@@ -17,8 +17,8 @@ const title = "RVLand Devs | Software sob medida, do zero";
 const description =
     "Apps, sites, plataformas e sistemas sob medida — do zero e no seu fluxo. Sem adaptação de software pronto: construímos o produto certo para o seu negócio.";
 
-const url = new URL("https://rvland-page.vercel.app"); // <- troque pelo seu domínio
-const ogImage = "/logo.jpg"; // <- /public/logo.jpg
+const url = new URL("https://rvland-page.vercel.app");
+const ogImage = "/logo.jpg";
 
 export const metadata: Metadata = {
     metadataBase: url,
@@ -84,6 +84,10 @@ export const metadata: Metadata = {
     },
 
     category: "technology",
+
+    icons: {
+        icon: [{ url: "/favicon.ico" }],
+    },
 };
 
 export default function RootLayout({
