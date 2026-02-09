@@ -28,14 +28,9 @@ import { Separator } from "@/components/ui/separator";
 import { Input } from "@/components/ui/input";
 import { Textarea } from "@/components/ui/textarea";
 
-/**
- * ✅ EDITE AQUI (apenas isso)
- * - WhatsApp: use só números com DDI (ex: 5581999999999)
- * - Email: ex: contato@rvland.dev
- */
 const CONTACT = {
   whatsapp: "5541995394878",
-  email: "contato.rvland@gmail.com",
+  email: "contato.rvlandd@gmail.com",
 };
 
 const META_PIXEL_ID = process.env.NEXT_PUBLIC_META_PIXEL_ID ?? "";
@@ -1168,9 +1163,6 @@ export default function Page() {
             <Separator className="mb-6 bg-white/10" />
             <div className="flex flex-col items-start justify-between gap-4 md:flex-row md:items-center">
               <div className="flex items-center gap-3">
-                <div className="relative h-9 w-9 overflow-hidden rounded-xl border border-white/10 bg-white/5">
-                  <Image src="/logo.svg" alt="RVLand Devs" fill className="object-contain p-2" />
-                </div>
                 <div>
                   <div className="text-sm font-semibold">RVLand Devs</div>
                   <div className="text-xs text-white/60">Sua ilha de realidades — nós codificamos o resto.</div>
