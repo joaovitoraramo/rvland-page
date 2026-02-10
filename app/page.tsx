@@ -29,7 +29,7 @@ import { Input } from "@/components/ui/input";
 import { Textarea } from "@/components/ui/textarea";
 
 const CONTACT = {
-  whatsapp: "5541995394878",
+  whatsapp: "554184891365",
   email: "contato.rvlandd@gmail.com",
 };
 
