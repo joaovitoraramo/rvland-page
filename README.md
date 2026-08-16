@@ -1,36 +1,59 @@
-This is a [Next.js](https://nextjs.org) project bootstrapped with [`create-next-app`](https://nextjs.org/docs/app/api-reference/cli/create-next-app).
+# RVLand Devs — site
 
-## Getting Started
+Landing page institucional da RVLand Devs. Next.js 16 (App Router) + Tailwind v4 +
+shadcn/ui, hospedada na Vercel.
 
-First, run the development server:
+## Rodando
 
 ```bash
+npm install
+cp .env.example .env.local   # ajuste os valores
 npm run dev
-# or
-yarn dev
-# or
-pnpm dev
-# or
-bun dev
 ```
 
-Open [http://localhost:3000](http://localhost:3000) with your browser to see the result.
+- `npm run dev` — desenvolvimento em http://localhost:3000
+- `npm run build` — build de produção
+- `npm run lint` — ESLint
 
-You can start editing the page by modifying `app/page.tsx`. The page auto-updates as you edit the file.
+## Variáveis de ambiente
 
-This project uses [`next/font`](https://nextjs.org/docs/app/building-your-application/optimizing/fonts) to automatically optimize and load [Geist](https://vercel.com/font), a new font family for Vercel.
+Ver [`.env.example`](.env.example). Nenhuma é obrigatória para rodar local: o site
+cai em defaults sensatos e o Meta Pixel simplesmente não carrega se o ID estiver
+vazio.
 
-## Learn More
+## Estrutura
 
-To learn more about Next.js, take a look at the following resources:
+```
+app/
+  layout.tsx           metadata global, lang pt-BR, fontes
+  page.tsx             landing (Server Component) + JSON-LD
+  globals.css          tema shadcn + animações da landing
+  opengraph-image.tsx  card social 1200x630 gerado em build
+  sitemap.ts robots.ts
+components/
+  landing/             ilhas interativas ("use client")
+  ui/                  primitivos shadcn/ui
+lib/
+  site.ts              fonte única: contato, SEO, FAQ, helpers de link
+```
 
-- [Next.js Documentation](https://nextjs.org/docs) - learn about Next.js features and API.
-- [Learn Next.js](https://nextjs.org/learn) - an interactive Next.js tutorial.
+### Por que a landing é Server Component
 
-You can check out [the Next.js GitHub repository](https://github.com/vercel/next.js) - your feedback and contributions are welcome!
+Só os pedaços que precisam de evento de mouse ou `IntersectionObserver` vivem em
+`components/landing/` com `"use client"`. O resto é HTML renderizado no servidor —
+menos JS no cliente e conteúdo indexável sem depender de hidratação.
 
-## Deploy on Vercel
+### Animação de entrada sem quebrar no-JS
 
-The easiest way to deploy your Next.js app is to use the [Vercel Platform](https://vercel.com/new?utm_medium=default-template&filter=next.js&utm_source=create-next-app&utm_campaign=create-next-app-readme) from the creators of Next.js.
+Os blocos usam a classe `.rv-reveal`, que é **visível por padrão**. Um script
+bloqueante no `layout.tsx` adiciona `.js` ao `<html>`, e só então o CSS esconde os
+blocos para que o `Reveal` os anime. Sem JS, a página continua legível.
 
-Check out our [Next.js deployment documentation](https://nextjs.org/docs/app/building-your-application/deploying) for more details.
+Se for mexer nisso: nunca coloque o estado escondido direto no `className` do JSX,
+senão o HTML servido volta a nascer invisível.
+
+## Pendências conhecidas
+
+- O formulário de contato abre `mailto:`/WhatsApp; não persiste o lead em lugar
+  nenhum. Trocar por Server Action + banco quando houver backend.
+- O Meta Pixel dispara `PageView` sem camada de consentimento (LGPD).

@@ -124,3 +124,100 @@
     @apply bg-background text-foreground;
   }
 }
+
+/* Fundo global da landing. Fica aqui (e não em styled-jsx) para valer já no
+   primeiro paint, antes de qualquer hidratação. */
+html,
+body {
+  overflow-x: hidden;
+  background: #05070b;
+}
+
+/* Reveal on scroll.
+   O conteúdo é visível por padrão: sem JS, a página é legível.
+   A classe `js` é adicionada no <html> por um script bloqueante no layout,
+   então o estado escondido só existe quando o JS de fato vai revelar. */
+.rv-reveal {
+  transition: opacity 700ms ease, transform 700ms ease;
+}
+
+.js .rv-reveal {
+  opacity: 0;
+  transform: translateY(1rem);
+  will-change: opacity, transform;
+}
+
+.js .rv-reveal.rv-reveal-in {
+  opacity: 1;
+  transform: none;
+  will-change: auto;
+}
+
+.rv-aurora {
+  background: radial-gradient(
+      600px circle at 30% 20%,
+      rgba(0, 229, 255, 0.18),
+      transparent 55%
+    ),
+    radial-gradient(520px circle at 70% 60%, rgba(0, 255, 138, 0.12), transparent 56%),
+    radial-gradient(520px circle at 60% 10%, rgba(255, 255, 255, 0.08), transparent 50%);
+  filter: blur(10px);
+  animation: rvAurora 10s ease-in-out infinite;
+}
+
+.rv-scan {
+  background: linear-gradient(
+    to bottom,
+    transparent 0%,
+    rgba(255, 255, 255, 0.08) 45%,
+    transparent 70%
+  );
+  transform: translateY(-60%);
+  animation: rvScan 7s ease-in-out infinite;
+  mix-blend-mode: screen;
+}
+
+@keyframes rvAurora {
+  0% {
+    transform: translate3d(-2%, -1%, 0) scale(1.02);
+    opacity: 0.55;
+  }
+  50% {
+    transform: translate3d(2%, 1%, 0) scale(1.05);
+    opacity: 0.7;
+  }
+  100% {
+    transform: translate3d(-2%, -1%, 0) scale(1.02);
+    opacity: 0.55;
+  }
+}
+
+@keyframes rvScan {
+  0% {
+    transform: translateY(-70%);
+    opacity: 0.15;
+  }
+  50% {
+    transform: translateY(0%);
+    opacity: 0.25;
+  }
+  100% {
+    transform: translateY(70%);
+    opacity: 0.15;
+  }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .rv-aurora,
+  .rv-scan {
+    animation: none !important;
+  }
+
+  .rv-reveal,
+  .js .rv-reveal,
+  .js .rv-reveal.rv-reveal-in {
+    opacity: 1;
+    transform: none;
+    transition: none;
+  }
+}
