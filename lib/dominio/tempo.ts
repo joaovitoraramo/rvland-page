@@ -48,3 +48,31 @@ export function formatarCompetenciaBR(competencia: string): string {
   const [ano, mes] = competencia.split("-");
   return `${mes}/${ano}`;
 }
+
+/**
+ * Interpreta competência digitada por humano: "03/2026", "3/2026" ou
+ * "2026-03" (o que um input type=month envia nos navegadores que o
+ * suportam). Retorna a competência normalizada ("2026-03-01") ou null.
+ */
+export function parseCompetenciaHumana(texto: string): string | null {
+  const limpo = texto.trim();
+
+  let ano: number;
+  let mes: number;
+
+  const br = limpo.match(/^(\d{1,2})\/(\d{4})$/);
+  const iso = limpo.match(/^(\d{4})-(\d{2})$/);
+
+  if (br) {
+    mes = Number(br[1]);
+    ano = Number(br[2]);
+  } else if (iso) {
+    ano = Number(iso[1]);
+    mes = Number(iso[2]);
+  } else {
+    return null;
+  }
+
+  if (mes < 1 || mes > 12) return null;
+  return `${ano}-${String(mes).padStart(2, "0")}-01`;
+}

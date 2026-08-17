@@ -9,13 +9,13 @@ import { db, contratos, faturas, licencas, pagamentos } from "@/lib/db";
 import { exigirPermissao } from "@/lib/auth";
 import { registrarAuditoria } from "@/lib/audit";
 import { reaisParaCentavos } from "@/lib/formato";
-import { hojeSP } from "@/lib/dominio/tempo";
+import { hojeSP, parseCompetenciaHumana } from "@/lib/dominio/tempo";
 
 // ── Fatura manual (avulsa, histórica ou parcela de contrato fechado) ─────────
 
 const esquemaFaturaManual = z.object({
   contratoId: z.string().uuid("Selecione o contrato."),
-  competencia: z.string().regex(/^\d{4}-\d{2}$/, "Informe a competência."),
+  competencia: z.string().trim().min(1, "Informe a competência."),
   vencimento: z.string().regex(/^\d{4}-\d{2}-\d{2}$/, "Informe o vencimento."),
   valor: z.string().trim().min(1, "Informe o valor."),
   historica: z.enum(["sim", "nao"]),
@@ -74,7 +74,11 @@ export async function criarFaturaManual(
     return { erros: { pagoEm: "Informe a data do pagamento." } };
   }
 
-  const competencia = `${dados.data.competencia}-01`;
+  // Aceita "03/2026" (digitado) e "2026-03" (input type=month do Chrome)
+  const competencia = parseCompetenciaHumana(dados.data.competencia);
+  if (!competencia) {
+    return { erros: { competencia: "Use o formato MM/AAAA. Ex: 03/2026" } };
+  }
 
   const [fatura] = await db
     .insert(faturas)

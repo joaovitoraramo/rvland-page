@@ -8,6 +8,7 @@ import {
   compararDatas,
   formatarDataBR,
   formatarCompetenciaBR,
+  parseCompetenciaHumana,
 } from "./tempo";
 
 describe("hojeSP", () => {
@@ -60,5 +61,25 @@ describe("formatação pt-BR", () => {
   it("formata data e competência", () => {
     expect(formatarDataBR("2026-08-16")).toBe("16/08/2026");
     expect(formatarCompetenciaBR("2026-08-01")).toBe("08/2026");
+  });
+});
+
+describe("parseCompetenciaHumana", () => {
+  it("aceita MM/AAAA (formato brasileiro digitado)", () => {
+    expect(parseCompetenciaHumana("03/2026")).toBe("2026-03-01");
+    expect(parseCompetenciaHumana("3/2026")).toBe("2026-03-01");
+    expect(parseCompetenciaHumana(" 12/2025 ")).toBe("2025-12-01");
+  });
+
+  it("aceita AAAA-MM (input type=month do Chrome)", () => {
+    expect(parseCompetenciaHumana("2026-03")).toBe("2026-03-01");
+  });
+
+  it("rejeita mês inválido e lixo", () => {
+    expect(parseCompetenciaHumana("13/2026")).toBeNull();
+    expect(parseCompetenciaHumana("0/2026")).toBeNull();
+    expect(parseCompetenciaHumana("2026-13")).toBeNull();
+    expect(parseCompetenciaHumana("março de 2026")).toBeNull();
+    expect(parseCompetenciaHumana("")).toBeNull();
   });
 });

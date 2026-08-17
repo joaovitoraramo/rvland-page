@@ -48,8 +48,15 @@ export function FormFaturaManual({
         </div>
 
         <div>
-          <Label htmlFor="competencia">Competência *</Label>
-          <Input id="competencia" name="competencia" type="month" required className={estiloInput} />
+          <Label htmlFor="competencia">Competência (MM/AAAA) *</Label>
+          <Input
+            id="competencia"
+            name="competencia"
+            placeholder="03/2026"
+            inputMode="numeric"
+            required
+            className={estiloInput}
+          />
           {campo("competencia")}
         </div>
 
