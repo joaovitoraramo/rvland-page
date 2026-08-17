@@ -15,6 +15,12 @@ export function statusAgora(s: {
   return statusServidor(s, Date.now());
 }
 
+/** Segundos desde uma data (lido aqui, fora do render). Null se ausente. */
+export function segundosDesde(d: Date | null): number | null {
+  if (!d) return null;
+  return Math.max(0, Math.floor((Date.now() - d.getTime()) / 1000));
+}
+
 export type LinhaServidor = {
   id: string;
   nome: string;

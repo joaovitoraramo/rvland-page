@@ -6,6 +6,7 @@ import { listarServidores } from "@/lib/consultas/servidores";
 import { formatarDataHoraBR } from "@/lib/formato";
 import { PageHeader } from "@/components/painel/page-header";
 import { BadgeServidor } from "@/components/painel/badge-servidor";
+import { MonitorVivo } from "@/components/painel/monitor-vivo";
 import { Btn, EmptyState } from "@/components/painel/ui";
 import {
   Table,
@@ -32,13 +33,16 @@ export default async function PaginaServidores() {
         titulo="Parque"
         descricao={`${lista.length} servidor(es) — ${online} online · ${offline} offline`}
         acoes={
-          pode(perfil, "servidores.cadastrar") ? (
-            <Btn asChild variante="primario">
-              <Link href="/painel/servidores/novo">
-                <Plus className="size-4" /> Novo servidor
-              </Link>
-            </Btn>
-          ) : null
+          <>
+            {lista.length > 0 ? <MonitorVivo segundosIniciais={null} /> : null}
+            {pode(perfil, "servidores.cadastrar") ? (
+              <Btn asChild variante="primario">
+                <Link href="/painel/servidores/novo">
+                  <Plus className="size-4" /> Novo servidor
+                </Link>
+              </Btn>
+            ) : null}
+          </>
         }
       />
 
