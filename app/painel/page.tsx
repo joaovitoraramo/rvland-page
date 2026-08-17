@@ -64,7 +64,7 @@ export default async function Dashboard({
       ) : null}
 
       {veValores ? (
-        <div className="rv-entrar-1 mb-7 grid grid-cols-2 gap-2.5 md:gap-3 lg:grid-cols-4">
+        <div className="rv-entrar-1 mb-7 grid grid-cols-1 gap-2.5 md:grid-cols-2 md:gap-3 lg:grid-cols-4">
           <Kpi
             icone={<Wallet />}
             rotulo="recebido no mês"
@@ -82,7 +82,7 @@ export default async function Dashboard({
             rotulo="mrr"
             valor={formatarReais(dados.mrrCentavos)}
             tom="ciano"
-            sub="contratos recorrentes ativos"
+            sub="contratos ativos"
           />
           <Kpi
             icone={<CalendarClock />}

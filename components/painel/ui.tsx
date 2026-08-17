@@ -113,27 +113,42 @@ export function Kpi({
 
   return (
     <div className="rounded-2xl border border-white/8 bg-gradient-to-b from-white/[0.055] to-white/[0.028] p-4 shadow-[inset_0_1px_0_rgba(255,255,255,0.05)] md:p-5">
-      <div className="flex items-center gap-2">
-        <span
+      {/* mobile: uma linha (rótulo à esquerda, número à direita) — o rótulo
+          não quebra e o número tem espaço próprio.
+          desktop: empilhado, como antes. */}
+      <div className="flex items-center justify-between gap-3 md:block">
+        <div className="flex min-w-0 items-center gap-2.5 md:gap-2">
+          <span
+            className={cn(
+              "grid size-8 shrink-0 place-items-center rounded-lg border [&_svg]:size-4",
+              iconeTons[tom]
+            )}
+          >
+            {icone}
+          </span>
+          <span className="min-w-0">
+            <span className="rv-eyebrow block leading-tight">{rotulo}</span>
+            {sub ? (
+              <span className="mt-1 block text-[11px] leading-tight text-white/35 md:hidden">
+                {sub}
+              </span>
+            ) : null}
+          </span>
+        </div>
+
+        <div
           className={cn(
-            "grid size-7 shrink-0 place-items-center rounded-lg border md:size-8 [&_svg]:size-3.5 md:[&_svg]:size-4",
-            iconeTons[tom]
+            "rv-num shrink-0 whitespace-nowrap text-xl font-semibold leading-none md:mt-3 md:text-[26px]",
+            tons[tom]
           )}
         >
-          {icone}
-        </span>
-        <span className="rv-eyebrow leading-tight">{rotulo}</span>
+          {valor}
+        </div>
       </div>
-      {/* valor menor no mobile para caber em 2 colunas sem cortar */}
-      <div
-        className={cn(
-          "rv-num mt-2.5 text-xl font-semibold leading-none md:mt-3 md:text-[26px]",
-          tons[tom]
-        )}
-      >
-        {valor}
-      </div>
-      {sub ? <div className="mt-2 text-xs leading-tight text-white/40">{sub}</div> : null}
+
+      {sub ? (
+        <div className="mt-2 hidden text-xs leading-tight text-white/40 md:block">{sub}</div>
+      ) : null}
     </div>
   );
 }

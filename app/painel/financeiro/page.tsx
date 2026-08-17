@@ -1,11 +1,11 @@
 import Link from "next/link";
 import { desc, eq } from "drizzle-orm";
-import { ArrowUpRight, Plus, Receipt } from "lucide-react";
+import { AlertTriangle, ArrowUpRight, FileClock, Plus, Receipt, Wallet } from "lucide-react";
 
 import { db, clientes, contratos, faturas } from "@/lib/db";
 import { exigirPermissao } from "@/lib/auth";
 import { PageHeader } from "@/components/painel/page-header";
-import { Btn, EmptyState } from "@/components/painel/ui";
+import { Btn, EmptyState, Kpi } from "@/components/painel/ui";
 import {
   Table,
   TableBody,
@@ -95,26 +95,25 @@ export default async function PaginaFinanceiro({
         }
       />
 
-      <div className="rv-entrar-1 mb-5 grid grid-cols-1 gap-2.5 sm:grid-cols-3 md:gap-3">
-        {[
-          { rotulo: "recebido (filtro atual)", valor: totais.recebido, classe: "rv-fosforo-verde" },
-          { rotulo: "em aberto", valor: totais.aAberta, classe: "text-white" },
-          {
-            rotulo: "vencido",
-            valor: totais.vencido,
-            classe: totais.vencido > 0 ? "rv-fosforo-ambar" : "text-white/50",
-          },
-        ].map((t) => (
-          <div
-            key={t.rotulo}
-            className="rounded-2xl border border-white/8 bg-gradient-to-b from-white/[0.055] to-white/[0.028] p-5 shadow-[inset_0_1px_0_rgba(255,255,255,0.05)]"
-          >
-            <div className="rv-eyebrow">{t.rotulo}</div>
-            <div className={`rv-num mt-2.5 text-[22px] font-semibold leading-none ${t.classe}`}>
-              {formatarReais(t.valor)}
-            </div>
-          </div>
-        ))}
+      <div className="rv-entrar-1 mb-5 grid grid-cols-1 gap-2.5 md:grid-cols-3 md:gap-3">
+        <Kpi
+          icone={<Wallet />}
+          rotulo="recebido"
+          valor={formatarReais(totais.recebido)}
+          tom={totais.recebido > 0 ? "verde" : "neutro"}
+          sub="no filtro atual"
+        />
+        <Kpi
+          icone={<FileClock />}
+          rotulo="em aberto"
+          valor={formatarReais(totais.aAberta)}
+        />
+        <Kpi
+          icone={<AlertTriangle />}
+          rotulo="vencido"
+          valor={formatarReais(totais.vencido)}
+          tom={totais.vencido > 0 ? "ambar" : "neutro"}
+        />
       </div>
 
       <form className="rv-entrar-2 mb-5 flex flex-wrap items-center gap-2" action="/painel/financeiro">
