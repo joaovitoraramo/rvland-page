@@ -29,7 +29,8 @@ export default async function PaginaEditarGrupo({
 
   return (
     <>
-      <PageHeader titulo={`Editar grupo — ${grupo.nome}`} />
+      <PageHeader trilha="config / grupos" titulo={grupo.nome} descricao="Editar permissões do grupo" />
+      <div className="rv-entrar-1">
       <FormGrupo
         acao={salvarGrupo.bind(null, id)}
         inicial={{
@@ -39,6 +40,7 @@ export default async function PaginaEditarGrupo({
         }}
         areas={permissoesPorArea()}
       />
+      </div>
     </>
   );
 }

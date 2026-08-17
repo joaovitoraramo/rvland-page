@@ -2,11 +2,11 @@
 
 import * as React from "react";
 import { useActionState } from "react";
+import { Check } from "lucide-react";
 
-import { Button } from "@/components/ui/button";
-import { Input } from "@/components/ui/input";
+import { Btn } from "@/components/painel/ui";
 import { Label } from "@/components/ui/label";
-import { Textarea } from "@/components/ui/textarea";
+import { InputDocumento, InputTelefone } from "@/components/painel/inputs-mascarados";
 import type { EstadoFormCliente } from "@/app/painel/clientes/actions";
 
 type DadosCliente = {
@@ -31,58 +31,77 @@ export function FormCliente({
 
   const campo = (nome: keyof NonNullable<EstadoFormCliente["erros"]>) =>
     estado.erros?.[nome] ? (
-      <p role="alert" className="mt-1 text-xs text-red-300">
+      <p role="alert" className="mt-1.5 text-xs text-red-300">
         {estado.erros[nome]}
       </p>
     ) : null;
 
-  const estiloInput = "border-white/10 bg-white/5 text-white placeholder:text-white/35";
-
   return (
-    <form action={dispatch} className="max-w-2xl space-y-4">
-      <div className="grid gap-4 sm:grid-cols-2">
-        <div>
-          <Label htmlFor="nome">Nome *</Label>
-          <Input id="nome" name="nome" defaultValue={inicial?.nome ?? ""} required className={estiloInput} />
-          {campo("nome")}
+    <form action={dispatch} className="max-w-2xl">
+      <div className="rounded-2xl border border-white/8 bg-gradient-to-b from-white/[0.045] to-white/[0.02] p-6">
+        <div className="grid gap-5 sm:grid-cols-2">
+          <div>
+            <Label htmlFor="nome">Nome *</Label>
+            <input
+              id="nome"
+              name="nome"
+              defaultValue={inicial?.nome ?? ""}
+              placeholder="Nome fantasia"
+              required
+              aria-invalid={!!estado.erros?.nome}
+            />
+            {campo("nome")}
+          </div>
+          <div>
+            <Label htmlFor="razaoSocial">Razão social</Label>
+            <input id="razaoSocial" name="razaoSocial" defaultValue={inicial?.razaoSocial ?? ""} />
+          </div>
+          <div>
+            <Label htmlFor="documento">CNPJ / CPF</Label>
+            <InputDocumento id="documento" name="documento" defaultValue={inicial?.documento ?? ""} />
+          </div>
+          <div>
+            <Label htmlFor="email">Email</Label>
+            <input
+              id="email"
+              name="email"
+              type="email"
+              placeholder="contato@cliente.com"
+              defaultValue={inicial?.email ?? ""}
+              aria-invalid={!!estado.erros?.email}
+            />
+            {campo("email")}
+          </div>
+          <div>
+            <Label htmlFor="telefone">Telefone / WhatsApp</Label>
+            <InputTelefone id="telefone" name="telefone" defaultValue={inicial?.telefone ?? ""} />
+          </div>
         </div>
-        <div>
-          <Label htmlFor="razaoSocial">Razão social</Label>
-          <Input id="razaoSocial" name="razaoSocial" defaultValue={inicial?.razaoSocial ?? ""} className={estiloInput} />
-        </div>
-        <div>
-          <Label htmlFor="documento">CNPJ / CPF</Label>
-          <Input id="documento" name="documento" defaultValue={inicial?.documento ?? ""} className={estiloInput} />
-        </div>
-        <div>
-          <Label htmlFor="email">Email</Label>
-          <Input id="email" name="email" type="email" defaultValue={inicial?.email ?? ""} className={estiloInput} />
-          {campo("email")}
-        </div>
-        <div>
-          <Label htmlFor="telefone">Telefone / WhatsApp</Label>
-          <Input id="telefone" name="telefone" defaultValue={inicial?.telefone ?? ""} className={estiloInput} />
-        </div>
-      </div>
 
-      <div>
-        <Label htmlFor="notas">Notas internas</Label>
-        <Textarea id="notas" name="notas" defaultValue={inicial?.notas ?? ""} className={`min-h-[90px] ${estiloInput}`} />
+        <div className="mt-5">
+          <Label htmlFor="notas">Notas internas</Label>
+          <textarea
+            id="notas"
+            name="notas"
+            defaultValue={inicial?.notas ?? ""}
+            placeholder="Contexto, combinados, particularidades..."
+            className="min-h-[90px]"
+          />
+        </div>
       </div>
 
       {estado.erro ? (
-        <p role="alert" className="text-sm text-red-300">
+        <p role="alert" className="mt-4 text-sm text-red-300">
           {estado.erro}
         </p>
       ) : null}
 
-      <Button
-        type="submit"
-        disabled={pendente}
-        className="rounded-xl bg-[rgba(0,229,255,0.18)] text-white hover:bg-[rgba(0,229,255,0.26)]"
-      >
-        {pendente ? "Salvando..." : rotuloEnviar}
-      </Button>
+      <div className="mt-5">
+        <Btn type="submit" variante="primario" disabled={pendente}>
+          {pendente ? "Salvando..." : rotuloEnviar}
+          {!pendente ? <Check className="size-4" /> : null}
+        </Btn>
+      </div>
     </form>
   );
 }

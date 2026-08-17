@@ -1,7 +1,16 @@
 import Link from "next/link";
 import { notFound } from "next/navigation";
-import { and, desc, eq, or } from "drizzle-orm";
-import { Pencil, Plus } from "lucide-react";
+import { and, desc, eq, or, sql } from "drizzle-orm";
+import {
+  ArchiveRestore,
+  Archive,
+  ArrowUpRight,
+  FileText,
+  Mail,
+  Pencil,
+  Phone,
+  Plus,
+} from "lucide-react";
 
 import { db, anexos, auditoria, clientes, contratos, faturas, licencas } from "@/lib/db";
 import { exigirPermissao, pode } from "@/lib/auth";
@@ -19,11 +28,11 @@ import { PageHeader } from "@/components/painel/page-header";
 import { StatusBadge } from "@/components/painel/status-badge";
 import { AcoesLicenca } from "@/components/painel/card-licenca";
 import { FormAnexo } from "@/components/painel/form-anexo";
-import { Badge } from "@/components/ui/badge";
-import { Button } from "@/components/ui/button";
+import { Btn } from "@/components/painel/ui";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { formatarReais, formatarDataHoraBR } from "@/lib/formato";
 import { formatarCompetenciaBR, formatarDataBR } from "@/lib/dominio/tempo";
+import { mascararDocumento, mascararTelefone } from "@/lib/dominio/mascaras";
 
 export const metadata = { title: "Cliente" };
 
@@ -59,7 +68,9 @@ export default async function PaginaCliente({
           or(
             and(eq(auditoria.entidade, "cliente"), eq(auditoria.entidadeId, id)),
             and(eq(auditoria.entidade, "licenca"), eq(auditoria.entidadeId, id)),
-            and(eq(auditoria.entidade, "anexo"), eq(auditoria.entidadeId, id))
+            and(eq(auditoria.entidade, "anexo"), eq(auditoria.entidadeId, id)),
+            // eventos financeiros carregam o cliente nos detalhes
+            sql`${auditoria.detalhes} ->> 'clienteId' = ${id}`
           )
         )
         .orderBy(desc(auditoria.criadoEm))
@@ -90,33 +101,40 @@ export default async function PaginaCliente({
   return (
     <>
       <PageHeader
+        trilha="clientes / 360"
         titulo={cliente.nome}
-        descricao={[cliente.razaoSocial, cliente.documento].filter(Boolean).join(" · ") || undefined}
+        descricao={
+          [cliente.razaoSocial, cliente.documento && mascararDocumento(cliente.documento)]
+            .filter(Boolean)
+            .join(" · ") || undefined
+        }
         acoes={
           <>
             {cliente.status === "arquivado" ? (
-              <Badge className="border-white/15 bg-white/5 text-white/55">Arquivado</Badge>
+              <span className="rv-eyebrow rounded-full border border-white/12 px-3 py-1.5">
+                arquivado
+              </span>
             ) : null}
             {pode(perfil, "clientes.editar") ? (
-              <Button
-                asChild
-                variant="secondary"
-                className="rounded-xl border border-white/10 bg-white/5 text-white hover:bg-white/10"
-              >
+              <Btn asChild>
                 <Link href={`/painel/clientes/${id}/editar`}>
-                  <Pencil className="h-4 w-4" /> Editar
+                  <Pencil className="size-4" /> Editar
                 </Link>
-              </Button>
+              </Btn>
             ) : null}
             {pode(perfil, "clientes.arquivar") ? (
               <form action={acaoArquivar}>
-                <Button
-                  type="submit"
-                  variant="secondary"
-                  className="rounded-xl border border-white/10 bg-white/5 text-white/70 hover:bg-white/10"
-                >
-                  {cliente.status === "ativo" ? "Arquivar" : "Reativar"}
-                </Button>
+                <Btn type="submit" variante="fantasma">
+                  {cliente.status === "ativo" ? (
+                    <>
+                      <Archive className="size-4" /> Arquivar
+                    </>
+                  ) : (
+                    <>
+                      <ArchiveRestore className="size-4" /> Reativar
+                    </>
+                  )}
+                </Btn>
               </form>
             ) : null}
           </>
@@ -124,10 +142,10 @@ export default async function PaginaCliente({
       />
 
       <div className="grid gap-4 lg:grid-cols-3">
-        {/* Coluna 1: licença + cadastro */}
-        <div className="space-y-4">
+        {/* Coluna 1: licença + contato */}
+        <div className="rv-entrar-1 space-y-4">
           {pode(perfil, "licencas.ver") ? (
-            <Card className="rounded-2xl border-white/10 bg-white/5">
+            <Card>
               <CardHeader>
                 <CardTitle className="flex items-center justify-between text-base text-white">
                   Licença
@@ -135,27 +153,29 @@ export default async function PaginaCliente({
                 </CardTitle>
               </CardHeader>
               <CardContent className="space-y-4 text-sm">
-                <div className="grid grid-cols-2 gap-2">
-                  <div>
-                    <div className="text-xs text-white/45">Válida até</div>
-                    <div className="text-white/85">
+                <div className="grid grid-cols-2 gap-3">
+                  <div className="rounded-xl border border-white/8 bg-black/25 p-3">
+                    <div className="rv-eyebrow">válida até</div>
+                    <div className="rv-num mt-1.5 text-white/90">
                       {licenca.venceEm ? formatarDataBR(licenca.venceEm) : "—"}
                     </div>
                   </div>
-                  <div>
-                    <div className="text-xs text-white/45">Tolerada até</div>
-                    <div className="text-white/85">
+                  <div className="rounded-xl border border-white/8 bg-black/25 p-3">
+                    <div className="rv-eyebrow">tolerada até</div>
+                    <div className="rv-num mt-1.5 text-white/90">
                       {licenca.toleradoAte ? formatarDataBR(licenca.toleradoAte) : "—"}
                     </div>
                   </div>
-                  <div>
-                    <div className="text-xs text-white/45">Dias de confiança</div>
-                    <div className="text-white/85">{linhaLicenca?.diasConfianca ?? 0}</div>
+                  <div className="rounded-xl border border-white/8 bg-black/25 p-3">
+                    <div className="rv-eyebrow">confiança</div>
+                    <div className="rv-num mt-1.5 text-white/90">
+                      {linhaLicenca?.diasConfianca ?? 0} dia(s)
+                    </div>
                   </div>
                   {linhaLicenca?.bloqueioManual ? (
-                    <div className="col-span-2">
-                      <div className="text-xs text-red-300/70">Bloqueio manual</div>
-                      <div className="text-red-200">{linhaLicenca.bloqueioMotivo}</div>
+                    <div className="col-span-2 rounded-xl border border-red-500/20 bg-red-500/[0.06] p-3">
+                      <div className="rv-eyebrow text-red-300/70">bloqueio manual</div>
+                      <div className="mt-1.5 text-red-200">{linhaLicenca.bloqueioMotivo}</div>
                     </div>
                   ) : null}
                 </div>
@@ -176,63 +196,75 @@ export default async function PaginaCliente({
             </Card>
           ) : null}
 
-          <Card className="rounded-2xl border-white/10 bg-white/5">
+          <Card>
             <CardHeader>
               <CardTitle className="text-base text-white">Contato</CardTitle>
             </CardHeader>
-            <CardContent className="space-y-1.5 text-sm text-white/75">
-              <div>{cliente.email ?? "— sem email —"}</div>
-              <div>{cliente.telefone ?? "— sem telefone —"}</div>
+            <CardContent className="space-y-2.5 text-sm">
+              <div className="flex items-center gap-2.5 text-white/75">
+                <Mail className="size-3.5 shrink-0 text-white/30" />
+                {cliente.email ?? <span className="text-white/30">sem email</span>}
+              </div>
+              <div className="flex items-center gap-2.5 text-white/75">
+                <Phone className="size-3.5 shrink-0 text-white/30" />
+                <span className="rv-num">
+                  {cliente.telefone ? (
+                    mascararTelefone(cliente.telefone)
+                  ) : (
+                    <span className="font-sans text-white/30">sem telefone</span>
+                  )}
+                </span>
+              </div>
               {cliente.notas ? (
-                <p className="mt-2 border-t border-white/10 pt-2 text-white/55">{cliente.notas}</p>
+                <p className="border-t border-white/8 pt-2.5 text-white/50">{cliente.notas}</p>
               ) : null}
             </CardContent>
           </Card>
         </div>
 
         {/* Coluna 2: contratos + faturas */}
-        <div className="space-y-4">
+        <div className="rv-entrar-2 space-y-4">
           {veContratos ? (
-            <Card className="rounded-2xl border-white/10 bg-white/5">
+            <Card>
               <CardHeader>
                 <CardTitle className="flex items-center justify-between text-base text-white">
                   Contratos
                   {pode(perfil, "contratos.criar") ? (
-                    <Button
-                      asChild
-                      size="sm"
-                      variant="secondary"
-                      className="rounded-lg border border-white/10 bg-white/5 text-white hover:bg-white/10"
-                    >
+                    <Btn asChild tamanho="sm">
                       <Link href={`/painel/contratos/novo?cliente=${id}`}>
-                        <Plus className="h-3.5 w-3.5" /> Novo
+                        <Plus className="size-3.5" /> Novo
                       </Link>
-                    </Button>
+                    </Btn>
                   ) : null}
                 </CardTitle>
               </CardHeader>
               <CardContent className="space-y-2">
                 {contratosDoCliente.length === 0 ? (
-                  <p className="text-sm text-white/45">Nenhum contrato.</p>
+                  <p className="text-sm text-white/40">Nenhum contrato.</p>
                 ) : (
                   contratosDoCliente.map((c) => (
                     <Link
                       key={c.id}
                       href={`/painel/contratos/${c.id}`}
-                      className="block rounded-xl border border-white/10 bg-black/20 p-3 transition-colors hover:bg-black/30"
+                      className="group block rounded-xl border border-white/8 bg-black/25 p-3.5 transition-all hover:border-[rgba(0,229,255,0.25)] hover:bg-black/35"
                     >
                       <div className="flex items-center justify-between gap-2">
                         <span className="text-sm font-medium text-white">{c.titulo}</span>
                         <span
-                          className={`text-xs ${c.status === "ativo" ? "text-emerald-300" : "text-white/40"}`}
+                          className={`rv-eyebrow ${
+                            c.status === "ativo" ? "!text-[#7DFFC4]" : "!text-white/30"
+                          }`}
                         >
-                          {c.status === "ativo" ? "Ativo" : "Encerrado"}
+                          {c.status === "ativo" ? "ativo" : "encerrado"}
                         </span>
                       </div>
-                      <div className="mt-0.5 text-xs text-white/50">
-                        {c.tipo === "recorrente"
-                          ? `Recorrente · vence dia ${c.diaVencimento}`
-                          : "Fechado"}
+                      <div className="mt-1 flex items-center justify-between">
+                        <span className="text-xs text-white/45">
+                          {c.tipo === "recorrente"
+                            ? `Recorrente · vence dia ${c.diaVencimento}`
+                            : "Fechado"}
+                        </span>
+                        <ArrowUpRight className="size-3.5 text-white/20 transition-colors group-hover:text-[#8AF0FF]" />
                       </div>
                     </Link>
                   ))
@@ -242,35 +274,41 @@ export default async function PaginaCliente({
           ) : null}
 
           {veFinanceiro ? (
-            <Card className="rounded-2xl border-white/10 bg-white/5">
+            <Card>
               <CardHeader>
                 <CardTitle className="text-base text-white">Últimas faturas</CardTitle>
               </CardHeader>
-              <CardContent className="space-y-1.5">
+              <CardContent className="space-y-1">
                 {faturasDoCliente.length === 0 ? (
-                  <p className="text-sm text-white/45">Nenhuma fatura.</p>
+                  <p className="text-sm text-white/40">Nenhuma fatura.</p>
                 ) : (
                   faturasDoCliente.map((f) => (
                     <Link
                       key={f.id}
                       href={`/painel/financeiro/faturas/${f.id}`}
-                      className="flex items-center justify-between rounded-lg px-2 py-1.5 text-sm transition-colors hover:bg-white/5"
+                      className="grid grid-cols-[1fr_auto_auto] items-center gap-3 rounded-lg px-2.5 py-2 text-sm transition-colors hover:bg-white/[0.04]"
                     >
-                      <span className="text-white/75">
+                      <span className="rv-num text-white/75">
                         {formatarCompetenciaBR(f.competencia)}
-                        {f.historica ? <span className="ml-1 text-xs text-white/35">(hist.)</span> : null}
+                        {f.historica ? (
+                          <span className="ml-1.5 font-sans text-xs text-white/30">hist.</span>
+                        ) : null}
                       </span>
-                      <span className="text-white/60">{formatarReais(f.valorCentavos)}</span>
+                      <span className="rv-num text-white/55">{formatarReais(f.valorCentavos)}</span>
                       <span
-                        className={
+                        className={`rv-eyebrow ${
                           f.status === "quitada"
-                            ? "text-xs text-emerald-300"
+                            ? "!text-[#7DFFC4]"
                             : f.status === "cancelada"
-                              ? "text-xs text-white/35"
-                              : "text-xs text-amber-300"
-                        }
+                              ? "!text-white/25"
+                              : "!text-[#FFD58A]"
+                        }`}
                       >
-                        {f.status === "quitada" ? "Quitada" : f.status === "cancelada" ? "Cancelada" : "Aberta"}
+                        {f.status === "quitada"
+                          ? "quitada"
+                          : f.status === "cancelada"
+                            ? "cancelada"
+                            : "aberta"}
                       </span>
                     </Link>
                   ))
@@ -281,36 +319,39 @@ export default async function PaginaCliente({
         </div>
 
         {/* Coluna 3: anexos + timeline */}
-        <div className="space-y-4">
+        <div className="rv-entrar-3 space-y-4">
           {veContratos ? (
-            <Card className="rounded-2xl border-white/10 bg-white/5">
+            <Card>
               <CardHeader>
                 <CardTitle className="text-base text-white">Anexos</CardTitle>
               </CardHeader>
               <CardContent className="space-y-3">
                 {anexosComUrl.length === 0 ? (
-                  <p className="text-sm text-white/45">Nenhum anexo.</p>
+                  <p className="text-sm text-white/40">Nenhum anexo.</p>
                 ) : (
                   <ul className="space-y-1.5 text-sm">
                     {anexosComUrl.map((a) => (
                       <li key={a.id} className="flex items-center justify-between gap-2">
-                        {a.url ? (
-                          <a
-                            href={a.url}
-                            target="_blank"
-                            rel="noreferrer"
-                            className="truncate text-cyan-200 hover:underline"
-                          >
-                            {a.nomeArquivo}
-                          </a>
-                        ) : (
-                          <span className="truncate text-white/60">{a.nomeArquivo}</span>
-                        )}
+                        <span className="flex min-w-0 items-center gap-2">
+                          <FileText className="size-3.5 shrink-0 text-white/30" />
+                          {a.url ? (
+                            <a
+                              href={a.url}
+                              target="_blank"
+                              rel="noreferrer"
+                              className="truncate text-[#8AF0FF] hover:underline"
+                            >
+                              {a.nomeArquivo}
+                            </a>
+                          ) : (
+                            <span className="truncate text-white/60">{a.nomeArquivo}</span>
+                          )}
+                        </span>
                         {pode(perfil, "contratos.editar") ? (
                           <form action={removerAnexo.bind(null, a.id)}>
                             <button
                               type="submit"
-                              className="text-xs text-white/35 hover:text-red-300"
+                              className="text-xs text-white/30 transition-colors hover:text-red-300"
                               aria-label={`Remover ${a.nomeArquivo}`}
                             >
                               remover
@@ -326,19 +367,22 @@ export default async function PaginaCliente({
             </Card>
           ) : null}
 
-          <Card className="rounded-2xl border-white/10 bg-white/5">
+          <Card>
             <CardHeader>
               <CardTitle className="text-base text-white">Timeline</CardTitle>
             </CardHeader>
             <CardContent>
               {timeline.length === 0 ? (
-                <p className="text-sm text-white/45">Nada registrado ainda.</p>
+                <p className="text-sm text-white/40">Nada registrado ainda.</p>
               ) : (
-                <ul className="space-y-2.5">
+                <ul className="space-y-3">
                   {timeline.map((t) => (
-                    <li key={t.id} className="border-l-2 border-white/10 pl-3 text-sm">
-                      <div className="text-white/80">{t.acao.replace(/[._]/g, " ")}</div>
-                      <div className="text-xs text-white/40">
+                    <li
+                      key={t.id}
+                      className="relative border-l border-white/10 pl-4 before:absolute before:-left-[3px] before:top-1.5 before:size-[5px] before:rounded-full before:bg-[rgba(0,229,255,0.6)]"
+                    >
+                      <div className="text-sm text-white/80">{t.acao.replace(/[._]/g, " ")}</div>
+                      <div className="rv-num mt-0.5 text-[11px] text-white/35">
                         {t.atorNome} · {formatarDataHoraBR(t.criadoEm)}
                       </div>
                     </li>

@@ -221,3 +221,234 @@ body {
     transition: none;
   }
 }
+
+/* ═══════════════════════════════════════════════════════════════════════
+   PAINEL — design system (escopo .painel; a landing nunca passa por aqui)
+   Identidade: console de operação. Dados em Geist Mono com cor-fósforo,
+   superfícies de vidro quietas, um único ponto de brilho por tela (ação
+   primária em gradiente ciano→verde).
+   ═══════════════════════════════════════════════════════════════════════ */
+
+.painel {
+  --rv-ciano: #00e5ff;
+  --rv-verde: #00ff8a;
+  --rv-ambar: #ffc24d;
+  --rv-vermelho: #ff5d5d;
+  --rv-tinta: #05070b;
+  --rv-superficie: rgba(255, 255, 255, 0.045);
+  --rv-borda: rgba(255, 255, 255, 0.09);
+  color-scheme: dark;
+}
+
+.painel ::selection {
+  background: rgba(0, 229, 255, 0.25);
+  color: #fff;
+}
+
+.painel ::-webkit-scrollbar {
+  width: 10px;
+  height: 10px;
+}
+.painel ::-webkit-scrollbar-thumb {
+  background: rgba(255, 255, 255, 0.12);
+  border-radius: 999px;
+  border: 3px solid transparent;
+  background-clip: content-box;
+}
+.painel ::-webkit-scrollbar-thumb:hover {
+  background-color: rgba(255, 255, 255, 0.2);
+  background-clip: content-box;
+}
+.painel ::-webkit-scrollbar-track {
+  background: transparent;
+}
+
+/* ── Campos de formulário (qualquer input/select/textarea do painel) ── */
+.painel :is(input, select, textarea):not([type="checkbox"], [type="radio"], [type="file"], [type="submit"]) {
+  height: 2.5rem;
+  width: 100%;
+  min-width: 0;
+  padding: 0 0.75rem;
+  border-radius: 10px;
+  border: 1px solid var(--rv-borda);
+  background-color: var(--rv-superficie);
+  color: #fff;
+  font-size: 0.875rem;
+  outline: none;
+  transition:
+    border-color 150ms ease,
+    background-color 150ms ease,
+    box-shadow 150ms ease;
+}
+
+.painel textarea {
+  height: auto;
+  min-height: 6rem;
+  padding: 0.625rem 0.75rem;
+  border-radius: 12px;
+  resize: vertical;
+}
+
+.painel :is(input, select, textarea)::placeholder {
+  color: rgba(255, 255, 255, 0.28);
+}
+
+.painel :is(input, select, textarea):focus-visible {
+  border-color: rgba(0, 229, 255, 0.5);
+  background-color: rgba(255, 255, 255, 0.06);
+  box-shadow: 0 0 0 3px rgba(0, 229, 255, 0.16);
+}
+
+.painel :is(input, select, textarea)[aria-invalid="true"] {
+  border-color: rgba(255, 93, 93, 0.55);
+}
+.painel :is(input, select, textarea)[aria-invalid="true"]:focus-visible {
+  box-shadow: 0 0 0 3px rgba(255, 93, 93, 0.15);
+}
+
+.painel :is(input, select, textarea):disabled {
+  opacity: 0.5;
+  pointer-events: none;
+}
+
+.painel select {
+  appearance: none;
+  padding-right: 2.25rem;
+  background-image: url("data:image/svg+xml;charset=utf-8,%3Csvg xmlns='http://www.w3.org/2000/svg' width='16' height='16' fill='none'%3E%3Cpath d='M4 6l4 4 4-4' stroke='rgba(255,255,255,0.45)' stroke-width='1.5' stroke-linecap='round' stroke-linejoin='round'/%3E%3C/svg%3E");
+  background-repeat: no-repeat;
+  background-position: right 0.75rem center;
+}
+.painel select option {
+  background: #0a0e14;
+  color: #fff;
+}
+
+.painel input[type="checkbox"] {
+  width: 1rem;
+  height: 1rem;
+  accent-color: var(--rv-ciano);
+  cursor: pointer;
+}
+
+.painel input[type="date"]::-webkit-calendar-picker-indicator {
+  opacity: 0.5;
+  cursor: pointer;
+}
+
+/* Dígitos em mono nos campos numéricos/datas do painel */
+.painel :is(input[type="date"], input[inputmode="numeric"], input[inputmode="decimal"]) {
+  font-family: var(--font-geist-mono), monospace;
+  font-variant-numeric: tabular-nums;
+  letter-spacing: 0.01em;
+}
+
+/* ── Cartões (shadcn Card dentro do painel) ── */
+.painel [data-slot="card"] {
+  border-radius: 1rem;
+  border: 1px solid rgba(255, 255, 255, 0.08);
+  background:
+    linear-gradient(180deg, rgba(255, 255, 255, 0.055), rgba(255, 255, 255, 0.028));
+  box-shadow:
+    0 1px 0 rgba(255, 255, 255, 0.05) inset,
+    0 16px 40px rgba(0, 0, 0, 0.35);
+  color: #fff;
+}
+
+/* ── Assinatura tipográfica ── */
+.rv-eyebrow {
+  font-family: var(--font-geist-mono), monospace;
+  font-size: 11px;
+  text-transform: uppercase;
+  letter-spacing: 0.14em;
+  color: rgba(255, 255, 255, 0.35);
+}
+
+.rv-num {
+  font-family: var(--font-geist-mono), monospace;
+  font-variant-numeric: tabular-nums;
+  letter-spacing: 0.01em;
+}
+
+/* Fósforo: valores com cor de status ganham um brilho discreto */
+.rv-fosforo-verde {
+  color: #7dffc4;
+  text-shadow: 0 0 14px rgba(0, 255, 138, 0.35);
+}
+.rv-fosforo-ambar {
+  color: #ffd58a;
+  text-shadow: 0 0 14px rgba(255, 194, 77, 0.3);
+}
+.rv-fosforo-vermelho {
+  color: #ff9d9d;
+  text-shadow: 0 0 14px rgba(255, 93, 93, 0.35);
+}
+.rv-fosforo-ciano {
+  color: #8af0ff;
+  text-shadow: 0 0 14px rgba(0, 229, 255, 0.35);
+}
+
+/* ── Movimento ──────────────────────────────────────────────────────────
+   Só opacity/transform (compositor), durações curtas, stagger discreto.
+   Blocos inteiros animam — nunca linha a linha de tabela. */
+@keyframes rvEntrar {
+  from {
+    opacity: 0;
+    transform: translateY(10px);
+  }
+  to {
+    opacity: 1;
+    transform: none;
+  }
+}
+
+@keyframes rvEntrarEscala {
+  from {
+    opacity: 0;
+    transform: translateY(8px) scale(0.97);
+  }
+  to {
+    opacity: 1;
+    transform: none;
+  }
+}
+
+@keyframes rvBannerEntrar {
+  from {
+    opacity: 0;
+    transform: translateY(-8px);
+  }
+  to {
+    opacity: 1;
+    transform: none;
+  }
+}
+
+.painel .rv-entrar {
+  animation: rvEntrar 420ms cubic-bezier(0.16, 1, 0.3, 1) both;
+}
+.painel .rv-entrar-1 {
+  animation: rvEntrar 420ms cubic-bezier(0.16, 1, 0.3, 1) 60ms both;
+}
+.painel .rv-entrar-2 {
+  animation: rvEntrar 420ms cubic-bezier(0.16, 1, 0.3, 1) 120ms both;
+}
+.painel .rv-entrar-3 {
+  animation: rvEntrar 420ms cubic-bezier(0.16, 1, 0.3, 1) 180ms both;
+}
+.painel .rv-entrar-escala {
+  animation: rvEntrarEscala 480ms cubic-bezier(0.16, 1, 0.3, 1) both;
+}
+.painel .rv-banner {
+  animation: rvBannerEntrar 360ms cubic-bezier(0.16, 1, 0.3, 1) both;
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .painel .rv-entrar,
+  .painel .rv-entrar-1,
+  .painel .rv-entrar-2,
+  .painel .rv-entrar-3,
+  .painel .rv-entrar-escala,
+  .painel .rv-banner {
+    animation: none;
+  }
+}

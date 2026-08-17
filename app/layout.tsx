@@ -74,7 +74,9 @@ export default function RootLayout({
   children: React.ReactNode;
 }>) {
   return (
-    <html lang="pt-BR">
+    // suppressHydrationWarning: o script abaixo adiciona a classe `js` antes
+    // da hidratação (mecanismo de reveal da landing) — divergência esperada.
+    <html lang="pt-BR" suppressHydrationWarning>
       <head>
         <script dangerouslySetInnerHTML={{ __html: ENABLE_JS_CLASS }} />
       </head>

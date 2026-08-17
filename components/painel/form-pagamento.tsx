@@ -2,10 +2,11 @@
 
 import * as React from "react";
 import { useActionState } from "react";
+import { CircleCheck } from "lucide-react";
 
-import { Button } from "@/components/ui/button";
-import { Input } from "@/components/ui/input";
+import { Btn } from "@/components/painel/ui";
 import { Label } from "@/components/ui/label";
+import { InputDinheiro } from "@/components/painel/inputs-mascarados";
 import type { EstadoPagamento } from "@/app/painel/financeiro/actions";
 
 export function FormPagamento({
@@ -20,26 +21,24 @@ export function FormPagamento({
 }) {
   const [estado, dispatch, pendente] = useActionState<EstadoPagamento, FormData>(acao, {});
 
-  const estiloInput = "border-white/10 bg-white/5 text-white placeholder:text-white/35";
-
   return (
-    <form action={dispatch} className="space-y-3">
-      <div className="grid gap-3 sm:grid-cols-2">
+    <form action={dispatch} className="space-y-4">
+      <div className="grid gap-4 sm:grid-cols-2">
         <div>
-          <Label htmlFor="valor">Valor (R$) *</Label>
-          <Input id="valor" name="valor" defaultValue={valorRestante} required className={estiloInput} />
+          <Label htmlFor="valor">Valor *</Label>
+          <InputDinheiro id="valor" name="valor" defaultValue={valorRestante} required />
         </div>
         <div>
           <Label htmlFor="pagoEm">Data do pagamento *</Label>
-          <Input id="pagoEm" name="pagoEm" type="date" defaultValue={hoje} required className={estiloInput} />
+          <input id="pagoEm" name="pagoEm" type="date" defaultValue={hoje} required />
         </div>
         <div>
           <Label htmlFor="forma">Forma</Label>
-          <Input id="forma" name="forma" placeholder="Pix, boleto..." className={estiloInput} />
+          <input id="forma" name="forma" placeholder="Pix, boleto..." />
         </div>
         <div>
           <Label htmlFor="notas">Notas</Label>
-          <Input id="notas" name="notas" className={estiloInput} />
+          <input id="notas" name="notas" />
         </div>
       </div>
 
@@ -50,13 +49,10 @@ export function FormPagamento({
       ) : null}
       {estado.ok ? <p className="text-sm text-emerald-300">{estado.ok}</p> : null}
 
-      <Button
-        type="submit"
-        disabled={pendente}
-        className="rounded-xl bg-[rgba(0,255,138,0.16)] text-white hover:bg-[rgba(0,255,138,0.22)]"
-      >
+      <Btn type="submit" variante="primario" disabled={pendente}>
         {pendente ? "Lançando..." : "Confirmar pagamento"}
-      </Button>
+        {!pendente ? <CircleCheck className="size-4" /> : null}
+      </Btn>
     </form>
   );
 }

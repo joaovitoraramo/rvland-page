@@ -24,7 +24,7 @@ export function TrocaGrupo({
         name="grupoId"
         defaultValue={grupoAtual}
         onChange={() => formRef.current?.requestSubmit()}
-        className="h-8 rounded-md border border-white/10 bg-white/5 px-2 text-sm text-white [&>option]:bg-[#0a0e14]"
+        className="!h-8 !w-auto rounded-lg text-[13px]"
       >
         {gruposDisponiveis.map((g) => (
           <option key={g.id} value={g.id}>

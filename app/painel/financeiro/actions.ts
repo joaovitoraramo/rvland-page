@@ -120,7 +120,8 @@ export async function criarFaturaManual(
     acao: historica ? "fatura.historica_lancada" : "fatura.criada_manual",
     entidade: "fatura",
     entidadeId: fatura.id,
-    detalhes: { competencia, valorCentavos, jaQuitada },
+    // clienteId nos detalhes: a timeline do cliente filtra por ele
+    detalhes: { clienteId: contrato.clienteId, competencia, valorCentavos, jaQuitada },
   });
 
   redirect(`/painel/financeiro/faturas/${fatura.id}`);

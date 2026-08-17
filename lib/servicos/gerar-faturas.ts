@@ -86,7 +86,13 @@ export async function gerarFaturasDaCompetencia(
       acao: "fatura.gerada",
       entidade: "fatura",
       entidadeId: contrato.id,
-      detalhes: { competencia, valorCentavos: valor, contratoId: contrato.id },
+      // clienteId nos detalhes: a timeline do cliente filtra por ele
+      detalhes: {
+        clienteId: contrato.clienteId,
+        competencia,
+        valorCentavos: valor,
+        contratoId: contrato.id,
+      },
     });
 
     criadas++;

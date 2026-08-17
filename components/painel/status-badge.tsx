@@ -1,31 +1,39 @@
 import { cn } from "@/lib/utils";
 import type { StatusLicenca } from "@/lib/dominio/licenca";
 
-const ESTILOS: Record<StatusLicenca, { rotulo: string; classe: string; ponto: string }> = {
+const ESTILOS: Record<
+  StatusLicenca,
+  { rotulo: string; classe: string; ponto: string; brilho: string }
+> = {
   em_dia: {
     rotulo: "Em dia",
-    classe: "border-[rgba(0,255,138,0.25)] bg-[rgba(0,255,138,0.10)] text-[rgba(150,255,200,0.95)]",
-    ponto: "bg-[rgba(0,255,138,0.9)]",
+    classe: "border-[rgba(0,255,138,0.22)] bg-[rgba(0,255,138,0.08)] text-[#7DFFC4]",
+    ponto: "bg-[#00FF8A]",
+    brilho: "0 0 8px rgba(0,255,138,0.8)",
   },
   atrasado: {
     rotulo: "Atrasado",
-    classe: "border-amber-400/25 bg-amber-400/10 text-amber-200",
-    ponto: "bg-amber-400",
+    classe: "border-[rgba(255,194,77,0.25)] bg-[rgba(255,194,77,0.08)] text-[#FFD58A]",
+    ponto: "bg-[#FFC24D]",
+    brilho: "0 0 8px rgba(255,194,77,0.8)",
   },
   bloqueado: {
     rotulo: "Bloqueado",
-    classe: "border-red-500/30 bg-red-500/10 text-red-200",
-    ponto: "bg-red-500",
+    classe: "border-[rgba(255,93,93,0.3)] bg-[rgba(255,93,93,0.09)] text-[#FF9D9D]",
+    ponto: "bg-[#FF5D5D]",
+    brilho: "0 0 8px rgba(255,93,93,0.8)",
   },
   cancelado: {
     rotulo: "Cancelado",
-    classe: "border-white/15 bg-white/5 text-white/55",
-    ponto: "bg-white/40",
+    classe: "border-white/12 bg-white/[0.04] text-white/50",
+    ponto: "bg-white/35",
+    brilho: "none",
   },
   sem_licenca: {
     rotulo: "Sem licença",
-    classe: "border-white/10 bg-white/[0.03] text-white/45",
-    ponto: "bg-white/25",
+    classe: "border-white/8 bg-white/[0.02] text-white/40",
+    ponto: "bg-white/20",
+    brilho: "none",
   },
 };
 
@@ -40,18 +48,21 @@ export function StatusBadge({
   className?: string;
 }) {
   const estilo = ESTILOS[status];
-  const rotulo =
-    status === "bloqueado" && simulacao ? "Seria bloqueado" : estilo.rotulo;
+  const rotulo = status === "bloqueado" && simulacao ? "Seria bloqueado" : estilo.rotulo;
 
   return (
     <span
       className={cn(
-        "inline-flex items-center gap-1.5 rounded-full border px-2.5 py-0.5 text-xs font-medium",
+        "inline-flex items-center gap-1.5 whitespace-nowrap rounded-full border px-2.5 py-1",
+        "font-mono text-[11px] font-medium uppercase tracking-[0.06em]",
         estilo.classe,
         className
       )}
     >
-      <span className={cn("h-1.5 w-1.5 rounded-full", estilo.ponto)} />
+      <span
+        className={cn("size-1.5 rounded-full", estilo.ponto)}
+        style={{ boxShadow: estilo.brilho }}
+      />
       {rotulo}
     </span>
   );

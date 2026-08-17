@@ -3,8 +3,7 @@
 import * as React from "react";
 import { useActionState } from "react";
 
-import { Button } from "@/components/ui/button";
-import { Input } from "@/components/ui/input";
+import { Btn } from "@/components/painel/ui";
 import type { EstadoConfig } from "@/app/painel/config/actions";
 
 /** Toggle com confirmação textual (pânico / simulação). */
@@ -30,28 +29,20 @@ export function FormToggleConfig({
   const palavra = ligado ? palavraDesligar : palavraLigar;
 
   return (
-    <form action={dispatch} className="space-y-2">
-      <p className="text-xs text-white/45">
-        Digite <strong className="text-white/80">{palavra}</strong> para confirmar.
+    <form action={dispatch} className="space-y-3">
+      <p className="text-xs text-white/40">
+        Digite <strong className="rv-num text-white/80">{palavra}</strong> para confirmar.
       </p>
       <div className="flex flex-wrap items-center gap-2">
-        <Input
+        <input
           name="confirmacao"
           placeholder={palavra}
           autoComplete="off"
-          className="w-40 border-white/10 bg-white/5 text-white placeholder:text-white/25"
+          className="rv-num !w-44 uppercase"
         />
-        <Button
-          type="submit"
-          disabled={pendente}
-          className={
-            perigoso
-              ? "rounded-xl bg-red-500/15 text-red-200 hover:bg-red-500/25"
-              : "rounded-xl bg-[rgba(0,255,138,0.16)] text-white hover:bg-[rgba(0,255,138,0.22)]"
-          }
-        >
+        <Btn type="submit" variante={perigoso ? "perigo" : "secundario"} disabled={pendente}>
           {pendente ? "..." : ligado ? rotuloDesligar : rotuloLigar}
-        </Button>
+        </Btn>
       </div>
       {estado.erro ? (
         <p role="alert" className="text-xs text-red-300">
@@ -74,23 +65,19 @@ export function FormTetoConfianca({
 
   return (
     <form action={dispatch} className="flex flex-wrap items-center gap-2">
-      <Input
+      <input
         name="dias"
         type="number"
+        inputMode="numeric"
         min={0}
         max={90}
         defaultValue={atual}
-        className="w-24 border-white/10 bg-white/5 text-white"
+        className="!w-24"
         aria-label="Teto de dias de confiança"
       />
-      <Button
-        type="submit"
-        disabled={pendente}
-        variant="secondary"
-        className="rounded-xl border border-white/10 bg-white/5 text-white hover:bg-white/10"
-      >
+      <Btn type="submit" disabled={pendente}>
         {pendente ? "..." : "Salvar teto"}
-      </Button>
+      </Btn>
       {estado.erro ? (
         <p role="alert" className="w-full text-xs text-red-300">
           {estado.erro}

@@ -1,9 +1,10 @@
 import { desc, eq } from "drizzle-orm";
+import { ScrollText } from "lucide-react";
 
 import { db, auditoria } from "@/lib/db";
 import { exigirPermissao } from "@/lib/auth";
 import { PageHeader } from "@/components/painel/page-header";
-import { Button } from "@/components/ui/button";
+import { Btn, EmptyState } from "@/components/painel/ui";
 import {
   Table,
   TableBody,
@@ -71,14 +72,14 @@ export default async function PaginaAuditoria({
 
   return (
     <>
-      <PageHeader titulo="Auditoria" descricao="Tudo que muda estado passa por aqui." />
+      <PageHeader
+        trilha="auditoria"
+        titulo="Auditoria"
+        descricao="Tudo que muda estado passa por aqui."
+      />
 
-      <form className="mb-4 flex items-center gap-2" action="/painel/auditoria">
-        <select
-          name="entidade"
-          defaultValue={filtro ?? ""}
-          className="h-9 rounded-md border border-white/10 bg-white/5 px-2 text-sm text-white [&>option]:bg-[#0a0e14]"
-        >
+      <form className="rv-entrar-1 mb-5 flex items-center gap-2" action="/painel/auditoria">
+        <select name="entidade" defaultValue={filtro ?? ""} className="!w-52">
           <option value="">Todas as entidades</option>
           {ENTIDADES.map((e) => (
             <option key={e} value={e}>
@@ -86,58 +87,62 @@ export default async function PaginaAuditoria({
             </option>
           ))}
         </select>
-        <Button type="submit" variant="secondary" className="rounded-xl border border-white/10 bg-white/5 text-white hover:bg-white/10">
-          Filtrar
-        </Button>
+        <Btn type="submit">Filtrar</Btn>
       </form>
 
-      <Table>
-        <TableHeader>
-          <TableRow>
-            <TableHead>Quando</TableHead>
-            <TableHead>Quem</TableHead>
-            <TableHead>Ação</TableHead>
-            <TableHead>Entidade</TableHead>
-            <TableHead>Detalhes</TableHead>
-          </TableRow>
-        </TableHeader>
-        <TableBody>
-          {visiveis.length === 0 ? (
-            <TableRow>
-              <TableCell colSpan={5} className="py-8 text-center text-white/45">
-                Nada registrado.
-              </TableCell>
-            </TableRow>
-          ) : (
-            visiveis.map((l) => (
-              <TableRow key={l.id}>
-                <TableCell className="whitespace-nowrap text-white/60">
-                  {formatarDataHoraBR(l.criadoEm)}
-                </TableCell>
-                <TableCell className="text-white/80">{l.atorNome}</TableCell>
-                <TableCell className="font-medium text-white">{l.acao}</TableCell>
-                <TableCell className="text-white/60">{l.entidade}</TableCell>
-                <TableCell className="max-w-md truncate text-xs text-white/45">
-                  {l.detalhes ? JSON.stringify(l.detalhes) : "—"}
-                </TableCell>
+      <div className="rv-entrar-2">
+        {visiveis.length === 0 ? (
+          <div className="rounded-2xl border border-white/8 bg-white/[0.02]">
+            <EmptyState icone={<ScrollText />} titulo="Nada registrado" />
+          </div>
+        ) : (
+          <Table>
+            <TableHeader>
+              <TableRow>
+                <TableHead>Quando</TableHead>
+                <TableHead>Quem</TableHead>
+                <TableHead>Ação</TableHead>
+                <TableHead>Entidade</TableHead>
+                <TableHead>Detalhes</TableHead>
               </TableRow>
-            ))
-          )}
-        </TableBody>
-      </Table>
+            </TableHeader>
+            <TableBody>
+              {visiveis.map((l) => (
+                <TableRow key={l.id}>
+                  <TableCell className="rv-num whitespace-nowrap text-white/55">
+                    {formatarDataHoraBR(l.criadoEm)}
+                  </TableCell>
+                  <TableCell className="text-white/75">{l.atorNome}</TableCell>
+                  <TableCell className="rv-num text-[13px] font-medium text-white">
+                    {l.acao}
+                  </TableCell>
+                  <TableCell>
+                    <span className="rv-eyebrow rounded-full border border-white/10 px-2 py-0.5">
+                      {l.entidade}
+                    </span>
+                  </TableCell>
+                  <TableCell className="max-w-md truncate font-mono text-[11px] text-white/35">
+                    {l.detalhes ? JSON.stringify(l.detalhes) : "—"}
+                  </TableCell>
+                </TableRow>
+              ))}
+            </TableBody>
+          </Table>
+        )}
 
-      <div className="mt-4 flex items-center gap-3 text-sm">
-        {paginaAtual > 1 ? (
-          <a href={linkCom(paginaAtual - 1)} className="text-cyan-200 hover:underline">
-            ← Anterior
-          </a>
-        ) : null}
-        <span className="text-white/40">página {paginaAtual}</span>
-        {temProxima ? (
-          <a href={linkCom(paginaAtual + 1)} className="text-cyan-200 hover:underline">
-            Próxima →
-          </a>
-        ) : null}
+        <div className="mt-5 flex items-center gap-3 text-sm">
+          {paginaAtual > 1 ? (
+            <Btn asChild tamanho="sm">
+              <a href={linkCom(paginaAtual - 1)}>← Anterior</a>
+            </Btn>
+          ) : null}
+          <span className="rv-eyebrow">página {paginaAtual}</span>
+          {temProxima ? (
+            <Btn asChild tamanho="sm">
+              <a href={linkCom(paginaAtual + 1)}>Próxima →</a>
+            </Btn>
+          ) : null}
+        </div>
       </div>
     </>
   );

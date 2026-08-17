@@ -40,7 +40,14 @@ export default async function LayoutPainel({ children }: { children: React.React
   }
 
   return (
-    <div className="flex min-h-screen bg-[#05070b] text-white">
+    <div className="painel flex min-h-screen bg-[#05070b] text-white">
+      {/* ambiente: mesma atmosfera da landing, bem mais quieta */}
+      <div className="pointer-events-none fixed inset-0 -z-10">
+        <div className="absolute inset-0 bg-[radial-gradient(1000px_circle_at_15%_-10%,rgba(0,229,255,0.07),transparent_60%)]" />
+        <div className="absolute inset-0 bg-[radial-gradient(800px_circle_at_90%_110%,rgba(0,255,138,0.05),transparent_60%)]" />
+        <div className="absolute inset-0 opacity-[0.05] [background-image:radial-gradient(rgba(255,255,255,0.4)_1px,transparent_1px)] [background-size:24px_24px]" />
+      </div>
+
       <Sidebar
         itens={itens}
         usuario={perfil.nome}
@@ -50,25 +57,32 @@ export default async function LayoutPainel({ children }: { children: React.React
 
       <div className="flex min-w-0 flex-1 flex-col">
         {config.modoPanico ? (
-          <div className="flex items-center gap-2 border-b border-red-500/30 bg-red-500/15 px-6 py-2 text-sm text-red-200">
-            <AlertTriangle className="h-4 w-4 shrink-0" />
+          <div className="rv-banner flex items-center gap-2.5 border-b border-red-500/25 bg-red-500/10 px-6 py-2.5 text-sm text-red-200 backdrop-blur-sm">
+            <span className="grid size-6 shrink-0 place-items-center rounded-md border border-red-500/30 bg-red-500/15">
+              <AlertTriangle className="size-3.5" />
+            </span>
             <span>
-              <strong>Bloqueios suspensos</strong> — botão de pânico ativo. Nenhum cliente será
-              bloqueado por atraso.
+              <strong className="font-semibold">Bloqueios suspensos</strong> — botão de pânico
+              ativo. Nenhum cliente será bloqueado por atraso.
             </span>
           </div>
         ) : null}
 
         {config.modoSimulacao ? (
-          <div className="flex items-center gap-2 border-b border-cyan-400/20 bg-cyan-400/10 px-6 py-2 text-sm text-cyan-200">
-            <FlaskConical className="h-4 w-4 shrink-0" />
+          <div className="rv-banner flex items-center gap-2.5 border-b border-[rgba(0,229,255,0.15)] bg-[rgba(0,229,255,0.06)] px-6 py-2.5 text-sm text-[#8AF0FF] backdrop-blur-sm">
+            <span className="grid size-6 shrink-0 place-items-center rounded-md border border-[rgba(0,229,255,0.25)] bg-[rgba(0,229,255,0.1)]">
+              <FlaskConical className="size-3.5" />
+            </span>
             <span>
-              <strong>Modo simulação</strong> — bloqueios são apenas indicados, nada é executado.
+              <strong className="font-semibold">Modo simulação</strong> — bloqueios são apenas
+              indicados, nada é executado.
             </span>
           </div>
         ) : null}
 
-        <main className="min-w-0 flex-1 px-6 py-6 md:px-8">{children}</main>
+        <main className="min-w-0 flex-1 px-6 py-8 md:px-10">
+          <div className="mx-auto w-full max-w-[1200px]">{children}</div>
+        </main>
       </div>
     </div>
   );

@@ -12,7 +12,6 @@ import {
 import { PageHeader } from "@/components/painel/page-header";
 import { FormPagamento } from "@/components/painel/form-pagamento";
 import { FormEditarFatura } from "@/components/painel/form-editar-fatura";
-import { Badge } from "@/components/ui/badge";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import {
   Table,
@@ -23,11 +22,7 @@ import {
   TableRow,
 } from "@/components/ui/table";
 import { formatarReais } from "@/lib/formato";
-import {
-  formatarCompetenciaBR,
-  formatarDataBR,
-  hojeSP,
-} from "@/lib/dominio/tempo";
+import { formatarCompetenciaBR, formatarDataBR, hojeSP } from "@/lib/dominio/tempo";
 
 export const metadata = { title: "Fatura" };
 
@@ -64,85 +59,100 @@ export default async function PaginaFatura({
   const acaoEditar = editarFatura.bind(null, fatura.id);
   const acaoCancelar = cancelarFatura.bind(null, fatura.id);
 
+  const resumo = [
+    { rotulo: "valor", valor: formatarReais(fatura.valorCentavos), classe: "text-white" },
+    {
+      rotulo: "pago",
+      valor: formatarReais(fatura.pagoCentavos),
+      classe: fatura.pagoCentavos > 0 ? "rv-fosforo-verde" : "text-white/50",
+    },
+    {
+      rotulo: "restante",
+      valor: formatarReais(restante),
+      classe: restante > 0 ? "rv-fosforo-ambar" : "text-white/50",
+    },
+    { rotulo: "vencimento", valor: formatarDataBR(fatura.vencimento), classe: "text-white" },
+  ];
+
   return (
     <>
       <PageHeader
-        titulo={`Fatura ${formatarCompetenciaBR(fatura.competencia)} — ${cliente?.nome ?? ""}`}
+        trilha="financeiro / fatura"
+        titulo={`${formatarCompetenciaBR(fatura.competencia)} — ${cliente?.nome ?? ""}`}
         descricao={contrato?.titulo}
         acoes={
           <>
             {fatura.historica ? (
-              <Badge className="border-white/15 bg-white/5 text-white/55">Histórica</Badge>
+              <span className="rv-eyebrow rounded-full border border-white/12 px-3 py-1.5">
+                histórica
+              </span>
             ) : null}
-            <Badge
-              className={
+            <span
+              className={`rv-eyebrow rounded-full border px-3 py-1.5 ${
                 fatura.status === "quitada"
-                  ? "border-[rgba(0,255,138,0.25)] bg-[rgba(0,255,138,0.10)] text-[rgba(150,255,200,0.95)]"
+                  ? "border-[rgba(0,255,138,0.25)] !text-[#7DFFC4]"
                   : fatura.status === "cancelada"
-                    ? "border-white/15 bg-white/5 text-white/55"
-                    : "border-amber-400/25 bg-amber-400/10 text-amber-200"
-              }
+                    ? "border-white/12 !text-white/40"
+                    : "border-[rgba(255,194,77,0.3)] !text-[#FFD58A]"
+              }`}
             >
               {fatura.status === "quitada"
-                ? "Quitada"
+                ? "quitada"
                 : fatura.status === "cancelada"
-                  ? "Cancelada"
-                  : "Aberta"}
-            </Badge>
+                  ? "cancelada"
+                  : "aberta"}
+            </span>
           </>
         }
       />
 
       <div className="grid gap-4 lg:grid-cols-2">
-        <div className="space-y-4">
-          <Card className="rounded-2xl border-white/10 bg-white/5">
+        <div className="rv-entrar-1 space-y-4">
+          <Card>
             <CardHeader>
               <CardTitle className="text-base text-white">Resumo</CardTitle>
             </CardHeader>
             <CardContent>
-              <div className="grid grid-cols-2 gap-3 text-sm sm:grid-cols-4">
-                <div>
-                  <div className="text-xs text-white/45">Valor</div>
-                  <div className="font-semibold text-white">{formatarReais(fatura.valorCentavos)}</div>
-                </div>
-                <div>
-                  <div className="text-xs text-white/45">Pago</div>
-                  <div className="font-semibold text-emerald-300">{formatarReais(fatura.pagoCentavos)}</div>
-                </div>
-                <div>
-                  <div className="text-xs text-white/45">Restante</div>
-                  <div className="font-semibold text-white">{formatarReais(restante)}</div>
-                </div>
-                <div>
-                  <div className="text-xs text-white/45">Vencimento</div>
-                  <div className="font-semibold text-white">{formatarDataBR(fatura.vencimento)}</div>
-                </div>
+              <div className="grid grid-cols-2 gap-3 sm:grid-cols-4">
+                {resumo.map((r) => (
+                  <div key={r.rotulo} className="rounded-xl border border-white/8 bg-black/25 p-3">
+                    <div className="rv-eyebrow">{r.rotulo}</div>
+                    <div className={`rv-num mt-1.5 text-sm font-semibold ${r.classe}`}>
+                      {r.valor}
+                    </div>
+                  </div>
+                ))}
               </div>
               {fatura.notas ? (
-                <p className="mt-3 border-t border-white/10 pt-3 text-sm text-white/60">{fatura.notas}</p>
+                <p className="mt-4 border-t border-white/8 pt-3 text-sm text-white/55">
+                  {fatura.notas}
+                </p>
               ) : null}
-              <p className="mt-3 text-xs text-white/40">
+              <p className="mt-3 text-xs text-white/35">
                 Cliente:{" "}
-                <Link href={`/painel/clientes/${fatura.clienteId}`} className="text-white/70 hover:underline">
+                <Link
+                  href={`/painel/clientes/${fatura.clienteId}`}
+                  className="text-white/60 hover:text-[#8AF0FF]"
+                >
                   {cliente?.nome}
                 </Link>
               </p>
             </CardContent>
           </Card>
 
-          <Card className="rounded-2xl border-white/10 bg-white/5">
+          <Card>
             <CardHeader>
               <CardTitle className="text-base text-white">Pagamentos lançados</CardTitle>
             </CardHeader>
             <CardContent>
               {listaPagamentos.length === 0 ? (
-                <p className="text-sm text-white/45">Nenhum pagamento ainda.</p>
+                <p className="text-sm text-white/40">Nenhum pagamento ainda.</p>
               ) : (
                 <Table>
                   <TableHeader>
                     <TableRow>
                       <TableHead>Data</TableHead>
-                      <TableHead>Valor</TableHead>
+                      <TableHead className="text-right">Valor</TableHead>
                       <TableHead>Forma</TableHead>
                       <TableHead>Por</TableHead>
                     </TableRow>
@@ -150,10 +160,12 @@ export default async function PaginaFatura({
                   <TableBody>
                     {listaPagamentos.map((p) => (
                       <TableRow key={p.id}>
-                        <TableCell>{formatarDataBR(p.pagoEm)}</TableCell>
-                        <TableCell>{formatarReais(p.valorCentavos)}</TableCell>
-                        <TableCell className="text-white/60">{p.forma ?? "—"}</TableCell>
-                        <TableCell className="text-white/50">{p.criadoPor}</TableCell>
+                        <TableCell className="rv-num">{formatarDataBR(p.pagoEm)}</TableCell>
+                        <TableCell className="rv-num text-right">
+                          {formatarReais(p.valorCentavos)}
+                        </TableCell>
+                        <TableCell className="text-white/55">{p.forma ?? "—"}</TableCell>
+                        <TableCell className="text-white/45">{p.criadoPor}</TableCell>
                       </TableRow>
                     ))}
                   </TableBody>
@@ -163,16 +175,16 @@ export default async function PaginaFatura({
           </Card>
         </div>
 
-        <div className="space-y-4">
+        <div className="rv-entrar-2 space-y-4">
           {fatura.status === "aberta" && pode(perfil, "financeiro.lancar_pagamento") ? (
-            <Card className="rounded-2xl border-white/10 bg-white/5">
+            <Card>
               <CardHeader>
                 <CardTitle className="text-base text-white">Lançar pagamento</CardTitle>
               </CardHeader>
               <CardContent>
                 <FormPagamento acao={acaoPagar} valorRestante={restanteFormatado} hoje={hojeSP()} />
                 {!fatura.historica ? (
-                  <p className="mt-3 text-xs text-white/40">
+                  <p className="mt-3 text-xs text-white/35">
                     Quitação integral renova a licença automaticamente (auditado).
                   </p>
                 ) : null}
@@ -181,7 +193,7 @@ export default async function PaginaFatura({
           ) : null}
 
           {fatura.status === "aberta" && pode(perfil, "financeiro.editar_cobranca") ? (
-            <Card className="rounded-2xl border-white/10 bg-white/5">
+            <Card>
               <CardHeader>
                 <CardTitle className="text-base text-white">Editar / cancelar</CardTitle>
               </CardHeader>

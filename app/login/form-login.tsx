@@ -2,57 +2,59 @@
 
 import * as React from "react";
 import { useActionState } from "react";
+import { ArrowRight, KeyRound } from "lucide-react";
 
-import { Button } from "@/components/ui/button";
-import { Input } from "@/components/ui/input";
+import { Btn } from "@/components/painel/ui";
 import { entrar, type EstadoLogin } from "./actions";
 
 export function FormLogin() {
   const [estado, acao, pendente] = useActionState<EstadoLogin, FormData>(entrar, {});
 
   return (
-    <form action={acao} className="space-y-4">
+    <form action={acao} className="space-y-5">
       <div>
-        <label htmlFor="email" className="mb-1.5 block text-sm text-white/70">
-          Email
+        <label htmlFor="email" className="rv-eyebrow mb-2 block">
+          email
         </label>
-        <Input
+        <input
           id="email"
           name="email"
           type="email"
           autoComplete="email"
+          placeholder="voce@rvland.dev"
+          autoFocus
           required
-          className="border-white/10 bg-white/5 text-white placeholder:text-white/35"
         />
       </div>
 
       <div>
-        <label htmlFor="senha" className="mb-1.5 block text-sm text-white/70">
-          Senha
+        <label htmlFor="senha" className="rv-eyebrow mb-2 block">
+          senha
         </label>
-        <Input
+        <input
           id="senha"
           name="senha"
           type="password"
           autoComplete="current-password"
+          placeholder="••••••••••"
           required
-          className="border-white/10 bg-white/5 text-white placeholder:text-white/35"
         />
       </div>
 
       {estado.erro ? (
-        <p role="alert" className="text-sm text-red-300">
+        <p
+          role="alert"
+          className="flex items-center gap-2 rounded-lg border border-red-500/20 bg-red-500/10 px-3 py-2 text-sm text-red-200"
+        >
+          <KeyRound className="size-3.5 shrink-0" />
           {estado.erro}
         </p>
       ) : null}
 
-      <Button
-        type="submit"
-        disabled={pendente}
-        className="w-full rounded-xl bg-[rgba(0,229,255,0.18)] text-white hover:bg-[rgba(0,229,255,0.26)]"
-      >
+      <Btn type="submit" variante="primario" disabled={pendente} className="w-full">
         {pendente ? "Entrando..." : "Entrar"}
-      </Button>
+        {!pendente ? <ArrowRight className="size-4" /> : null}
+      </Btn>
     </form>
   );
 }

@@ -14,8 +14,10 @@ export default async function PaginaNovoUsuario() {
 
   return (
     <>
-      <PageHeader titulo="Novo usuário" descricao="Cria no Supabase Auth e vincula ao grupo." />
+      <PageHeader trilha="config / usuários / novo" titulo="Novo usuário" descricao="Cria no Supabase Auth e vincula ao grupo." />
+      <div className="rv-entrar-1">
       <FormUsuario gruposDisponiveis={lista.map((g) => ({ id: g.id, nome: g.nome }))} />
+      </div>
     </>
   );
 }

@@ -28,11 +28,11 @@ export default async function PaginaConfig() {
 
   return (
     <>
-      <PageHeader titulo="Configurações" />
+      <PageHeader trilha="config" titulo="Configurações" />
 
-      <div className="grid gap-4 lg:grid-cols-2">
+      <div className="rv-entrar-1 grid gap-4 lg:grid-cols-2">
         {podePanico ? (
-          <Card className="rounded-2xl border-white/10 bg-white/5">
+          <Card>
             <CardHeader>
               <CardTitle className="flex items-center gap-2 text-base text-white">
                 <ShieldAlert className="h-4 w-4 text-red-300" />
@@ -59,7 +59,7 @@ export default async function PaginaConfig() {
         ) : null}
 
         {podeSimulacao ? (
-          <Card className="rounded-2xl border-white/10 bg-white/5">
+          <Card>
             <CardHeader>
               <CardTitle className="flex items-center gap-2 text-base text-white">
                 <FlaskConical className="h-4 w-4 text-cyan-200" />
@@ -86,7 +86,7 @@ export default async function PaginaConfig() {
         ) : null}
 
         {podePanico ? (
-          <Card className="rounded-2xl border-white/10 bg-white/5">
+          <Card>
             <CardHeader>
               <CardTitle className="text-base text-white">Dias de confiança — teto</CardTitle>
               <CardDescription className="text-white/60">
@@ -100,7 +100,7 @@ export default async function PaginaConfig() {
         ) : null}
 
         {podeGrupos || podeUsuarios ? (
-          <Card className="rounded-2xl border-white/10 bg-white/5">
+          <Card>
             <CardHeader>
               <CardTitle className="text-base text-white">Acesso</CardTitle>
             </CardHeader>

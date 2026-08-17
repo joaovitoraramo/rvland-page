@@ -3,9 +3,9 @@
 import * as React from "react";
 import { useActionState } from "react";
 
-import { Button } from "@/components/ui/button";
-import { Input } from "@/components/ui/input";
+import { Btn } from "@/components/painel/ui";
 import { Label } from "@/components/ui/label";
+import { InputDinheiro } from "@/components/painel/inputs-mascarados";
 import type { EstadoEditarFatura } from "@/app/painel/financeiro/actions";
 
 export function FormEditarFatura({
@@ -28,46 +28,39 @@ export function FormEditarFatura({
     FormData
   >(acaoCancelar, {});
 
-  const estiloInput = "border-white/10 bg-white/5 text-white placeholder:text-white/35";
-
   return (
     <div className="space-y-6">
-      <form action={dispatchEditar} className="space-y-3">
-        <div className="grid gap-3 sm:grid-cols-2">
+      <form action={dispatchEditar} className="space-y-4">
+        <div className="grid gap-4 sm:grid-cols-2">
           <div>
             <Label htmlFor="vencimento">Vencimento</Label>
-            <Input id="vencimento" name="vencimento" type="date" defaultValue={vencimento} className={estiloInput} />
+            <input id="vencimento" name="vencimento" type="date" defaultValue={vencimento} />
           </div>
           <div>
-            <Label htmlFor="valor-editar">Valor (R$)</Label>
-            <Input id="valor-editar" name="valor" defaultValue={valor} className={estiloInput} />
+            <Label htmlFor="valor-editar">Valor</Label>
+            <InputDinheiro id="valor-editar" name="valor" defaultValue={valor} />
           </div>
         </div>
-        {estadoEditar.erro ? <p role="alert" className="text-sm text-red-300">{estadoEditar.erro}</p> : null}
+        {estadoEditar.erro ? (
+          <p role="alert" className="text-sm text-red-300">{estadoEditar.erro}</p>
+        ) : null}
         {estadoEditar.ok ? <p className="text-sm text-emerald-300">{estadoEditar.ok}</p> : null}
-        <Button
-          type="submit"
-          disabled={pendenteEditar}
-          variant="secondary"
-          className="rounded-xl border border-white/10 bg-white/5 text-white hover:bg-white/10"
-        >
+        <Btn type="submit" disabled={pendenteEditar}>
           {pendenteEditar ? "Salvando..." : "Salvar alterações"}
-        </Button>
+        </Btn>
       </form>
 
-      <form action={dispatchCancelar} className="space-y-3 border-t border-white/10 pt-4">
+      <form action={dispatchCancelar} className="space-y-4 border-t border-white/8 pt-5">
         <div>
           <Label htmlFor="motivo">Motivo do cancelamento</Label>
-          <Input id="motivo" name="motivo" placeholder="Ex: gerada em duplicidade" className={estiloInput} />
+          <input id="motivo" name="motivo" placeholder="Ex: gerada em duplicidade" />
         </div>
-        {estadoCancelar.erro ? <p role="alert" className="text-sm text-red-300">{estadoCancelar.erro}</p> : null}
-        <Button
-          type="submit"
-          disabled={pendenteCancelar}
-          className="rounded-xl bg-red-500/15 text-red-200 hover:bg-red-500/25"
-        >
+        {estadoCancelar.erro ? (
+          <p role="alert" className="text-sm text-red-300">{estadoCancelar.erro}</p>
+        ) : null}
+        <Btn type="submit" variante="perigo" disabled={pendenteCancelar}>
           {pendenteCancelar ? "Cancelando..." : "Cancelar fatura"}
-        </Button>
+        </Btn>
       </form>
     </div>
   );

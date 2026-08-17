@@ -23,10 +23,13 @@ export default async function PaginaNovoContrato({
   return (
     <>
       <PageHeader
+        trilha="contratos / novo"
         titulo={`Novo contrato — ${cliente.nome}`}
         descricao="Recorrente gera fatura mensal e licença; fechado é só registro financeiro."
       />
-      <FormContrato clienteId={cliente.id} />
+      <div className="rv-entrar-1">
+        <FormContrato clienteId={cliente.id} />
+      </div>
     </>
   );
 }

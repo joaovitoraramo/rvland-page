@@ -13,6 +13,7 @@ import {
 } from "lucide-react";
 
 import { cn } from "@/lib/utils";
+import { Avatar } from "@/components/painel/ui";
 
 export type ItemNav = {
   href: string;
@@ -42,13 +43,22 @@ export function Sidebar({
   const pathname = usePathname();
 
   return (
-    <aside className="flex w-56 shrink-0 flex-col border-r border-white/10 bg-black/20">
-      <Link href="/painel" className="px-5 py-5 leading-tight">
-        <div className="text-sm font-semibold tracking-wide text-white">RVLand Devs</div>
-        <div className="text-xs text-white/50">Central de gestão</div>
+    <aside className="sticky top-0 flex h-screen w-60 shrink-0 flex-col border-r border-white/8 bg-black/30 backdrop-blur-xl">
+      {/* Marca */}
+      <Link href="/painel" className="flex items-center gap-3 px-5 pb-5 pt-6">
+        <span className="grid size-9 shrink-0 place-items-center rounded-xl bg-gradient-to-br from-[#00E5FF] to-[#00FF8A] font-mono text-[13px] font-bold text-[#05070B]">
+          RV
+        </span>
+        <span className="leading-tight">
+          <span className="block text-sm font-semibold tracking-wide text-white">
+            RVLand Devs
+          </span>
+          <span className="rv-eyebrow block">central de gestão</span>
+        </span>
       </Link>
 
-      <nav className="flex-1 space-y-1 px-3">
+      {/* Navegação */}
+      <nav className="flex-1 space-y-0.5 px-3 pt-2">
         {itens.map((item) => {
           const Icone = ICONES[item.icone];
           const ativo =
@@ -59,34 +69,51 @@ export function Sidebar({
             <Link
               key={item.href}
               href={item.href}
+              aria-current={ativo ? "page" : undefined}
               className={cn(
-                "flex items-center gap-3 rounded-xl px-3 py-2 text-sm transition-colors",
+                "relative flex items-center gap-3 rounded-[10px] px-3 py-2.5 text-sm transition-colors",
                 ativo
-                  ? "bg-white/10 text-white"
-                  : "text-white/60 hover:bg-white/5 hover:text-white"
+                  ? "bg-white/[0.07] text-white"
+                  : "text-white/55 hover:bg-white/[0.04] hover:text-white"
               )}
             >
-              <Icone className="h-4 w-4" />
+              {/* trilho de ativo */}
+              <span
+                className={cn(
+                  "absolute left-0 top-1/2 h-5 w-[3px] -translate-y-1/2 rounded-full transition-all",
+                  ativo
+                    ? "bg-gradient-to-b from-[#00E5FF] to-[#00FF8A] opacity-100"
+                    : "opacity-0"
+                )}
+              />
+              <Icone className={cn("size-4", ativo ? "text-[#8AF0FF]" : "")} />
               {item.rotulo}
             </Link>
           );
         })}
       </nav>
 
-      <div className="border-t border-white/10 p-4">
-        <div className="min-w-0">
-          <div className="truncate text-sm text-white/85">{usuario}</div>
-          <div className="text-xs text-white/45">{grupo}</div>
+      {/* Usuário */}
+      <div className="border-t border-white/8 p-3">
+        <div className="flex items-center gap-3 rounded-xl border border-white/8 bg-white/[0.04] p-3">
+          <Avatar nome={usuario} />
+          <span className="min-w-0 flex-1 leading-tight">
+            <span className="block truncate text-[13px] font-medium text-white">
+              {usuario}
+            </span>
+            <span className="rv-eyebrow block truncate">{grupo}</span>
+          </span>
+          <form action={acaoSair} className="shrink-0">
+            <button
+              type="submit"
+              title="Sair"
+              aria-label="Sair"
+              className="grid size-8 place-items-center rounded-lg text-white/40 transition-colors hover:bg-white/8 hover:text-white focus-visible:outline-none focus-visible:ring-[3px] focus-visible:ring-[rgba(0,229,255,0.3)]"
+            >
+              <LogOut className="size-4" />
+            </button>
+          </form>
         </div>
-        <form action={acaoSair} className="mt-3">
-          <button
-            type="submit"
-            className="flex w-full items-center gap-2 rounded-lg px-2 py-1.5 text-xs text-white/55 transition-colors hover:bg-white/5 hover:text-white"
-          >
-            <LogOut className="h-3.5 w-3.5" />
-            Sair
-          </button>
-        </form>
       </div>
     </aside>
   );

@@ -2,9 +2,9 @@
 
 import * as React from "react";
 import { useActionState } from "react";
+import { LockOpen, ShieldBan, Timer } from "lucide-react";
 
-import { Button } from "@/components/ui/button";
-import { Input } from "@/components/ui/input";
+import { Btn } from "@/components/painel/ui";
 import type { EstadoAcaoLicenca } from "@/app/painel/clientes/actions";
 
 export function AcoesLicenca({
@@ -39,34 +39,29 @@ export function AcoesLicenca({
     FormData
   >(acaoBloquear, {});
 
-  const estiloInput = "border-white/10 bg-white/5 text-white placeholder:text-white/35";
-
   return (
-    <div className="space-y-4">
+    <div className="space-y-4 border-t border-white/8 pt-4">
       {podeConfianca ? (
         <form action={dispatchConfianca} className="flex flex-wrap items-center gap-2">
-          <Input
+          <input
             name="dias"
             type="number"
+            inputMode="numeric"
             min={1}
             max={ehDono ? 365 : maxDias}
             defaultValue={diasConfianca || 2}
-            className={`w-20 ${estiloInput}`}
+            className="!w-20"
             aria-label="Dias de confiança"
           />
-          <Button
-            type="submit"
-            disabled={pendenteConfianca}
-            variant="secondary"
-            className="rounded-xl border border-white/10 bg-white/5 text-white hover:bg-white/10"
-          >
+          <Btn type="submit" tamanho="sm" disabled={pendenteConfianca}>
+            <Timer className="size-3.5" />
             {pendenteConfianca ? "..." : "Conceder confiança"}
-          </Button>
-          {!ehDono ? (
-            <span className="text-xs text-white/40">máx. {maxDias} dias</span>
-          ) : null}
+          </Btn>
+          {!ehDono ? <span className="text-xs text-white/35">máx. {maxDias} dias</span> : null}
           {estadoConfianca.erro ? (
-            <p role="alert" className="w-full text-xs text-red-300">{estadoConfianca.erro}</p>
+            <p role="alert" className="w-full text-xs text-red-300">
+              {estadoConfianca.erro}
+            </p>
           ) : null}
           {estadoConfianca.ok ? (
             <p className="w-full text-xs text-emerald-300">{estadoConfianca.ok}</p>
@@ -76,31 +71,24 @@ export function AcoesLicenca({
 
       {bloqueadoManual && podeDesbloquear ? (
         <form action={acaoDesbloquear}>
-          <Button
-            type="submit"
-            className="rounded-xl bg-[rgba(0,255,138,0.16)] text-white hover:bg-[rgba(0,255,138,0.22)]"
-          >
+          <Btn type="submit" variante="primario" tamanho="sm">
+            <LockOpen className="size-3.5" />
             Desbloquear
-          </Button>
+          </Btn>
         </form>
       ) : null}
 
       {!bloqueadoManual && podeBloquear ? (
         <form action={dispatchBloquear} className="flex flex-wrap items-center gap-2">
-          <Input
-            name="motivo"
-            placeholder="Motivo do bloqueio manual"
-            className={`w-56 ${estiloInput}`}
-          />
-          <Button
-            type="submit"
-            disabled={pendenteBloquear}
-            className="rounded-xl bg-red-500/15 text-red-200 hover:bg-red-500/25"
-          >
-            {pendenteBloquear ? "..." : "Bloquear manualmente"}
-          </Button>
+          <input name="motivo" placeholder="Motivo do bloqueio manual" className="!w-56" />
+          <Btn type="submit" variante="perigo" tamanho="sm" disabled={pendenteBloquear}>
+            <ShieldBan className="size-3.5" />
+            {pendenteBloquear ? "..." : "Bloquear"}
+          </Btn>
           {estadoBloquear.erro ? (
-            <p role="alert" className="w-full text-xs text-red-300">{estadoBloquear.erro}</p>
+            <p role="alert" className="w-full text-xs text-red-300">
+              {estadoBloquear.erro}
+            </p>
           ) : null}
         </form>
       ) : null}

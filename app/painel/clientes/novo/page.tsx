@@ -10,8 +10,14 @@ export default async function PaginaNovoCliente() {
 
   return (
     <>
-      <PageHeader titulo="Novo cliente" descricao="Cadastro básico; contratos vêm depois." />
-      <FormCliente acao={criarCliente} rotuloEnviar="Cadastrar cliente" />
+      <PageHeader
+        trilha="clientes / novo"
+        titulo="Novo cliente"
+        descricao="Cadastro básico; contratos vêm depois."
+      />
+      <div className="rv-entrar-1">
+        <FormCliente acao={criarCliente} rotuloEnviar="Cadastrar cliente" />
+      </div>
     </>
   );
 }

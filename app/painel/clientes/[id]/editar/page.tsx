@@ -24,8 +24,10 @@ export default async function PaginaEditarCliente({
 
   return (
     <>
-      <PageHeader titulo={`Editar — ${cliente.nome}`} />
-      <FormCliente acao={acao} inicial={cliente} rotuloEnviar="Salvar alterações" />
+      <PageHeader trilha="clientes / editar" titulo={cliente.nome} />
+      <div className="rv-entrar-1">
+        <FormCliente acao={acao} inicial={cliente} rotuloEnviar="Salvar alterações" />
+      </div>
     </>
   );
 }

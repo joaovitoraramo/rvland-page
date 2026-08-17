@@ -1,17 +1,14 @@
 import Link from "next/link";
 import { notFound } from "next/navigation";
 import { asc, desc, eq } from "drizzle-orm";
+import { ArrowUpRight, FileX2 } from "lucide-react";
 
 import { db, clientes, contratos, contratosPrecos, faturas } from "@/lib/db";
 import { exigirPermissao, pode } from "@/lib/auth";
-import {
-  encerrarContrato,
-  novaVigenciaPreco,
-} from "@/app/painel/contratos/actions";
+import { encerrarContrato, novaVigenciaPreco } from "@/app/painel/contratos/actions";
 import { PageHeader } from "@/components/painel/page-header";
 import { FormVigencia } from "@/components/painel/form-vigencia";
-import { Badge } from "@/components/ui/badge";
-import { Button } from "@/components/ui/button";
+import { Btn } from "@/components/painel/ui";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import {
   Table,
@@ -88,72 +85,71 @@ export default async function PaginaContrato({
   return (
     <>
       <PageHeader
+        trilha="contratos"
         titulo={contrato.titulo}
         descricao={`${cliente?.nome ?? ""} — início ${formatarDataBR(contrato.inicio)}${
           contrato.fim ? ` · fim ${formatarDataBR(contrato.fim)}` : ""
         }`}
         acoes={
           <>
-            <Badge className="border-white/10 bg-white/5 text-white/70">
-              {contrato.tipo === "recorrente" ? "Recorrente" : "Fechado"}
-            </Badge>
-            <Badge
-              className={
+            <span className="rv-eyebrow rounded-full border border-white/12 px-3 py-1.5">
+              {contrato.tipo === "recorrente" ? "recorrente" : "fechado"}
+            </span>
+            <span
+              className={`rv-eyebrow rounded-full border px-3 py-1.5 ${
                 contrato.status === "ativo"
-                  ? "border-[rgba(0,255,138,0.25)] bg-[rgba(0,255,138,0.10)] text-[rgba(150,255,200,0.95)]"
-                  : "border-white/15 bg-white/5 text-white/55"
-              }
+                  ? "border-[rgba(0,255,138,0.25)] !text-[#7DFFC4]"
+                  : "border-white/12 !text-white/40"
+              }`}
             >
-              {contrato.status === "ativo" ? "Ativo" : "Encerrado"}
-            </Badge>
+              {contrato.status === "ativo" ? "ativo" : "encerrado"}
+            </span>
           </>
         }
       />
 
       <div className="grid gap-4 lg:grid-cols-2">
-        <Card className="rounded-2xl border-white/10 bg-white/5">
+        <Card className="rv-entrar-1">
           <CardHeader>
             <CardTitle className="text-base text-white">Dados</CardTitle>
           </CardHeader>
-          <CardContent className="space-y-2 text-sm text-white/75">
-            {contrato.descricao ? <p>{contrato.descricao}</p> : null}
-            <div className="grid grid-cols-2 gap-2">
-              <div>
-                <div className="text-xs text-white/45">Valor vigente</div>
-                <div className="text-lg font-semibold text-white">
+          <CardContent className="space-y-4 text-sm">
+            {contrato.descricao ? <p className="text-white/65">{contrato.descricao}</p> : null}
+            <div className="grid grid-cols-3 gap-3">
+              <div className="rounded-xl border border-white/8 bg-black/25 p-3">
+                <div className="rv-eyebrow">valor vigente</div>
+                <div className="rv-num rv-fosforo-ciano mt-1.5 text-lg font-semibold">
                   {valorAtual != null ? formatarReais(valorAtual) : "—"}
-                  {contrato.tipo === "recorrente" ? (
-                    <span className="text-xs font-normal text-white/45"> /mês</span>
-                  ) : null}
                 </div>
+                {contrato.tipo === "recorrente" ? (
+                  <div className="mt-0.5 text-[11px] text-white/35">por mês</div>
+                ) : null}
               </div>
               {contrato.tipo === "recorrente" ? (
                 <>
-                  <div>
-                    <div className="text-xs text-white/45">Vencimento</div>
-                    <div className="text-white/85">dia {contrato.diaVencimento}</div>
+                  <div className="rounded-xl border border-white/8 bg-black/25 p-3">
+                    <div className="rv-eyebrow">vencimento</div>
+                    <div className="rv-num mt-1.5 text-lg font-semibold text-white/90">
+                      dia {contrato.diaVencimento}
+                    </div>
                   </div>
-                  <div>
-                    <div className="text-xs text-white/45">Tolerância</div>
-                    <div className="text-white/85">{contrato.toleranciaDias} dias</div>
+                  <div className="rounded-xl border border-white/8 bg-black/25 p-3">
+                    <div className="rv-eyebrow">tolerância</div>
+                    <div className="rv-num mt-1.5 text-lg font-semibold text-white/90">
+                      {contrato.toleranciaDias} dias
+                    </div>
                   </div>
                 </>
               ) : null}
             </div>
 
             {contrato.status === "ativo" && pode(perfil, "contratos.encerrar") ? (
-              <form
-                action={acaoEncerrar}
-                className="mt-4 border-t border-white/10 pt-4"
-              >
-                <Button
-                  type="submit"
-                  variant="destructive"
-                  className="rounded-xl bg-red-500/15 text-red-200 hover:bg-red-500/25"
-                >
+              <form action={acaoEncerrar} className="border-t border-white/8 pt-4">
+                <Btn type="submit" variante="perigo">
+                  <FileX2 className="size-4" />
                   Encerrar contrato
-                </Button>
-                <p className="mt-1 text-xs text-white/40">
+                </Btn>
+                <p className="mt-2 text-xs text-white/35">
                   Para de gerar faturas; cliente recorrente vira Cancelado.
                 </p>
               </form>
@@ -161,7 +157,7 @@ export default async function PaginaContrato({
           </CardContent>
         </Card>
 
-        <Card className="rounded-2xl border-white/10 bg-white/5">
+        <Card className="rv-entrar-2">
           <CardHeader>
             <CardTitle className="text-base text-white">Vigências de preço</CardTitle>
           </CardHeader>
@@ -170,16 +166,18 @@ export default async function PaginaContrato({
               <TableHeader>
                 <TableRow>
                   <TableHead>Desde</TableHead>
-                  <TableHead>Valor</TableHead>
+                  <TableHead className="text-right">Valor</TableHead>
                   <TableHead>Por</TableHead>
                 </TableRow>
               </TableHeader>
               <TableBody>
                 {vigencias.map((v) => (
                   <TableRow key={v.id}>
-                    <TableCell>{formatarCompetenciaBR(v.vigenteDesde)}</TableCell>
-                    <TableCell>{formatarReais(v.valorCentavos)}</TableCell>
-                    <TableCell className="text-white/50">{v.criadoPor}</TableCell>
+                    <TableCell className="rv-num">{formatarCompetenciaBR(v.vigenteDesde)}</TableCell>
+                    <TableCell className="rv-num text-right">
+                      {formatarReais(v.valorCentavos)}
+                    </TableCell>
+                    <TableCell className="text-white/45">{v.criadoPor}</TableCell>
                   </TableRow>
                 ))}
               </TableBody>
@@ -194,45 +192,59 @@ export default async function PaginaContrato({
         </Card>
       </div>
 
-      <Card className="mt-4 rounded-2xl border-white/10 bg-white/5">
+      <Card className="rv-entrar-3 mt-4">
         <CardHeader>
           <CardTitle className="text-base text-white">Últimas faturas</CardTitle>
         </CardHeader>
         <CardContent>
           {faturasDoContrato.length === 0 ? (
-            <p className="text-sm text-white/45">Nenhuma fatura ainda.</p>
+            <p className="text-sm text-white/40">Nenhuma fatura ainda.</p>
           ) : (
             <Table>
               <TableHeader>
                 <TableRow>
                   <TableHead>Competência</TableHead>
                   <TableHead>Vencimento</TableHead>
-                  <TableHead>Valor</TableHead>
+                  <TableHead className="text-right">Valor</TableHead>
                   <TableHead>Situação</TableHead>
+                  <TableHead className="text-right">Ações</TableHead>
                 </TableRow>
               </TableHeader>
               <TableBody>
                 {faturasDoContrato.map((f) => (
                   <TableRow key={f.id}>
-                    <TableCell>
-                      <Link
-                        href={`/painel/financeiro/faturas/${f.id}`}
-                        className="hover:underline"
-                      >
-                        {formatarCompetenciaBR(f.competencia)}
-                      </Link>
+                    <TableCell className="rv-num">
+                      {formatarCompetenciaBR(f.competencia)}
                       {f.historica ? (
-                        <span className="ml-2 text-xs text-white/40">(histórica)</span>
+                        <span className="ml-2 font-sans text-xs text-white/30">hist.</span>
                       ) : null}
                     </TableCell>
-                    <TableCell>{formatarDataBR(f.vencimento)}</TableCell>
-                    <TableCell>{formatarReais(f.valorCentavos)}</TableCell>
-                    <TableCell className="text-white/60">
+                    <TableCell className="rv-num">{formatarDataBR(f.vencimento)}</TableCell>
+                    <TableCell className="rv-num text-right">
+                      {formatarReais(f.valorCentavos)}
+                    </TableCell>
+                    <TableCell
+                      className={
+                        f.status === "quitada"
+                          ? "text-[#7DFFC4]"
+                          : f.status === "cancelada"
+                            ? "text-white/35"
+                            : "text-[#FFD58A]"
+                      }
+                    >
                       {f.status === "quitada"
                         ? "Quitada"
                         : f.status === "cancelada"
                           ? "Cancelada"
                           : "Aberta"}
+                    </TableCell>
+                    <TableCell className="text-right">
+                      <Btn asChild tamanho="sm">
+                        <Link href={`/painel/financeiro/faturas/${f.id}`}>
+                          Abrir
+                          <ArrowUpRight className="size-3.5" />
+                        </Link>
+                      </Btn>
                     </TableCell>
                   </TableRow>
                 ))}

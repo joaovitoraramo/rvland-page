@@ -2,9 +2,9 @@
 
 import * as React from "react";
 import { useActionState } from "react";
+import { Check } from "lucide-react";
 
-import { Button } from "@/components/ui/button";
-import { Input } from "@/components/ui/input";
+import { Btn } from "@/components/painel/ui";
 import { Label } from "@/components/ui/label";
 import type { EstadoGrupo } from "@/app/painel/config/actions";
 
@@ -20,34 +20,39 @@ export function FormGrupo({
   const [estado, dispatch, pendente] = useActionState<EstadoGrupo, FormData>(acao, {});
   const selecionadas = new Set(inicial?.permissoes ?? []);
 
-  const estiloInput = "border-white/10 bg-white/5 text-white placeholder:text-white/35";
-
   return (
     <form action={dispatch} className="max-w-3xl space-y-5">
-      <div className="grid gap-4 sm:grid-cols-2">
-        <div>
-          <Label htmlFor="nome">Nome do grupo *</Label>
-          <Input id="nome" name="nome" defaultValue={inicial?.nome ?? ""} required className={estiloInput} />
-        </div>
-        <div>
-          <Label htmlFor="descricao">Descrição</Label>
-          <Input id="descricao" name="descricao" defaultValue={inicial?.descricao ?? ""} className={estiloInput} />
+      <div className="rounded-2xl border border-white/8 bg-gradient-to-b from-white/[0.045] to-white/[0.02] p-6">
+        <div className="grid gap-5 sm:grid-cols-2">
+          <div>
+            <Label htmlFor="nome">Nome do grupo *</Label>
+            <input id="nome" name="nome" defaultValue={inicial?.nome ?? ""} required />
+          </div>
+          <div>
+            <Label htmlFor="descricao">Descrição</Label>
+            <input id="descricao" name="descricao" defaultValue={inicial?.descricao ?? ""} />
+          </div>
         </div>
       </div>
 
-      <div className="space-y-4">
+      <div className="grid gap-4 sm:grid-cols-2">
         {Object.entries(areas).map(([area, permissoes]) => (
-          <fieldset key={area} className="rounded-xl border border-white/10 bg-black/20 p-4">
-            <legend className="px-1 text-sm font-medium text-white/80">{area}</legend>
-            <div className="grid gap-2 sm:grid-cols-2">
+          <fieldset
+            key={area}
+            className="rounded-2xl border border-white/8 bg-gradient-to-b from-white/[0.04] to-white/[0.02] p-5"
+          >
+            <legend className="rv-eyebrow px-1">{area}</legend>
+            <div className="mt-1 space-y-2.5">
               {permissoes.map((p) => (
-                <label key={p.chave} className="flex items-center gap-2 text-sm text-white/70">
+                <label
+                  key={p.chave}
+                  className="flex cursor-pointer items-center gap-2.5 text-sm text-white/70 transition-colors hover:text-white"
+                >
                   <input
                     type="checkbox"
                     name="permissoes"
                     value={p.chave}
                     defaultChecked={selecionadas.has(p.chave)}
-                    className="h-4 w-4 accent-cyan-400"
                   />
                   {p.rotulo}
                 </label>
@@ -63,13 +68,10 @@ export function FormGrupo({
         </p>
       ) : null}
 
-      <Button
-        type="submit"
-        disabled={pendente}
-        className="rounded-xl bg-[rgba(0,229,255,0.18)] text-white hover:bg-[rgba(0,229,255,0.26)]"
-      >
+      <Btn type="submit" variante="primario" disabled={pendente}>
         {pendente ? "Salvando..." : "Salvar grupo"}
-      </Button>
+        {!pendente ? <Check className="size-4" /> : null}
+      </Btn>
     </form>
   );
 }

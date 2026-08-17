@@ -15,6 +15,7 @@ export default async function PaginaNovaFatura() {
       id: contratos.id,
       titulo: contratos.titulo,
       tipo: contratos.tipo,
+      diaVencimento: contratos.diaVencimento,
       clienteNome: clientes.nome,
     })
     .from(contratos)
@@ -23,11 +24,13 @@ export default async function PaginaNovaFatura() {
   const contratosDisponiveis = linhas.map((l) => ({
     id: l.id,
     rotulo: `${l.clienteNome} — ${l.titulo} (${l.tipo})`,
+    diaVencimento: l.diaVencimento,
   }));
 
   return (
     <>
       <PageHeader
+        trilha="financeiro / nova fatura"
         titulo="Nova fatura"
         descricao="Avulsa, parcela de contrato fechado, ou lançamento de histórico."
       />

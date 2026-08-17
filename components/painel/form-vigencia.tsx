@@ -3,10 +3,9 @@
 import * as React from "react";
 import { useActionState } from "react";
 
-import { Button } from "@/components/ui/button";
-import { Input } from "@/components/ui/input";
+import { Btn } from "@/components/painel/ui";
 import { Label } from "@/components/ui/label";
-import { Select } from "@/components/ui/select";
+import { InputDinheiro } from "@/components/painel/inputs-mascarados";
 import type { EstadoNovaVigencia } from "@/app/painel/contratos/actions";
 
 export function FormVigencia({
@@ -22,35 +21,24 @@ export function FormVigencia({
   return (
     <form action={dispatch} className="flex flex-wrap items-end gap-3">
       <div>
-        <Label htmlFor="valor">Novo valor (R$)</Label>
-        <Input
-          id="valor"
-          name="valor"
-          placeholder="1.800,00"
-          required
-          className="w-36 border-white/10 bg-white/5 text-white placeholder:text-white/35"
-        />
+        <Label htmlFor="valor">Novo valor</Label>
+        <InputDinheiro id="valor" name="valor" required className="w-40" />
       </div>
 
       <div>
-        <Label htmlFor="vigenteDesde">A partir da competência</Label>
-        <Select id="vigenteDesde" name="vigenteDesde" className="w-40">
+        <Label htmlFor="vigenteDesde">A partir de</Label>
+        <select id="vigenteDesde" name="vigenteDesde" className="!w-36">
           {competencias.map((c) => (
             <option key={c.valor} value={c.valor}>
               {c.rotulo}
             </option>
           ))}
-        </Select>
+        </select>
       </div>
 
-      <Button
-        type="submit"
-        disabled={pendente}
-        variant="secondary"
-        className="rounded-xl border border-white/10 bg-white/5 text-white hover:bg-white/10"
-      >
+      <Btn type="submit" disabled={pendente}>
         {pendente ? "Salvando..." : "Registrar vigência"}
-      </Button>
+      </Btn>
 
       {estado.erro ? (
         <p role="alert" className="w-full text-sm text-red-300">

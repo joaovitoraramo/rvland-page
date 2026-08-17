@@ -2,11 +2,10 @@
 
 import * as React from "react";
 import { useActionState } from "react";
+import { UserPlus } from "lucide-react";
 
-import { Button } from "@/components/ui/button";
-import { Input } from "@/components/ui/input";
+import { Btn } from "@/components/painel/ui";
 import { Label } from "@/components/ui/label";
-import { Select } from "@/components/ui/select";
 import { criarUsuario, type EstadoUsuario } from "@/app/painel/config/actions";
 
 export function FormUsuario({
@@ -18,57 +17,65 @@ export function FormUsuario({
 
   const campo = (nome: keyof NonNullable<EstadoUsuario["erros"]>) =>
     estado.erros?.[nome] ? (
-      <p role="alert" className="mt-1 text-xs text-red-300">
+      <p role="alert" className="mt-1.5 text-xs text-red-300">
         {estado.erros[nome]}
       </p>
     ) : null;
 
-  const estiloInput = "border-white/10 bg-white/5 text-white placeholder:text-white/35";
-
   return (
-    <form action={dispatch} className="max-w-lg space-y-4">
-      <div>
-        <Label htmlFor="nome">Nome *</Label>
-        <Input id="nome" name="nome" required className={estiloInput} />
-        {campo("nome")}
-      </div>
-      <div>
-        <Label htmlFor="email">Email *</Label>
-        <Input id="email" name="email" type="email" required className={estiloInput} />
-        {campo("email")}
-      </div>
-      <div>
-        <Label htmlFor="senha">Senha provisória *</Label>
-        <Input id="senha" name="senha" type="text" autoComplete="off" required className={estiloInput} />
-        {campo("senha")}
-        <p className="mt-1 text-xs text-white/40">Mínimo 8 caracteres. Combine a troca no primeiro acesso.</p>
-      </div>
-      <div>
-        <Label htmlFor="grupoId">Grupo *</Label>
-        <Select id="grupoId" name="grupoId" required>
-          <option value="">Selecione...</option>
-          {gruposDisponiveis.map((g) => (
-            <option key={g.id} value={g.id}>
-              {g.nome}
-            </option>
-          ))}
-        </Select>
-        {campo("grupoId")}
+    <form action={dispatch} className="max-w-lg">
+      <div className="space-y-5 rounded-2xl border border-white/8 bg-gradient-to-b from-white/[0.045] to-white/[0.02] p-6">
+        <div>
+          <Label htmlFor="nome">Nome *</Label>
+          <input id="nome" name="nome" required aria-invalid={!!estado.erros?.nome} />
+          {campo("nome")}
+        </div>
+        <div>
+          <Label htmlFor="email">Email *</Label>
+          <input id="email" name="email" type="email" required aria-invalid={!!estado.erros?.email} />
+          {campo("email")}
+        </div>
+        <div>
+          <Label htmlFor="senha">Senha provisória *</Label>
+          <input
+            id="senha"
+            name="senha"
+            type="text"
+            autoComplete="off"
+            required
+            aria-invalid={!!estado.erros?.senha}
+          />
+          {campo("senha")}
+          <p className="mt-1.5 text-xs text-white/35">
+            Mínimo 8 caracteres. Combine a troca no primeiro acesso.
+          </p>
+        </div>
+        <div>
+          <Label htmlFor="grupoId">Grupo *</Label>
+          <select id="grupoId" name="grupoId" required aria-invalid={!!estado.erros?.grupoId}>
+            <option value="">Selecione...</option>
+            {gruposDisponiveis.map((g) => (
+              <option key={g.id} value={g.id}>
+                {g.nome}
+              </option>
+            ))}
+          </select>
+          {campo("grupoId")}
+        </div>
       </div>
 
       {estado.erro ? (
-        <p role="alert" className="text-sm text-red-300">
+        <p role="alert" className="mt-4 text-sm text-red-300">
           {estado.erro}
         </p>
       ) : null}
 
-      <Button
-        type="submit"
-        disabled={pendente}
-        className="rounded-xl bg-[rgba(0,229,255,0.18)] text-white hover:bg-[rgba(0,229,255,0.26)]"
-      >
-        {pendente ? "Criando..." : "Criar usuário"}
-      </Button>
+      <div className="mt-5">
+        <Btn type="submit" variante="primario" disabled={pendente}>
+          {pendente ? "Criando..." : "Criar usuário"}
+          {!pendente ? <UserPlus className="size-4" /> : null}
+        </Btn>
+      </div>
     </form>
   );
 }

@@ -11,8 +11,10 @@ export default async function PaginaNovoGrupo() {
 
   return (
     <>
-      <PageHeader titulo="Novo grupo" />
+      <PageHeader trilha="config / grupos / novo" titulo="Novo grupo" />
+      <div className="rv-entrar-1">
       <FormGrupo acao={salvarGrupo.bind(null, null)} areas={permissoesPorArea()} />
+      </div>
     </>
   );
 }

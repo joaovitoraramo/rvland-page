@@ -1,11 +1,11 @@
 import Link from "next/link";
 import { desc, eq } from "drizzle-orm";
-import { Plus } from "lucide-react";
+import { ArrowUpRight, Plus, Receipt } from "lucide-react";
 
 import { db, clientes, contratos, faturas } from "@/lib/db";
 import { exigirPermissao } from "@/lib/auth";
 import { PageHeader } from "@/components/painel/page-header";
-import { Button } from "@/components/ui/button";
+import { Btn, EmptyState } from "@/components/painel/ui";
 import {
   Table,
   TableBody,
@@ -21,11 +21,10 @@ export const metadata = { title: "Financeiro" };
 
 type Situacao = "aberta" | "vencida" | "quitada" | "cancelada" | "historica";
 
-function situacaoDe(f: {
-  status: string;
-  vencimento: string;
-  historica: boolean;
-}, hoje: string): Situacao {
+function situacaoDe(
+  f: { status: string; vencimento: string; historica: boolean },
+  hoje: string
+): Situacao {
   if (f.historica) return "historica";
   if (f.status === "quitada") return "quitada";
   if (f.status === "cancelada") return "cancelada";
@@ -35,10 +34,10 @@ function situacaoDe(f: {
 
 const ROTULOS: Record<Situacao, { texto: string; classe: string }> = {
   aberta: { texto: "Aberta", classe: "text-white/70" },
-  vencida: { texto: "Vencida", classe: "text-amber-300" },
-  quitada: { texto: "Quitada", classe: "text-emerald-300" },
-  cancelada: { texto: "Cancelada", classe: "text-white/40" },
-  historica: { texto: "Histórica", classe: "text-white/40" },
+  vencida: { texto: "Vencida", classe: "text-[#FFD58A]" },
+  quitada: { texto: "Quitada", classe: "text-[#7DFFC4]" },
+  cancelada: { texto: "Cancelada", classe: "text-white/35" },
+  historica: { texto: "Histórica", classe: "text-white/35" },
 };
 
 export default async function PaginaFinanceiro({
@@ -84,36 +83,42 @@ export default async function PaginaFinanceiro({
   return (
     <>
       <PageHeader
+        trilha="financeiro"
         titulo="Financeiro"
         descricao="Faturas geradas pelo cron e lançadas manualmente."
         acoes={
-          <Button asChild className="rounded-xl bg-[rgba(0,229,255,0.18)] text-white hover:bg-[rgba(0,229,255,0.26)]">
+          <Btn asChild variante="primario">
             <Link href="/painel/financeiro/faturas/nova">
-              <Plus className="h-4 w-4" /> Nova fatura
+              <Plus className="size-4" /> Nova fatura
             </Link>
-          </Button>
+          </Btn>
         }
       />
 
-      <div className="mb-4 grid gap-3 sm:grid-cols-3">
+      <div className="rv-entrar-1 mb-5 grid gap-3 sm:grid-cols-3">
         {[
-          { rotulo: "Recebido (filtro atual)", valor: totais.recebido, classe: "text-emerald-300" },
-          { rotulo: "Em aberto", valor: totais.aAberta, classe: "text-white" },
-          { rotulo: "Vencido", valor: totais.vencido, classe: "text-amber-300" },
+          { rotulo: "recebido (filtro atual)", valor: totais.recebido, classe: "rv-fosforo-verde" },
+          { rotulo: "em aberto", valor: totais.aAberta, classe: "text-white" },
+          {
+            rotulo: "vencido",
+            valor: totais.vencido,
+            classe: totais.vencido > 0 ? "rv-fosforo-ambar" : "text-white/50",
+          },
         ].map((t) => (
-          <div key={t.rotulo} className="rounded-2xl border border-white/10 bg-white/5 p-4">
-            <div className="text-xs text-white/50">{t.rotulo}</div>
-            <div className={`mt-1 text-xl font-semibold ${t.classe}`}>{formatarReais(t.valor)}</div>
+          <div
+            key={t.rotulo}
+            className="rounded-2xl border border-white/8 bg-gradient-to-b from-white/[0.055] to-white/[0.028] p-5 shadow-[inset_0_1px_0_rgba(255,255,255,0.05)]"
+          >
+            <div className="rv-eyebrow">{t.rotulo}</div>
+            <div className={`rv-num mt-2.5 text-[22px] font-semibold leading-none ${t.classe}`}>
+              {formatarReais(t.valor)}
+            </div>
           </div>
         ))}
       </div>
 
-      <form className="mb-4 flex flex-wrap items-center gap-2" action="/painel/financeiro">
-        <select
-          name="competencia"
-          defaultValue={filtroCompetencia ?? ""}
-          className="h-9 rounded-md border border-white/10 bg-white/5 px-2 text-sm text-white [&>option]:bg-[#0a0e14]"
-        >
+      <form className="rv-entrar-2 mb-5 flex flex-wrap items-center gap-2" action="/painel/financeiro">
+        <select name="competencia" defaultValue={filtroCompetencia ?? ""} className="!w-52">
           <option value="">Todas as competências</option>
           {competencias.map((c) => (
             <option key={c} value={c}>
@@ -121,11 +126,7 @@ export default async function PaginaFinanceiro({
             </option>
           ))}
         </select>
-        <select
-          name="situacao"
-          defaultValue={filtroSituacao ?? ""}
-          className="h-9 rounded-md border border-white/10 bg-white/5 px-2 text-sm text-white [&>option]:bg-[#0a0e14]"
-        >
+        <select name="situacao" defaultValue={filtroSituacao ?? ""} className="!w-48">
           <option value="">Todas as situações</option>
           <option value="aberta">Abertas</option>
           <option value="vencida">Vencidas</option>
@@ -133,50 +134,63 @@ export default async function PaginaFinanceiro({
           <option value="cancelada">Canceladas</option>
           <option value="historica">Históricas</option>
         </select>
-        <Button type="submit" variant="secondary" className="rounded-xl border border-white/10 bg-white/5 text-white hover:bg-white/10">
-          Filtrar
-        </Button>
+        <Btn type="submit">Filtrar</Btn>
       </form>
 
-      <Table>
-        <TableHeader>
-          <TableRow>
-            <TableHead>Competência</TableHead>
-            <TableHead>Cliente</TableHead>
-            <TableHead>Contrato</TableHead>
-            <TableHead>Vencimento</TableHead>
-            <TableHead>Valor</TableHead>
-            <TableHead>Situação</TableHead>
-          </TableRow>
-        </TableHeader>
-        <TableBody>
-          {filtradas.length === 0 ? (
-            <TableRow>
-              <TableCell colSpan={6} className="py-8 text-center text-white/45">
-                Nenhuma fatura no filtro.
-              </TableCell>
-            </TableRow>
-          ) : (
-            filtradas.map((l) => {
-              const s = situacaoDe(l.fatura, hoje);
-              return (
-                <TableRow key={l.fatura.id}>
-                  <TableCell>
-                    <Link href={`/painel/financeiro/faturas/${l.fatura.id}`} className="font-medium text-white hover:underline">
+      <div className="rv-entrar-3">
+        {filtradas.length === 0 ? (
+          <div className="rounded-2xl border border-white/8 bg-white/[0.02]">
+            <EmptyState
+              icone={<Receipt />}
+              titulo="Nenhuma fatura no filtro"
+              dica="Ajuste os filtros ou lance uma nova fatura."
+            />
+          </div>
+        ) : (
+          <Table>
+            <TableHeader>
+              <TableRow>
+                <TableHead>Competência</TableHead>
+                <TableHead>Cliente</TableHead>
+                <TableHead>Contrato</TableHead>
+                <TableHead>Vencimento</TableHead>
+                <TableHead className="text-right">Valor</TableHead>
+                <TableHead>Situação</TableHead>
+                <TableHead className="text-right">Ações</TableHead>
+              </TableRow>
+            </TableHeader>
+            <TableBody>
+              {filtradas.map((l) => {
+                const s = situacaoDe(l.fatura, hoje);
+                return (
+                  <TableRow key={l.fatura.id}>
+                    <TableCell className="rv-num font-medium text-white">
                       {formatarCompetenciaBR(l.fatura.competencia)}
-                    </Link>
-                  </TableCell>
-                  <TableCell className="text-white/70">{l.clienteNome}</TableCell>
-                  <TableCell className="text-white/60">{l.contratoTitulo}</TableCell>
-                  <TableCell className="text-white/70">{formatarDataBR(l.fatura.vencimento)}</TableCell>
-                  <TableCell>{formatarReais(l.fatura.valorCentavos)}</TableCell>
-                  <TableCell className={ROTULOS[s].classe}>{ROTULOS[s].texto}</TableCell>
-                </TableRow>
-              );
-            })
-          )}
-        </TableBody>
-      </Table>
+                    </TableCell>
+                    <TableCell className="text-white/70">{l.clienteNome}</TableCell>
+                    <TableCell className="text-white/55">{l.contratoTitulo}</TableCell>
+                    <TableCell className="rv-num text-white/70">
+                      {formatarDataBR(l.fatura.vencimento)}
+                    </TableCell>
+                    <TableCell className="rv-num text-right">
+                      {formatarReais(l.fatura.valorCentavos)}
+                    </TableCell>
+                    <TableCell className={ROTULOS[s].classe}>{ROTULOS[s].texto}</TableCell>
+                    <TableCell className="text-right">
+                      <Btn asChild tamanho="sm">
+                        <Link href={`/painel/financeiro/faturas/${l.fatura.id}`}>
+                          Abrir
+                          <ArrowUpRight className="size-3.5" />
+                        </Link>
+                      </Btn>
+                    </TableCell>
+                  </TableRow>
+                );
+              })}
+            </TableBody>
+          </Table>
+        )}
+      </div>
     </>
   );
 }

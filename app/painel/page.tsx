@@ -1,10 +1,19 @@
 import Link from "next/link";
+import {
+  AlertTriangle,
+  ArrowUpRight,
+  CalendarClock,
+  TrendingUp,
+  Users,
+  Wallet,
+} from "lucide-react";
 
 import { exigirPerfil, pode } from "@/lib/auth";
 import { getConfig } from "@/lib/config";
 import { dadosDashboard } from "@/lib/consultas/dashboard";
 import { PageHeader } from "@/components/painel/page-header";
 import { StatusBadge } from "@/components/painel/status-badge";
+import { Btn, EmptyState, Kpi } from "@/components/painel/ui";
 import {
   Table,
   TableBody,
@@ -30,13 +39,6 @@ export default async function Dashboard({
 
   const veValores = pode(perfil, "financeiro.ver");
 
-  const kpis = [
-    { rotulo: "Recebido no mês", valor: dados.recebidoNoMesCentavos, classe: "text-emerald-300" },
-    { rotulo: "Em atraso", valor: dados.emAtrasoCentavos, classe: "text-amber-300" },
-    { rotulo: "MRR (contratos ativos)", valor: dados.mrrCentavos, classe: "text-white" },
-    { rotulo: "A vencer em 15 dias", valor: dados.aVencer15dCentavos, classe: "text-cyan-200" },
-  ];
-
   const contagem = dados.clientes.reduce(
     (acc, c) => {
       acc[c.licenca.status] = (acc[c.licenca.status] ?? 0) + 1;
@@ -48,95 +50,132 @@ export default async function Dashboard({
   return (
     <>
       <PageHeader
-        titulo="Dashboard"
-        descricao={`${dados.clientes.length} cliente(s) ativos — ${contagem.em_dia ?? 0} em dia, ${
+        trilha="dashboard"
+        titulo="Visão geral"
+        descricao={`${dados.clientes.length} cliente(s) ativos — ${contagem.em_dia ?? 0} em dia · ${
           contagem.atrasado ?? 0
-        } atrasado(s), ${contagem.bloqueado ?? 0} bloqueado(s)`}
+        } atrasado(s) · ${contagem.bloqueado ?? 0} bloqueado(s)`}
       />
 
       {negado ? (
-        <div className="mb-4 rounded-xl border border-amber-400/25 bg-amber-400/10 px-4 py-2 text-sm text-amber-200">
+        <div className="rv-entrar mb-4 rounded-xl border border-[rgba(255,194,77,0.25)] bg-[rgba(255,194,77,0.08)] px-4 py-2.5 text-sm text-[#FFD58A]">
           Você não tem permissão para acessar aquela área.
         </div>
       ) : null}
 
       {veValores ? (
-        <div className="mb-6 grid gap-3 sm:grid-cols-2 lg:grid-cols-4">
-          {kpis.map((k) => (
-            <div key={k.rotulo} className="rounded-2xl border border-white/10 bg-white/5 p-4">
-              <div className="text-xs text-white/50">{k.rotulo}</div>
-              <div className={`mt-1 text-2xl font-semibold ${k.classe}`}>
-                {formatarReais(k.valor)}
-              </div>
-            </div>
-          ))}
+        <div className="rv-entrar-1 mb-7 grid gap-3 sm:grid-cols-2 lg:grid-cols-4">
+          <Kpi
+            icone={<Wallet />}
+            rotulo="recebido no mês"
+            valor={formatarReais(dados.recebidoNoMesCentavos)}
+            tom={dados.recebidoNoMesCentavos > 0 ? "verde" : "neutro"}
+          />
+          <Kpi
+            icone={<AlertTriangle />}
+            rotulo="em atraso"
+            valor={formatarReais(dados.emAtrasoCentavos)}
+            tom={dados.emAtrasoCentavos > 0 ? "ambar" : "neutro"}
+          />
+          <Kpi
+            icone={<TrendingUp />}
+            rotulo="mrr"
+            valor={formatarReais(dados.mrrCentavos)}
+            tom="ciano"
+            sub="contratos recorrentes ativos"
+          />
+          <Kpi
+            icone={<CalendarClock />}
+            rotulo="a vencer · 15 dias"
+            valor={formatarReais(dados.aVencer15dCentavos)}
+          />
         </div>
       ) : null}
 
-      <h2 className="mb-3 text-sm font-medium uppercase tracking-wide text-white/50">
-        Todos os clientes
-      </h2>
+      <div className="rv-entrar-2">
+        <div className="rv-eyebrow mb-3">todos os clientes</div>
 
-      <Table>
-        <TableHeader>
-          <TableRow>
-            <TableHead>Cliente</TableHead>
-            <TableHead>Licença</TableHead>
-            <TableHead>Contratos</TableHead>
-            {veValores ? <TableHead>Mensalidade</TableHead> : null}
-            {veValores ? <TableHead>Em aberto</TableHead> : null}
-            <TableHead>Próx. vencimento</TableHead>
-            <TableHead>Último pgto (mês)</TableHead>
-          </TableRow>
-        </TableHeader>
-        <TableBody>
-          {dados.clientes.length === 0 ? (
-            <TableRow>
-              <TableCell colSpan={veValores ? 7 : 5} className="py-8 text-center text-white/45">
-                Nenhum cliente cadastrado ainda.{" "}
-                {pode(perfil, "clientes.criar") ? (
-                  <Link href="/painel/clientes/novo" className="text-cyan-300 hover:underline">
-                    Cadastrar o primeiro
-                  </Link>
-                ) : null}
-              </TableCell>
-            </TableRow>
-          ) : (
-            dados.clientes.map((c) => (
-              <TableRow key={c.id}>
-                <TableCell>
-                  <Link href={`/painel/clientes/${c.id}`} className="font-medium text-white hover:underline">
-                    {c.nome}
-                  </Link>
-                </TableCell>
-                <TableCell>
-                  <StatusBadge status={c.licenca.status} simulacao={config.modoSimulacao} />
-                  {c.licenca.status === "atrasado" && c.licenca.toleradoAte ? (
-                    <div className="mt-1 text-xs text-white/45">
-                      tolerado até {formatarDataBR(c.licenca.toleradoAte)}
-                    </div>
-                  ) : null}
-                </TableCell>
-                <TableCell className="text-white/70">{c.contratosAtivos}</TableCell>
-                {veValores ? (
-                  <TableCell>{c.valorMensalCentavos ? formatarReais(c.valorMensalCentavos) : "—"}</TableCell>
-                ) : null}
-                {veValores ? (
-                  <TableCell className={c.emAbertoCentavos > 0 ? "text-amber-300" : "text-white/50"}>
-                    {c.emAbertoCentavos ? formatarReais(c.emAbertoCentavos) : "—"}
-                  </TableCell>
-                ) : null}
-                <TableCell className="text-white/70">
-                  {c.proximoVencimento ? formatarDataBR(c.proximoVencimento) : "—"}
-                </TableCell>
-                <TableCell className="text-white/70">
-                  {c.ultimoPagamento ? formatarDataBR(c.ultimoPagamento) : "—"}
-                </TableCell>
+        {dados.clientes.length === 0 ? (
+          <div className="rounded-2xl border border-white/8 bg-white/[0.02]">
+            <EmptyState
+              icone={<Users />}
+              titulo="Nenhum cliente cadastrado ainda"
+              dica="O dashboard ganha vida com o primeiro cadastro."
+              acao={
+                pode(perfil, "clientes.criar") ? (
+                  <Btn asChild variante="primario" tamanho="sm">
+                    <Link href="/painel/clientes/novo">Cadastrar o primeiro</Link>
+                  </Btn>
+                ) : undefined
+              }
+            />
+          </div>
+        ) : (
+          <Table>
+            <TableHeader>
+              <TableRow>
+                <TableHead>Cliente</TableHead>
+                <TableHead>Licença</TableHead>
+                <TableHead className="text-center">Contratos</TableHead>
+                {veValores ? <TableHead className="text-right">Mensalidade</TableHead> : null}
+                {veValores ? <TableHead className="text-right">Em aberto</TableHead> : null}
+                <TableHead>Próx. venc.</TableHead>
+                <TableHead className="text-right">Ações</TableHead>
               </TableRow>
-            ))
-          )}
-        </TableBody>
-      </Table>
+            </TableHeader>
+            <TableBody>
+              {dados.clientes.map((c) => (
+                <TableRow key={c.id}>
+                  <TableCell>
+                    <Link
+                      href={`/painel/clientes/${c.id}`}
+                      className="font-medium text-white hover:text-[#8AF0FF]"
+                    >
+                      {c.nome}
+                    </Link>
+                  </TableCell>
+                  <TableCell>
+                    <StatusBadge status={c.licenca.status} simulacao={config.modoSimulacao} />
+                    {c.licenca.status === "atrasado" && c.licenca.toleradoAte ? (
+                      <div className="rv-num mt-1 text-xs text-white/40">
+                        tolerado até {formatarDataBR(c.licenca.toleradoAte)}
+                      </div>
+                    ) : null}
+                  </TableCell>
+                  <TableCell className="rv-num text-center text-white/70">
+                    {c.contratosAtivos}
+                  </TableCell>
+                  {veValores ? (
+                    <TableCell className="rv-num text-right">
+                      {c.valorMensalCentavos ? formatarReais(c.valorMensalCentavos) : "—"}
+                    </TableCell>
+                  ) : null}
+                  {veValores ? (
+                    <TableCell
+                      className={`rv-num text-right ${
+                        c.emAbertoCentavos > 0 ? "rv-fosforo-ambar" : "text-white/40"
+                      }`}
+                    >
+                      {c.emAbertoCentavos ? formatarReais(c.emAbertoCentavos) : "—"}
+                    </TableCell>
+                  ) : null}
+                  <TableCell className="rv-num text-white/70">
+                    {c.proximoVencimento ? formatarDataBR(c.proximoVencimento) : "—"}
+                  </TableCell>
+                  <TableCell className="text-right">
+                    <Btn asChild tamanho="sm">
+                      <Link href={`/painel/clientes/${c.id}`}>
+                        Abrir
+                        <ArrowUpRight className="size-3.5" />
+                      </Link>
+                    </Btn>
+                  </TableCell>
+                </TableRow>
+              ))}
+            </TableBody>
+          </Table>
+        )}
+      </div>
     </>
   );
 }
