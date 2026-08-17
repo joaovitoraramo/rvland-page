@@ -230,6 +230,13 @@ func cmdRun() {
 	}
 	logf("iniciando (servidor %s, driver %s, v%s)", cfg.ServidorID, cfg.Driver, versao)
 
+	// Reforço imediato na subida: aplica o lease em cache antes do 1º heartbeat.
+	// Se o último lease era bloqueado, garante o serviço parado/desabilitado já
+	// no boot, sem depender da rede.
+	if est := carregaEstado(); est.Lease != nil {
+		aplicaLease(est.Lease, novoGerenciador(cfg.Driver), est)
+	}
+
 	var pendentes []map[string]any
 	for {
 		novos, iv := umHeartbeat(cfg, pendentes)
@@ -263,14 +270,41 @@ func cmdStatus() {
 	fmt.Printf("driver:     %s\n", cfg.Driver)
 	fmt.Printf("versão:     %s\n", versao)
 	if est.Lease != nil {
-		fmt.Printf("licença:    %s (operar até %s)\n", est.Lease.Status, est.Lease.OperarAte)
-		fmt.Printf("serviços:   %s\n", strings.Join(est.Lease.ServicosLicenciados, ", "))
-		if len(est.Bloqueados) > 0 {
-			fmt.Printf("bloqueados: %s\n", strings.Join(est.Bloqueados, ", "))
-		}
+		l := est.Lease
+		fmt.Printf("licença:    %s (operar até %s)\n", l.Status, l.OperarAte)
+		fmt.Printf("serviços:   %s\n", strings.Join(l.ServicosLicenciados, ", "))
+		fmt.Printf("situação:   %s\n", situacaoLicenca(l, est.Bloqueados))
 	} else {
-		fmt.Println("licença:    (sem lease em cache)")
+		fmt.Println("licença:    (sem lease em cache — rode `agenterv reconnect`)")
 	}
+}
+
+// situacaoLicenca descreve, para o `status`, o que está (ou estaria) acontecendo.
+func situacaoLicenca(l *Lease, bloqueados []string) string {
+	operarAte, err := time.Parse(time.RFC3339, l.OperarAte)
+	venceu := err == nil && !time.Now().Before(operarAte)
+
+	if l.Panico {
+		return "operando — PÂNICO ativo (bloqueios suspensos na plataforma)"
+	}
+	if !venceu {
+		return "operando normalmente (licença vigente)"
+	}
+	// operar_ate já passou
+	if l.ModoSimulacao {
+		return "MODO SIMULAÇÃO — SERIAM parados: " + juntar(l.ServicosLicenciados)
+	}
+	if len(bloqueados) > 0 {
+		return "BLOQUEADO — parados e desabilitados: " + juntar(bloqueados)
+	}
+	return "BLOQUEADO (nenhum serviço licenciado a parar)"
+}
+
+func juntar(s []string) string {
+	if len(s) == 0 {
+		return "(nenhum)"
+	}
+	return strings.Join(s, ", ")
 }
 
 func cmdLogs() {

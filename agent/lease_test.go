@@ -70,6 +70,31 @@ func TestAplicaLease_BloqueiaERecupera(t *testing.T) {
 	}
 }
 
+// Cenário do reboot: bloqueado, o systemd sobe o serviço no boot, e o agente
+// aplica o lease em cache — deve RE-parar mesmo com a unidade já em bloqueados.
+func TestAplicaLease_ReaplicaAposReboot(t *testing.T) {
+	gs := novoGerenciador("dry")
+	unidade := "app.service"
+	passado := time.Now().Add(-time.Hour).UTC().Format(time.RFC3339)
+
+	// estado como se já estivesse bloqueado antes do reboot
+	est := &EstadoAgente{Bloqueados: []string{unidade}}
+	// simula o systemd tendo subido o serviço no boot
+	_ = gs.Start(unidade)
+	if ativo, _ := gs.Ativo(unidade); !ativo {
+		t.Fatal("pré-condição: serviço deveria estar rodando após boot")
+	}
+
+	// agente aplica o lease bloqueado em cache na subida
+	aplicaLease(&Lease{
+		Status: "bloqueado", OperarAte: passado, ServicosLicenciados: []string{unidade},
+	}, gs, est)
+
+	if ativo, _ := gs.Ativo(unidade); ativo {
+		t.Fatal("serviço deveria ter sido re-parado após reboot (bug corrigido)")
+	}
+}
+
 func TestAplicaLease_SimulacaoNaoBloqueia(t *testing.T) {
 	gs := novoGerenciador("dry")
 	est := &EstadoAgente{}

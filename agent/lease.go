@@ -92,28 +92,30 @@ func aplicaLease(l *Lease, gs GerenciadorServico, est *EstadoAgente) {
 
 	if deveBloquear {
 		for _, u := range l.ServicosLicenciados {
-			if contem(est.Bloqueados, u) {
+			// idempotente: garante parado E desabilitado toda vez (inclusive
+			// após reboot, se o systemd tiver subido o serviço). Não pula pela
+			// lista persistida — era o bug que deixava o serviço voltar.
+			if e := gs.Bloquear(u); e != nil {
+				logf("falha ao bloquear %s: %v", u, e)
 				continue
 			}
-			if e := gs.Stop(u); e != nil {
-				logf("falha ao parar %s: %v", u, e)
-				continue
+			if !contem(est.Bloqueados, u) {
+				est.Bloqueados = append(est.Bloqueados, u)
+				logf("BLOQUEIO: %s parado e desabilitado (licença %s, operar_ate %s)", u, l.Status, l.OperarAte)
 			}
-			est.Bloqueados = append(est.Bloqueados, u)
-			logf("BLOQUEIO: %s parado (licença %s, operar_ate %s)", u, l.Status, l.OperarAte)
 		}
 	} else {
 		if l.ModoSimulacao && err == nil && !agora.Before(operarAte) {
-			logf("[simulação] serviços SERIAM bloqueados agora (nada executado)")
+			logf("[simulação] serviços SERIAM bloqueados agora: %v (nada executado)", l.ServicosLicenciados)
 		}
-		// recuperação: religa o que foi bloqueado pelo agente
+		// recuperação: reabilita e sobe só o que o agente havia bloqueado
 		for _, u := range append([]string{}, est.Bloqueados...) {
-			if e := gs.Start(u); e != nil {
-				logf("falha ao religar %s: %v", u, e)
+			if e := gs.Liberar(u); e != nil {
+				logf("falha ao liberar %s: %v", u, e)
 				continue
 			}
 			est.Bloqueados = remove(est.Bloqueados, u)
-			logf("RECUPERAÇÃO: %s religado (licença %s)", u, l.Status)
+			logf("RECUPERAÇÃO: %s reabilitado e no ar (licença %s)", u, l.Status)
 		}
 	}
 
