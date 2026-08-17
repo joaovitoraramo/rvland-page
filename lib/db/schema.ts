@@ -345,14 +345,19 @@ export const comandos = pgTable(
   (t) => [index("comandos_servidor_idx").on(t.servidorId, t.estado)]
 );
 
-export const agenteReleases = pgTable("agente_releases", {
-  id: uuid("id").primaryKey().defaultRandom(),
-  versao: text("versao").notNull().unique(), // semver
-  canal: text("canal").notNull().default("estavel").$type<"estavel" | "canary">(),
-  caminhoStorage: text("caminho_storage").notNull(),
-  sha256: text("sha256").notNull(),
-  assinatura: text("assinatura").notNull(), // base64, chave de release (offline)
-  notas: text("notas"),
-  ativo: boolean("ativo").notNull().default(true),
-  criadoEm: timestamp("criado_em", { withTimezone: true }).notNull().defaultNow(),
-});
+export const agenteReleases = pgTable(
+  "agente_releases",
+  {
+    id: uuid("id").primaryKey().defaultRandom(),
+    versao: text("versao").notNull(), // semver
+    arch: text("arch").notNull().default("amd64").$type<"amd64" | "arm64">(),
+    canal: text("canal").notNull().default("estavel").$type<"estavel" | "canary">(),
+    caminhoStorage: text("caminho_storage").notNull(),
+    sha256: text("sha256").notNull(),
+    assinatura: text("assinatura").notNull(), // base64, chave de release (offline)
+    notas: text("notas"),
+    ativo: boolean("ativo").notNull().default(true),
+    criadoEm: timestamp("criado_em", { withTimezone: true }).notNull().defaultNow(),
+  },
+  (t) => [uniqueIndex("agente_releases_versao_arch_unq").on(t.versao, t.arch)]
+);

@@ -1,0 +1,17 @@
+# Unidade systemd de referência (o instalador escreve esta mesma unidade).
+# Instalação manual: copie para /etc/systemd/system/ e
+#   systemctl daemon-reload && systemctl enable --now rvland-agent
+[Unit]
+Description=RVLand Agent
+After=network-online.target
+Wants=network-online.target
+
+[Service]
+Type=simple
+ExecStart=/usr/local/bin/agenterv run
+Restart=always
+RestartSec=10
+User=root
+
+[Install]
+WantedBy=multi-user.target

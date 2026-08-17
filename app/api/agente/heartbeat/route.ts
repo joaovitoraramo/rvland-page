@@ -19,37 +19,37 @@ export const dynamic = "force-dynamic";
 const INTERVALO_SEG = 60;
 
 const esquema = z.object({
-  agente_versao: z.string().optional(),
-  uptime_seg: z.number().int().nonnegative().optional(),
+  agente_versao: z.string().nullish(),
+  uptime_seg: z.number().int().nonnegative().nullish(),
   telemetria: z
     .object({
-      cpu_pct: z.number().optional(),
-      memoria_pct: z.number().optional(),
-      disco_pct: z.number().optional(),
-      carga1: z.number().optional(),
+      cpu_pct: z.number().nullish(),
+      memoria_pct: z.number().nullish(),
+      disco_pct: z.number().nullish(),
+      carga1: z.number().nullish(),
     })
     .partial()
-    .optional(),
-  servicos: z.array(z.object({ unidade: z.string(), ativo: z.boolean() })).optional(),
+    .nullish(),
+  servicos: z.array(z.object({ unidade: z.string(), ativo: z.boolean() })).nullish(),
   eventos: z
     .array(
       z.object({
         tipo: z.string(),
-        severidade: z.enum(["info", "aviso", "critico"]).optional(),
+        severidade: z.enum(["info", "aviso", "critico"]).nullish(),
         mensagem: z.string(),
-        dados: z.record(z.string(), z.unknown()).optional(),
+        dados: z.record(z.string(), z.unknown()).nullish(),
       })
     )
-    .optional(),
+    .nullish(),
   resultados_comandos: z
     .array(
       z.object({
         id: z.string().uuid(),
         estado: z.enum(["concluido", "falhou"]),
-        saida: z.record(z.string(), z.unknown()).optional(),
+        saida: z.record(z.string(), z.unknown()).nullish(),
       })
     )
-    .optional(),
+    .nullish(),
 });
 
 const TIPOS_EVENTO = new Set([
@@ -63,7 +63,7 @@ const TIPOS_EVENTO = new Set([
   "update_falhou",
 ]);
 
-function inteiro(n: number | undefined): number | null {
+function inteiro(n: number | null | undefined): number | null {
   return typeof n === "number" && Number.isFinite(n) ? Math.round(n) : null;
 }
 

@@ -51,3 +51,7 @@ next-env.d.ts
 
 # Fase 2: chaves do agente (NUNCA versionar)
 chaves/
+
+# binários compilados do agente
+agent/agenterv
+agent/*.exe
