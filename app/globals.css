@@ -125,12 +125,22 @@
   }
 }
 
-/* Fundo global da landing. Fica aqui (e não em styled-jsx) para valer já no
-   primeiro paint, antes de qualquer hidratação. */
+/* Fundo global. Fica aqui (e não em styled-jsx) para valer já no primeiro
+   paint, antes de qualquer hidratação. */
 html,
 body {
-  overflow-x: hidden;
+  overflow-x: hidden; /* fallback para navegadores sem `clip` */
   background: #05070b;
+}
+
+/* `overflow-x: hidden` faz o navegador computar `overflow-y: auto`, o que cria
+   um contexto de rolagem e QUEBRA position:sticky (a barra do painel soltava
+   ao rolar). `clip` recorta sem criar esse contexto. */
+@supports (overflow: clip) {
+  html,
+  body {
+    overflow-x: clip;
+  }
 }
 
 /* Reveal on scroll.
