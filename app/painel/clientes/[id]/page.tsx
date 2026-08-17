@@ -12,10 +12,12 @@ import {
   Plus,
 } from "lucide-react";
 
-import { db, anexos, auditoria, clientes, contratos, faturas, licencas } from "@/lib/db";
+import { db, anexos, auditoria, clientes, contratos, faturas, licencas, servidores } from "@/lib/db";
 import { exigirPermissao, pode } from "@/lib/auth";
 import { getConfig } from "@/lib/config";
 import { statusDeCliente } from "@/lib/consultas/licencas";
+import { statusAgora } from "@/lib/consultas/servidores";
+import { BadgeServidor } from "@/components/painel/badge-servidor";
 import { supabaseAdmin } from "@/lib/supabase/admin";
 import {
   arquivarCliente,
@@ -97,6 +99,11 @@ export default async function PaginaCliente({
 
   const veContratos = pode(perfil, "contratos.ver");
   const veFinanceiro = pode(perfil, "financeiro.ver");
+  const veServidores = pode(perfil, "servidores.ver");
+
+  const servidoresDoCliente = veServidores
+    ? await db.select().from(servidores).where(eq(servidores.clienteId, id))
+    : [];
 
   return (
     <>
@@ -318,8 +325,46 @@ export default async function PaginaCliente({
           ) : null}
         </div>
 
-        {/* Coluna 3: anexos + timeline */}
+        {/* Coluna 3: servidores + anexos + timeline */}
         <div className="rv-entrar-3 space-y-4">
+          {veServidores ? (
+            <Card>
+              <CardHeader>
+                <CardTitle className="flex items-center justify-between text-base text-white">
+                  Servidores
+                  {pode(perfil, "servidores.cadastrar") ? (
+                    <Btn asChild tamanho="sm">
+                      <Link href={`/painel/servidores/novo?cliente=${id}`}>
+                        <Plus className="size-3.5" /> Novo
+                      </Link>
+                    </Btn>
+                  ) : null}
+                </CardTitle>
+              </CardHeader>
+              <CardContent className="space-y-2">
+                {servidoresDoCliente.length === 0 ? (
+                  <p className="text-sm text-white/40">Nenhum servidor.</p>
+                ) : (
+                  servidoresDoCliente.map((s) => (
+                    <Link
+                      key={s.id}
+                      href={`/painel/servidores/${s.id}`}
+                      className="flex items-center justify-between gap-2 rounded-xl border border-white/8 bg-black/25 p-3 transition-colors hover:bg-black/35"
+                    >
+                      <span className="min-w-0">
+                        <span className="block truncate text-sm font-medium text-white">{s.nome}</span>
+                        {s.host ? <span className="rv-num block text-xs text-white/40">{s.host}</span> : null}
+                      </span>
+                      <BadgeServidor
+                        status={statusAgora({ status: s.status, ultimoContatoEm: s.ultimoContatoEm })}
+                      />
+                    </Link>
+                  ))
+                )}
+              </CardContent>
+            </Card>
+          ) : null}
+
           {veContratos ? (
             <Card>
               <CardHeader>

@@ -65,3 +65,8 @@ export function buildMailto(email: string, subject: string, body: string) {
     subject
   )}&body=${encodeURIComponent(body)}`;
 }
+
+/** Comando de instalação do agente (colar no SSH do servidor). */
+export function comandoInstalacaoAgente(token: string, baseUrl = SITE_URL) {
+  return `curl -fsSL ${baseUrl}/api/agente/instalar | sudo bash -s -- --token=${token} --servidor=${baseUrl}`;
+}

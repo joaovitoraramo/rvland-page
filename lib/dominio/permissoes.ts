@@ -28,10 +28,11 @@ export const PERMISSOES = [
   { chave: "licencas.bloquear", rotulo: "Bloquear manualmente", area: "Licenças" },
   { chave: "licencas.desbloquear", rotulo: "Desbloquear", area: "Licenças" },
 
-  { chave: "servidores.ver", rotulo: "Ver servidores (Fase 2)", area: "Servidores" },
-  { chave: "servidores.cadastrar", rotulo: "Cadastrar servidores (Fase 2)", area: "Servidores" },
-  { chave: "servidores.executar", rotulo: "Executar comandos (Fase 2)", area: "Servidores" },
-  { chave: "servidores.manutencao", rotulo: "Janela de manutenção (Fase 2)", area: "Servidores" },
+  { chave: "servidores.ver", rotulo: "Ver servidores", area: "Servidores" },
+  { chave: "servidores.cadastrar", rotulo: "Cadastrar / revogar servidores", area: "Servidores" },
+  { chave: "servidores.editar", rotulo: "Gerenciar serviços do servidor", area: "Servidores" },
+  { chave: "servidores.executar", rotulo: "Executar comandos (start/stop)", area: "Servidores" },
+  { chave: "servidores.manutencao", rotulo: "Janela de manutenção", area: "Servidores" },
 
   { chave: "agente.publicar", rotulo: "Publicar release do agente (Fase 2)", area: "Agente" },
   { chave: "agente.forcar_update", rotulo: "Forçar update do agente (Fase 2)", area: "Agente" },

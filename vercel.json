@@ -3,6 +3,10 @@
     {
       "path": "/api/cron/faturas",
       "schedule": "0 6 * * *"
+    },
+    {
+      "path": "/api/cron/telemetria",
+      "schedule": "30 6 * * *"
     }
   ]
 }

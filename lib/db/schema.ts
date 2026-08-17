@@ -66,6 +66,7 @@ export const auditoria = pgTable(
         | "usuario"
         | "plataforma"
         | "anexo"
+        | "servidor"
       >(),
     entidadeId: text("entidade_id"),
     detalhes: jsonb("detalhes").$type<Record<string, unknown>>(),

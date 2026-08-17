@@ -7,6 +7,7 @@ import {
   LayoutDashboard,
   Users,
   Receipt,
+  Server,
   Settings2,
   ScrollText,
   LogOut,
@@ -18,13 +19,14 @@ import { Avatar } from "@/components/painel/ui";
 export type ItemNav = {
   href: string;
   rotulo: string;
-  icone: "dashboard" | "clientes" | "financeiro" | "config" | "auditoria";
+  icone: "dashboard" | "clientes" | "financeiro" | "servidores" | "config" | "auditoria";
 };
 
 const ICONES = {
   dashboard: LayoutDashboard,
   clientes: Users,
   financeiro: Receipt,
+  servidores: Server,
   config: Settings2,
   auditoria: ScrollText,
 } as const;
