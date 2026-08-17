@@ -16,7 +16,7 @@ export function FormServico({
   const [estado, dispatch, pendente] = useActionState<EstadoServico, FormData>(acao, {});
 
   return (
-    <form action={dispatch} className="space-y-3 border-t border-white/8 pt-4">
+    <form action={dispatch} className="space-y-3">
       <div className="grid gap-3 sm:grid-cols-2">
         <div>
           <Label htmlFor="nome">Rótulo</Label>

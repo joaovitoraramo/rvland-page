@@ -12,6 +12,7 @@ type GerenciadorServico interface {
 	Ativo(unidade string) (bool, error)
 	Start(unidade string) error
 	Stop(unidade string) error
+	Status(unidade string) (string, error) // saída de `systemctl status`
 }
 
 func novoGerenciador(driver string) GerenciadorServico {
@@ -33,6 +34,11 @@ func (g *gerenciadorSystemd) Start(unidade string) error {
 }
 func (g *gerenciadorSystemd) Stop(unidade string) error {
 	return exec.Command("systemctl", "stop", unidade).Run()
+}
+func (g *gerenciadorSystemd) Status(unidade string) (string, error) {
+	// status sai com código != 0 se inativo; queremos a saída mesmo assim
+	out, _ := exec.Command("systemctl", "status", unidade, "--no-pager", "-l", "-n", "12").CombinedOutput()
+	return string(out), nil
 }
 
 // ── dry: registra a intenção e simula estado (dev/macOS) ──
@@ -62,6 +68,14 @@ func (g *gerenciadorDry) Stop(unidade string) error {
 	g.estado[unidade] = false
 	logf("[dry] systemctl stop %s", unidade)
 	return nil
+}
+func (g *gerenciadorDry) Status(unidade string) (string, error) {
+	ativo, _ := g.Ativo(unidade)
+	estado := "inactive (dead)"
+	if ativo {
+		estado = "active (running)"
+	}
+	return "● " + unidade + "\n     Active: " + estado + "\n     (driver dry — sem systemd real)", nil
 }
 
 func logf(f string, a ...any) {

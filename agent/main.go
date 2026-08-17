@@ -142,6 +142,7 @@ func montaCorpoHeartbeat(cfg *Config, lease *Lease, resultados []map[string]any)
 		"agente_versao":       versao,
 		"uptime_seg":          up,
 		"telemetria":          tel,
+		"hardware":            coletaHardware(),
 		"servicos":            servicos,
 		"eventos":             []map[string]any{},
 		"resultados_comandos": resultados,
@@ -160,7 +161,9 @@ func executaComandos(cfg *Config, cmds []ComandoPend) []map[string]any {
 		switch c.Verbo {
 		case "status":
 			ativo, _ := gs.Ativo(c.ServicoUnidade)
+			texto, _ := gs.Status(c.ServicoUnidade)
 			saida["ativo"] = ativo
+			saida["texto"] = texto
 		case "start":
 			if e := gs.Start(c.ServicoUnidade); e != nil {
 				estado, saida["erro"] = "falhou", e.Error()

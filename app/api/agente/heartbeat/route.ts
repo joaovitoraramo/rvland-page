@@ -13,6 +13,7 @@ import {
 } from "@/lib/db";
 import { verificarHeartbeat } from "@/lib/crypto/heartbeat-auth";
 import { emitirLease } from "@/lib/servicos/emitir-lease";
+import { ultimaVersaoEstavel } from "@/lib/servicos/releases";
 
 export const dynamic = "force-dynamic";
 
@@ -29,6 +30,26 @@ const esquema = z.object({
       carga1: z.number().nullish(),
     })
     .partial()
+    .nullish(),
+  hardware: z
+    .object({
+      distro: z.string().nullish(),
+      kernel: z.string().nullish(),
+      cpu_modelo: z.string().nullish(),
+      cpu_nucleos: z.number().nullish(),
+      ram_total_mb: z.number().nullish(),
+      discos: z
+        .array(
+          z.object({
+            montagem: z.string(),
+            dispositivo: z.string(),
+            fs: z.string(),
+            total_gb: z.number(),
+            usado_pct: z.number(),
+          })
+        )
+        .nullish(),
+    })
     .nullish(),
   servicos: z.array(z.object({ unidade: z.string(), ativo: z.boolean() })).nullish(),
   eventos: z
@@ -171,7 +192,22 @@ export async function POST(req: Request) {
 
   await db
     .update(servidores)
-    .set({ ultimoContatoEm: agora, agenteVersao: b.agente_versao ?? servidor.agenteVersao })
+    .set({
+      ultimoContatoEm: agora,
+      agenteVersao: b.agente_versao ?? servidor.agenteVersao,
+      ...(b.hardware
+        ? {
+            hardware: {
+              distro: b.hardware.distro ?? undefined,
+              kernel: b.hardware.kernel ?? undefined,
+              cpu_modelo: b.hardware.cpu_modelo ?? undefined,
+              cpu_nucleos: b.hardware.cpu_nucleos ?? undefined,
+              ram_total_mb: b.hardware.ram_total_mb ?? undefined,
+              discos: b.hardware.discos ?? undefined,
+            },
+          }
+        : {}),
+    })
     .where(eq(servidores.id, servidor.id));
 
   // Comandos pendentes → marca enviado e devolve
@@ -211,7 +247,11 @@ export async function POST(req: Request) {
       );
   }
 
-  const licenca = await emitirLease({ id: servidor.id, clienteId: servidor.clienteId });
+  const [licenca, versaoAlvo] = await Promise.all([
+    emitirLease({ id: servidor.id, clienteId: servidor.clienteId }),
+    // pin do servidor tem prioridade; senão, a última estável (auto-update)
+    servidor.versaoAlvo ? Promise.resolve(servidor.versaoAlvo) : ultimaVersaoEstavel(),
+  ]);
 
   return NextResponse.json({
     licenca,
@@ -220,7 +260,7 @@ export async function POST(req: Request) {
       verbo: p.verbo,
       servico_unidade: p.servicoId ? (unidades.get(p.servicoId) ?? null) : null,
     })),
-    versao_alvo: servidor.versaoAlvo ?? null,
+    versao_alvo: versaoAlvo,
     intervalo_seg: INTERVALO_SEG,
   });
 }

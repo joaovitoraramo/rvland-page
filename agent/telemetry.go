@@ -6,6 +6,7 @@ import (
 	"strconv"
 	"strings"
 	"syscall"
+	"time"
 )
 
 type Telemetria struct {
@@ -28,8 +29,49 @@ func coletaTelemetria() (Telemetria, int) {
 	t.MemoriaPct = pint(memoriaPct())
 	t.DiscoPct = pint(discoPct("/"))
 	t.Carga1 = pint(carga1x100())
-	t.CPUPct = pint(0) // CPU instantânea exige 2 amostras; simplificado no MVP
+	t.CPUPct = pint(cpuPct())
 	return t, uptimeSeg()
+}
+
+// cpuPct amostra /proc/stat duas vezes e calcula o uso no intervalo.
+func cpuPct() int {
+	i1, t1, ok1 := statCPU()
+	if !ok1 {
+		return 0
+	}
+	time.Sleep(400 * time.Millisecond)
+	i2, t2, ok2 := statCPU()
+	if !ok2 || t2 <= t1 {
+		return 0
+	}
+	uso := 1 - float64(i2-i1)/float64(t2-t1)
+	if uso < 0 {
+		uso = 0
+	}
+	return int(uso*100 + 0.5)
+}
+
+// statCPU retorna (idle, total) acumulados da linha "cpu" do /proc/stat.
+func statCPU() (idle, total uint64, ok bool) {
+	b, err := os.ReadFile("/proc/stat")
+	if err != nil {
+		return 0, 0, false
+	}
+	for _, ln := range strings.Split(string(b), "\n") {
+		if !strings.HasPrefix(ln, "cpu ") {
+			continue
+		}
+		f := strings.Fields(ln)[1:] // user nice system idle iowait irq softirq steal ...
+		for i, s := range f {
+			v, _ := strconv.ParseUint(s, 10, 64)
+			total += v
+			if i == 3 || i == 4 { // idle + iowait
+				idle += v
+			}
+		}
+		return idle, total, true
+	}
+	return 0, 0, false
 }
 
 func memoriaPct() int {

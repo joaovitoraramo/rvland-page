@@ -36,6 +36,13 @@
       "when": 1786980916643,
       "tag": "0004_slim_dreadnoughts",
       "breakpoints": true
+    },
+    {
+      "idx": 5,
+      "version": "7",
+      "when": 1786990431650,
+      "tag": "0005_exotic_oracle",
+      "breakpoints": true
     }
   ]
 }

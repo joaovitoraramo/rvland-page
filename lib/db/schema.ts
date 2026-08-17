@@ -236,6 +236,20 @@ export const servidores = pgTable(
     agentePubkey: text("agente_pubkey"),
     agenteVersao: text("agente_versao"),
     versaoAlvo: text("versao_alvo"), // fixa canary; null = último estável
+    hardware: jsonb("hardware").$type<{
+      distro?: string;
+      kernel?: string;
+      cpu_modelo?: string;
+      cpu_nucleos?: number;
+      ram_total_mb?: number;
+      discos?: {
+        montagem: string;
+        dispositivo: string;
+        fs: string;
+        total_gb: number;
+        usado_pct: number;
+      }[];
+    }>(),
     manutencaoAte: timestamp("manutencao_ate", { withTimezone: true }),
     ultimoContatoEm: timestamp("ultimo_contato_em", { withTimezone: true }),
     criadoEm: timestamp("criado_em", { withTimezone: true }).notNull().defaultNow(),
