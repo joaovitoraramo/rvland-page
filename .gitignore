@@ -48,3 +48,6 @@ next-env.d.ts
 
 # validação visual (playwright)
 .playwright-fotos/
+
+# Fase 2: chaves do agente (NUNCA versionar)
+chaves/
