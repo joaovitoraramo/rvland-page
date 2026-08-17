@@ -15,6 +15,20 @@
       "when": 1786924637108,
       "tag": "0001_rls_e_storage",
       "breakpoints": true
+    },
+    {
+      "idx": 2,
+      "version": "7",
+      "when": 1786975894920,
+      "tag": "0002_clammy_donald_blake",
+      "breakpoints": true
+    },
+    {
+      "idx": 3,
+      "version": "7",
+      "when": 1786975903220,
+      "tag": "0003_rls_agente",
+      "breakpoints": true
     }
   ]
 }

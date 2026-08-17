@@ -210,3 +210,148 @@ export const anexos = pgTable(
   },
   (t) => [index("anexos_cliente_idx").on(t.clienteId)]
 );
+
+// ─── Fase 2: agente e parque de servidores ──────────────────────────────────
+
+export const servidores = pgTable(
+  "servidores",
+  {
+    id: uuid("id").primaryKey().defaultRandom(),
+    clienteId: uuid("cliente_id")
+      .notNull()
+      .references(() => clientes.id),
+    nome: text("nome").notNull(),
+    descricao: text("descricao"),
+    host: text("host"), // informativo (IP/hostname); acesso é pelo agente
+    so: text("so"), // informativo
+    status: text("status")
+      .notNull()
+      .default("pendente")
+      .$type<"pendente" | "ativo" | "revogado">(),
+    // enrollment de uso único
+    enrollmentTokenHash: text("enrollment_token_hash"),
+    enrollmentExpiraEm: timestamp("enrollment_expira_em", { withTimezone: true }),
+    // chave pública do agente (base64), definida no enroll — a privada nunca sai do servidor
+    agentePubkey: text("agente_pubkey"),
+    agenteVersao: text("agente_versao"),
+    versaoAlvo: text("versao_alvo"), // fixa canary; null = último estável
+    manutencaoAte: timestamp("manutencao_ate", { withTimezone: true }),
+    ultimoContatoEm: timestamp("ultimo_contato_em", { withTimezone: true }),
+    criadoEm: timestamp("criado_em", { withTimezone: true }).notNull().defaultNow(),
+  },
+  (t) => [index("servidores_cliente_idx").on(t.clienteId)]
+);
+
+export const servicoGerenciados = pgTable(
+  "servico_gerenciados",
+  {
+    id: uuid("id").primaryKey().defaultRandom(),
+    servidorId: uuid("servidor_id")
+      .notNull()
+      .references(() => servidores.id, { onDelete: "cascade" }),
+    nome: text("nome").notNull(), // rótulo humano
+    unidadeSystemd: text("unidade_systemd").notNull(), // ex: concicredit.service
+    licenciado: boolean("licenciado").notNull().default(true),
+    ativo: boolean("ativo").notNull().default(true),
+    statusReportado: text("status_reportado")
+      .notNull()
+      .default("desconhecido")
+      .$type<"ativo" | "inativo" | "desconhecido">(),
+    atualizadoEm: timestamp("atualizado_em", { withTimezone: true }).notNull().defaultNow(),
+  },
+  (t) => [index("servico_servidor_idx").on(t.servidorId)]
+);
+
+// 1 linha por servidor, sobrescrita a cada heartbeat (nunca cresce)
+export const telemetriaAtual = pgTable("telemetria_atual", {
+  servidorId: uuid("servidor_id")
+    .primaryKey()
+    .references(() => servidores.id, { onDelete: "cascade" }),
+  cpuPct: integer("cpu_pct"),
+  memoriaPct: integer("memoria_pct"),
+  discoPct: integer("disco_pct"),
+  carga1: integer("carga1"), // load average * 100
+  uptimeSeg: integer("uptime_seg"),
+  payload: jsonb("payload").$type<Record<string, unknown>>(),
+  coletadoEm: timestamp("coletado_em", { withTimezone: true }).notNull().defaultNow(),
+});
+
+// Histórico curto, podado por cron
+export const telemetriaHistorico = pgTable(
+  "telemetria_historico",
+  {
+    id: bigserial("id", { mode: "number" }).primaryKey(),
+    servidorId: uuid("servidor_id")
+      .notNull()
+      .references(() => servidores.id, { onDelete: "cascade" }),
+    cpuPct: integer("cpu_pct"),
+    memoriaPct: integer("memoria_pct"),
+    discoPct: integer("disco_pct"),
+    coletadoEm: timestamp("coletado_em", { withTimezone: true }).notNull().defaultNow(),
+  },
+  (t) => [index("telemetria_hist_idx").on(t.servidorId, t.coletadoEm)]
+);
+
+export const eventos = pgTable(
+  "eventos",
+  {
+    id: bigserial("id", { mode: "number" }).primaryKey(),
+    servidorId: uuid("servidor_id")
+      .notNull()
+      .references(() => servidores.id, { onDelete: "cascade" }),
+    tipo: text("tipo")
+      .notNull()
+      .$type<
+        | "servico_caiu"
+        | "disco_alto"
+        | "reboot"
+        | "ssh_login"
+        | "agente_online"
+        | "agente_offline"
+        | "update_aplicado"
+        | "update_falhou"
+      >(),
+    severidade: text("severidade").notNull().default("info").$type<"info" | "aviso" | "critico">(),
+    mensagem: text("mensagem").notNull(),
+    dados: jsonb("dados").$type<Record<string, unknown>>(),
+    reconhecido: boolean("reconhecido").notNull().default(false),
+    criadoEm: timestamp("criado_em", { withTimezone: true }).notNull().defaultNow(),
+  },
+  (t) => [index("eventos_servidor_idx").on(t.servidorId, t.criadoEm)]
+);
+
+// Fila de comandos: o agente puxa os pendentes no heartbeat
+export const comandos = pgTable(
+  "comandos",
+  {
+    id: uuid("id").primaryKey().defaultRandom(),
+    servidorId: uuid("servidor_id")
+      .notNull()
+      .references(() => servidores.id, { onDelete: "cascade" }),
+    servicoId: uuid("servico_id").references(() => servicoGerenciados.id, {
+      onDelete: "cascade",
+    }),
+    verbo: text("verbo").notNull().$type<"status" | "start" | "stop" | "update">(),
+    estado: text("estado")
+      .notNull()
+      .default("pendente")
+      .$type<"pendente" | "enviado" | "concluido" | "falhou">(),
+    resultado: jsonb("resultado").$type<Record<string, unknown>>(),
+    criadoPor: text("criado_por").notNull(),
+    criadoEm: timestamp("criado_em", { withTimezone: true }).notNull().defaultNow(),
+    concluidoEm: timestamp("concluido_em", { withTimezone: true }),
+  },
+  (t) => [index("comandos_servidor_idx").on(t.servidorId, t.estado)]
+);
+
+export const agenteReleases = pgTable("agente_releases", {
+  id: uuid("id").primaryKey().defaultRandom(),
+  versao: text("versao").notNull().unique(), // semver
+  canal: text("canal").notNull().default("estavel").$type<"estavel" | "canary">(),
+  caminhoStorage: text("caminho_storage").notNull(),
+  sha256: text("sha256").notNull(),
+  assinatura: text("assinatura").notNull(), // base64, chave de release (offline)
+  notas: text("notas"),
+  ativo: boolean("ativo").notNull().default(true),
+  criadoEm: timestamp("criado_em", { withTimezone: true }).notNull().defaultNow(),
+});
