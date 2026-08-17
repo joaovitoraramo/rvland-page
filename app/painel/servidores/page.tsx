@@ -87,19 +87,19 @@ export default async function PaginaServidores() {
                     </Link>
                     {s.host ? <div className="rv-num mt-0.5 text-xs text-white/40">{s.host}</div> : null}
                   </TableCell>
-                  <TableCell className="text-white/70">{s.clienteNome}</TableCell>
-                  <TableCell>
+                  <TableCell rotulo="cliente" className="text-white/70">{s.clienteNome}</TableCell>
+                  <TableCell rotulo="status">
                     <BadgeServidor status={s.status} />
                   </TableCell>
-                  <TableCell className="rv-num text-white/55">{s.agenteVersao ?? "—"}</TableCell>
-                  <TableCell className="rv-num text-right text-white/60">
+                  <TableCell rotulo="agente" className="rv-num text-white/55">{s.agenteVersao ?? "—"}</TableCell>
+                  <TableCell rotulo="cpu / disco" className="rv-num text-right text-white/60">
                     {s.cpuPct != null ? `${s.cpuPct}%` : "—"} / {s.discoPct != null ? `${s.discoPct}%` : "—"}
                   </TableCell>
-                  <TableCell className="rv-num text-white/55">
+                  <TableCell rotulo="último contato" className="rv-num text-white/55">
                     {s.ultimoContatoEm ? formatarDataHoraBR(s.ultimoContatoEm) : "nunca"}
                   </TableCell>
                   <TableCell className="text-right">
-                    <Btn asChild tamanho="sm">
+                    <Btn asChild tamanho="sm" className="max-md:w-full">
                       <Link href={`/painel/servidores/${s.id}`}>
                         Abrir <ArrowUpRight className="size-3.5" />
                       </Link>

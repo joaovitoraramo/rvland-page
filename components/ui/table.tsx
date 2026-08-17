@@ -48,9 +48,20 @@ function TableHead({ className, ...props }: React.ComponentProps<"th">) {
   );
 }
 
-function TableCell({ className, ...props }: React.ComponentProps<"td">) {
+function TableCell({
+  className,
+  rotulo,
+  ...props
+}: React.ComponentProps<"td"> & {
+  /** Rótulo mono exibido no modo card (mobile), via CSS attr(data-rotulo). */
+  rotulo?: string;
+}) {
   return (
-    <td className={cn("px-4 py-3.5 align-middle text-white/85", className)} {...props} />
+    <td
+      data-rotulo={rotulo}
+      className={cn("px-4 py-3.5 align-middle text-white/85", className)}
+      {...props}
+    />
   );
 }
 

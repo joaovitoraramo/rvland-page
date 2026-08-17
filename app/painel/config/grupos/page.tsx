@@ -58,7 +58,7 @@ export default async function PaginaGrupos() {
               const qtd = qtdPorGrupo.get(g.id) ?? 0;
               return (
                 <TableRow key={g.id}>
-                  <TableCell className="font-medium text-white">
+                  <TableCell rotulo="grupo" className="font-medium text-white">
                     {g.nome}
                     {g.todasPermissoes ? (
                       <span className="rv-eyebrow ml-2 rounded-full border border-[rgba(0,255,138,0.25)] bg-[rgba(0,255,138,0.06)] px-2 py-0.5 !text-[#7DFFC4]">
@@ -66,8 +66,8 @@ export default async function PaginaGrupos() {
                       </span>
                     ) : null}
                   </TableCell>
-                  <TableCell className="text-white/55">{g.descricao ?? "—"}</TableCell>
-                  <TableCell className="rv-num text-center text-white/70">{qtd}</TableCell>
+                  <TableCell rotulo="descrição" className="text-white/55">{g.descricao ?? "—"}</TableCell>
+                  <TableCell rotulo="usuários" className="rv-num text-center text-white/70">{qtd}</TableCell>
                   <TableCell className="text-right">
                     {!g.todasPermissoes ? (
                       <div className="inline-flex items-center gap-1.5">

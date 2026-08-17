@@ -134,7 +134,7 @@ export default async function Dashboard({
                       {c.nome}
                     </Link>
                   </TableCell>
-                  <TableCell>
+                  <TableCell rotulo="licença">
                     <StatusBadge status={c.licenca.status} simulacao={config.modoSimulacao} />
                     {c.licenca.status === "atrasado" && c.licenca.toleradoAte ? (
                       <div className="rv-num mt-1 text-xs text-white/40">
@@ -142,16 +142,17 @@ export default async function Dashboard({
                       </div>
                     ) : null}
                   </TableCell>
-                  <TableCell className="rv-num text-center text-white/70">
+                  <TableCell rotulo="contratos" className="rv-num text-center text-white/70">
                     {c.contratosAtivos}
                   </TableCell>
                   {veValores ? (
-                    <TableCell className="rv-num text-right">
+                    <TableCell rotulo="mensalidade" className="rv-num text-right">
                       {c.valorMensalCentavos ? formatarReais(c.valorMensalCentavos) : "—"}
                     </TableCell>
                   ) : null}
                   {veValores ? (
                     <TableCell
+                      rotulo="em aberto"
                       className={`rv-num text-right ${
                         c.emAbertoCentavos > 0 ? "rv-fosforo-ambar" : "text-white/40"
                       }`}
@@ -159,11 +160,11 @@ export default async function Dashboard({
                       {c.emAbertoCentavos ? formatarReais(c.emAbertoCentavos) : "—"}
                     </TableCell>
                   ) : null}
-                  <TableCell className="rv-num text-white/70">
+                  <TableCell rotulo="próx. venc." className="rv-num text-white/70">
                     {c.proximoVencimento ? formatarDataBR(c.proximoVencimento) : "—"}
                   </TableCell>
                   <TableCell className="text-right">
-                    <Btn asChild tamanho="sm">
+                    <Btn asChild tamanho="sm" className="max-md:w-full">
                       <Link href={`/painel/clientes/${c.id}`}>
                         Abrir
                         <ArrowUpRight className="size-3.5" />

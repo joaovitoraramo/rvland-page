@@ -118,7 +118,7 @@ export default async function PaginaFinanceiro({
       </div>
 
       <form className="rv-entrar-2 mb-5 flex flex-wrap items-center gap-2" action="/painel/financeiro">
-        <select name="competencia" defaultValue={filtroCompetencia ?? ""} className="!w-52">
+        <select name="competencia" defaultValue={filtroCompetencia ?? ""} className="!w-full sm:!w-52">
           <option value="">Todas as competências</option>
           {competencias.map((c) => (
             <option key={c} value={c}>
@@ -126,7 +126,7 @@ export default async function PaginaFinanceiro({
             </option>
           ))}
         </select>
-        <select name="situacao" defaultValue={filtroSituacao ?? ""} className="!w-48">
+        <select name="situacao" defaultValue={filtroSituacao ?? ""} className="!w-full sm:!w-48">
           <option value="">Todas as situações</option>
           <option value="aberta">Abertas</option>
           <option value="vencida">Vencidas</option>
@@ -164,20 +164,20 @@ export default async function PaginaFinanceiro({
                 const s = situacaoDe(l.fatura, hoje);
                 return (
                   <TableRow key={l.fatura.id}>
-                    <TableCell className="rv-num font-medium text-white">
+                    <TableCell rotulo="competência" className="rv-num font-medium text-white">
                       {formatarCompetenciaBR(l.fatura.competencia)}
                     </TableCell>
-                    <TableCell className="text-white/70">{l.clienteNome}</TableCell>
-                    <TableCell className="text-white/55">{l.contratoTitulo}</TableCell>
-                    <TableCell className="rv-num text-white/70">
+                    <TableCell rotulo="cliente" className="text-white/70">{l.clienteNome}</TableCell>
+                    <TableCell rotulo="contrato" className="text-white/55">{l.contratoTitulo}</TableCell>
+                    <TableCell rotulo="vencimento" className="rv-num text-white/70">
                       {formatarDataBR(l.fatura.vencimento)}
                     </TableCell>
-                    <TableCell className="rv-num text-right">
+                    <TableCell rotulo="valor" className="rv-num text-right">
                       {formatarReais(l.fatura.valorCentavos)}
                     </TableCell>
-                    <TableCell className={ROTULOS[s].classe}>{ROTULOS[s].texto}</TableCell>
+                    <TableCell rotulo="situação" className={ROTULOS[s].classe}>{ROTULOS[s].texto}</TableCell>
                     <TableCell className="text-right">
-                      <Btn asChild tamanho="sm">
+                      <Btn asChild tamanho="sm" className="max-md:w-full">
                         <Link href={`/painel/financeiro/faturas/${l.fatura.id}`}>
                           Abrir
                           <ArrowUpRight className="size-3.5" />

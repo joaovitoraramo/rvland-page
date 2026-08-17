@@ -35,12 +35,12 @@ export const metadata = { title: "Servidor" };
 function Medidor({ icone, rotulo, pct }: { icone: React.ReactNode; rotulo: string; pct: number | null }) {
   const cor = pct == null ? "#ffffff30" : pct >= 85 ? "#FF5D5D" : pct >= 60 ? "#FFC24D" : "#00FF8A";
   return (
-    <div className="rounded-xl border border-white/8 bg-black/25 p-4">
-      <div className="flex items-center gap-2 text-white/45 [&_svg]:size-3.5">
+    <div className="rounded-xl border border-white/8 bg-black/25 p-3 md:p-4">
+      <div className="flex items-center gap-1.5 text-white/45 [&_svg]:size-3.5">
         {icone}
         <span className="rv-eyebrow">{rotulo}</span>
       </div>
-      <div className="rv-num mt-2 text-2xl font-semibold text-white">
+      <div className="rv-num mt-2 text-xl font-semibold text-white md:text-2xl">
         {pct != null ? pct : "—"}
         {pct != null ? <span className="text-sm text-white/40">%</span> : null}
       </div>
@@ -169,7 +169,7 @@ export default async function PaginaServidor({ params }: { params: Promise<{ id:
               </CardTitle>
             </CardHeader>
             <CardContent>
-              <div className="grid grid-cols-1 gap-3 sm:grid-cols-3">
+              <div className="grid grid-cols-3 gap-2 sm:gap-3">
                 <Medidor icone={<Cpu />} rotulo="cpu" pct={tel?.cpuPct ?? null} />
                 <Medidor icone={<MemoryStick />} rotulo="memória" pct={tel?.memoriaPct ?? null} />
                 <Medidor icone={<HardDrive />} rotulo="disco" pct={tel?.discoPct ?? null} />

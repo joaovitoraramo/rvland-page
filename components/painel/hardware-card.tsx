@@ -140,11 +140,11 @@ export function HardwareCard({ hardware }: { hardware: Hardware | null }) {
               <TableBody>
                 {hardware.discos.map((d) => (
                   <TableRow key={d.montagem}>
-                    <TableCell className="rv-num font-medium text-white">{d.montagem}</TableCell>
-                    <TableCell className="rv-num text-white/55">{d.dispositivo}</TableCell>
-                    <TableCell className="text-white/55">{d.fs}</TableCell>
-                    <TableCell className="rv-num text-right text-white/70">{d.total_gb} GB</TableCell>
-                    <TableCell className="text-right">
+                    <TableCell rotulo="montagem" className="rv-num font-medium text-white">{d.montagem}</TableCell>
+                    <TableCell rotulo="dispositivo" className="rv-num break-all text-white/55">{d.dispositivo}</TableCell>
+                    <TableCell rotulo="fs" className="text-white/55">{d.fs}</TableCell>
+                    <TableCell rotulo="total" className="rv-num text-right text-white/70">{d.total_gb} GB</TableCell>
+                    <TableCell rotulo="uso" className="text-right">
                       <span
                         className={`rv-num ${
                           d.usado_pct >= 85

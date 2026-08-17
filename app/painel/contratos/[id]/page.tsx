@@ -173,11 +173,11 @@ export default async function PaginaContrato({
               <TableBody>
                 {vigencias.map((v) => (
                   <TableRow key={v.id}>
-                    <TableCell className="rv-num">{formatarCompetenciaBR(v.vigenteDesde)}</TableCell>
-                    <TableCell className="rv-num text-right">
+                    <TableCell rotulo="desde" className="rv-num">{formatarCompetenciaBR(v.vigenteDesde)}</TableCell>
+                    <TableCell rotulo="valor" className="rv-num text-right">
                       {formatarReais(v.valorCentavos)}
                     </TableCell>
-                    <TableCell className="text-white/45">{v.criadoPor}</TableCell>
+                    <TableCell rotulo="por" className="text-white/45">{v.criadoPor}</TableCell>
                   </TableRow>
                 ))}
               </TableBody>
@@ -213,17 +213,18 @@ export default async function PaginaContrato({
               <TableBody>
                 {faturasDoContrato.map((f) => (
                   <TableRow key={f.id}>
-                    <TableCell className="rv-num">
+                    <TableCell rotulo="competência" className="rv-num">
                       {formatarCompetenciaBR(f.competencia)}
                       {f.historica ? (
                         <span className="ml-2 font-sans text-xs text-white/30">hist.</span>
                       ) : null}
                     </TableCell>
-                    <TableCell className="rv-num">{formatarDataBR(f.vencimento)}</TableCell>
-                    <TableCell className="rv-num text-right">
+                    <TableCell rotulo="vencimento" className="rv-num">{formatarDataBR(f.vencimento)}</TableCell>
+                    <TableCell rotulo="valor" className="rv-num text-right">
                       {formatarReais(f.valorCentavos)}
                     </TableCell>
                     <TableCell
+                      rotulo="situação"
                       className={
                         f.status === "quitada"
                           ? "text-[#7DFFC4]"
@@ -239,7 +240,7 @@ export default async function PaginaContrato({
                           : "Aberta"}
                     </TableCell>
                     <TableCell className="text-right">
-                      <Btn asChild tamanho="sm">
+                      <Btn asChild tamanho="sm" className="max-md:w-full">
                         <Link href={`/painel/financeiro/faturas/${f.id}`}>
                           Abrir
                           <ArrowUpRight className="size-3.5" />

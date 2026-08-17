@@ -68,8 +68,8 @@ export default async function PaginaUsuarios() {
           <TableBody>
             {lista.map((u) => (
               <TableRow key={u.id}>
-                <TableCell>
-                  <span className="flex items-center gap-3">
+                <TableCell rotulo="usuário">
+                  <span className="flex items-center gap-3 max-md:justify-end">
                     <Avatar nome={u.nome} className="size-8 text-[10px]" />
                     <span className="font-medium text-white">
                       {u.nome}
@@ -79,8 +79,8 @@ export default async function PaginaUsuarios() {
                     </span>
                   </span>
                 </TableCell>
-                <TableCell className="text-white/55">{u.email}</TableCell>
-                <TableCell>
+                <TableCell rotulo="email" className="text-white/55">{u.email}</TableCell>
+                <TableCell rotulo="grupo">
                   {u.id === perfil.id ? (
                     <span className="text-white/70">{u.grupoNome}</span>
                   ) : (
@@ -91,7 +91,7 @@ export default async function PaginaUsuarios() {
                     />
                   )}
                 </TableCell>
-                <TableCell>
+                <TableCell rotulo="situação">
                   <span
                     className={`rv-eyebrow ${u.ativo ? "!text-[#7DFFC4]" : "!text-white/30"}`}
                   >

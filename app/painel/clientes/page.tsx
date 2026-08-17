@@ -81,7 +81,7 @@ export default async function PaginaClientes({
         className="rv-entrar-1 mb-5 flex flex-wrap items-center gap-2"
         action="/painel/clientes"
       >
-        <div className="relative w-72">
+        <div className="relative w-full sm:w-72">
           <Search className="pointer-events-none absolute left-3 top-1/2 size-4 -translate-y-1/2 text-white/30" />
           <input
             type="search"
@@ -91,7 +91,7 @@ export default async function PaginaClientes({
             className="!pl-9"
           />
         </div>
-        <select name="status" defaultValue={filtroStatus ?? ""} className="!w-44">
+        <select name="status" defaultValue={filtroStatus ?? ""} className="!w-full sm:!w-44">
           <option value="">Todos os status</option>
           <option value="em_dia">Em dia</option>
           <option value="atrasado">Atrasado</option>
@@ -135,7 +135,7 @@ export default async function PaginaClientes({
                   <TableRow key={c.id}>
                     <TableCell>
                       <Link
-                        href={`/painel/clientes/${c.id}`}
+                      href={`/painel/clientes/${c.id}`}
                         className="font-medium text-white hover:text-[#8AF0FF]"
                       >
                         {c.nome}
@@ -144,17 +144,17 @@ export default async function PaginaClientes({
                         <div className="mt-0.5 text-xs text-white/40">{c.razaoSocial}</div>
                       ) : null}
                     </TableCell>
-                    <TableCell className="rv-num text-white/60">
+                    <TableCell rotulo="documento" className="rv-num text-white/60">
                       {c.documento ? mascararDocumento(c.documento) : "—"}
                     </TableCell>
-                    <TableCell className="text-white/60">{c.email ?? c.telefone ?? "—"}</TableCell>
-                    <TableCell>
+                    <TableCell rotulo="contato" className="text-white/60">{c.email ?? c.telefone ?? "—"}</TableCell>
+                    <TableCell rotulo="licença">
                       {st ? (
                         <StatusBadge status={st.status} simulacao={config.modoSimulacao} />
                       ) : null}
                     </TableCell>
                     <TableCell className="text-right">
-                      <div className="inline-flex items-center gap-1.5">
+                      <div className="inline-flex items-center gap-1.5 max-md:flex max-md:w-full max-md:[&>a:first-child]:flex-1">
                         <Btn asChild tamanho="sm">
                           <Link href={`/painel/clientes/${c.id}`}>
                             Abrir

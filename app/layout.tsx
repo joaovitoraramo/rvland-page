@@ -61,6 +61,8 @@ export const metadata: Metadata = {
 
 export const viewport = {
   themeColor: "#05070b",
+  // safe areas (env(safe-area-inset-*)) só funcionam com viewport-fit=cover
+  viewportFit: "cover" as const,
 };
 
 // Marca que o JS está ativo antes do <body> ser pintado. O CSS usa `.js` para

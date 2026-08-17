@@ -45,7 +45,7 @@ export function Sidebar({
   const pathname = usePathname();
 
   return (
-    <aside className="sticky top-0 flex h-screen w-60 shrink-0 flex-col border-r border-white/8 bg-black/30 backdrop-blur-xl">
+    <aside className="sticky top-0 hidden h-screen w-60 shrink-0 flex-col border-r border-white/8 bg-black/30 backdrop-blur-xl md:flex">
       {/* Marca */}
       <Link href="/painel" className="flex items-center gap-3 px-5 pb-5 pt-6">
         <span className="grid size-9 shrink-0 place-items-center rounded-xl bg-gradient-to-br from-[#00E5FF] to-[#00FF8A] font-mono text-[13px] font-bold text-[#05070B]">

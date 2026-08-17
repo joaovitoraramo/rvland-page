@@ -79,7 +79,7 @@ export default async function PaginaAuditoria({
       />
 
       <form className="rv-entrar-1 mb-5 flex items-center gap-2" action="/painel/auditoria">
-        <select name="entidade" defaultValue={filtro ?? ""} className="!w-52">
+        <select name="entidade" defaultValue={filtro ?? ""} className="!w-full sm:!w-52">
           <option value="">Todas as entidades</option>
           {ENTIDADES.map((e) => (
             <option key={e} value={e}>
@@ -109,19 +109,19 @@ export default async function PaginaAuditoria({
             <TableBody>
               {visiveis.map((l) => (
                 <TableRow key={l.id}>
-                  <TableCell className="rv-num whitespace-nowrap text-white/55">
+                  <TableCell rotulo="quando" className="rv-num whitespace-nowrap text-white/55">
                     {formatarDataHoraBR(l.criadoEm)}
                   </TableCell>
-                  <TableCell className="text-white/75">{l.atorNome}</TableCell>
-                  <TableCell className="rv-num text-[13px] font-medium text-white">
+                  <TableCell rotulo="quem" className="text-white/75">{l.atorNome}</TableCell>
+                  <TableCell rotulo="ação" className="rv-num text-[13px] font-medium text-white">
                     {l.acao}
                   </TableCell>
-                  <TableCell>
+                  <TableCell rotulo="entidade">
                     <span className="rv-eyebrow rounded-full border border-white/10 px-2 py-0.5">
                       {l.entidade}
                     </span>
                   </TableCell>
-                  <TableCell className="max-w-md truncate font-mono text-[11px] text-white/35">
+                  <TableCell rotulo="detalhes" className="max-w-md truncate font-mono text-[11px] text-white/35 max-md:max-w-full">
                     {l.detalhes ? JSON.stringify(l.detalhes) : "—"}
                   </TableCell>
                 </TableRow>

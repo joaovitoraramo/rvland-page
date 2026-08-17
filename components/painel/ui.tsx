@@ -25,10 +25,11 @@ const VARIANTES: Record<VarianteBtn, string> = {
   fantasma: "text-white/60 hover:text-white hover:bg-white/5",
 };
 
+// Mobile-first um degrau maior (alvo de toque); md volta ao tamanho desktop
 const TAMANHOS: Record<TamanhoBtn, string> = {
-  md: "h-10 px-4 text-sm rounded-[10px] gap-2",
-  sm: "h-8 px-3 text-[13px] rounded-lg gap-1.5",
-  icone: "size-9 rounded-[10px]",
+  md: "h-11 md:h-10 px-4 text-sm rounded-[10px] gap-2",
+  sm: "h-9 md:h-8 px-3 text-[13px] rounded-lg gap-1.5",
+  icone: "size-10 md:size-9 rounded-[10px]",
 };
 
 export function Btn({

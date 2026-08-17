@@ -160,12 +160,12 @@ export default async function PaginaFatura({
                   <TableBody>
                     {listaPagamentos.map((p) => (
                       <TableRow key={p.id}>
-                        <TableCell className="rv-num">{formatarDataBR(p.pagoEm)}</TableCell>
-                        <TableCell className="rv-num text-right">
+                        <TableCell rotulo="data" className="rv-num">{formatarDataBR(p.pagoEm)}</TableCell>
+                        <TableCell rotulo="valor" className="rv-num text-right">
                           {formatarReais(p.valorCentavos)}
                         </TableCell>
-                        <TableCell className="text-white/55">{p.forma ?? "—"}</TableCell>
-                        <TableCell className="text-white/45">{p.criadoPor}</TableCell>
+                        <TableCell rotulo="forma" className="text-white/55">{p.forma ?? "—"}</TableCell>
+                        <TableCell rotulo="por" className="text-white/45">{p.criadoPor}</TableCell>
                       </TableRow>
                     ))}
                   </TableBody>
