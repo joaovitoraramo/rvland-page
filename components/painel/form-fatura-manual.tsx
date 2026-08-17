@@ -2,17 +2,20 @@
 
 import * as React from "react";
 import { useActionState } from "react";
-import { ReceiptText, Sparkles } from "lucide-react";
+import { FileText, ReceiptText, Sparkles } from "lucide-react";
 
 import { Btn } from "@/components/painel/ui";
 import { Label } from "@/components/ui/label";
+import { SelectRico } from "@/components/painel/select-rico";
 import { InputCompetencia, InputDinheiro } from "@/components/painel/inputs-mascarados";
 import { parseCompetenciaHumana } from "@/lib/dominio/tempo";
 import { criarFaturaManual, type EstadoFaturaManual } from "@/app/painel/financeiro/actions";
 
 export type ContratoParaFatura = {
   id: string;
-  rotulo: string;
+  cliente: string;
+  titulo: string;
+  tipo: "recorrente" | "fechado";
   diaVencimento: number | null;
 };
 
@@ -28,7 +31,7 @@ export function FormFaturaManual({
   const [historica, setHistorica] = React.useState(false);
   const [jaQuitada, setJaQuitada] = React.useState(false);
 
-  // Autofill do vencimento: competência válida + dia do contrato → preenche.
+  // Fluxo guiado: contrato → competência → (vencimento sozinho) → valor.
   // Se o usuário tocar no vencimento manualmente, paramos de sobrescrever.
   const [contratoId, setContratoId] = React.useState("");
   const [competencia, setCompetencia] = React.useState("");
@@ -36,18 +39,50 @@ export function FormFaturaManual({
   const [vencimentoTocado, setVencimentoTocado] = React.useState(false);
   const [autofillAtivo, setAutofillAtivo] = React.useState(false);
 
+  const competenciaRef = React.useRef<HTMLInputElement | null>(null);
+  const valorRef = React.useRef<HTMLInputElement | null>(null);
+
   const tentarAutofill = React.useCallback(
-    (comp: string, contrato: string, tocado: boolean) => {
-      if (tocado) return;
+    (comp: string, contrato: string, tocado: boolean): boolean => {
+      if (tocado) return false;
       const iso = parseCompetenciaHumana(comp);
       const dia = contratosDisponiveis.find((c) => c.id === contrato)?.diaVencimento;
       if (iso && dia) {
         setVencimento(`${iso.slice(0, 7)}-${String(dia).padStart(2, "0")}`);
         setAutofillAtivo(true);
+        return true;
       }
+      return false;
     },
     [contratosDisponiveis]
   );
+
+  const aoEscolherContrato = (id: string) => {
+    setContratoId(id);
+    tentarAutofill(competencia, id, vencimentoTocado);
+  };
+
+  // O Radix devolveria o foco ao trigger; redirecionamos para o próximo
+  // passo do fluxo (competência, ou valor se a competência já está pronta).
+  const aoFecharSelect = (e: Event) => {
+    e.preventDefault();
+    if (!parseCompetenciaHumana(competencia)) {
+      competenciaRef.current?.focus();
+    } else if (!valorRef.current?.value) {
+      valorRef.current?.focus();
+    }
+  };
+
+  const aoDigitarCompetencia = (v: string) => {
+    setCompetencia(v);
+    const preencheu = tentarAutofill(v, contratoId, vencimentoTocado);
+    // competência completa + vencimento resolvido → pula direto pro valor
+    const completa = !!parseCompetenciaHumana(v);
+    const vencimentoResolvido = preencheu || vencimento !== "";
+    if (completa && vencimentoResolvido && !valorRef.current?.value) {
+      valorRef.current?.focus();
+    }
+  };
 
   const diaDoContrato = contratosDisponiveis.find((c) => c.id === contratoId)?.diaVencimento;
 
@@ -64,24 +99,23 @@ export function FormFaturaManual({
         <div className="grid gap-5 sm:grid-cols-2">
           <div className="sm:col-span-2">
             <Label htmlFor="contratoId">Contrato *</Label>
-            <select
+            <SelectRico
               id="contratoId"
               name="contratoId"
               required
+              icone={<FileText />}
+              placeholder="Escolha o contrato..."
               value={contratoId}
-              onChange={(e) => {
-                setContratoId(e.target.value);
-                tentarAutofill(competencia, e.target.value, vencimentoTocado);
-              }}
-              aria-invalid={!!estado.erros?.contratoId}
-            >
-              <option value="">Selecione...</option>
-              {contratosDisponiveis.map((c) => (
-                <option key={c.id} value={c.id}>
-                  {c.rotulo}
-                </option>
-              ))}
-            </select>
+              onValueChange={aoEscolherContrato}
+              onCloseAutoFocus={aoFecharSelect}
+              invalido={!!estado.erros?.contratoId}
+              opcoes={contratosDisponiveis.map((c) => ({
+                valor: c.id,
+                titulo: c.cliente,
+                detalhe: c.titulo,
+                tag: c.tipo,
+              }))}
+            />
             {campo("contratoId")}
           </div>
 
@@ -91,10 +125,8 @@ export function FormFaturaManual({
               id="competencia"
               name="competencia"
               required
-              aoMudar={(v) => {
-                setCompetencia(v);
-                tentarAutofill(v, contratoId, vencimentoTocado);
-              }}
+              ref={competenciaRef}
+              aoMudar={aoDigitarCompetencia}
               aria-invalid={!!estado.erros?.competencia}
             />
             {campo("competencia")}
@@ -130,6 +162,7 @@ export function FormFaturaManual({
               id="valor"
               name="valor"
               required
+              ref={valorRef}
               className="max-w-[240px]"
               aria-invalid={!!estado.erros?.valor}
             />

@@ -442,13 +442,31 @@ body {
   animation: rvBannerEntrar 360ms cubic-bezier(0.16, 1, 0.3, 1) both;
 }
 
+/* Popovers (select custom etc.): abre com escala a partir do trigger */
+@keyframes rvPop {
+  from {
+    opacity: 0;
+    transform: scale(0.96) translateY(-4px);
+  }
+  to {
+    opacity: 1;
+    transform: none;
+  }
+}
+
+.rv-pop {
+  transform-origin: var(--radix-select-content-transform-origin, top);
+  animation: rvPop 160ms cubic-bezier(0.16, 1, 0.3, 1);
+}
+
 @media (prefers-reduced-motion: reduce) {
   .painel .rv-entrar,
   .painel .rv-entrar-1,
   .painel .rv-entrar-2,
   .painel .rv-entrar-3,
   .painel .rv-entrar-escala,
-  .painel .rv-banner {
+  .painel .rv-banner,
+  .rv-pop {
     animation: none;
   }
 }

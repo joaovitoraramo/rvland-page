@@ -59,18 +59,30 @@ await page.click("table a:has-text('Abrir')");
 await page.waitForURL("**/faturas/**");
 await foto("06-fatura-detalhe", { fullPage: true });
 
-// 7. Nova fatura — testa máscara + autofill
+// 7. Nova fatura — select custom, máscara, autofill e fluxo de foco
 await page.goto(`${BASE}/painel/financeiro/faturas/nova`);
-await page.selectOption("#contratoId", { index: 1 });
-await page.fill("#competencia", "");
-await page.type("#competencia", "042026", { delay: 40 });
+await page.click("#contratoId"); // abre o SelectRico
+await foto("07a-select-aberto");
+await page.locator("[role='option']").first().click();
+
+// escolher contrato deve focar a competência
+const focoCompetencia = await page.evaluate(
+  () => document.activeElement?.id === "competencia"
+);
+console.log(`FOCO pos-contrato em competencia: ${focoCompetencia}`);
+
+await page.keyboard.type("042026", { delay: 40 });
 const competenciaVal = await page.inputValue("#competencia");
 const vencimentoVal = await page.inputValue("#vencimento");
 console.log(`MASCARA competencia="${competenciaVal}" vencimento_autofill="${vencimentoVal}"`);
-// testa dinheiro
-await page.type("#valor input, input#valor", "200000", { delay: 25 }).catch(async () => {
-  await page.type("input[name=valor]", "200000", { delay: 25 });
-});
+
+// competência completa deve ter pulado o foco pro valor
+const focoValor = await page.evaluate(
+  () => document.activeElement?.getAttribute("name") === "valor"
+);
+console.log(`FOCO pos-competencia em valor: ${focoValor}`);
+
+await page.keyboard.type("200000", { delay: 25 });
 const valorVal = await page.inputValue("input[name=valor]");
 console.log(`MASCARA valor="${valorVal}"`);
 await foto("07-nova-fatura-autofill");

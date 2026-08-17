@@ -23,7 +23,9 @@ export default async function PaginaNovaFatura() {
 
   const contratosDisponiveis = linhas.map((l) => ({
     id: l.id,
-    rotulo: `${l.clienteNome} — ${l.titulo} (${l.tipo})`,
+    cliente: l.clienteNome,
+    titulo: l.titulo,
+    tipo: l.tipo,
     diaVencimento: l.diaVencimento,
   }));
 
