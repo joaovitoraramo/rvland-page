@@ -20,6 +20,8 @@ export type EntradaLicenca = {
   diasConfianca: number;
   bloqueioManual: boolean;
   modoPanico: boolean;
+  /** Próximo vencimento agendado do contrato (quando a fatura ainda não existe). */
+  proximoAgendado?: { vencimento: string; toleranciaDias: number };
 };
 
 export type StatusLicenca = "em_dia" | "atrasado" | "bloqueado" | "cancelado" | "sem_licenca";
@@ -56,12 +58,17 @@ export function statusLicenca(e: EntradaLicenca): ResultadoLicenca {
   const proxima = relevantes
     .filter((f) => compararDatas(f.vencimento, e.hoje) >= 0)
     .sort((a, b) => compararDatas(a.vencimento, b.vencimento))[0];
-  const venceEm = proxima?.vencimento ?? null;
 
-  // 4. Nada vencido → em dia
+  // 4. Nada vencido → em dia. Referência: próxima fatura aberta OU, se ela ainda
+  // não foi gerada, o próximo vencimento agendado do contrato.
   if (vencidas.length === 0) {
-    return { status: "em_dia", venceEm, toleradoAte: null };
+    const refVenc = proxima?.vencimento ?? e.proximoAgendado?.vencimento ?? null;
+    const refTol = proxima?.toleranciaDias ?? e.proximoAgendado?.toleranciaDias ?? 0;
+    const toleradoAte = refVenc ? addDias(refVenc, refTol + e.diasConfianca) : null;
+    return { status: "em_dia", venceEm: refVenc, toleradoAte };
   }
+
+  const venceEm = proxima?.vencimento ?? null;
 
   // Referência: a vencida mais antiga
   const referencia = vencidas[0];

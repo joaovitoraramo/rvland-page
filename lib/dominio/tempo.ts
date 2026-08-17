@@ -34,6 +34,15 @@ export function addDias(dataISO: string, dias: number): string {
   return d.toISOString().slice(0, 10);
 }
 
+/** Soma meses a uma competência ("2026-08-01" + 1 → "2026-09-01"). */
+export function addMeses(competencia: string, meses: number): string {
+  const [ano, mes] = competencia.split("-").map(Number);
+  const total = (ano * 12 + (mes - 1)) + meses;
+  const novoAno = Math.floor(total / 12);
+  const novoMes = (total % 12) + 1;
+  return `${novoAno}-${String(novoMes).padStart(2, "0")}-01`;
+}
+
 /** < 0 se a antes de b; 0 se iguais; > 0 se a depois de b. */
 export function compararDatas(a: string, b: string): number {
   return a < b ? -1 : a > b ? 1 : 0;

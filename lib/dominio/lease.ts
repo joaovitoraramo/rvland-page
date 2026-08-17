@@ -45,8 +45,11 @@ const FUTURO_DISTANTE = "2099-01-01T00:00:00.000Z";
 function operarAte(hoje: string, licenca: ResultadoLicenca): string {
   switch (licenca.status) {
     case "em_dia":
-      // roda até o próximo vencimento (renovado bem antes pelo heartbeat diário)
-      return licenca.venceEm ? `${licenca.venceEm}${HORA_CORTE_UTC}` : FUTURO_DISTANTE;
+      // opera até a madrugada seguinte ao fim da tolerância do próximo
+      // vencimento (mesma regra do atrasado) — outage-safe e renovado a cada dia
+      return licenca.toleradoAte
+        ? `${addDias(licenca.toleradoAte, 1)}${HORA_CORTE_UTC}`
+        : FUTURO_DISTANTE;
     case "atrasado":
       // último dia tolerado roda inteiro; corta 03:00 SP da manhã seguinte
       return licenca.toleradoAte

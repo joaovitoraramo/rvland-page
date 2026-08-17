@@ -20,11 +20,19 @@ const base: EntradaLease = {
 };
 
 describe("montarLease — operar_ate", () => {
-  it("em dia: opera até o próximo vencimento (outage-safe, futuro distante)", () => {
-    const l = montarLease({ ...base, licenca: lic({ status: "em_dia", venceEm: "2026-09-15" }) });
+  it("em dia: opera até a madrugada seguinte ao fim da tolerância do próximo venc.", () => {
+    // próximo venc 15/09, tolerância → tolerado até 19/09; corta 03:00 de 20/09
+    const l = montarLease({
+      ...base,
+      licenca: lic({ status: "em_dia", venceEm: "2026-09-15", toleradoAte: "2026-09-19" }),
+    });
     expect(l.status).toBe("em_dia");
-    // 03:00 SP = 06:00Z do próprio vencimento
-    expect(l.operar_ate).toBe("2026-09-15T06:00:00.000Z");
+    expect(l.operar_ate).toBe("2026-09-20T06:00:00.000Z");
+  });
+
+  it("em dia sem tolerância conhecida cai no futuro distante (outage-safe)", () => {
+    const l = montarLease({ ...base, licenca: lic({ status: "em_dia", toleradoAte: null }) });
+    expect(l.operar_ate).toBe("2099-01-01T00:00:00.000Z");
   });
 
   it("atrasado: opera até a madrugada seguinte ao último dia tolerado", () => {
