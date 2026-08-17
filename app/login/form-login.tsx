@@ -7,11 +7,39 @@ import { ArrowRight, KeyRound } from "lucide-react";
 import { Btn } from "@/components/painel/ui";
 import { entrar, type EstadoLogin } from "./actions";
 
+// Só o email é lembrado (localStorage) — a sessão continua nas mãos do
+// Supabase; desmarcar e entrar apaga o registro.
+const CHAVE_EMAIL = "rvland.login.email";
+
 export function FormLogin() {
   const [estado, acao, pendente] = useActionState<EstadoLogin, FormData>(entrar, {});
 
+  const [email, setEmail] = React.useState("");
+  const [lembrar, setLembrar] = React.useState(false);
+  const emailRef = React.useRef<HTMLInputElement | null>(null);
+  const senhaRef = React.useRef<HTMLInputElement | null>(null);
+
+  React.useEffect(() => {
+    const salvo = window.localStorage.getItem(CHAVE_EMAIL);
+    if (salvo) {
+      setEmail(salvo);
+      setLembrar(true);
+      senhaRef.current?.focus();
+    } else {
+      emailRef.current?.focus();
+    }
+  }, []);
+
+  const persistirEscolha = () => {
+    if (lembrar && email.trim()) {
+      window.localStorage.setItem(CHAVE_EMAIL, email.trim());
+    } else {
+      window.localStorage.removeItem(CHAVE_EMAIL);
+    }
+  };
+
   return (
-    <form action={acao} className="space-y-5">
+    <form action={acao} onSubmit={persistirEscolha} className="space-y-5">
       <div>
         <label htmlFor="email" className="rv-eyebrow mb-2 block">
           email
@@ -22,8 +50,10 @@ export function FormLogin() {
           type="email"
           autoComplete="email"
           placeholder="voce@rvland.dev"
-          autoFocus
           required
+          ref={emailRef}
+          value={email}
+          onChange={(e) => setEmail(e.target.value)}
         />
       </div>
 
@@ -38,8 +68,18 @@ export function FormLogin() {
           autoComplete="current-password"
           placeholder="••••••••••"
           required
+          ref={senhaRef}
         />
       </div>
+
+      <label className="flex w-fit cursor-pointer items-center gap-2.5 text-sm text-white/60 transition-colors hover:text-white">
+        <input
+          type="checkbox"
+          checked={lembrar}
+          onChange={(e) => setLembrar(e.target.checked)}
+        />
+        Lembrar meu email
+      </label>
 
       {estado.erro ? (
         <p
