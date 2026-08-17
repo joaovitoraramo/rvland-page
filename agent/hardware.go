@@ -2,6 +2,7 @@ package main
 
 import (
 	"os"
+	"os/exec"
 	"runtime"
 	"strconv"
 	"strings"
@@ -11,12 +12,19 @@ import (
 // Hardware é o inventário do servidor, enviado no heartbeat. Muda raramente,
 // mas é barato mandar sempre e a plataforma guarda o último.
 type Hardware struct {
-	Distro      string  `json:"distro"`
-	Kernel      string  `json:"kernel"`
-	CPUModelo   string  `json:"cpu_modelo"`
-	CPUNucleos  int     `json:"cpu_nucleos"`
-	RAMTotalMB  int     `json:"ram_total_mb"`
-	Discos      []Disco `json:"discos"`
+	Distro         string `json:"distro"`
+	Kernel         string `json:"kernel"`
+	CPUModelo      string `json:"cpu_modelo"`
+	CPUNucleos     int    `json:"cpu_nucleos"`
+	RAMTotalMB     int    `json:"ram_total_mb"`
+	Virtualizacao  *Virt  `json:"virtualizacao,omitempty"`
+	Discos         []Disco `json:"discos"`
+}
+
+// Virt: se a máquina é física, VM ou container, e a tecnologia detectada.
+type Virt struct {
+	Tipo       string `json:"tipo"`       // fisico | vm | container
+	Tecnologia string `json:"tecnologia"` // kvm, qemu, lxc, docker, none...
 }
 
 type Disco struct {
@@ -32,13 +40,47 @@ func coletaHardware() Hardware {
 		return Hardware{Distro: runtime.GOOS, Kernel: "", CPUModelo: "n/d", CPUNucleos: runtime.NumCPU()}
 	}
 	return Hardware{
-		Distro:     distroLinux(),
-		Kernel:     kernelLinux(),
-		CPUModelo:  cpuModelo(),
-		CPUNucleos: runtime.NumCPU(),
-		RAMTotalMB: ramTotalMB(),
-		Discos:     discos(),
+		Distro:        distroLinux(),
+		Kernel:        kernelLinux(),
+		CPUModelo:     cpuModelo(),
+		CPUNucleos:    runtime.NumCPU(),
+		RAMTotalMB:    ramTotalMB(),
+		Virtualizacao: detectVirt(),
+		Discos:        discos(),
 	}
+}
+
+// container: conjunto de tecnologias que o systemd-detect-virt classifica como
+// container (o resto que não é "none" é VM).
+var techContainer = map[string]bool{
+	"lxc": true, "lxc-libvirt": true, "systemd-nspawn": true, "docker": true,
+	"podman": true, "rkt": true, "wsl": true, "proot": true, "pouch": true,
+	"openvz": true, "container-other": true,
+}
+
+// detectVirt usa systemd-detect-virt (presente onde há systemd). Fallback: se
+// não existir, tenta marcadores de container conhecidos.
+func detectVirt() *Virt {
+	out, _ := exec.Command("systemd-detect-virt").CombinedOutput()
+	tech := strings.TrimSpace(string(out))
+
+	if tech == "" {
+		// fallback sem systemd-detect-virt
+		if _, err := os.Stat("/.dockerenv"); err == nil {
+			return &Virt{Tipo: "container", Tecnologia: "docker"}
+		}
+		if b, err := os.ReadFile("/run/systemd/container"); err == nil {
+			return &Virt{Tipo: "container", Tecnologia: strings.TrimSpace(string(b))}
+		}
+		return nil
+	}
+	if tech == "none" {
+		return &Virt{Tipo: "fisico", Tecnologia: "none"}
+	}
+	if techContainer[tech] {
+		return &Virt{Tipo: "container", Tecnologia: tech}
+	}
+	return &Virt{Tipo: "vm", Tecnologia: tech}
 }
 
 func distroLinux() string {

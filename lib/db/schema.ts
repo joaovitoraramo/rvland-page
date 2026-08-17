@@ -242,6 +242,7 @@ export const servidores = pgTable(
       cpu_modelo?: string;
       cpu_nucleos?: number;
       ram_total_mb?: number;
+      virtualizacao?: { tipo: string; tecnologia: string };
       discos?: {
         montagem: string;
         dispositivo: string;

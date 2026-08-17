@@ -38,6 +38,7 @@ const esquema = z.object({
       cpu_modelo: z.string().nullish(),
       cpu_nucleos: z.number().nullish(),
       ram_total_mb: z.number().nullish(),
+      virtualizacao: z.object({ tipo: z.string(), tecnologia: z.string() }).nullish(),
       discos: z
         .array(
           z.object({
@@ -203,6 +204,7 @@ export async function POST(req: Request) {
               cpu_modelo: b.hardware.cpu_modelo ?? undefined,
               cpu_nucleos: b.hardware.cpu_nucleos ?? undefined,
               ram_total_mb: b.hardware.ram_total_mb ?? undefined,
+              virtualizacao: b.hardware.virtualizacao ?? undefined,
               discos: b.hardware.discos ?? undefined,
             },
           }

@@ -201,6 +201,34 @@ export async function removerServico(servicoId: string, servidorId: string): Pro
   revalidatePath(`/painel/servidores/${servidorId}`);
 }
 
+/** Alterna se o serviço é licenciado (se o bloqueio o afeta). */
+export async function alternarLicencaServico(
+  servicoId: string,
+  servidorId: string
+): Promise<void> {
+  const perfil = await exigirPermissao("servidores.editar");
+  const [svc] = await db
+    .select()
+    .from(servicoGerenciados)
+    .where(eq(servicoGerenciados.id, servicoId));
+  if (!svc) return;
+
+  const novo = !svc.licenciado;
+  await db
+    .update(servicoGerenciados)
+    .set({ licenciado: novo, atualizadoEm: new Date() })
+    .where(eq(servicoGerenciados.id, servicoId));
+
+  await registrarAuditoria({
+    ator: perfil,
+    acao: "servidor.servico_licenca_alterada",
+    entidade: "servidor",
+    entidadeId: servidorId,
+    detalhes: { unidade: svc.unidadeSystemd, licenciado: novo },
+  });
+  revalidatePath(`/painel/servidores/${servidorId}`);
+}
+
 // ── Fila de comandos (o agente executa via systemctl no próximo heartbeat) ────
 
 const VERBOS = new Set(["status", "start", "stop", "update"]);

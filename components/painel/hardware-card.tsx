@@ -1,4 +1,4 @@
-import { Cpu, HardDrive, MemoryStick, Server } from "lucide-react";
+import { Box, Cpu, HardDrive, MemoryStick, MonitorSmartphone, Server } from "lucide-react";
 
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import {
@@ -16,7 +16,26 @@ type Hardware = {
   cpu_modelo?: string;
   cpu_nucleos?: number;
   ram_total_mb?: number;
+  virtualizacao?: { tipo: string; tecnologia: string };
   discos?: { montagem: string; dispositivo: string; fs: string; total_gb: number; usado_pct: number }[];
+};
+
+const VIRT: Record<string, { rotulo: string; classe: string; Icone: typeof Box }> = {
+  fisico: {
+    rotulo: "Host físico",
+    classe: "border-[rgba(0,255,138,0.25)] bg-[rgba(0,255,138,0.08)] text-[#7DFFC4]",
+    Icone: Server,
+  },
+  vm: {
+    rotulo: "Máquina virtual",
+    classe: "border-[rgba(0,229,255,0.25)] bg-[rgba(0,229,255,0.08)] text-[#8AF0FF]",
+    Icone: MonitorSmartphone,
+  },
+  container: {
+    rotulo: "Container",
+    classe: "border-[rgba(255,194,77,0.25)] bg-[rgba(255,194,77,0.08)] text-[#FFD58A]",
+    Icone: Box,
+  },
 };
 
 function Item({
@@ -66,10 +85,25 @@ export function HardwareCard({ hardware }: { hardware: Hardware | null }) {
       : `${hardware.ram_total_mb} MB`
     : "—";
 
+  const virt = hardware.virtualizacao ? VIRT[hardware.virtualizacao.tipo] : null;
+
   return (
     <Card>
       <CardHeader>
-        <CardTitle className="text-base text-white">Hardware</CardTitle>
+        <CardTitle className="flex items-center justify-between text-base text-white">
+          Hardware
+          {virt ? (
+            <span
+              className={`inline-flex items-center gap-1.5 rounded-full border px-2.5 py-1 font-mono text-[11px] ${virt.classe}`}
+            >
+              <virt.Icone className="size-3" />
+              {virt.rotulo}
+              {hardware.virtualizacao?.tecnologia && hardware.virtualizacao.tecnologia !== "none" ? (
+                <span className="opacity-70">· {hardware.virtualizacao.tecnologia}</span>
+              ) : null}
+            </span>
+          ) : null}
+        </CardTitle>
       </CardHeader>
       <CardContent className="space-y-4">
         <div className="grid grid-cols-1 gap-3 sm:grid-cols-3">

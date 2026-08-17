@@ -1,10 +1,15 @@
-import { Activity, Play, Plus, Square, Trash2 } from "lucide-react";
+import { Activity, KeyRound, Play, Plus, Square, Trash2, Unlock } from "lucide-react";
 
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Btn } from "@/components/painel/ui";
 import { SnapshotStatus } from "@/components/painel/snapshot-status";
 import { FormServico } from "@/components/painel/form-servico";
-import { enfileirarComando, removerServico, type EstadoServico } from "@/app/painel/servidores/actions";
+import {
+  alternarLicencaServico,
+  enfileirarComando,
+  removerServico,
+  type EstadoServico,
+} from "@/app/painel/servidores/actions";
 
 type Servico = {
   id: string;
@@ -59,14 +64,7 @@ export function CardServicos({
                 {/* linha 1: nome + status */}
                 <div className="flex items-start justify-between gap-3">
                   <div className="min-w-0">
-                    <div className="flex flex-wrap items-center gap-2">
-                      <span className="text-sm font-semibold text-white">{s.nome}</span>
-                      {s.licenciado ? (
-                        <span className="rv-eyebrow rounded border border-[rgba(0,229,255,0.2)] px-1.5 py-0.5 !text-[#8AF0FF]">
-                          licenciado
-                        </span>
-                      ) : null}
-                    </div>
+                    <span className="text-sm font-semibold text-white">{s.nome}</span>
                     <div className="rv-num mt-1 truncate text-xs text-white/45">{s.unidadeSystemd}</div>
                   </div>
                   <span
@@ -75,6 +73,45 @@ export function CardServicos({
                     <span className={`size-1.5 rounded-full ${pill.dot}`} />
                     {s.statusReportado}
                   </span>
+                </div>
+
+                {/* toggle de licença: clicável quando pode editar, senão chip estático */}
+                <div className="mt-2.5">
+                  {podeEditar ? (
+                    <form action={alternarLicencaServico.bind(null, s.id, servidorId)}>
+                      <button
+                        type="submit"
+                        title={
+                          s.licenciado
+                            ? "Licenciado — o bloqueio para este serviço. Clique para desmarcar."
+                            : "Não entra no bloqueio. Clique para marcar como licenciado."
+                        }
+                        className={`inline-flex items-center gap-2 rounded-full border px-2.5 py-1 text-[11px] font-medium transition-colors ${
+                          s.licenciado
+                            ? "border-[rgba(0,229,255,0.3)] bg-[rgba(0,229,255,0.08)] text-[#8AF0FF] hover:bg-[rgba(0,229,255,0.14)]"
+                            : "border-white/12 bg-white/[0.03] text-white/45 hover:bg-white/[0.06] hover:text-white/70"
+                        }`}
+                      >
+                        <span
+                          className={`relative inline-flex h-3.5 w-6 items-center rounded-full transition-colors ${
+                            s.licenciado ? "bg-[rgba(0,229,255,0.5)]" : "bg-white/15"
+                          }`}
+                        >
+                          <span
+                            className={`absolute size-2.5 rounded-full bg-white transition-all ${
+                              s.licenciado ? "left-[11px]" : "left-0.5"
+                            }`}
+                          />
+                        </span>
+                        {s.licenciado ? <KeyRound className="size-3" /> : <Unlock className="size-3" />}
+                        {s.licenciado ? "Licenciado" : "Sem licença"}
+                      </button>
+                    </form>
+                  ) : s.licenciado ? (
+                    <span className="rv-eyebrow inline-flex items-center gap-1.5 rounded-full border border-[rgba(0,229,255,0.2)] px-2 py-0.5 !text-[#8AF0FF]">
+                      <KeyRound className="size-3" /> licenciado
+                    </span>
+                  ) : null}
                 </div>
 
                 {/* linha 2: ações */}
