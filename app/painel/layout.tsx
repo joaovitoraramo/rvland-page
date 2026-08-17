@@ -5,7 +5,7 @@ import { exigirPerfil, pode } from "@/lib/auth";
 import { getConfig } from "@/lib/config";
 import { sair } from "@/app/login/actions";
 import { Sidebar, type ItemNav } from "@/components/painel/sidebar";
-import { NavMovel } from "@/components/painel/nav-movel";
+import { DrawerMovel } from "@/components/painel/drawer-movel";
 
 export const metadata: Metadata = {
   title: { default: "Painel", template: "%s | Painel RVLand" },
@@ -60,7 +60,7 @@ export default async function LayoutPainel({ children }: { children: React.React
       />
 
       <div className="flex min-w-0 flex-1 flex-col">
-        <NavMovel itens={itens} usuario={perfil.nome} acaoSair={sair} />
+        <DrawerMovel itens={itens} usuario={perfil.nome} grupo={perfil.grupoNome} acaoSair={sair} />
         {config.modoPanico ? (
           <div className="rv-banner flex items-center gap-2.5 border-b border-red-500/25 bg-red-500/10 px-6 py-2.5 text-sm text-red-200 backdrop-blur-sm">
             <span className="grid size-6 shrink-0 place-items-center rounded-md border border-red-500/30 bg-red-500/15">
@@ -86,7 +86,7 @@ export default async function LayoutPainel({ children }: { children: React.React
         ) : null}
 
         {/* mobile: pb-28 dá respiro para a tab bar fixa; safe-areas no CSS */}
-        <main className="min-w-0 flex-1 px-4 pb-28 pt-5 md:px-10 md:py-8">
+        <main className="min-w-0 flex-1 px-4 pb-10 pt-5 md:px-10 md:py-8">
           <div className="mx-auto w-full max-w-[1200px]">{children}</div>
         </main>
       </div>

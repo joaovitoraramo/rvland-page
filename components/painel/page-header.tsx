@@ -21,9 +21,12 @@ export function PageHeader({
         </h1>
         {descricao ? <p className="mt-1.5 text-sm text-white/55">{descricao}</p> : null}
       </div>
-      {/* mobile: ações quebram em linha própria e envolvem; desktop: à direita */}
+      {/* mobile: ações em linha própria; o botão principal ocupa a largura
+          toda (alvo de toque grande), badges continuam envolvendo */}
       {acoes ? (
-        <div className="flex flex-wrap items-center gap-2 max-md:w-full md:shrink-0">{acoes}</div>
+        <div className="flex flex-wrap items-center gap-2 max-md:w-full max-md:[&>a]:w-full max-md:[&>button]:w-full md:shrink-0">
+          {acoes}
+        </div>
       ) : null}
     </div>
   );

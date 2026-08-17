@@ -64,7 +64,7 @@ export default async function Dashboard({
       ) : null}
 
       {veValores ? (
-        <div className="rv-entrar-1 mb-7 grid gap-3 sm:grid-cols-2 lg:grid-cols-4">
+        <div className="rv-entrar-1 mb-7 grid grid-cols-2 gap-2.5 md:gap-3 lg:grid-cols-4">
           <Kpi
             icone={<Wallet />}
             rotulo="recebido no mês"

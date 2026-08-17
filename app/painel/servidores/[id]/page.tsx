@@ -35,16 +35,20 @@ export const metadata = { title: "Servidor" };
 function Medidor({ icone, rotulo, pct }: { icone: React.ReactNode; rotulo: string; pct: number | null }) {
   const cor = pct == null ? "#ffffff30" : pct >= 85 ? "#FF5D5D" : pct >= 60 ? "#FFC24D" : "#00FF8A";
   return (
-    <div className="rounded-xl border border-white/8 bg-black/25 p-3 md:p-4">
-      <div className="flex items-center gap-1.5 text-white/45 [&_svg]:size-3.5">
-        {icone}
-        <span className="rv-eyebrow">{rotulo}</span>
+    <div className="rounded-xl border border-white/8 bg-black/25 p-4">
+      {/* mobile: rótulo e valor na mesma linha, barra larga embaixo.
+          desktop: empilhado em coluna estreita. */}
+      <div className="flex items-center justify-between gap-3 md:block">
+        <div className="flex items-center gap-1.5 text-white/45 [&_svg]:size-3.5">
+          {icone}
+          <span className="rv-eyebrow">{rotulo}</span>
+        </div>
+        <div className="rv-num text-2xl font-semibold leading-none text-white md:mt-2">
+          {pct != null ? pct : "—"}
+          {pct != null ? <span className="text-sm text-white/40">%</span> : null}
+        </div>
       </div>
-      <div className="rv-num mt-2 text-xl font-semibold text-white md:text-2xl">
-        {pct != null ? pct : "—"}
-        {pct != null ? <span className="text-sm text-white/40">%</span> : null}
-      </div>
-      <div className="mt-2.5 h-1.5 overflow-hidden rounded-full bg-white/8">
+      <div className="mt-3 h-1.5 overflow-hidden rounded-full bg-white/8 md:mt-2.5">
         <div className="h-full rounded-full transition-all duration-500" style={{ width: `${pct ?? 0}%`, background: cor }} />
       </div>
     </div>
@@ -169,7 +173,7 @@ export default async function PaginaServidor({ params }: { params: Promise<{ id:
               </CardTitle>
             </CardHeader>
             <CardContent>
-              <div className="grid grid-cols-3 gap-2 sm:gap-3">
+              <div className="grid grid-cols-1 gap-2.5 md:grid-cols-3 md:gap-3">
                 <Medidor icone={<Cpu />} rotulo="cpu" pct={tel?.cpuPct ?? null} />
                 <Medidor icone={<MemoryStick />} rotulo="memória" pct={tel?.memoriaPct ?? null} />
                 <Medidor icone={<HardDrive />} rotulo="disco" pct={tel?.discoPct ?? null} />

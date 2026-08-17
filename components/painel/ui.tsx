@@ -112,22 +112,28 @@ export function Kpi({
   } as const;
 
   return (
-    <div className="rounded-2xl border border-white/8 bg-gradient-to-b from-white/[0.055] to-white/[0.028] p-5 shadow-[inset_0_1px_0_rgba(255,255,255,0.05)]">
-      <div className="flex items-center gap-2.5">
+    <div className="rounded-2xl border border-white/8 bg-gradient-to-b from-white/[0.055] to-white/[0.028] p-4 shadow-[inset_0_1px_0_rgba(255,255,255,0.05)] md:p-5">
+      <div className="flex items-center gap-2">
         <span
           className={cn(
-            "grid size-8 place-items-center rounded-lg border [&_svg]:size-4",
+            "grid size-7 shrink-0 place-items-center rounded-lg border md:size-8 [&_svg]:size-3.5 md:[&_svg]:size-4",
             iconeTons[tom]
           )}
         >
           {icone}
         </span>
-        <span className="rv-eyebrow">{rotulo}</span>
+        <span className="rv-eyebrow leading-tight">{rotulo}</span>
       </div>
-      <div className={cn("rv-num mt-3 text-[26px] font-semibold leading-none", tons[tom])}>
+      {/* valor menor no mobile para caber em 2 colunas sem cortar */}
+      <div
+        className={cn(
+          "rv-num mt-2.5 text-xl font-semibold leading-none md:mt-3 md:text-[26px]",
+          tons[tom]
+        )}
+      >
         {valor}
       </div>
-      {sub ? <div className="mt-2 text-xs text-white/40">{sub}</div> : null}
+      {sub ? <div className="mt-2 text-xs leading-tight text-white/40">{sub}</div> : null}
     </div>
   );
 }

@@ -95,7 +95,7 @@ export default async function PaginaFinanceiro({
         }
       />
 
-      <div className="rv-entrar-1 mb-5 grid gap-3 sm:grid-cols-3">
+      <div className="rv-entrar-1 mb-5 grid grid-cols-1 gap-2.5 sm:grid-cols-3 md:gap-3">
         {[
           { rotulo: "recebido (filtro atual)", valor: totais.recebido, classe: "rv-fosforo-verde" },
           { rotulo: "em aberto", valor: totais.aAberta, classe: "text-white" },
@@ -134,7 +134,7 @@ export default async function PaginaFinanceiro({
           <option value="cancelada">Canceladas</option>
           <option value="historica">Históricas</option>
         </select>
-        <Btn type="submit">Filtrar</Btn>
+        <Btn type="submit" className="max-sm:w-full">Filtrar</Btn>
       </form>
 
       <div className="rv-entrar-3">

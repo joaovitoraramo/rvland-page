@@ -99,7 +99,7 @@ export default async function PaginaClientes({
           <option value="cancelado">Cancelado</option>
           <option value="sem_licenca">Sem licença</option>
         </select>
-        <Btn type="submit">Filtrar</Btn>
+        <Btn type="submit" className="max-sm:w-full">Filtrar</Btn>
         <Link
           href={arquivados === "1" ? "/painel/clientes" : "/painel/clientes?arquivados=1"}
           className="ml-auto text-xs text-white/40 transition-colors hover:text-white"

@@ -87,7 +87,7 @@ export default async function PaginaAuditoria({
             </option>
           ))}
         </select>
-        <Btn type="submit">Filtrar</Btn>
+        <Btn type="submit" className="max-sm:w-full">Filtrar</Btn>
       </form>
 
       <div className="rv-entrar-2">

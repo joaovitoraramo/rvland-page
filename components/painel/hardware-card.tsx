@@ -55,7 +55,8 @@ function Item({
         {icone}
         <span className="rv-eyebrow">{rotulo}</span>
       </div>
-      <div className="mt-1.5 truncate text-sm font-medium text-white" title={valor}>
+      {/* mobile: quebra livre (modelo de CPU é longo); desktop: uma linha */}
+      <div className="mt-1.5 text-sm font-medium text-white md:truncate" title={valor}>
         {valor}
       </div>
       {sub ? <div className="rv-num mt-0.5 text-xs text-white/40">{sub}</div> : null}
