@@ -619,15 +619,17 @@ body {
   }
 }
 
-/* Barra superior e drawer do mobile (ver DrawerMovel) */
+/* Barra superior e drawer do mobile (ver DrawerMovel).
+   max(): no iOS o inset cobre o notch; no Chrome Android o inset é 0, então
+   o piso de 0.75rem evita a barra encostar na UI do navegador. */
 .rv-topbar-movel {
-  padding-top: env(safe-area-inset-top);
+  padding-top: max(env(safe-area-inset-top), 0.75rem);
   background: rgba(4, 6, 10, 0.85);
   backdrop-filter: blur(20px);
   -webkit-backdrop-filter: blur(20px);
 }
 .rv-drawer {
-  padding-top: env(safe-area-inset-top);
-  padding-bottom: env(safe-area-inset-bottom);
+  padding-top: max(env(safe-area-inset-top), 0.75rem);
+  padding-bottom: max(env(safe-area-inset-bottom), 0.5rem);
   box-shadow: 24px 0 60px rgba(0, 0, 0, 0.6);
 }
