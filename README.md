@@ -1,7 +1,12 @@
-# RVLand Devs — site
+# RVLand Devs — site + plataforma
 
-Landing page institucional da RVLand Devs. Next.js 16 (App Router) + Tailwind v4 +
-shadcn/ui, hospedada na Vercel.
+Landing page institucional **e** central interna de gestão de clientes
+recorrentes (`/painel`). Next.js 16 (App Router) + Tailwind v4 + shadcn/ui +
+Supabase (Postgres/Auth/Storage) + Drizzle, hospedado na Vercel.
+
+Documentos de projeto: spec em
+[docs/superpowers/specs/](docs/superpowers/specs/) e plano em
+[docs/superpowers/plans/](docs/superpowers/plans/).
 
 ## Rodando
 
@@ -14,6 +19,25 @@ npm run dev
 - `npm run dev` — desenvolvimento em http://localhost:3000
 - `npm run build` — build de produção
 - `npm run lint` — ESLint
+- `npm run test` — testes do domínio (vitest)
+
+## Setup da plataforma (uma vez)
+
+1. Crie um projeto no [Supabase](https://supabase.com) e preencha no
+   `.env.local`: `NEXT_PUBLIC_SUPABASE_URL`, `NEXT_PUBLIC_SUPABASE_ANON_KEY`,
+   `SUPABASE_SERVICE_ROLE_KEY` e `DATABASE_URL` (ver `.env.example`).
+2. `npm run db:migrate` — cria as tabelas, liga RLS e cria o bucket privado
+   `contratos`.
+3. Defina `SEED_ADMIN_EMAIL`, `SEED_ADMIN_SENHA` e `SEED_ADMIN_NOME` no
+   `.env.local` e rode `npm run db:seed` — cria os grupos Dono/Financeiro/
+   Operação, as configurações padrão e o seu usuário.
+4. Acesse `/login`. Usuários seguintes são criados dentro do painel
+   (Configurações → Usuários).
+5. Na Vercel, configure as mesmas envs + `CRON_SECRET` (o cron diário de
+   faturas em `vercel.json` usa esse segredo).
+
+O **modo simulação nasce ligado**: nenhum bloqueio é executado até você
+desligar conscientemente em Configurações.
 
 ## Variáveis de ambiente
 
