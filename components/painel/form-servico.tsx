@@ -6,7 +6,7 @@ import { Plus } from "lucide-react";
 
 import { Btn } from "@/components/painel/ui";
 import { Label } from "@/components/ui/label";
-import type { EstadoServico } from "@/app/painel/servidores/actions";
+import type { EstadoServico } from "@/app/(app)/painel/servidores/actions";
 
 export function FormServico({
   acao,

@@ -19,7 +19,7 @@ import {
   adicionarServico,
   regenerarToken,
   revogarServidor,
-} from "@/app/painel/servidores/actions";
+} from "@/app/(app)/painel/servidores/actions";
 import { PageHeader } from "@/components/painel/page-header";
 import { BadgeServidor } from "@/components/painel/badge-servidor";
 import { MonitorVivo } from "@/components/painel/monitor-vivo";

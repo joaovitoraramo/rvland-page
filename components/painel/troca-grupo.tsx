@@ -3,7 +3,7 @@
 import * as React from "react";
 import { useActionState } from "react";
 
-import type { EstadoUsuario } from "@/app/painel/config/actions";
+import type { EstadoUsuario } from "@/app/(app)/painel/config/actions";
 
 /** Select que troca o grupo do usuário ao mudar (submit automático). */
 export function TrocaGrupo({

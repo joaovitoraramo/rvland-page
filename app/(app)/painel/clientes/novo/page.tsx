@@ -1,5 +1,5 @@
 import { exigirPermissao } from "@/lib/auth";
-import { criarCliente } from "@/app/painel/clientes/actions";
+import { criarCliente } from "@/app/(app)/painel/clientes/actions";
 import { FormCliente } from "@/components/painel/form-cliente";
 import { PageHeader } from "@/components/painel/page-header";
 

@@ -6,7 +6,7 @@ import { Check } from "lucide-react";
 
 import { Btn } from "@/components/painel/ui";
 import { Label } from "@/components/ui/label";
-import type { EstadoGrupo } from "@/app/painel/config/actions";
+import type { EstadoGrupo } from "@/app/(app)/painel/config/actions";
 
 export function FormGrupo({
   acao,

@@ -9,7 +9,7 @@ import {
   enfileirarComando,
   removerServico,
   type EstadoServico,
-} from "@/app/painel/servidores/actions";
+} from "@/app/(app)/painel/servidores/actions";
 
 type Servico = {
   id: string;

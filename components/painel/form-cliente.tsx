@@ -7,7 +7,7 @@ import { Check } from "lucide-react";
 import { Btn } from "@/components/painel/ui";
 import { Label } from "@/components/ui/label";
 import { InputDocumento, InputTelefone } from "@/components/painel/inputs-mascarados";
-import type { EstadoFormCliente } from "@/app/painel/clientes/actions";
+import type { EstadoFormCliente } from "@/app/(app)/painel/clientes/actions";
 
 type DadosCliente = {
   nome?: string;

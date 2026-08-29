@@ -6,7 +6,7 @@ import { KeyRound, RefreshCw } from "lucide-react";
 
 import { Btn } from "@/components/painel/ui";
 import { Copiavel } from "@/components/painel/copiavel";
-import type { EstadoToken } from "@/app/painel/servidores/actions";
+import type { EstadoToken } from "@/app/(app)/painel/servidores/actions";
 
 export function RevelarToken({
   acao,

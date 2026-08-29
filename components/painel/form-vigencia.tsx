@@ -6,7 +6,7 @@ import { useActionState } from "react";
 import { Btn } from "@/components/painel/ui";
 import { Label } from "@/components/ui/label";
 import { InputDinheiro } from "@/components/painel/inputs-mascarados";
-import type { EstadoNovaVigencia } from "@/app/painel/contratos/actions";
+import type { EstadoNovaVigencia } from "@/app/(app)/painel/contratos/actions";
 
 export function FormVigencia({
   acao,

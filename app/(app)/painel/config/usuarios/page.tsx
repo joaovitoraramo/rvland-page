@@ -4,7 +4,7 @@ import { Plus } from "lucide-react";
 
 import { db, grupos, perfis } from "@/lib/db";
 import { exigirPermissao } from "@/lib/auth";
-import { alternarUsuarioAtivo, trocarGrupoUsuario } from "@/app/painel/config/actions";
+import { alternarUsuarioAtivo, trocarGrupoUsuario } from "@/app/(app)/painel/config/actions";
 import { PageHeader } from "@/components/painel/page-header";
 import { TrocaGrupo } from "@/components/painel/troca-grupo";
 import { Avatar, Btn } from "@/components/painel/ui";

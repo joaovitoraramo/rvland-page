@@ -9,7 +9,7 @@ import { Btn } from "@/components/painel/ui";
 import { Label } from "@/components/ui/label";
 import { SelectRico } from "@/components/painel/select-rico";
 import { Copiavel } from "@/components/painel/copiavel";
-import { criarServidor, type EstadoServidor } from "@/app/painel/servidores/actions";
+import { criarServidor, type EstadoServidor } from "@/app/(app)/painel/servidores/actions";
 
 export function FormServidor({
   clientes,

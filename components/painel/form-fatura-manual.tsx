@@ -9,7 +9,7 @@ import { Label } from "@/components/ui/label";
 import { SelectRico } from "@/components/painel/select-rico";
 import { InputCompetencia, InputDinheiro } from "@/components/painel/inputs-mascarados";
 import { parseCompetenciaHumana } from "@/lib/dominio/tempo";
-import { criarFaturaManual, type EstadoFaturaManual } from "@/app/painel/financeiro/actions";
+import { criarFaturaManual, type EstadoFaturaManual } from "@/app/(app)/painel/financeiro/actions";
 
 export type ContratoParaFatura = {
   id: string;

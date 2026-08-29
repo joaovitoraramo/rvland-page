@@ -7,7 +7,7 @@ import { FilePlus2 } from "lucide-react";
 import { Btn } from "@/components/painel/ui";
 import { Label } from "@/components/ui/label";
 import { InputDinheiro } from "@/components/painel/inputs-mascarados";
-import { criarContrato, type EstadoFormContrato } from "@/app/painel/contratos/actions";
+import { criarContrato, type EstadoFormContrato } from "@/app/(app)/painel/contratos/actions";
 
 export function FormContrato({ clienteId }: { clienteId: string }) {
   const [estado, dispatch, pendente] = useActionState<EstadoFormContrato, FormData>(

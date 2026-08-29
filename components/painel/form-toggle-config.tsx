@@ -4,7 +4,7 @@ import * as React from "react";
 import { useActionState } from "react";
 
 import { Btn } from "@/components/painel/ui";
-import type { EstadoConfig } from "@/app/painel/config/actions";
+import type { EstadoConfig } from "@/app/(app)/painel/config/actions";
 
 /** Toggle com confirmação textual (pânico / simulação). */
 export function FormToggleConfig({

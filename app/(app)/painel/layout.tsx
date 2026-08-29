@@ -3,7 +3,7 @@ import { AlertTriangle, FlaskConical } from "lucide-react";
 
 import { exigirPerfil, pode } from "@/lib/auth";
 import { getConfig } from "@/lib/config";
-import { sair } from "@/app/login/actions";
+import { sair } from "@/app/(app)/login/actions";
 import { Sidebar, type ItemNav } from "@/components/painel/sidebar";
 import { DrawerMovel } from "@/components/painel/drawer-movel";
 

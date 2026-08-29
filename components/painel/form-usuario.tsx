@@ -6,7 +6,7 @@ import { UserPlus } from "lucide-react";
 
 import { Btn } from "@/components/painel/ui";
 import { Label } from "@/components/ui/label";
-import { criarUsuario, type EstadoUsuario } from "@/app/painel/config/actions";
+import { criarUsuario, type EstadoUsuario } from "@/app/(app)/painel/config/actions";
 
 export function FormUsuario({
   gruposDisponiveis,

@@ -3,7 +3,7 @@ import { eq } from "drizzle-orm";
 
 import { db, clientes } from "@/lib/db";
 import { exigirPermissao } from "@/lib/auth";
-import { atualizarCliente } from "@/app/painel/clientes/actions";
+import { atualizarCliente } from "@/app/(app)/painel/clientes/actions";
 import { FormCliente } from "@/components/painel/form-cliente";
 import { PageHeader } from "@/components/painel/page-header";
 

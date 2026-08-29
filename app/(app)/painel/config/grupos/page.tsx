@@ -4,7 +4,7 @@ import { Pencil, Plus } from "lucide-react";
 
 import { db, grupos, perfis } from "@/lib/db";
 import { exigirPermissao } from "@/lib/auth";
-import { excluirGrupo } from "@/app/painel/config/actions";
+import { excluirGrupo } from "@/app/(app)/painel/config/actions";
 import { PageHeader } from "@/components/painel/page-header";
 import { Btn } from "@/components/painel/ui";
 import {

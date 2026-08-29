@@ -5,7 +5,7 @@ import { ArrowUpRight, FileX2 } from "lucide-react";
 
 import { db, clientes, contratos, contratosPrecos, faturas } from "@/lib/db";
 import { exigirPermissao, pode } from "@/lib/auth";
-import { encerrarContrato, novaVigenciaPreco } from "@/app/painel/contratos/actions";
+import { encerrarContrato, novaVigenciaPreco } from "@/app/(app)/painel/contratos/actions";
 import { PageHeader } from "@/components/painel/page-header";
 import { FormVigencia } from "@/components/painel/form-vigencia";
 import { Btn } from "@/components/painel/ui";

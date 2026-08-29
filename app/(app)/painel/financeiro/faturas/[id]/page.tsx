@@ -8,7 +8,7 @@ import {
   cancelarFatura,
   editarFatura,
   lancarPagamento,
-} from "@/app/painel/financeiro/actions";
+} from "@/app/(app)/painel/financeiro/actions";
 import { PageHeader } from "@/components/painel/page-header";
 import { FormPagamento } from "@/components/painel/form-pagamento";
 import { FormEditarFatura } from "@/components/painel/form-editar-fatura";

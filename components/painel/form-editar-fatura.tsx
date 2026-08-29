@@ -6,7 +6,7 @@ import { useActionState } from "react";
 import { Btn } from "@/components/painel/ui";
 import { Label } from "@/components/ui/label";
 import { InputDinheiro } from "@/components/painel/inputs-mascarados";
-import type { EstadoEditarFatura } from "@/app/painel/financeiro/actions";
+import type { EstadoEditarFatura } from "@/app/(app)/painel/financeiro/actions";
 
 export function FormEditarFatura({
   acaoEditar,

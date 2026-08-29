@@ -24,7 +24,7 @@ import {
   bloquearManual,
   concederConfianca,
   desbloquearManual,
-} from "@/app/painel/clientes/actions";
+} from "@/app/(app)/painel/clientes/actions";
 import { enviarAnexo, removerAnexo } from "./anexos-actions";
 import { PageHeader } from "@/components/painel/page-header";
 import { StatusBadge } from "@/components/painel/status-badge";

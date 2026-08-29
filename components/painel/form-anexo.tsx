@@ -5,7 +5,7 @@ import { useActionState } from "react";
 import { Paperclip, Upload } from "lucide-react";
 
 import { Btn } from "@/components/painel/ui";
-import type { EstadoAnexo } from "@/app/painel/clientes/[id]/anexos-actions";
+import type { EstadoAnexo } from "@/app/(app)/painel/clientes/[id]/anexos-actions";
 
 export function FormAnexo({
   acao,

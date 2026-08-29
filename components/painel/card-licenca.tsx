@@ -5,7 +5,7 @@ import { useActionState } from "react";
 import { LockOpen, ShieldBan, Timer } from "lucide-react";
 
 import { Btn } from "@/components/painel/ui";
-import type { EstadoAcaoLicenca } from "@/app/painel/clientes/actions";
+import type { EstadoAcaoLicenca } from "@/app/(app)/painel/clientes/actions";
 
 export function AcoesLicenca({
   podeConfianca,
