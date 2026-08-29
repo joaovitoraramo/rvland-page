@@ -83,6 +83,23 @@ const pagamentosDepois = await sql`
   select count(*)::int as n from pagamentos where fatura_id = ${fatura.id}`;
 if (pagamentosDepois[0].n !== 1) falhas.push("registrou pagamento sem fatura aberta");
 
+// 5. /leads e /lead com lead descartável (nota deve CONCATENAR)
+const [ld] = await sql`
+  insert into leads (origem, nome, negocio, canal, contato, mensagem, notas)
+  values ('en', 'Harness Lead', 'Test Co', 'sms', '5550001111', 'Mensagem de teste.', 'Nota original.')
+  returning id`;
+const listaLeads = await post(update("/leads"));
+if (listaLeads.status !== 200) falhas.push(`/leads: esperado 200, veio ${listaLeads.status}`);
+const atualiza = await post(update(`/lead ${ld.id.slice(0, 8)} proposta Nota via telegram`));
+if (atualiza.status !== 200) falhas.push(`/lead: esperado 200, veio ${atualiza.status}`);
+await new Promise((r) => setTimeout(r, 1200));
+const [ldDepois] = await sql`select status, notas from leads where id = ${ld.id}`;
+if (ldDepois.status !== "proposta") falhas.push(`lead não mudou de status: ${ldDepois.status}`);
+if (!ldDepois.notas?.includes("Nota original.") || !ldDepois.notas?.includes("Nota via telegram")) {
+  falhas.push(`nota não concatenou: ${ldDepois.notas}`);
+}
+await sql`delete from leads where id = ${ld.id}`;
+
 // limpeza (ordem por FK)
 await sql`delete from pagamentos where fatura_id = ${fatura.id}`;
 await sql`delete from faturas where id = ${fatura.id}`;
