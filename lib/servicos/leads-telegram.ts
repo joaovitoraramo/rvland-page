@@ -8,6 +8,7 @@ import { formatarDataBR, hojeSP } from "@/lib/dominio/tempo";
 import { rotuloCanal } from "@/lib/dominio/leads";
 import {
   concatenarNota,
+  detalheLead,
   mensagemLeads,
   parseComandoLead,
   rotuloStatusLead,
@@ -36,10 +37,13 @@ export async function executarComandoLeads(): Promise<string[]> {
   );
 }
 
-/** /lead <id> <status> [nota]: muda status; nota SEMPRE concatena. */
-export async function executarComandoLead(texto: string): Promise<string> {
+/**
+ * /lead <id> — consulta (mensagem e notas, sem alterar nada);
+ * /lead <id> <status> [nota] — atualiza; nota SEMPRE concatena.
+ */
+export async function executarComandoLead(texto: string): Promise<string[]> {
   const parse = parseComandoLead(texto);
-  if (!parse.ok) return parse.erro;
+  if (!parse.ok) return [parse.erro];
   const { idCurto, status, nota } = parse.comando;
 
   const candidatos = await db
@@ -48,11 +52,26 @@ export async function executarComandoLead(texto: string): Promise<string> {
     .where(sql`${leads.id}::text like ${idCurto + "%"}`)
     .limit(3);
 
-  if (candidatos.length === 0) return `Nenhum lead encontrado com id ${idCurto}.`;
+  if (candidatos.length === 0) return [`Nenhum lead encontrado com id ${idCurto}.`];
   if (candidatos.length > 1) {
-    return `Mais de um lead começa com ${idCurto} — use mais caracteres do id.`;
+    return [`Mais de um lead começa com ${idCurto} — use mais caracteres do id.`];
   }
   const lead = candidatos[0];
+
+  if (status === null) {
+    return detalheLead({
+      id: lead.id,
+      nome: lead.nome,
+      negocio: lead.negocio,
+      origem: lead.origem,
+      canal: rotuloCanal[lead.canal],
+      contato: lead.contato,
+      status: lead.status,
+      criadoEm: lead.criadoEm,
+      mensagem: lead.mensagem,
+      notas: lead.notas,
+    });
+  }
 
   const notas = nota ? concatenarNota(lead.notas, nota, formatarDataBR(hojeSP())) : lead.notas;
 
@@ -89,5 +108,5 @@ export async function executarComandoLead(texto: string): Promise<string> {
       : `✅ ${lead.nome}: ${rotuloStatusLead[lead.status]} → ${rotuloStatusLead[status]}.`,
   ];
   if (nota) partes.push("📝 Nota acrescentada às existentes.");
-  return partes.join("\n");
+  return [partes.join("\n")];
 }

@@ -98,6 +98,11 @@ if (ldDepois.status !== "proposta") falhas.push(`lead não mudou de status: ${ld
 if (!ldDepois.notas?.includes("Nota original.") || !ldDepois.notas?.includes("Nota via telegram")) {
   falhas.push(`nota não concatenou: ${ldDepois.notas}`);
 }
+const consulta = await post(update(`/lead ${ld.id.slice(0, 8)}`));
+if (consulta.status !== 200) falhas.push(`/lead consulta: esperado 200, veio ${consulta.status}`);
+await new Promise((r) => setTimeout(r, 800));
+const [ldFinal] = await sql`select status from leads where id = ${ld.id}`;
+if (ldFinal.status !== "proposta") falhas.push("consulta do /lead alterou o status");
 await sql`delete from leads where id = ${ld.id}`;
 
 // limpeza (ordem por FK)

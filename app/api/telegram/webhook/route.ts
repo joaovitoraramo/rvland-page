@@ -41,7 +41,9 @@ export async function POST(request: Request) {
       await enviarTelegram(parte);
     }
   } else if (texto.startsWith("/lead")) {
-    await enviarTelegram(await executarComandoLead(texto));
+    for (const parte of await executarComandoLead(texto)) {
+      await enviarTelegram(parte);
+    }
   } else {
     await enviarTelegram(AJUDA_BOT);
   }
