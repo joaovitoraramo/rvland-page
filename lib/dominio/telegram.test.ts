@@ -246,6 +246,7 @@ describe("mensagemLeads", () => {
     expect(chunks[0]).toContain("Novo");
     expect(chunks[0]).toContain("id: a1b2c3d4");
     expect(chunks[0]).toContain("/lead");
+    expect(chunks[0]).toContain("Status: novo · em_conversa · proposta · ganho · perdido");
   });
 
   it("vazio tem mensagem própria", () => {

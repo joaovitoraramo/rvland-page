@@ -306,7 +306,7 @@ export function mensagemLeads(leads: LeadResumo[]): string[] {
       atual = `${atual}\n\n${bloco}`;
     }
   }
-  atual += "\n\nAtualizar: /lead <id> <status> [nota]";
+  atual += `\n\nAtualizar: /lead <id> <status> [nota]\nStatus: ${STATUS_LEAD.join(" · ")}`;
   chunks.push(atual);
   return chunks;
 }
