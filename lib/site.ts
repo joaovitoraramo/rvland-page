@@ -13,7 +13,7 @@ export const SITE = {
   tagline: "Realidade Visualizada",
   title: "RVLand Devs | Software sob medida, do zero",
   description:
-    "Apps, sites, plataformas e sistemas sob medida — do zero e no seu fluxo. Sem adaptação de software pronto: construímos o produto certo para o seu negócio.",
+    "Apps, sites, plataformas e sistemas sob medida, do zero e no seu fluxo. Sem adaptação de software pronto: construímos o produto certo para o seu negócio.",
   locale: "pt_BR",
   keywords: [
     "desenvolvimento de software",

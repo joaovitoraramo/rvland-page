@@ -3,7 +3,7 @@ import { SITE_EN } from "@/lib/site-en";
 
 export const size = { width: 1200, height: 630 };
 export const contentType = "image/png";
-export const alt = "RVLand Devs — Websites for businesses";
+export const alt = "RVLand Devs | Websites for businesses";
 
 export default function OpengraphImage() {
   return new ImageResponse(

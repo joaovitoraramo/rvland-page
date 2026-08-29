@@ -7,9 +7,9 @@ import { formatarDolares } from "@/lib/formato";
 
 export const SITE_EN = {
   name: "RVLand Devs",
-  title: "RVLand Devs | Websites for businesses — no calls, just text",
+  title: "RVLand Devs | Websites for businesses. No calls, just text",
   description:
-    "We design, write, and launch your business website. Approve everything by message — no calls, no meetings. One price, everything included.",
+    "We design, write, and launch your business website. Approve everything by message: no calls, no meetings. One price, everything included.",
   keywords: [
     "small business website",
     "website design",
@@ -24,7 +24,7 @@ export const SITE_EN = {
 export const INCLUDED_EN = [
   {
     title: "Custom design",
-    desc: "Built for your business — never a template.",
+    desc: "Built for your business, never a template.",
   },
   {
     title: "Perfect on phones",
@@ -44,7 +44,7 @@ export const INCLUDED_EN = [
   },
   {
     title: "Secure (SSL)",
-    desc: "The padlock in the browser — trust, built in.",
+    desc: "The padlock in the browser. Trust, built in.",
   },
   {
     title: "Fast hosting",
@@ -77,7 +77,7 @@ export function faqEn(care: { valorCentavos: number; mesesInclusos: number }) {
   return [
     {
       q: "Do I own my website?",
-      a: "Yes. Once your plan is paid in full, the site is 100% yours — domain, design, and content.",
+      a: "Yes. Once your plan is paid in full, the site is 100% yours: domain, design, and content.",
     },
     {
       q: "How long does it take?",
@@ -85,15 +85,15 @@ export function faqEn(care: { valorCentavos: number; mesesInclusos: number }) {
     },
     {
       q: "Who writes the content?",
-      a: "We do. Send us the basics about your business and we write clear, professional copy — you approve every word.",
+      a: "We do. Send us the basics about your business and we write clear, professional copy, and you approve every word.",
     },
     {
       q: `What happens after the first ${care.mesesInclusos} months?`,
-      a: `Support & hosting continues at ${mensal} — updates, backups, and changes. You can also move your site elsewhere; it's yours.`,
+      a: `Support & hosting continues at ${mensal}: updates, backups, and changes. You can also move your site elsewhere; it's yours.`,
     },
     {
       q: "Why don't you do calls?",
-      a: "Because you don't have time for them. We move at the pace of your day — you reply when it suits you, and we never ask you to stop working to sit on a call. Time is money. Everything happens by message: faster for you, documented for both of us. No meetings. No pressure.",
+      a: "Because you don't have time for them. We move at the pace of your day: you reply when it suits you, and we never ask you to stop working to sit on a call. Time is money. Everything happens by message: faster for you, documented for both of us. No meetings. No pressure.",
     },
   ] as const;
 }

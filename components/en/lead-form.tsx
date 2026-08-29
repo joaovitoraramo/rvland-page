@@ -99,12 +99,12 @@ export function LeadFormEn() {
         mensagem: form.mensagem,
       });
       if (!result.ok) {
-        setGeneralError("Something went wrong — please try again.");
+        setGeneralError("Something went wrong. Please try again.");
         return;
       }
       setDone(true);
     } catch {
-      setGeneralError("Something went wrong — please try again.");
+      setGeneralError("Something went wrong. Please try again.");
     } finally {
       setSending(false);
     }
@@ -117,7 +117,7 @@ export function LeadFormEn() {
           <CheckCircle2 className="h-10 w-10 text-[rgba(0,255,138,0.9)]" />
           <div className="text-lg font-semibold text-white">Got it!</div>
           <p className="max-w-sm text-sm text-white/70">
-            We&apos;ll get back to you soon — by message, of course. Keep an eye
+            We&apos;ll get back to you soon, by message of course. Keep an eye
             on your {channel.label}.
           </p>
         </CardContent>
@@ -150,7 +150,7 @@ export function LeadFormEn() {
       <CardHeader>
         <CardTitle className="text-white">Get your free concept</CardTitle>
         <CardDescription className="text-white/70">
-          Tell us about your business — we&apos;ll send a free homepage concept.
+          Tell us about your business and we&apos;ll send a free homepage concept.
           No strings attached.
         </CardDescription>
       </CardHeader>
@@ -257,7 +257,7 @@ export function LeadFormEn() {
             className="group h-11 w-full rounded-xl border border-white/10 bg-[rgba(0,255,138,0.16)] text-sm font-medium text-white transition-all hover:-translate-y-[1px] hover:bg-[rgba(0,255,138,0.22)]"
           >
             <span className="inline-flex items-center gap-2">
-              {sending ? "Sending..." : "Send it — get my free concept"}
+              {sending ? "Sending..." : "Send it and get my free concept"}
               <ArrowRight className="h-4 w-4 transition-transform duration-200 group-hover:translate-x-0.5" />
             </span>
           </Button>

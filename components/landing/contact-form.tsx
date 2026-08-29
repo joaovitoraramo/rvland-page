@@ -95,7 +95,7 @@ export function CodeContactForm({
       });
 
       if (!resultado.ok) {
-        setErroGeral("Algo deu errado — tente de novo ou chame direto no WhatsApp.");
+        setErroGeral("Algo deu errado. Tente de novo ou chame direto no WhatsApp.");
         return;
       }
 
@@ -106,11 +106,11 @@ export function CodeContactForm({
         const wa = buildWhatsappLink(whatsapp, `Olá! Segue meu pedido:\n\n${corpo}`);
         if (wa) window.open(wa, "_blank", "noopener,noreferrer");
       } else if (canal === "email") {
-        const to = buildMailto(email, `Projeto RVLand — ${form.nome}`, corpo);
+        const to = buildMailto(email, `Projeto RVLand: ${form.nome}`, corpo);
         if (to) window.location.href = to;
       }
     } catch {
-      setErroGeral("Algo deu errado — tente de novo ou chame direto no WhatsApp.");
+      setErroGeral("Algo deu errado. Tente de novo ou chame direto no WhatsApp.");
     } finally {
       setEnviando(false);
     }

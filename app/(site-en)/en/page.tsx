@@ -46,7 +46,7 @@ const NO_CALLS = [
   {
     icon: <Moon className="h-5 w-5 text-[rgba(0,229,255,0.95)]" />,
     title: "Reply on your schedule",
-    desc: "7 AM or 11 PM — message us whenever suits you. We answer fast.",
+    desc: "7 AM or 11 PM: message us whenever suits you. We answer fast.",
   },
   {
     icon: <PenLine className="h-5 w-5 text-[rgba(0,255,138,0.9)]" />,
@@ -103,7 +103,7 @@ export default async function PaginaEn() {
               A website that wins you customers.
             </h1>
             <p className="mt-5 max-w-xl text-lg text-white/70">
-              We design it, write it, and put it live — you approve everything
+              We design it, write it, and put it live. You approve everything
               from your phone. No calls. No meetings. No tech headaches.
             </p>
             <div className="mt-8 flex flex-col gap-3 sm:flex-row">
@@ -136,7 +136,7 @@ export default async function PaginaEn() {
               </span>
             </h2>
             <p className="mx-auto mt-3 max-w-xl text-white/65">
-              You&apos;re busy running a business — not sitting on Zoom. Message
+              You&apos;re busy running a business, not sitting on Zoom. Message
               us, approve the design, and your site goes live. That&apos;s it.
             </p>
           </div>
@@ -265,7 +265,7 @@ export default async function PaginaEn() {
               </h2>
               <p className="mt-3 max-w-md text-white/65">
                 Send us your info and we&apos;ll reply with a free homepage
-                concept for your business — before you pay anything.
+                concept for your business, before you pay anything.
               </p>
               <ul className="mt-6 space-y-3 text-sm text-white/70">
                 <li className="flex items-start gap-2">
@@ -274,11 +274,11 @@ export default async function PaginaEn() {
                 </li>
                 <li className="flex items-start gap-2">
                   <span className="mt-[7px] inline-block h-1.5 w-1.5 rounded-full bg-[rgba(0,255,138,0.85)]" />
-                  Free concept — you only pay if you love it.
+                  Free concept: you only pay if you love it.
                 </li>
                 <li className="flex items-start gap-2">
                   <span className="mt-[7px] inline-block h-1.5 w-1.5 rounded-full bg-[rgba(0,255,138,0.85)]" />
-                  No calls, no meetings — that&apos;s a promise.
+                  No calls, no meetings. That&apos;s a promise.
                 </li>
               </ul>
             </div>

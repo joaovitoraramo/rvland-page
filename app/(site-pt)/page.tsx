@@ -235,7 +235,7 @@ export default function Page() {
 
                       <h1 className="text-balance text-3xl font-semibold leading-tight md:text-5xl">
                         <span className="text-white">RVLand</span>{" "}
-                        <span className="text-white/80">— sua ilha de realidades.</span>
+                        <span className="text-white/80">é sua ilha de realidades.</span>
                         <span className="block bg-gradient-to-r from-[rgba(0,229,255,0.95)] via-white to-[rgba(0,255,138,0.95)] bg-clip-text text-transparent">
                           Nós codificamos o resto.
                         </span>
@@ -243,7 +243,7 @@ export default function Page() {
 
                       <p className="mt-4 text-pretty text-base text-white/70 md:text-lg">
                         Construímos <strong className="text-white/90">apps, sites, plataformas e sistemas</strong>{" "}
-                        personalizados. Você traz a visão — nós entregamos o produto pronto para uso.
+                        personalizados. Você traz a visão e nós entregamos o produto pronto para uso.
                       </p>
 
                       <div className="mt-6 flex flex-col gap-3 sm:flex-row">
@@ -350,7 +350,7 @@ export default function Page() {
           <Reveal>
             <SectionHeader
               title="O que entregamos"
-              subtitle="Soluções sob medida. O produto se adapta ao seu negócio — não o contrário."
+              subtitle="Soluções sob medida. O produto se adapta ao seu negócio, não o contrário."
               right={<Badge className="border-white/10 bg-white/5 text-white/70">Next.js • React • APIs • Vercel</Badge>}
             />
 
@@ -588,7 +588,7 @@ export default function Page() {
             <div className="flex items-center gap-3">
               <div>
                 <div className="text-sm font-semibold">{SITE.name}</div>
-                <div className="text-xs text-white/60">Sua ilha de realidades — nós codificamos o resto.</div>
+                <div className="text-xs text-white/60">Sua ilha de realidades. Nós codificamos o resto.</div>
               </div>
             </div>
 
