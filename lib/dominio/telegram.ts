@@ -1,5 +1,6 @@
-import { reaisParaCentavos, formatarReais } from "@/lib/formato";
+import { formatarDataHoraBR, reaisParaCentavos, formatarReais } from "@/lib/formato";
 import { formatarCompetenciaBR, formatarDataBR } from "@/lib/dominio/tempo";
+import { STATUS_LEAD, type StatusLead } from "@/lib/dominio/leads";
 
 /**
  * Domínio puro do bot do Telegram: parser do /fatura, distribuição de um
@@ -14,6 +15,8 @@ const DATA_RE = /^(\d{2})\/(\d{2})\/(\d{4})$/;
 export const AJUDA_BOT = [
   "Comandos disponíveis:",
   "/clientes — lista clientes, ids e faturas em aberto",
+  "/leads — funil de leads com ids",
+  "/lead <id> <status> [nota] — status: novo, em_conversa, proposta, ganho, perdido",
   "/fatura <id> <valor> [data]",
   "Ex.: /fatura a1b2c3d4 2.490,40 29/08/2026",
   "O id do cliente aparece nos avisos de licença. Sem data = hoje.",
@@ -224,6 +227,86 @@ export function mensagemClientes(clientes: ClienteResumo[]): string[] {
       atual = `${atual}\n\n${bloco}`;
     }
   }
+  chunks.push(atual);
+  return chunks;
+}
+
+export const rotuloStatusLead: Record<StatusLead, string> = {
+  novo: "Novo",
+  em_conversa: "Em conversa",
+  proposta: "Proposta",
+  ganho: "Ganho",
+  perdido: "Perdido",
+};
+
+export type ComandoLead = { idCurto: string; status: StatusLead; nota: string | null };
+
+export function parseComandoLead(
+  texto: string
+): { ok: true; comando: ComandoLead } | { ok: false; erro: string } {
+  const m = texto.trim().match(/^\/lead(?:@\S+)?\s+(\S+)\s+(\S+)([\s\S]*)$/);
+  if (!m) return { ok: false, erro: "Não entendi. Use: /lead <id> <status> [nota]" };
+
+  const idCurto = m[1].toLowerCase();
+  if (!ID_RE.test(idCurto)) {
+    return {
+      ok: false,
+      erro: "Id inválido — use pelo menos os 8 primeiros caracteres do id do lead (veja /leads).",
+    };
+  }
+
+  const status = m[2].toLowerCase();
+  if (!(STATUS_LEAD as readonly string[]).includes(status)) {
+    return { ok: false, erro: `Status inválido. Use um de: ${STATUS_LEAD.join(", ")}.` };
+  }
+
+  const nota = m[3].trim();
+  return { ok: true, comando: { idCurto, status: status as StatusLead, nota: nota || null } };
+}
+
+/** Nota do Telegram SEMPRE acrescenta às existentes, com carimbo — nunca substitui. */
+export function concatenarNota(atuais: string | null, nota: string, dataBR: string): string {
+  const entrada = `[${dataBR} · telegram] ${nota.trim()}`;
+  return atuais && atuais.trim() ? `${atuais.trimEnd()}\n\n${entrada}` : entrada;
+}
+
+export type LeadResumo = {
+  id: string;
+  nome: string;
+  negocio: string | null;
+  origem: "br" | "en";
+  canal: string;
+  contato: string;
+  status: StatusLead;
+  criadoEm: Date;
+};
+
+/** Funil vivo do /leads, quebrado em mensagens sob o limite do Telegram. */
+export function mensagemLeads(leads: LeadResumo[]): string[] {
+  if (leads.length === 0) return ["Nenhum lead em aberto."];
+
+  const blocos = leads.map((l) => {
+    const titulo = l.negocio
+      ? `▪️ ${l.nome} — ${l.negocio} (${l.origem.toUpperCase()})`
+      : `▪️ ${l.nome} (${l.origem.toUpperCase()})`;
+    return [
+      titulo,
+      `${rotuloStatusLead[l.status]} · ${l.canal}: ${l.contato} · ${formatarDataHoraBR(l.criadoEm)}`,
+      `id: ${l.id.slice(0, 8)}`,
+    ].join("\n");
+  });
+
+  const chunks: string[] = [];
+  let atual = `📋 Leads em aberto (${leads.length})`;
+  for (const bloco of blocos) {
+    if (atual.length + bloco.length + 2 > LIMITE_CHUNK) {
+      chunks.push(atual);
+      atual = bloco;
+    } else {
+      atual = `${atual}\n\n${bloco}`;
+    }
+  }
+  atual += "\n\nAtualizar: /lead <id> <status> [nota]";
   chunks.push(atual);
   return chunks;
 }

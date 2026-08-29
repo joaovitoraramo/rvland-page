@@ -1,7 +1,10 @@
 import { describe, expect, it } from "vitest";
 import {
   distribuirPagamento,
+  concatenarNota,
   mensagemClientes,
+  mensagemLeads,
+  parseComandoLead,
   mensagemLead,
   mensagemLicenca,
   parseComandoFatura,
@@ -184,5 +187,83 @@ describe("mensagemClientes", () => {
 
   it("lista vazia tem mensagem própria", () => {
     expect(mensagemClientes([])).toEqual(["Nenhum cliente ativo."]);
+  });
+});
+
+describe("parseComandoLead", () => {
+  it("aceita status e nota multilinha", () => {
+    const r = parseComandoLead("/lead a1b2c3d4 proposta Mandei o preview.\nEle gostou.");
+    expect(r).toEqual({
+      ok: true,
+      comando: { idCurto: "a1b2c3d4", status: "proposta", nota: "Mandei o preview.\nEle gostou." },
+    });
+  });
+
+  it("nota é opcional", () => {
+    const r = parseComandoLead("/lead a1b2c3d4 ganho");
+    expect(r).toEqual({ ok: true, comando: { idCurto: "a1b2c3d4", status: "ganho", nota: null } });
+  });
+
+  it("rejeita status desconhecido, id inválido e comando incompleto", () => {
+    expect(parseComandoLead("/lead a1b2c3d4 fechado").ok).toBe(false);
+    expect(parseComandoLead("/lead abc proposta").ok).toBe(false);
+    expect(parseComandoLead("/lead").ok).toBe(false);
+  });
+});
+
+describe("concatenarNota", () => {
+  it("acrescenta com carimbo, nunca substitui", () => {
+    expect(concatenarNota("Já conversamos.", "Fechou!", "29/08/2026")).toBe(
+      "Já conversamos.\n\n[29/08/2026 · telegram] Fechou!"
+    );
+  });
+
+  it("sem notas atuais, entra só a nova", () => {
+    expect(concatenarNota(null, "Primeira nota", "29/08/2026")).toBe(
+      "[29/08/2026 · telegram] Primeira nota"
+    );
+    expect(concatenarNota("  ", "Oi", "29/08/2026")).toBe("[29/08/2026 · telegram] Oi");
+  });
+});
+
+describe("mensagemLeads", () => {
+  it("lista nome, negócio, status, id curto e a dica do comando", () => {
+    const chunks = mensagemLeads([
+      {
+        id: "a1b2c3d4-1111-2222-3333-444444444444",
+        nome: "John",
+        negocio: "Sparkle Car Wash",
+        origem: "en",
+        canal: "SMS",
+        contato: "5551234567",
+        status: "novo",
+        criadoEm: new Date("2026-08-29T19:40:00Z"),
+      },
+    ]);
+    expect(chunks).toHaveLength(1);
+    expect(chunks[0]).toContain("John");
+    expect(chunks[0]).toContain("Sparkle Car Wash");
+    expect(chunks[0]).toContain("Novo");
+    expect(chunks[0]).toContain("id: a1b2c3d4");
+    expect(chunks[0]).toContain("/lead");
+  });
+
+  it("vazio tem mensagem própria", () => {
+    expect(mensagemLeads([])).toEqual(["Nenhum lead em aberto."]);
+  });
+
+  it("quebra em várias mensagens quando estoura", () => {
+    const muitos = Array.from({ length: 120 }, (_, i) => ({
+      id: `${String(i).padStart(8, "0")}-aaaa-bbbb-cccc-dddddddddddd`,
+      nome: `Lead ${i}`,
+      negocio: null,
+      origem: "br" as const,
+      canal: "WhatsApp",
+      contato: "41999999999",
+      status: "novo" as const,
+      criadoEm: new Date(),
+    }));
+    const chunks = mensagemLeads(muitos);
+    expect(chunks.length).toBeGreaterThan(1);
   });
 });
