@@ -388,6 +388,7 @@ export const leads = pgTable(
     nome: text("nome").notNull(),
     negocio: text("negocio"),
     siteAtual: text("site_atual"),
+    planoInteresse: text("plano_interesse").$type<"full" | "m6" | "m12">(),
     canal: text("canal")
       .notNull()
       .$type<"email" | "sms" | "instagram" | "messenger" | "whatsapp" | "telefone">(),
