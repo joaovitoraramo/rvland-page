@@ -1,57 +1,14 @@
-import { CONTACT, FAQ, SITE, SITE_URL } from "@/lib/site";
+import { CONTACT, SITE_URL } from "@/lib/site";
 import { SITE_EN } from "@/lib/site-en";
 import type { PricingEn } from "@/lib/dominio/preco-site";
 
 /**
- * JSON-LD dos sites público PT e EN. É o formato que buscadores e chats de
- * IA leem para citar preços, serviços e respostas. SÓ FATOS REAIS aqui:
- * avaliação/quantidade de cliente inventada é spam de schema e derruba a
- * confiança (e o ranking) em vez de subir.
+ * JSON-LD da /en: é o formato que buscadores e chats de IA leem para citar
+ * preços, serviços e respostas. SÓ FATOS REAIS aqui: avaliação ou contagem
+ * de cliente inventada é spam de schema e derruba a confiança em vez de
+ * subir. (A landing PT tem o JSON-LD próprio, inline na página.)
+ * Sem telephone de propósito: a promessa do site é "no calls".
  */
-
-function Script({ dados }: { dados: object }) {
-  return (
-    <script
-      type="application/ld+json"
-      dangerouslySetInnerHTML={{ __html: JSON.stringify(dados) }}
-    />
-  );
-}
-
-export function SchemaSitePt() {
-  const dados = {
-    "@context": "https://schema.org",
-    "@graph": [
-      {
-        "@type": "ProfessionalService",
-        "@id": `${SITE_URL}/#organizacao`,
-        name: SITE.name,
-        description: SITE.description,
-        url: SITE_URL,
-        email: CONTACT.email,
-        areaServed: "BR",
-        knowsLanguage: ["pt-BR", "en"],
-      },
-      {
-        "@type": "WebSite",
-        url: SITE_URL,
-        name: SITE.name,
-        inLanguage: "pt-BR",
-      },
-      {
-        "@type": "FAQPage",
-        inLanguage: "pt-BR",
-        mainEntity: FAQ.map((f) => ({
-          "@type": "Question",
-          name: f.q,
-          acceptedAnswer: { "@type": "Answer", text: f.a },
-        })),
-      },
-    ],
-  };
-  return <Script dados={dados} />;
-}
-
 export function SchemaSiteEn({
   pricing,
   faq,
@@ -104,12 +61,15 @@ export function SchemaSiteEn({
       },
       {
         "@type": "WebSite",
+        "@id": `${SITE_URL}/en#website`,
         url: `${SITE_URL}/en`,
         name: SITE_EN.name,
         inLanguage: "en",
+        publisher: { "@id": `${SITE_URL}/en#organization` },
       },
       {
         "@type": "FAQPage",
+        "@id": `${SITE_URL}/en#faq`,
         inLanguage: "en",
         mainEntity: faq.map((f) => ({
           "@type": "Question",
@@ -119,5 +79,13 @@ export function SchemaSiteEn({
       },
     ],
   };
-  return <Script dados={dados} />;
+
+  return (
+    <script
+      type="application/ld+json"
+      dangerouslySetInnerHTML={{
+        __html: JSON.stringify(dados).replace(/</g, "\\u003c"),
+      }}
+    />
+  );
 }
