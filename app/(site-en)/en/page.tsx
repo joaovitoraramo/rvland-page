@@ -95,7 +95,7 @@ export default async function PaginaEn() {
           <div className="relative max-w-2xl">
             <div className="mb-4 inline-flex items-center gap-2 rounded-full border border-white/10 bg-white/5 px-3 py-1 text-xs uppercase tracking-[0.2em] text-white/60">
               <MessageSquareText className="h-3.5 w-3.5" />
-              Websites for small businesses
+              Websites for businesses
             </div>
             <h1 className="text-4xl font-semibold leading-tight tracking-tight md:text-6xl">
               A website that wins you customers.

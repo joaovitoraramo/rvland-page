@@ -5,7 +5,7 @@
 
 export const SITE_EN = {
   name: "RVLand Devs",
-  title: "RVLand Devs | Websites for small businesses — no calls, just text",
+  title: "RVLand Devs | Websites for businesses — no calls, just text",
   description:
     "We design, write, and launch your business website. Approve everything by message — no calls, no meetings. One price, everything included.",
   keywords: [
