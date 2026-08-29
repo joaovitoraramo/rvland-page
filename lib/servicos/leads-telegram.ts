@@ -33,6 +33,7 @@ export async function executarComandoLeads(): Promise<string[]> {
       contato: l.contato,
       status: l.status,
       criadoEm: l.criadoEm,
+      planoInteresse: l.planoInteresse,
     }))
   );
 }
@@ -68,6 +69,7 @@ export async function executarComandoLead(texto: string): Promise<string[]> {
       contato: lead.contato,
       status: lead.status,
       criadoEm: lead.criadoEm,
+      planoInteresse: lead.planoInteresse,
       mensagem: lead.mensagem,
       notas: lead.notas,
     });

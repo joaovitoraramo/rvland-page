@@ -78,9 +78,18 @@ export function LeadFormEn() {
 
     setSending(true);
     setGeneralError(null);
+
+    let planoInteresse: string | undefined;
+    try {
+      planoInteresse = sessionStorage.getItem("rv-plano-interesse") ?? undefined;
+    } catch {
+      /* storage indisponível: lead segue sem interesse */
+    }
+
     try {
       const result = await criarLead({
         origem: "en",
+        planoInteresse,
         website: honeypotRef.current?.value ?? "",
         nome: form.nome,
         negocio: form.negocio.trim() || undefined,

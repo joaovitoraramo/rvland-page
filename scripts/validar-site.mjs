@@ -64,8 +64,11 @@ const texto6 = await page.locator("#pricing").textContent();
 if (!texto6?.includes("/mo")) falhas.push("seleção '6 months' não mostrou valor mensal");
 await foto(page, "en-pricing-6m");
 
-// formulário EN → lead
+// formulário EN → lead (com interesse capturado: 6 months + CTA do pricing)
 await page.goto(`${BASE}/en`);
+await page.click("#pricing button:has-text('6 months')");
+await page.click("#pricing a:has-text('Get your free concept')");
+await page.waitForTimeout(400);
 await page.fill("#lead-nome", `Playwright EN ${marca}`);
 await page.fill("#lead-negocio", "Sparkle Car Wash");
 await page.click("#contact button:has-text('Text (SMS)')");
@@ -124,6 +127,16 @@ await page.goto(`${BASE}/painel/config/precos-site`);
 await foto(page, "painel-precos-site", true);
 
 await browser.close();
+
+// interesse de plano gravado silenciosamente + limpeza dos leads de teste
+const { default: postgres } = await import("postgres");
+const sqlDb = postgres(env.DATABASE_URL, { prepare: false, max: 1 });
+const [leadEn] = await sqlDb`select plano_interesse from leads where nome = ${`Playwright EN ${marca}`}`;
+if (!leadEn || leadEn.plano_interesse !== "m6") {
+  falhas.push(`plano_interesse esperado m6, veio ${leadEn?.plano_interesse}`);
+}
+await sqlDb`delete from leads where nome like 'Playwright %'`;
+await sqlDb.end();
 
 if (falhas.length > 0) {
   console.error("FALHAS:\n" + falhas.map((f) => ` - ${f}`).join("\n"));

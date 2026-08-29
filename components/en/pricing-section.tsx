@@ -91,6 +91,14 @@ export function PricingSection({ pricing }: { pricing: PricingEn }) {
 
         <a
           href="#contact"
+          onClick={() => {
+            // guarda o plano selecionado para o lead — captura silenciosa
+            try {
+              sessionStorage.setItem("rv-plano-interesse", ativo);
+            } catch {
+              /* storage bloqueado: lead segue sem interesse */
+            }
+          }}
           className="mt-7 inline-flex h-11 items-center justify-center gap-2 rounded-xl border border-white/10 bg-[rgba(0,255,138,0.16)] px-6 text-sm font-medium text-white transition-all hover:-translate-y-[1px] hover:bg-[rgba(0,255,138,0.22)]"
         >
           Get your free concept
