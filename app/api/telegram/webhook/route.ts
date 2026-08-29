@@ -3,6 +3,7 @@ import { NextResponse } from "next/server";
 import { enviarTelegram } from "@/lib/telegram";
 import { executarComandoFatura } from "@/lib/servicos/fatura-telegram";
 import { executarComandoClientes } from "@/lib/servicos/clientes-telegram";
+import { executarComandoLead, executarComandoLeads } from "@/lib/servicos/leads-telegram";
 import { AJUDA_BOT } from "@/lib/dominio/telegram";
 
 export const dynamic = "force-dynamic";
@@ -34,6 +35,13 @@ export async function POST(request: Request) {
     for (const parte of await executarComandoClientes()) {
       await enviarTelegram(parte);
     }
+  } else if (texto.startsWith("/leads")) {
+    // atenção: "/leads" antes de "/lead" — prefixos colidem
+    for (const parte of await executarComandoLeads()) {
+      await enviarTelegram(parte);
+    }
+  } else if (texto.startsWith("/lead")) {
+    await enviarTelegram(await executarComandoLead(texto));
   } else {
     await enviarTelegram(AJUDA_BOT);
   }
