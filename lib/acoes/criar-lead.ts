@@ -2,7 +2,9 @@
 
 import { db, leads } from "@/lib/db";
 import { registrarAuditoria } from "@/lib/audit";
-import { esquemaLead, normalizarLead } from "@/lib/dominio/leads";
+import { esquemaLead, normalizarLead, rotuloCanal } from "@/lib/dominio/leads";
+import { enviarTelegram } from "@/lib/telegram";
+import { mensagemLead } from "@/lib/dominio/telegram";
 
 export type EstadoLeadPublico = { ok?: boolean; erro?: string };
 
@@ -45,6 +47,18 @@ export async function criarLead(entrada: {
     entidade: "lead",
     detalhes: { origem: lead.origem, canal: lead.canal, nome: lead.nome },
   });
+
+  // Aviso no Telegram — await obrigatório em serverless; falha não afeta o lead.
+  await enviarTelegram(
+    mensagemLead({
+      origem: lead.origem,
+      nome: lead.nome,
+      negocio: lead.negocio,
+      canal: rotuloCanal[lead.canal],
+      contato: lead.contato,
+      mensagem: lead.mensagem,
+    })
+  );
 
   return { ok: true };
 }
