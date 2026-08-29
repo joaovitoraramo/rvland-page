@@ -13,6 +13,7 @@ const DATA_RE = /^(\d{2})\/(\d{2})\/(\d{4})$/;
 
 export const AJUDA_BOT = [
   "Comandos disponíveis:",
+  "/clientes — lista clientes, ids e faturas em aberto",
   "/fatura <id> <valor> [data]",
   "Ex.: /fatura a1b2c3d4 2.490,40 29/08/2026",
   "O id do cliente aparece nos avisos de licença. Sem data = hoje.",
@@ -178,4 +179,51 @@ export function respostaFatura(r: {
   linhas.push(licenca);
 
   return linhas.join("\n");
+}
+
+export type ClienteResumo = {
+  id: string;
+  nome: string;
+  licenca: string;
+  faturas: { id: string; competencia: string; valorCentavos: number; vencimento: string }[];
+};
+
+const LIMITE_CHUNK = 3500; // margem sob os 4096 do Telegram
+
+/** Lista de clientes do /clientes, quebrada em mensagens sob o limite. */
+export function mensagemClientes(clientes: ClienteResumo[]): string[] {
+  if (clientes.length === 0) return ["Nenhum cliente ativo."];
+
+  const blocos = clientes.map((c) => {
+    const linhas = [
+      `▪️ ${c.nome} — ${ROTULO_STATUS[c.licenca] ?? c.licenca}`,
+      `id: ${c.id}`,
+    ];
+    if (c.faturas.length === 0) {
+      linhas.push("(sem faturas em aberto)");
+    } else {
+      for (const f of c.faturas) {
+        linhas.push(
+          `• ${formatarCompetenciaBR(f.competencia)} · ${formatarReais(
+            f.valorCentavos
+          )} · vence ${formatarDataBR(f.vencimento)}`
+        );
+        linhas.push(`  fatura: ${f.id}`);
+      }
+    }
+    return linhas.join("\n");
+  });
+
+  const chunks: string[] = [];
+  let atual = `👥 Clientes ativos (${clientes.length})`;
+  for (const bloco of blocos) {
+    if (atual.length + bloco.length + 2 > LIMITE_CHUNK) {
+      chunks.push(atual);
+      atual = bloco;
+    } else {
+      atual = `${atual}\n\n${bloco}`;
+    }
+  }
+  chunks.push(atual);
+  return chunks;
 }

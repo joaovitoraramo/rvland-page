@@ -1,6 +1,7 @@
 import { describe, expect, it } from "vitest";
 import {
   distribuirPagamento,
+  mensagemClientes,
   mensagemLead,
   mensagemLicenca,
   parseComandoFatura,
@@ -132,5 +133,56 @@ describe("mensagens", () => {
     expect(m).toContain("quitada");
     expect(m).toContain("Sobra");
     expect(m).toContain("em dia");
+  });
+});
+
+describe("mensagemClientes", () => {
+  const cliente = (n: number): import("@/lib/dominio/telegram").ClienteResumo => ({
+    id: `0000000${n}-aaaa-bbbb-cccc-dddddddddddd`.slice(-36),
+    nome: `Cliente ${n}`,
+    licenca: "em_dia",
+    faturas: [],
+  });
+
+  it("lista nome, status, uuid do cliente e das faturas", () => {
+    const chunks = mensagemClientes([
+      {
+        id: "a1b2c3d4-1111-2222-3333-444444444444",
+        nome: "Credit Recover",
+        licenca: "atrasado",
+        faturas: [
+          {
+            id: "f0f1f2f3-5555-6666-7777-888888888888",
+            competencia: "2026-08-01",
+            valorCentavos: 249040,
+            vencimento: "2026-08-15",
+          },
+        ],
+      },
+    ]);
+    expect(chunks).toHaveLength(1);
+    expect(chunks[0]).toContain("Credit Recover");
+    expect(chunks[0]).toContain("atrasado");
+    expect(chunks[0]).toContain("a1b2c3d4-1111-2222-3333-444444444444");
+    expect(chunks[0]).toContain("f0f1f2f3-5555-6666-7777-888888888888");
+    expect(chunks[0]).toContain("08/2026");
+    expect(chunks[0]).toContain("15/08/2026");
+  });
+
+  it("marca cliente sem faturas em aberto", () => {
+    const chunks = mensagemClientes([{ ...cliente(1), nome: "Zen Ltda" }]);
+    expect(chunks[0]).toContain("Zen Ltda");
+    expect(chunks[0]).toContain("sem faturas em aberto");
+  });
+
+  it("quebra em várias mensagens quando estoura o limite", () => {
+    const muitos = Array.from({ length: 80 }, (_, i) => cliente(i));
+    const chunks = mensagemClientes(muitos);
+    expect(chunks.length).toBeGreaterThan(1);
+    for (const c of chunks) expect(c.length).toBeLessThanOrEqual(3800);
+  });
+
+  it("lista vazia tem mensagem própria", () => {
+    expect(mensagemClientes([])).toEqual(["Nenhum cliente ativo."]);
   });
 });
