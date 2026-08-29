@@ -25,3 +25,23 @@ export function formatarDataHoraBR(data: Date): string {
     minute: "2-digit",
   });
 }
+
+/** USD: "$1,497" quando os centavos são zero; "$79.50" quando não. */
+export function formatarDolares(centavos: number): string {
+  const semCentavos = centavos % 100 === 0;
+  return (centavos / 100).toLocaleString("en-US", {
+    style: "currency",
+    currency: "USD",
+    minimumFractionDigits: semCentavos ? 0 : 2,
+    maximumFractionDigits: semCentavos ? 0 : 2,
+  });
+}
+
+/** "1,497.00" ou "1497" (input humano US) → centavos. NaN se inválido. */
+export function dolaresParaCentavos(texto: string): number {
+  const limpo = texto.trim().replace(/[$\s,]/g, "");
+  if (limpo === "") return NaN;
+  const valor = Number(limpo);
+  if (!Number.isFinite(valor)) return NaN;
+  return Math.round(valor * 100);
+}

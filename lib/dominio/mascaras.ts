@@ -55,3 +55,14 @@ export function mascararTelefone(texto: string): string {
   if (resto.length <= 8) return `(${ddd}) ${resto.slice(0, 4)}-${resto.slice(4)}`;
   return `(${ddd}) ${resto.slice(0, 5)}-${resto.slice(5)}`;
 }
+
+/** Estilo banco US: cada dígito entra pelos centavos. "149700" → "1,497.00". */
+export function mascararDinheiroUS(texto: string): string {
+  const d = digitos(texto).replace(/^0+(?=\d)/, "");
+  if (d === "") return "";
+  const centavos = d.padStart(3, "0");
+  const inteiro = centavos.slice(0, -2);
+  const decimais = centavos.slice(-2);
+  const comMilhar = inteiro.replace(/\B(?=(\d{3})+(?!\d))/g, ",");
+  return `${comMilhar}.${decimais}`;
+}

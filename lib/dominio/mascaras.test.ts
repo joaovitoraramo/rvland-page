@@ -2,6 +2,7 @@ import { describe, it, expect } from "vitest";
 import {
   mascararCompetencia,
   mascararDinheiro,
+  mascararDinheiroUS,
   mascararDocumento,
   mascararTelefone,
 } from "./mascaras";
@@ -76,5 +77,13 @@ describe("mascararTelefone (fixo 10 / celular 11)", () => {
   it("limita a 11 dígitos e limpa lixo", () => {
     expect(mascararTelefone("41 98489-1365 ramal 2")).toBe("(41) 98489-1365");
     expect(mascararTelefone("")).toBe("");
+  });
+});
+
+describe("mascararDinheiroUS", () => {
+  it("formata progressivamente no padrão americano", () => {
+    expect(mascararDinheiroUS("149700")).toBe("1,497.00");
+    expect(mascararDinheiroUS("5")).toBe("0.05");
+    expect(mascararDinheiroUS("")).toBe("");
   });
 });

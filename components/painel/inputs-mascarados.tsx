@@ -5,6 +5,7 @@ import * as React from "react";
 import {
   mascararCompetencia,
   mascararDinheiro,
+  mascararDinheiroUS,
   mascararDocumento,
   mascararTelefone,
 } from "@/lib/dominio/mascaras";
@@ -100,5 +101,25 @@ export function InputTelefone({ defaultValue, aoMudar, className, ...props }: Pr
       className={className}
       {...props}
     />
+  );
+}
+
+export function InputDolar({ defaultValue, aoMudar, className, ...props }: PropsBase) {
+  const { valor, onChange } = useMascara(mascararDinheiroUS, defaultValue, aoMudar);
+  return (
+    <div className={cn("relative", className)}>
+      <span className="pointer-events-none absolute left-3 top-1/2 -translate-y-1/2 font-mono text-sm text-white/35">
+        $
+      </span>
+      <input
+        type="text"
+        inputMode="numeric"
+        placeholder="0.00"
+        value={valor}
+        onChange={onChange}
+        className="!pl-8"
+        {...props}
+      />
+    </div>
   );
 }
