@@ -2,6 +2,7 @@ import { NextResponse } from "next/server";
 
 import { enviarTelegram } from "@/lib/telegram";
 import { executarComandoFatura } from "@/lib/servicos/fatura-telegram";
+import { executarComandoClientes } from "@/lib/servicos/clientes-telegram";
 import { AJUDA_BOT } from "@/lib/dominio/telegram";
 
 export const dynamic = "force-dynamic";
@@ -29,6 +30,10 @@ export async function POST(request: Request) {
   const texto = String(mensagem?.text ?? "").trim();
   if (texto.startsWith("/fatura")) {
     await enviarTelegram(await executarComandoFatura(texto));
+  } else if (texto.startsWith("/clientes")) {
+    for (const parte of await executarComandoClientes()) {
+      await enviarTelegram(parte);
+    }
   } else {
     await enviarTelegram(AJUDA_BOT);
   }
