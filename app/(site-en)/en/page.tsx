@@ -13,7 +13,8 @@ import { HeroGlow } from "@/components/landing/hero-glow";
 import { Card, CardContent } from "@/components/ui/card";
 
 import { getPricingEn } from "@/lib/config";
-import { FAQ_EN, INCLUDED_EN, SITE_EN, STEPS_EN } from "@/lib/site-en";
+import { faqEn, INCLUDED_EN, SITE_EN, STEPS_EN } from "@/lib/site-en";
+import { formatarDolares } from "@/lib/formato";
 import { PricingSection } from "@/components/en/pricing-section";
 import { LeadFormEn } from "@/components/en/lead-form";
 import { RolagemSecao } from "@/components/en/rolagem-secao";
@@ -61,6 +62,7 @@ const NO_CALLS = [
 
 export default async function PaginaEn() {
   const pricing = await getPricingEn();
+  const faq = faqEn(pricing.care);
 
   return (
     <main className="relative min-h-screen bg-[#05070b] text-white">
@@ -178,8 +180,9 @@ export default async function PaginaEn() {
             ))}
           </div>
           <p className="mt-5 text-sm text-white/55">
-            Every plan includes 12 months of support &amp; hosting. After that,
-            it&apos;s just $79/month.
+            Every plan includes {pricing.care.mesesInclusos} months of support
+            &amp; hosting. After that, it&apos;s just{" "}
+            {formatarDolares(pricing.care.valorCentavos)}/month.
           </p>
         </Reveal>
       </section>
@@ -236,7 +239,7 @@ export default async function PaginaEn() {
             </h2>
           </div>
           <div className="grid gap-3 md:grid-cols-2">
-            {FAQ_EN.map((item) => (
+            {faq.map((item) => (
               <div
                 key={item.q}
                 className="rounded-2xl border border-white/10 bg-white/[0.04] p-5"

@@ -1,3 +1,5 @@
+import { formatarDolares } from "@/lib/formato";
+
 /**
  * Conteúdo do site internacional (/en). NÃO é tradução do PT: público
  * diferente (small business americano), oferta diferente (website + booking).
@@ -69,25 +71,29 @@ export const STEPS_EN = [
   },
 ] as const;
 
-export const FAQ_EN = [
-  {
-    q: "Do I own my website?",
-    a: "Yes. Once your plan is paid in full, the site is 100% yours — domain, design, and content.",
-  },
-  {
-    q: "How long does it take?",
-    a: "Most sites are ready for your approval within days of getting your info, and live shortly after you approve.",
-  },
-  {
-    q: "Who writes the content?",
-    a: "We do. Send us the basics about your business and we write clear, professional copy — you approve every word.",
-  },
-  {
-    q: "What happens after the first 12 months?",
-    a: "Support & hosting continues at $79/month — updates, backups, and changes by text. You can also move your site elsewhere; it's yours.",
-  },
-  {
-    q: "Why don't you do calls?",
-    a: "Because you don't have time for them. Everything happens by message — faster for you, documented for both of us. No meetings. No pressure.",
-  },
-] as const;
+/** FAQ com os valores vivos do pricing (configurável no painel → revalidate). */
+export function faqEn(care: { valorCentavos: number; mesesInclusos: number }) {
+  const mensal = `${formatarDolares(care.valorCentavos)}/month`;
+  return [
+    {
+      q: "Do I own my website?",
+      a: "Yes. Once your plan is paid in full, the site is 100% yours — domain, design, and content.",
+    },
+    {
+      q: "How long does it take?",
+      a: "Most sites are ready for your approval within days of getting your info, and live shortly after you approve.",
+    },
+    {
+      q: "Who writes the content?",
+      a: "We do. Send us the basics about your business and we write clear, professional copy — you approve every word.",
+    },
+    {
+      q: `What happens after the first ${care.mesesInclusos} months?`,
+      a: `Support & hosting continues at ${mensal} — updates, backups, and changes. You can also move your site elsewhere; it's yours.`,
+    },
+    {
+      q: "Why don't you do calls?",
+      a: "Because you don't have time for them. We move at the pace of your day — you reply when it suits you, and we never ask you to stop working to sit on a call. Time is money. Everything happens by message: faster for you, documented for both of us. No meetings. No pressure.",
+    },
+  ] as const;
+}
