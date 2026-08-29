@@ -5,6 +5,7 @@ import Link from "next/link";
 import { usePathname } from "next/navigation";
 import {
   LayoutDashboard,
+  Inbox,
   Users,
   Receipt,
   Server,
@@ -22,6 +23,7 @@ import type { ItemNav } from "@/components/painel/sidebar";
 const ICONES = {
   dashboard: LayoutDashboard,
   clientes: Users,
+  leads: Inbox,
   financeiro: Receipt,
   servidores: Server,
   config: Settings2,

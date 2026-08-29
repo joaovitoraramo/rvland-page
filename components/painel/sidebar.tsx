@@ -5,6 +5,7 @@ import Link from "next/link";
 import { usePathname } from "next/navigation";
 import {
   LayoutDashboard,
+  Inbox,
   Users,
   Receipt,
   Server,
@@ -19,12 +20,13 @@ import { Avatar } from "@/components/painel/ui";
 export type ItemNav = {
   href: string;
   rotulo: string;
-  icone: "dashboard" | "clientes" | "financeiro" | "servidores" | "config" | "auditoria";
+  icone: "dashboard" | "clientes" | "leads" | "financeiro" | "servidores" | "config" | "auditoria";
 };
 
 const ICONES = {
   dashboard: LayoutDashboard,
   clientes: Users,
+  leads: Inbox,
   financeiro: Receipt,
   servidores: Server,
   config: Settings2,
