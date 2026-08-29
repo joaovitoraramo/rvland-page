@@ -67,3 +67,10 @@ describe("linkContato", () => {
     expect(linkContato("messenger", "mycarwash")).toBe("https://m.me/mycarwash");
   });
 });
+
+describe("planoInteresse", () => {
+  it("aceita plano válido e rejeita desconhecido", () => {
+    expect(esquemaLead.safeParse({ ...baseEn, planoInteresse: "m6" }).success).toBe(true);
+    expect(esquemaLead.safeParse({ ...baseEn, planoInteresse: "anual" }).success).toBe(false);
+  });
+});

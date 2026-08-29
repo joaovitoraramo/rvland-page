@@ -239,6 +239,7 @@ describe("mensagemLeads", () => {
         contato: "5551234567",
         status: "novo",
         criadoEm: new Date("2026-08-29T19:40:00Z"),
+        planoInteresse: "m12",
       },
     ]);
     expect(chunks).toHaveLength(1);
@@ -248,6 +249,7 @@ describe("mensagemLeads", () => {
     expect(chunks[0]).toContain("id: a1b2c3d4");
     expect(chunks[0]).toContain("/lead");
     expect(chunks[0]).toContain("Status: novo · em_conversa · proposta · ganho · perdido");
+    expect(chunks[0]).toContain("12 meses");
   });
 
   it("vazio tem mensagem própria", () => {
@@ -264,6 +266,7 @@ describe("mensagemLeads", () => {
       contato: "41999999999",
       status: "novo" as const,
       criadoEm: new Date(),
+      planoInteresse: null,
     }));
     const chunks = mensagemLeads(muitos);
     expect(chunks.length).toBeGreaterThan(1);
@@ -289,6 +292,7 @@ describe("detalheLead", () => {
     contato: "5551234567",
     status: "novo" as const,
     criadoEm: new Date("2026-08-29T19:40:00Z"),
+    planoInteresse: null,
     mensagem: "I want a new website.",
     notas: "Nota antiga.",
   };
@@ -304,5 +308,37 @@ describe("detalheLead", () => {
 
   it("sem notas mostra marcador", () => {
     expect(detalheLead({ ...base, notas: null }).join("\n")).toContain("— sem notas —");
+  });
+});
+
+describe("interesse de plano", () => {
+  it("aparece na notificação de lead novo", () => {
+    const m = mensagemLead({
+      origem: "en",
+      nome: "John",
+      negocio: null,
+      canal: "SMS",
+      contato: "5551234567",
+      mensagem: "Hi there, need a site.",
+      planoInteresse: "m6",
+    });
+    expect(m).toContain("6 meses");
+  });
+
+  it("aparece no detalhe do lead", () => {
+    const tudo = detalheLead({
+      id: "a1b2c3d4-1111-2222-3333-444444444444",
+      nome: "John",
+      negocio: null,
+      origem: "en",
+      canal: "SMS",
+      contato: "5551234567",
+      status: "novo",
+      criadoEm: new Date("2026-08-29T19:40:00Z"),
+      planoInteresse: "full",
+      mensagem: "Hi.",
+      notas: null,
+    }).join("\n");
+    expect(tudo).toContain("à vista");
   });
 });

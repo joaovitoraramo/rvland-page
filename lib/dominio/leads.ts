@@ -31,6 +31,16 @@ export const rotuloCanal: Record<CanalLead, string> = {
   telefone: "Telefone",
 };
 
+export const PLANOS_INTERESSE = ["full", "m6", "m12"] as const;
+export type PlanoInteresse = (typeof PLANOS_INTERESSE)[number];
+
+/** Rótulo do plano de interesse (capturado no pricing da /en) para o João. */
+export const rotuloPlanoInteresse: Record<PlanoInteresse, string> = {
+  full: "à vista",
+  m6: "6 meses",
+  m12: "12 meses",
+};
+
 const CANAIS_POR_ORIGEM: Record<OrigemLead, readonly CanalLead[]> = {
   br: CANAIS_BR,
   en: CANAIS_EN,
@@ -45,6 +55,7 @@ export const esquemaLead = z
     nome: z.string().trim().min(2).max(160),
     negocio: z.string().trim().max(160).optional(),
     siteAtual: z.string().trim().max(300).optional(),
+    planoInteresse: z.enum(PLANOS_INTERESSE).optional(),
     canal: z.enum(TODOS_CANAIS),
     contato: z.string().trim().min(3).max(200),
     mensagem: z.string().trim().min(10).max(4000),

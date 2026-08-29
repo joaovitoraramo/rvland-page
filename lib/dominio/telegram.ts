@@ -1,6 +1,11 @@
 import { formatarDataHoraBR, reaisParaCentavos, formatarReais } from "@/lib/formato";
 import { formatarCompetenciaBR, formatarDataBR } from "@/lib/dominio/tempo";
-import { STATUS_LEAD, type StatusLead } from "@/lib/dominio/leads";
+import {
+  rotuloPlanoInteresse,
+  STATUS_LEAD,
+  type PlanoInteresse,
+  type StatusLead,
+} from "@/lib/dominio/leads";
 
 /**
  * Domínio puro do bot do Telegram: parsers dos comandos, distribuição de
@@ -111,12 +116,19 @@ export function mensagemLead(lead: {
   canal: string;
   contato: string;
   mensagem: string;
+  planoInteresse?: PlanoInteresse | null;
 }): string {
   const origem = lead.origem === "en" ? "EN" : "BR";
   const titulo = lead.negocio ? `🆕 Lead ${origem} — ${lead.negocio}` : `🆕 Lead ${origem}`;
   const corpo =
     lead.mensagem.length > 300 ? `${lead.mensagem.slice(0, 300)}…` : lead.mensagem;
-  return [titulo, `${lead.nome} · ${lead.canal}: ${lead.contato}`, `«${corpo}»`].join("\n");
+
+  const linhas = [titulo, `${lead.nome} · ${lead.canal}: ${lead.contato}`];
+  if (lead.planoInteresse) {
+    linhas.push(`💰 Interesse: ${rotuloPlanoInteresse[lead.planoInteresse]}`);
+  }
+  linhas.push(`«${corpo}»`);
+  return linhas.join("\n");
 }
 
 const ROTULO_STATUS: Record<string, string> = {
@@ -288,6 +300,7 @@ export type LeadResumo = {
   contato: string;
   status: StatusLead;
   criadoEm: Date;
+  planoInteresse: PlanoInteresse | null;
 };
 
 /** Funil vivo do /leads, quebrado em mensagens sob o limite do Telegram. */
@@ -298,11 +311,13 @@ export function mensagemLeads(leads: LeadResumo[]): string[] {
     const titulo = l.negocio
       ? `▪️ ${l.nome} — ${l.negocio} (${l.origem.toUpperCase()})`
       : `▪️ ${l.nome} (${l.origem.toUpperCase()})`;
-    return [
-      titulo,
-      `${rotuloStatusLead[l.status]} · ${l.canal}: ${l.contato} · ${formatarDataHoraBR(l.criadoEm)}`,
-      `id: ${l.id.slice(0, 8)}`,
-    ].join("\n");
+    const linha2 = [
+      rotuloStatusLead[l.status],
+      `${l.canal}: ${l.contato}`,
+      formatarDataHoraBR(l.criadoEm),
+      ...(l.planoInteresse ? [`💰 ${rotuloPlanoInteresse[l.planoInteresse]}`] : []),
+    ].join(" · ");
+    return [titulo, linha2, `id: ${l.id.slice(0, 8)}`].join("\n");
   });
 
   const chunks: string[] = [];
@@ -353,6 +368,7 @@ export function detalheLead(l: {
   contato: string;
   status: StatusLead;
   criadoEm: Date;
+  planoInteresse: PlanoInteresse | null;
   mensagem: string;
   notas: string | null;
 }): string[] {
@@ -360,12 +376,15 @@ export function detalheLead(l: {
     ? `▪️ ${l.nome} — ${l.negocio} (${l.origem.toUpperCase()})`
     : `▪️ ${l.nome} (${l.origem.toUpperCase()})`;
 
-  const cabecalho = [
+  const cabecalhoLinhas = [
     titulo,
     `Status: ${rotuloStatusLead[l.status]} · ${l.canal}: ${l.contato}`,
-    `Chegou: ${formatarDataHoraBR(l.criadoEm)}`,
-    `id: ${l.id.slice(0, 8)}`,
-  ].join("\n");
+  ];
+  if (l.planoInteresse) {
+    cabecalhoLinhas.push(`💰 Interesse: ${rotuloPlanoInteresse[l.planoInteresse]}`);
+  }
+  cabecalhoLinhas.push(`Chegou: ${formatarDataHoraBR(l.criadoEm)}`, `id: ${l.id.slice(0, 8)}`);
+  const cabecalho = cabecalhoLinhas.join("\n");
 
   const mensagem = `📩 Mensagem:\n«${l.mensagem}»`;
   const notas = `📝 Notas:\n${l.notas?.trim() ? l.notas : "— sem notas —"}`;
