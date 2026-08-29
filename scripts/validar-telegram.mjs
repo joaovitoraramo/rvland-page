@@ -39,6 +39,10 @@ if (secretErrado.status !== 401) falhas.push(`secret errado: esperado 401, veio 
 const chatEstranho = await post(update("/fatura x", "999999"));
 if (chatEstranho.status !== 200) falhas.push(`chat estranho: esperado 200, veio ${chatEstranho.status}`);
 
+// 2a. /clientes responde 200 (a listagem vai pro chat)
+const listaClientes = await post(update("/clientes"));
+if (listaClientes.status !== 200) falhas.push(`/clientes: esperado 200, veio ${listaClientes.status}`);
+
 // 2. comando com id inexistente responde 200 (a resposta vai pro chat)
 const inexistente = await post(update("/fatura deadbeef 1,00"));
 if (inexistente.status !== 200) falhas.push(`id inexistente: esperado 200, veio ${inexistente.status}`);
