@@ -1,5 +1,6 @@
 import { describe, expect, it } from "vitest";
 import {
+  detalheLead,
   distribuirPagamento,
   concatenarNota,
   mensagemClientes,
@@ -266,5 +267,42 @@ describe("mensagemLeads", () => {
     }));
     const chunks = mensagemLeads(muitos);
     expect(chunks.length).toBeGreaterThan(1);
+  });
+});
+
+describe("parseComandoLead — consulta", () => {
+  it("só o id vira consulta", () => {
+    expect(parseComandoLead("/lead a1b2c3d4")).toEqual({
+      ok: true,
+      comando: { idCurto: "a1b2c3d4", status: null, nota: null },
+    });
+  });
+});
+
+describe("detalheLead", () => {
+  const base = {
+    id: "a1b2c3d4-1111-2222-3333-444444444444",
+    nome: "John",
+    negocio: "Sparkle Car Wash",
+    origem: "en" as const,
+    canal: "SMS",
+    contato: "5551234567",
+    status: "novo" as const,
+    criadoEm: new Date("2026-08-29T19:40:00Z"),
+    mensagem: "I want a new website.",
+    notas: "Nota antiga.",
+  };
+
+  it("mostra status, mensagem e notas", () => {
+    const tudo = detalheLead(base).join("\n");
+    expect(tudo).toContain("John");
+    expect(tudo).toContain("Novo");
+    expect(tudo).toContain("I want a new website.");
+    expect(tudo).toContain("Nota antiga.");
+    expect(tudo).toContain("id: a1b2c3d4");
+  });
+
+  it("sem notas mostra marcador", () => {
+    expect(detalheLead({ ...base, notas: null }).join("\n")).toContain("— sem notas —");
   });
 });

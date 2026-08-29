@@ -3,8 +3,8 @@ import { formatarCompetenciaBR, formatarDataBR } from "@/lib/dominio/tempo";
 import { STATUS_LEAD, type StatusLead } from "@/lib/dominio/leads";
 
 /**
- * Domínio puro do bot do Telegram: parser do /fatura, distribuição de um
- * valor entre faturas em aberto e os textos das mensagens. Nada de IO aqui.
+ * Domínio puro do bot do Telegram: parsers dos comandos, distribuição de
+ * pagamento entre faturas e os textos das mensagens. Nada de IO aqui.
  */
 
 export type ComandoFatura = { idCurto: string; valorCentavos: number; pagoEm: string | null };
@@ -16,7 +16,8 @@ export const AJUDA_BOT = [
   "Comandos disponíveis:",
   "/clientes — lista clientes, ids e faturas em aberto",
   "/leads — funil de leads com ids",
-  "/lead <id> <status> [nota] — status: novo, em_conversa, proposta, ganho, perdido",
+  "/lead <id> — mostra mensagem e notas do lead",
+  "/lead <id> <status> [nota] — atualiza (status: novo, em_conversa, proposta, ganho, perdido)",
   "/fatura <id> <valor> [data]",
   "Ex.: /fatura a1b2c3d4 2.490,40 29/08/2026",
   "O id do cliente aparece nos avisos de licença. Sem data = hoje.",
@@ -239,13 +240,18 @@ export const rotuloStatusLead: Record<StatusLead, string> = {
   perdido: "Perdido",
 };
 
-export type ComandoLead = { idCurto: string; status: StatusLead; nota: string | null };
+export type ComandoLead = { idCurto: string; status: StatusLead | null; nota: string | null };
 
 export function parseComandoLead(
   texto: string
 ): { ok: true; comando: ComandoLead } | { ok: false; erro: string } {
-  const m = texto.trim().match(/^\/lead(?:@\S+)?\s+(\S+)\s+(\S+)([\s\S]*)$/);
-  if (!m) return { ok: false, erro: "Não entendi. Use: /lead <id> <status> [nota]" };
+  const m = texto.trim().match(/^\/lead(?:@\S+)?\s+(\S+)(?:\s+(\S+)([\s\S]*))?$/);
+  if (!m) {
+    return {
+      ok: false,
+      erro: "Não entendi. Use: /lead <id> [status] [nota] — só o id mostra o lead.",
+    };
+  }
 
   const idCurto = m[1].toLowerCase();
   if (!ID_RE.test(idCurto)) {
@@ -255,12 +261,15 @@ export function parseComandoLead(
     };
   }
 
+  // Só o id: consulta — devolve os dados do lead sem alterar nada.
+  if (!m[2]) return { ok: true, comando: { idCurto, status: null, nota: null } };
+
   const status = m[2].toLowerCase();
   if (!(STATUS_LEAD as readonly string[]).includes(status)) {
     return { ok: false, erro: `Status inválido. Use um de: ${STATUS_LEAD.join(", ")}.` };
   }
 
-  const nota = m[3].trim();
+  const nota = (m[3] ?? "").trim();
   return { ok: true, comando: { idCurto, status: status as StatusLead, nota: nota || null } };
 }
 
@@ -309,4 +318,58 @@ export function mensagemLeads(leads: LeadResumo[]): string[] {
   atual += `\n\nAtualizar: /lead <id> <status> [nota]\nStatus: ${STATUS_LEAD.join(" · ")}`;
   chunks.push(atual);
   return chunks;
+}
+
+/** Junta blocos em mensagens sob o limite; bloco gigante é fatiado na marra. */
+function empacotar(blocos: string[]): string[] {
+  const normalizados = blocos.flatMap((b) => {
+    if (b.length <= LIMITE_CHUNK) return [b];
+    const partes: string[] = [];
+    for (let i = 0; i < b.length; i += LIMITE_CHUNK) partes.push(b.slice(i, i + LIMITE_CHUNK));
+    return partes;
+  });
+
+  const chunks: string[] = [];
+  let atual = "";
+  for (const bloco of normalizados) {
+    if (atual && atual.length + bloco.length + 2 > LIMITE_CHUNK) {
+      chunks.push(atual);
+      atual = bloco;
+    } else {
+      atual = atual ? `${atual}\n\n${bloco}` : bloco;
+    }
+  }
+  if (atual) chunks.push(atual);
+  return chunks;
+}
+
+/** Consulta do /lead <id>: cabeçalho, mensagem original e notas completas. */
+export function detalheLead(l: {
+  id: string;
+  nome: string;
+  negocio: string | null;
+  origem: "br" | "en";
+  canal: string;
+  contato: string;
+  status: StatusLead;
+  criadoEm: Date;
+  mensagem: string;
+  notas: string | null;
+}): string[] {
+  const titulo = l.negocio
+    ? `▪️ ${l.nome} — ${l.negocio} (${l.origem.toUpperCase()})`
+    : `▪️ ${l.nome} (${l.origem.toUpperCase()})`;
+
+  const cabecalho = [
+    titulo,
+    `Status: ${rotuloStatusLead[l.status]} · ${l.canal}: ${l.contato}`,
+    `Chegou: ${formatarDataHoraBR(l.criadoEm)}`,
+    `id: ${l.id.slice(0, 8)}`,
+  ].join("\n");
+
+  const mensagem = `📩 Mensagem:\n«${l.mensagem}»`;
+  const notas = `📝 Notas:\n${l.notas?.trim() ? l.notas : "— sem notas —"}`;
+  const rodape = "Atualizar: /lead <id> <status> [nota]";
+
+  return empacotar([cabecalho, mensagem, notas, rodape]);
 }
