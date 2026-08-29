@@ -15,6 +15,17 @@ const ROTULOS: Record<IdPlano, string> = {
   m12: "12 months",
 };
 
+const INCLUIDO = [
+  "Custom website design",
+  "Mobile responsive",
+  "Basic SEO setup",
+  "Google Maps integration",
+  "Contact forms & leads",
+  "SSL certificate & security",
+  "Website hosting included",
+  "Support & maintenance",
+];
+
 /** Seletor de três posições com pílula deslizante; valores vêm do painel. */
 export function PricingSection({ pricing }: { pricing: PricingEn }) {
   const opcoes = (["full", "m6", "m12"] as const).filter(
@@ -78,15 +89,13 @@ export function PricingSection({ pricing }: { pricing: PricingEn }) {
             : "one-time payment"}
         </div>
 
-        <ul className="mx-auto mt-6 max-w-xs space-y-2 text-left text-sm text-white/70">
-          {["Custom design & copy", "Booking & contact forms", "Live in days"].map(
-            (item) => (
-              <li key={item} className="flex items-start gap-2">
-                <Check className="mt-0.5 h-4 w-4 shrink-0 text-[rgba(0,255,138,0.9)]" />
-                <span>{item}</span>
-              </li>
-            )
-          )}
+        <ul className="mx-auto mt-6 grid max-w-md gap-x-6 gap-y-2 text-left text-sm text-white/70 sm:grid-cols-2">
+          {INCLUIDO.map((item) => (
+            <li key={item} className="flex items-start gap-2">
+              <Check className="mt-0.5 h-4 w-4 shrink-0 text-[rgba(0,255,138,0.9)]" />
+              <span>{item}</span>
+            </li>
+          ))}
         </ul>
 
         <a
