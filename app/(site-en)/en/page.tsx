@@ -18,6 +18,7 @@ import { formatarDolares } from "@/lib/formato";
 import { PricingSection } from "@/components/en/pricing-section";
 import { LeadFormEn } from "@/components/en/lead-form";
 import { RolagemSecao } from "@/components/en/rolagem-secao";
+import { SchemaSiteEn } from "@/components/seo/schema-site";
 
 export const metadata: Metadata = {
   title: SITE_EN.title,
@@ -296,6 +297,7 @@ export default async function PaginaEn() {
         </div>
       </footer>
 
+      <SchemaSiteEn pricing={pricing} faq={faq} />
       <RolagemSecao />
     </main>
   );

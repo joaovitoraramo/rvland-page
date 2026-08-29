@@ -27,6 +27,7 @@ import { Magnetic } from "@/components/landing/magnetic";
 import { HeroGlow } from "@/components/landing/hero-glow";
 import { TiltCard } from "@/components/landing/tilt-card";
 import { CodeContactForm } from "@/components/landing/contact-form";
+import { SchemaSitePt } from "@/components/seo/schema-site";
 
 import {
   CONTACT,
@@ -597,6 +598,7 @@ export default function Page() {
             </div>
           </div>
         </footer>
+        <SchemaSitePt />
       </main>
     </>
   );

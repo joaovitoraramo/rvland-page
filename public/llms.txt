@@ -1,0 +1,19 @@
+# RVLand Devs
+
+> Custom websites for businesses, designed, written, and launched entirely by message: no calls, no meetings. Flat, transparent pricing listed on the site, with support and hosting included in every plan. Based in Brazil, serving clients internationally in English and Portuguese.
+
+RVLand Devs builds custom websites for small businesses (car washes, local services, and more). The client sends business info by message (Instagram DM, SMS, email, or Messenger), approves a free homepage concept, and the site goes live in days. Every plan includes custom design, copywriting, mobile-responsive layout, basic SEO, Google Maps integration, contact and booking forms, SSL, hosting, and ongoing support.
+
+## Pages
+
+- [Website services in English](https://rvland-page.vercel.app/en): plans, pricing, FAQ, and lead form
+- [Pricing](https://rvland-page.vercel.app/en?section=pricing): pay in full or monthly plans, support and hosting included
+- [Site em português](https://rvland-page.vercel.app/): desenvolvimento de software sob medida no Brasil
+
+## Facts
+
+- Payment options: one-time payment or monthly installment plans (see live pricing on the site)
+- Every plan includes months of support and hosting; afterwards a flat monthly support plan applies
+- Communication is 100% by text message; no sales calls or meetings, ever
+- Free homepage concept before any payment
+- The client owns the website once the plan is paid in full
