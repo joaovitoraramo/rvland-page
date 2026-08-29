@@ -1,6 +1,7 @@
 import "server-only";
 import { eq } from "drizzle-orm";
 import { db, configuracoes } from "@/lib/db";
+import { parsePricingEn, type PricingEn } from "@/lib/dominio/preco-site";
 
 export type ConfigPlataforma = {
   modoPanico: boolean;
@@ -42,3 +43,12 @@ export async function setConfig(chave: string, valor: Record<string, unknown>): 
 
 export const configuracaoExiste = async (chave: string) =>
   (await db.select().from(configuracoes).where(eq(configuracoes.chave, chave))).length > 0;
+
+/** Pricing da /en; JSON inválido ou ausente cai no padrão do domínio. */
+export async function getPricingEn(): Promise<PricingEn> {
+  const [linha] = await db
+    .select()
+    .from(configuracoes)
+    .where(eq(configuracoes.chave, "pricing_en"));
+  return parsePricingEn(linha?.valor);
+}
