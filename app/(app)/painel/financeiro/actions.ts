@@ -2,14 +2,15 @@
 
 import { revalidatePath } from "next/cache";
 import { redirect } from "next/navigation";
-import { and, eq, ne } from "drizzle-orm";
+import { eq } from "drizzle-orm";
 import { z } from "zod";
 
-import { db, contratos, faturas, licencas, pagamentos } from "@/lib/db";
+import { db, contratos, faturas, pagamentos } from "@/lib/db";
 import { exigirPermissao } from "@/lib/auth";
 import { registrarAuditoria } from "@/lib/audit";
 import { reaisParaCentavos } from "@/lib/formato";
-import { hojeSP, parseCompetenciaHumana } from "@/lib/dominio/tempo";
+import { parseCompetenciaHumana } from "@/lib/dominio/tempo";
+import { registrarPagamentoNaFatura } from "@/lib/servicos/registrar-pagamento";
 
 // ── Fatura manual (avulsa, histórica ou parcela de contrato fechado) ─────────
 
@@ -149,86 +150,25 @@ export async function lancarPagamento(
   const forma = String(formData.get("forma") ?? "").trim() || null;
   const notas = String(formData.get("notas") ?? "").trim() || null;
 
-  const [fatura] = await db.select().from(faturas).where(eq(faturas.id, faturaId));
-  if (!fatura) return { erro: "Fatura não encontrada." };
-  if (fatura.status === "cancelada") return { erro: "Fatura cancelada não recebe pagamento." };
-  if (fatura.status === "quitada") return { erro: "Fatura já quitada." };
-
-  await db.insert(pagamentos).values({
+  const resultado = await registrarPagamentoNaFatura({
     faturaId,
     valorCentavos,
     pagoEm,
     forma,
     notas,
     criadoPor: perfil.nome,
-  });
-
-  const totalPago = fatura.pagoCentavos + valorCentavos;
-  const quitou = totalPago >= fatura.valorCentavos;
-
-  await db
-    .update(faturas)
-    .set({
-      pagoCentavos: totalPago,
-      ...(quitou ? { status: "quitada" as const, quitadaEm: new Date() } : {}),
-    })
-    .where(eq(faturas.id, faturaId));
-
-  await registrarAuditoria({
     ator: perfil,
-    acao: quitou ? "pagamento.confirmado" : "pagamento.parcial",
-    entidade: "pagamento",
-    entidadeId: faturaId,
-    detalhes: {
-      clienteId: fatura.clienteId,
-      valorCentavos,
-      totalPago,
-      valorFatura: fatura.valorCentavos,
-    },
   });
-
-  // Renovação automática: quitou e o cliente ficou sem vencidas não-históricas
-  // → zera dias de confiança e audita a renovação. O status deriva sozinho;
-  // o agente (Fase 2) aplicará no próximo heartbeat.
-  if (quitou && !fatura.historica) {
-    const hoje = hojeSP();
-    const abertasVencidas = (
-      await db
-        .select({ vencimento: faturas.vencimento, historica: faturas.historica })
-        .from(faturas)
-        .where(
-          and(
-            eq(faturas.clienteId, fatura.clienteId),
-            eq(faturas.status, "aberta"),
-            ne(faturas.id, faturaId)
-          )
-        )
-    ).filter((f) => !f.historica && f.vencimento < hoje);
-
-    if (abertasVencidas.length === 0) {
-      await db
-        .update(licencas)
-        .set({ diasConfianca: 0, atualizadoEm: new Date() })
-        .where(eq(licencas.clienteId, fatura.clienteId));
-
-      await registrarAuditoria({
-        ator: "sistema",
-        acao: "licenca.renovada",
-        entidade: "licenca",
-        entidadeId: fatura.clienteId,
-        detalhes: { faturaId, motivo: "pagamento integral confirmado" },
-      });
-    }
-  }
+  if (!resultado.ok) return { erro: resultado.erro };
 
   revalidatePath(`/painel/financeiro/faturas/${faturaId}`);
-  revalidatePath(`/painel/clientes/${fatura.clienteId}`);
+  revalidatePath(`/painel/clientes/${resultado.clienteId}`);
   revalidatePath("/painel/financeiro");
   revalidatePath("/painel");
 
   return {
-    ok: quitou
-      ? fatura.historica
+    ok: resultado.quitou
+      ? resultado.historica
         ? "Fatura histórica quitada (sem efeito em licença)."
         : "Fatura quitada — licença renovada."
       : "Pagamento parcial registrado; fatura segue aberta.",
