@@ -2,6 +2,7 @@ import { NextResponse } from "next/server";
 
 import { gerarFaturasDaCompetencia } from "@/lib/servicos/gerar-faturas";
 import { competenciaAtual } from "@/lib/dominio/tempo";
+import { avisarViradasDeLicenca } from "@/lib/servicos/avisos-licenca";
 
 export const dynamic = "force-dynamic";
 
@@ -18,5 +19,14 @@ export async function GET(request: Request) {
   const competencia = competenciaAtual();
   const resultado = await gerarFaturasDaCompetencia(competencia);
 
-  return NextResponse.json({ competencia, ...resultado });
+  // Etapa 2: avisos de virada de licença no Telegram. Falha aqui não pode
+  // derrubar a geração de faturas — o cron responde 200 do mesmo jeito.
+  let avisosLicenca = 0;
+  try {
+    avisosLicenca = (await avisarViradasDeLicenca()).enviados;
+  } catch (err) {
+    console.error("[cron/faturas] avisos de licença falharam:", err);
+  }
+
+  return NextResponse.json({ competencia, ...resultado, avisosLicenca });
 }
