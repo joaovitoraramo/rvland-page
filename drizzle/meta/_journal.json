@@ -43,6 +43,20 @@
       "when": 1786990431650,
       "tag": "0005_exotic_oracle",
       "breakpoints": true
+    },
+    {
+      "idx": 6,
+      "version": "7",
+      "when": 1788031919515,
+      "tag": "0006_pale_vanisher",
+      "breakpoints": true
+    },
+    {
+      "idx": 7,
+      "version": "7",
+      "when": 1788031920671,
+      "tag": "0007_rls_leads",
+      "breakpoints": true
     }
   ]
 }

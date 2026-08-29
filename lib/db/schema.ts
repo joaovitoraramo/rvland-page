@@ -67,6 +67,7 @@ export const auditoria = pgTable(
         | "plataforma"
         | "anexo"
         | "servidor"
+        | "lead"
       >(),
     entidadeId: text("entidade_id"),
     detalhes: jsonb("detalhes").$type<Record<string, unknown>>(),
@@ -375,4 +376,30 @@ export const agenteReleases = pgTable(
     criadoEm: timestamp("criado_em", { withTimezone: true }).notNull().defaultNow(),
   },
   (t) => [uniqueIndex("agente_releases_versao_arch_unq").on(t.versao, t.arch)]
+);
+
+// ─── Site público: leads dos formulários (BR e EN) ──────────────────────────
+
+export const leads = pgTable(
+  "leads",
+  {
+    id: uuid("id").primaryKey().defaultRandom(),
+    origem: text("origem").notNull().$type<"br" | "en">(),
+    nome: text("nome").notNull(),
+    negocio: text("negocio"),
+    siteAtual: text("site_atual"),
+    canal: text("canal")
+      .notNull()
+      .$type<"email" | "sms" | "instagram" | "messenger" | "whatsapp" | "telefone">(),
+    contato: text("contato").notNull(),
+    mensagem: text("mensagem").notNull(),
+    status: text("status")
+      .notNull()
+      .default("novo")
+      .$type<"novo" | "em_conversa" | "proposta" | "ganho" | "perdido">(),
+    notas: text("notas"),
+    criadoEm: timestamp("criado_em", { withTimezone: true }).notNull().defaultNow(),
+    atualizadoEm: timestamp("atualizado_em", { withTimezone: true }).notNull().defaultNow(),
+  },
+  (t) => [index("leads_origem_status_idx").on(t.origem, t.status)]
 );
