@@ -1,5 +1,5 @@
 import Link from "next/link";
-import { ShieldAlert, FlaskConical, Users, UserCog } from "lucide-react";
+import { ShieldAlert, FlaskConical, Users, UserCog, CircleDollarSign } from "lucide-react";
 
 import { exigirPerfil, pode } from "@/lib/auth";
 import { getConfig } from "@/lib/config";
@@ -25,6 +25,7 @@ export default async function PaginaConfig() {
   const podeSimulacao = pode(perfil, "plataforma.simulacao");
   const podeGrupos = pode(perfil, "plataforma.grupos");
   const podeUsuarios = pode(perfil, "plataforma.usuarios");
+  const podePrecos = pode(perfil, "site.precos");
 
   return (
     <>
@@ -123,6 +124,23 @@ export default async function PaginaConfig() {
                   Usuários
                 </Link>
               ) : null}
+            </CardContent>
+          </Card>
+        ) : null}
+
+        {podePrecos ? (
+          <Card>
+            <CardHeader>
+              <CardTitle className="text-base text-white">Site</CardTitle>
+            </CardHeader>
+            <CardContent>
+              <Link
+                href="/painel/config/precos-site"
+                className="flex items-center gap-3 rounded-xl border border-white/10 bg-black/20 p-3 text-sm text-white/80 transition-colors hover:bg-black/30"
+              >
+                <CircleDollarSign className="h-4 w-4" />
+                Preços do site (/en)
+              </Link>
             </CardContent>
           </Card>
         ) : null}

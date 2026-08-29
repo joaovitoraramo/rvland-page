@@ -37,6 +37,11 @@ export const PERMISSOES = [
   { chave: "agente.publicar", rotulo: "Publicar release do agente (Fase 2)", area: "Agente" },
   { chave: "agente.forcar_update", rotulo: "Forçar update do agente (Fase 2)", area: "Agente" },
 
+  { chave: "leads.ver", rotulo: "Ver leads", area: "Leads" },
+  { chave: "leads.editar", rotulo: "Editar leads (status e notas)", area: "Leads" },
+
+  { chave: "site.precos", rotulo: "Editar preços do site (/en)", area: "Site" },
+
   { chave: "plataforma.panico", rotulo: "Botão de pânico (suspender bloqueios)", area: "Plataforma" },
   { chave: "plataforma.simulacao", rotulo: "Modo simulação", area: "Plataforma" },
   { chave: "plataforma.usuarios", rotulo: "Gerenciar usuários", area: "Plataforma" },
