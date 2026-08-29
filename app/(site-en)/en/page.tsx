@@ -5,6 +5,8 @@ import {
   MessageSquareText,
   Moon,
   PenLine,
+  BadgeCheck,
+  RefreshCcw,
   ShieldCheck,
 } from "lucide-react";
 
@@ -58,6 +60,24 @@ const NO_CALLS = [
     icon: <ShieldCheck className="h-5 w-5 text-white/90" />,
     title: "No sales pressure",
     desc: "No pitch meetings. See the concept, decide when you're ready.",
+  },
+] as const;
+
+const GARANTIAS = [
+  {
+    icon: <ShieldCheck className="h-5 w-5" />,
+    title: "Free concept first",
+    desc: "See your homepage before you pay anything.",
+  },
+  {
+    icon: <BadgeCheck className="h-5 w-5" />,
+    title: "You own your website",
+    desc: "Domain, design, and content are 100% yours.",
+  },
+  {
+    icon: <RefreshCcw className="h-5 w-5" />,
+    title: "No lock-in",
+    desc: "Move your site elsewhere whenever you want.",
   },
 ] as const;
 
@@ -121,6 +141,21 @@ export default async function PaginaEn() {
               >
                 See pricing
               </a>
+            </div>
+
+            <div className="mt-10 flex flex-wrap gap-x-10 gap-y-6">
+              <div>
+                <div className="text-3xl font-semibold text-white">50+</div>
+                <div className="mt-1 text-sm text-white/55">projects delivered since 2024</div>
+              </div>
+              <div>
+                <div className="text-3xl font-semibold text-white">100%</div>
+                <div className="mt-1 text-sm text-white/55">by message, no calls</div>
+              </div>
+              <div>
+                <div className="text-3xl font-semibold text-white">{pricing.care.mesesInclusos}</div>
+                <div className="mt-1 text-sm text-white/55">months of support included</div>
+              </div>
             </div>
           </div>
         </div>
@@ -228,6 +263,21 @@ export default async function PaginaEn() {
             </p>
           </div>
           <PricingSection pricing={pricing} />
+
+          <div className="mx-auto mt-10 grid max-w-4xl gap-4 md:grid-cols-3">
+            {GARANTIAS.map((g) => (
+              <div
+                key={g.title}
+                className="flex items-start gap-3 rounded-2xl border border-white/10 bg-white/[0.04] p-5"
+              >
+                <span className="mt-0.5 shrink-0 text-[rgba(0,255,138,0.9)]">{g.icon}</span>
+                <span>
+                  <span className="block text-sm font-medium text-white">{g.title}</span>
+                  <span className="mt-1 block text-sm text-white/55">{g.desc}</span>
+                </span>
+              </div>
+            ))}
+          </div>
         </Reveal>
       </section>
 
