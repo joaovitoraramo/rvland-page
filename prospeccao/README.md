@@ -20,3 +20,11 @@ planilha montada por gerar-planilha.mjs com avaliação visual de cada screensho
     node scripts/prospectar-leads.mjs          # nova varredura (editar CIDADES no topo)
     node scripts/enriquecer-leads.mjs prospeccao/dados-geral.json
     node scripts/gerar-planilha.mjs
+
+## Workbook
+
+    ~/.asdf/installs/python/3.11.9/bin/python3 scripts/gerar-xlsx.py
+
+Gera prospeccao-rvland.xlsx a partir do CSV: dashboard com graficos, aba de
+leads filtravel, aba de prioridade com status e datas, lista de Instagram e
+os avisos de verificacao. Precos dos cenarios vem do painel (chave pricing_en).
