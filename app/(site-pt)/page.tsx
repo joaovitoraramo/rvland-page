@@ -119,6 +119,7 @@ export default function Page() {
         description: SITE.description,
         email: CONTACT.email,
         telephone: `+${CONTACT.whatsapp}`,
+        sameAs: [CONTACT.instagram],
         areaServed: "BR",
       },
       {

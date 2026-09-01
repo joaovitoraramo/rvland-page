@@ -2,6 +2,7 @@ import type { Metadata } from "next";
 import Link from "next/link";
 import {
   ArrowRight,
+  Instagram,
   MessageSquareText,
   Moon,
   PenLine,
@@ -15,6 +16,7 @@ import { HeroGlow } from "@/components/landing/hero-glow";
 import { Card, CardContent } from "@/components/ui/card";
 
 import { getPricingEn } from "@/lib/config";
+import { CONTACT } from "@/lib/site";
 import { faqEn, INCLUDED_EN, SITE_EN, STEPS_EN } from "@/lib/site-en";
 import { formatarDolares } from "@/lib/formato";
 import { PricingSection } from "@/components/en/pricing-section";
@@ -341,9 +343,20 @@ export default async function PaginaEn() {
       <footer className="border-t border-white/10 py-8">
         <div className="mx-auto flex w-full max-w-6xl flex-col items-center justify-between gap-3 px-4 text-sm text-white/45 md:flex-row md:px-6">
           <span>© {new Date().getFullYear()} RVLand Devs</span>
-          <Link href="/" className="transition-colors hover:text-white">
-            Português (Brasil) →
-          </Link>
+          <div className="flex items-center gap-5">
+            <a
+              href={CONTACT.instagram}
+              target="_blank"
+              rel="noreferrer"
+              className="inline-flex items-center gap-1.5 transition-colors hover:text-white"
+            >
+              <Instagram className="h-4 w-4" />
+              @rvlanddevs
+            </a>
+            <Link href="/" className="transition-colors hover:text-white">
+              Português (Brasil) →
+            </Link>
+          </div>
         </div>
       </footer>
 
