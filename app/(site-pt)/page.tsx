@@ -120,6 +120,7 @@ export default function Page() {
         email: CONTACT.email,
         telephone: `+${CONTACT.whatsapp}`,
         sameAs: [CONTACT.instagram],
+        logo: `${SITE_URL}/logo.png`,
         areaServed: "BR",
       },
       {

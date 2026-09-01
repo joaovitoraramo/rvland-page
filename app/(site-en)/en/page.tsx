@@ -1,4 +1,5 @@
 import type { Metadata } from "next";
+import Image from "next/image";
 import Link from "next/link";
 import {
   ArrowRight,
@@ -92,9 +93,13 @@ export default async function PaginaEn() {
       {/* topo */}
       <header className="mx-auto flex w-full max-w-6xl items-center justify-between px-4 py-5 md:px-6">
         <div className="flex items-center gap-3">
-          <span className="grid size-9 place-items-center rounded-xl bg-gradient-to-br from-[#00E5FF] to-[#00FF8A] font-mono text-[13px] font-bold text-[#05070B]">
-            RV
-          </span>
+          <Image
+            src="/logo.png"
+            alt="RVLand Devs"
+            width={44}
+            height={44}
+            className="size-11 rounded-full ring-1 ring-white/15"
+          />
           <span className="text-sm font-semibold tracking-wide">RVLand Devs</span>
         </div>
         <nav className="flex items-center gap-2">

@@ -53,6 +53,8 @@ export function SchemaSiteEn({
         email: CONTACT.email,
         areaServed: ["US", "BR"],
         sameAs: [CONTACT.instagram],
+        logo: `${SITE_URL}/logo.png`,
+        image: `${SITE_URL}/logo.png`,
         knowsLanguage: ["en", "pt-BR"],
         hasOfferCatalog: {
           "@type": "OfferCatalog",
