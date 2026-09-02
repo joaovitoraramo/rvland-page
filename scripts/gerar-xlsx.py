@@ -44,6 +44,18 @@ F_CORPO = Font(name="Calibri", size=10)
 F_NEGRITO = Font(name="Calibri", size=10, bold=True)
 
 BORDA_FINA = Border(*[Side(style="thin", color="DDE3EA")] * 4)
+F_LINK = Font(name="Calibri", size=10, color="0563C1", underline="single")
+
+
+def aplicar_link(ws, linha, coluna, destino, texto=None):
+    """Deixa a celula clicavel. Sem valor na celula, nao faz nada."""
+    c = ws.cell(row=linha, column=coluna)
+    if texto is not None:
+        c.value = texto
+    if not c.value:
+        return
+    c.hyperlink = destino
+    c.font = F_LINK
 
 # ── precos reais configurados no painel (chave pricing_en) ──────────────────
 PRECO_FULL = 1497.00
@@ -319,32 +331,42 @@ def montar_tabela(ws, cabecalhos, linhas_dados, larguras, titulo, subtitulo):
 # LEADS
 # ════════════════════════════════════════════════════════════════════════════
 ws = wb.create_sheet("Leads")
-cab = ["Pot.", "Temp.", "Negócio", "Nicho", "Cidade", "Site", "Nota site",
-       "Feito em", "Booking", "Copyright", "Instagram", "Seguidores", "E-mail", "Ângulo de abordagem"]
+cab = ["Pot.", "Temp.", "Negócio", "Nicho", "Cidade", "Site (clique)", "Print do site",
+       "Nota site", "Feito em", "Booking", "Copyright", "Instagram (clique)", "Seguidores",
+       "E-mail (clique)", "Ângulo de abordagem"]
 linhas_leads = [
-    [l["potencial"], l["temp"], l["negocio"], l["nicho"], l["cidade"], l["site"], l["nota_site"],
-     l["builder"].replace("custom/desconhecido", "sob medida"), l["booking"], l["ano_copyright"],
-     l["instagram"], l["seg_num"] or "", l["emails"], l["observacoes_angulo"]]
+    [l["potencial"], l["temp"], l["negocio"], l["nicho"], l["cidade"], l["site"], "abrir print",
+     l["nota_site"], l["builder"].replace("custom/desconhecido", "sob medida"), l["booking"],
+     l["ano_copyright"], l["instagram"], l["seg_num"] or "", l["emails"], l["observacoes_angulo"]]
     for l in leads
 ]
 ultima = montar_tabela(
     ws, cab, linhas_leads,
-    [6, 11, 30, 15, 16, 30, 9, 14, 9, 11, 24, 11, 34, 62],
+    [6, 11, 30, 15, 16, 30, 13, 9, 14, 9, 11, 24, 11, 34, 62],
     "Leads · carteira completa",
-    "Ordenado por potencial. Cada nota de site saiu da avaliação visual do screenshot, não de heurística.",
+    "Ordenado por potencial. Site, print, Instagram e e-mail são clicáveis: confira cada avaliação você mesmo.",
 )
 
-for r in range(5, ultima + 1):
+for r, l in zip(range(5, ultima + 1), leads):
     ws.cell(row=r, column=1).alignment = Alignment(horizontal="center")
-    ws.cell(row=r, column=7).alignment = Alignment(horizontal="center")
-    ws.cell(row=r, column=12).number_format = "#,##0"
+    ws.cell(row=r, column=8).alignment = Alignment(horizontal="center")
+    ws.cell(row=r, column=13).number_format = "#,##0"
+    aplicar_link(ws, r, 6, f"https://{l['site']}")
+    if l["screenshot"]:
+        aplicar_link(ws, r, 7, l["screenshot"].replace("prospeccao/", ""))
+    else:
+        ws.cell(row=r, column=7).value = ""
+    if l["instagram"]:
+        aplicar_link(ws, r, 12, f"https://instagram.com/{l['instagram'].lstrip('@')}")
+    if l["emails"]:
+        aplicar_link(ws, r, 14, f"mailto:{l['emails'].split(' / ')[0]}")
 
 faixa_pot = f"A5:A{ultima}"
 ws.conditional_formatting.add(faixa_pot, CellIsRule(operator="greaterThanOrEqual", formula=["8"], fill=FILL_QUENTE, font=Font(bold=True, color="0A6B3D")))
 ws.conditional_formatting.add(faixa_pot, CellIsRule(operator="between", formula=["6", "7"], fill=FILL_MORNO, font=Font(bold=True, color="8A5A12")))
 ws.conditional_formatting.add(faixa_pot, CellIsRule(operator="lessThanOrEqual", formula=["5"], fill=FILL_FRIO, font=Font(color=CINZA)))
-ws.conditional_formatting.add(f"G5:G{ultima}", DataBarRule(start_type="num", start_value=0, end_type="num", end_value=10, color=CIANO))
-ws.conditional_formatting.add(f"L5:L{ultima}", DataBarRule(start_type="min", end_type="max", color="B39DDB"))
+ws.conditional_formatting.add(f"H5:H{ultima}", DataBarRule(start_type="num", start_value=0, end_type="num", end_value=10, color=CIANO))
+ws.conditional_formatting.add(f"M5:M{ultima}", DataBarRule(start_type="min", end_type="max", color="B39DDB"))
 
 
 # ════════════════════════════════════════════════════════════════════════════
@@ -352,16 +374,17 @@ ws.conditional_formatting.add(f"L5:L{ultima}", DataBarRule(start_type="min", end
 # ════════════════════════════════════════════════════════════════════════════
 prio = wb.create_sheet("Prioridade")
 alvos = [l for l in leads if l["potencial"] >= 6]
-cab_p = ["Pot.", "Negócio", "Nicho", "Cidade", "Site", "Instagram", "Seguidores", "E-mail",
-         "Ângulo de abordagem", "Status", "Seguiu em", "Comentou em", "DM enviada em", "Notas"]
+cab_p = ["Pot.", "Negócio", "Nicho", "Cidade", "Site (clique)", "Print do site", "Instagram (clique)",
+         "Seguidores", "E-mail (clique)", "Ângulo de abordagem", "Status", "Seguiu em", "Comentou em",
+         "DM enviada em", "Notas"]
 linhas_p = [
-    [l["potencial"], l["negocio"], l["nicho"], l["cidade"], l["site"], l["instagram"],
+    [l["potencial"], l["negocio"], l["nicho"], l["cidade"], l["site"], "abrir print", l["instagram"],
      l["seg_num"] or "", l["emails"], l["observacoes_angulo"], "A fazer", "", "", "", ""]
     for l in alvos
 ]
 ultima_p = montar_tabela(
     prio, cab_p, linhas_p,
-    [6, 30, 15, 16, 28, 24, 11, 32, 58, 14, 12, 13, 15, 40],
+    [6, 30, 15, 16, 28, 13, 24, 11, 32, 58, 14, 12, 13, 15, 40],
     "Prioridade · seus alvos de verdade",
     "Potencial 6+. Fluxo: seguir → comentar 2 ou 3 dias → mandar a DM com a prévia pronta.",
 )
@@ -372,19 +395,28 @@ status_dv = DataValidation(
     allow_blank=True,
 )
 prio.add_data_validation(status_dv)
-status_dv.add(f"J5:J{ultima_p}")
+status_dv.add(f"K5:K{ultima_p}")
 
-for r in range(5, ultima_p + 1):
+for r, l in zip(range(5, ultima_p + 1), alvos):
     prio.cell(row=r, column=1).alignment = Alignment(horizontal="center")
-    prio.cell(row=r, column=7).number_format = "#,##0"
-    for c in (11, 12, 13):
+    prio.cell(row=r, column=8).number_format = "#,##0"
+    for c in (12, 13, 14):
         prio.cell(row=r, column=c).number_format = "DD/MM/YYYY"
+    aplicar_link(prio, r, 5, f"https://{l['site']}")
+    if l["screenshot"]:
+        aplicar_link(prio, r, 6, l["screenshot"].replace("prospeccao/", ""))
+    else:
+        prio.cell(row=r, column=6).value = ""
+    if l["instagram"]:
+        aplicar_link(prio, r, 7, f"https://instagram.com/{l['instagram'].lstrip('@')}")
+    if l["emails"]:
+        aplicar_link(prio, r, 9, f"mailto:{l['emails'].split(' / ')[0]}")
 
 prio.conditional_formatting.add(f"A5:A{ultima_p}", CellIsRule(operator="greaterThanOrEqual", formula=["8"], fill=FILL_QUENTE, font=Font(bold=True, color="0A6B3D")))
 prio.conditional_formatting.add(f"A5:A{ultima_p}", CellIsRule(operator="between", formula=["6", "7"], fill=FILL_MORNO, font=Font(bold=True, color="8A5A12")))
-prio.conditional_formatting.add(f"J5:J{ultima_p}", CellIsRule(operator="equal", formula=['"Ganho"'], fill=PatternFill("solid", fgColor="C8F0D8")))
-prio.conditional_formatting.add(f"J5:J{ultima_p}", CellIsRule(operator="equal", formula=['"Perdido"'], fill=PatternFill("solid", fgColor="F5D5D5")))
-prio.conditional_formatting.add(f"J5:J{ultima_p}", CellIsRule(operator="equal", formula=['"DM enviada"'], fill=PatternFill("solid", fgColor="DCE9F7")))
+prio.conditional_formatting.add(f"K5:K{ultima_p}", CellIsRule(operator="equal", formula=['"Ganho"'], fill=PatternFill("solid", fgColor="C8F0D8")))
+prio.conditional_formatting.add(f"K5:K{ultima_p}", CellIsRule(operator="equal", formula=['"Perdido"'], fill=PatternFill("solid", fgColor="F5D5D5")))
+prio.conditional_formatting.add(f"K5:K{ultima_p}", CellIsRule(operator="equal", formula=['"DM enviada"'], fill=PatternFill("solid", fgColor="DCE9F7")))
 
 
 # ════════════════════════════════════════════════════════════════════════════
@@ -408,9 +440,11 @@ sim_nao = DataValidation(type="list", formula1='"sim,não"', allow_blank=True)
 ig.add_data_validation(sim_nao)
 sim_nao.add(f"G5:H{ultima_ig}")
 
-for r in range(5, ultima_ig + 1):
+for r, l in zip(range(5, ultima_ig + 1), contas):
     ig.cell(row=r, column=2).number_format = "#,##0"
     ig.cell(row=r, column=5).alignment = Alignment(horizontal="center")
+    aplicar_link(ig, r, 1, f"https://instagram.com/{l['instagram'].lstrip('@')}")
+    aplicar_link(ig, r, 6, f"https://{l['site']}")
 ig.conditional_formatting.add(f"B5:B{ultima_ig}", DataBarRule(start_type="min", end_type="max", color=CIANO))
 ig.conditional_formatting.add(f"E5:E{ultima_ig}", CellIsRule(operator="greaterThanOrEqual", formula=["8"], fill=FILL_QUENTE, font=Font(bold=True, color="0A6B3D")))
 
