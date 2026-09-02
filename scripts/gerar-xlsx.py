@@ -293,7 +293,7 @@ for col_letra, larg in larguras_dash.items():
 # ════════════════════════════════════════════════════════════════════════════
 # helper de tabela
 # ════════════════════════════════════════════════════════════════════════════
-def montar_tabela(ws, cabecalhos, linhas_dados, larguras, titulo, subtitulo):
+def montar_tabela(ws, cabecalhos, linhas_dados, larguras, titulo, subtitulo, wrap_cols=None):
     ws.sheet_view.showGridLines = False
     ws["A1"] = titulo
     ws["A1"].font = F_TITULO
@@ -314,7 +314,8 @@ def montar_tabela(ws, cabecalhos, linhas_dados, larguras, titulo, subtitulo):
             c = ws.cell(row=r, column=1 + i, value=v)
             c.font = F_CORPO
             c.border = BORDA_FINA
-            c.alignment = Alignment(vertical="top", wrap_text=(i == len(linha_dados) - 1))
+            envolver = (i + 1) in wrap_cols if wrap_cols else (i == len(linha_dados) - 1)
+            c.alignment = Alignment(vertical="top", wrap_text=envolver)
             if r % 2 == 1:
                 c.fill = FILL_PAR
 
@@ -333,18 +334,21 @@ def montar_tabela(ws, cabecalhos, linhas_dados, larguras, titulo, subtitulo):
 ws = wb.create_sheet("Leads")
 cab = ["Pot.", "Temp.", "Negócio", "Nicho", "Cidade", "Site (clique)", "Print do site",
        "Nota site", "Feito em", "Booking", "Copyright", "Instagram (clique)", "Seguidores",
-       "E-mail (clique)", "Ângulo de abordagem"]
+       "E-mail (clique)", "O que vi no site (diagnóstico)", "Como abordar (o que fazer)"]
 linhas_leads = [
     [l["potencial"], l["temp"], l["negocio"], l["nicho"], l["cidade"], l["site"], "abrir print",
      l["nota_site"], l["builder"].replace("custom/desconhecido", "sob medida"), l["booking"],
-     l["ano_copyright"], l["instagram"], l["seg_num"] or "", l["emails"], l["observacoes_angulo"]]
+     l["ano_copyright"], l["instagram"], l["seg_num"] or "", l["emails"],
+     l["diagnostico_site"], l["como_abordar"]]
     for l in leads
 ]
 ultima = montar_tabela(
     ws, cab, linhas_leads,
-    [6, 11, 30, 15, 16, 30, 13, 9, 14, 9, 11, 24, 11, 34, 62],
+    [6, 11, 30, 15, 16, 30, 13, 9, 14, 9, 11, 24, 11, 34, 58, 72],
     "Leads · carteira completa",
-    "Ordenado por potencial. Site, print, Instagram e e-mail são clicáveis: confira cada avaliação você mesmo.",
+    "Site, print, Instagram e e-mail são clicáveis. As duas últimas colunas são coisas diferentes: "
+    "o diagnóstico é o que EU vi no site hoje; 'Como abordar' é o que VOCÊ faz.",
+    wrap_cols={15, 16},
 )
 
 for r, l in zip(range(5, ultima + 1), leads):
@@ -375,18 +379,20 @@ ws.conditional_formatting.add(f"M5:M{ultima}", DataBarRule(start_type="min", end
 prio = wb.create_sheet("Prioridade")
 alvos = [l for l in leads if l["potencial"] >= 6]
 cab_p = ["Pot.", "Negócio", "Nicho", "Cidade", "Site (clique)", "Print do site", "Instagram (clique)",
-         "Seguidores", "E-mail (clique)", "Ângulo de abordagem", "Status", "Seguiu em", "Comentou em",
-         "DM enviada em", "Notas"]
+         "Seguidores", "E-mail (clique)", "COMO ABORDAR (faça isto)", "O que vi no site (diagnóstico)",
+         "Status", "Seguiu em", "Comentou em", "DM enviada em", "Notas"]
 linhas_p = [
     [l["potencial"], l["negocio"], l["nicho"], l["cidade"], l["site"], "abrir print", l["instagram"],
-     l["seg_num"] or "", l["emails"], l["observacoes_angulo"], "A fazer", "", "", "", ""]
+     l["seg_num"] or "", l["emails"], l["como_abordar"], l["diagnostico_site"], "A fazer", "", "", "", ""]
     for l in alvos
 ]
 ultima_p = montar_tabela(
     prio, cab_p, linhas_p,
-    [6, 30, 15, 16, 28, 13, 24, 11, 32, 58, 14, 12, 13, 15, 40],
+    [6, 30, 15, 16, 28, 13, 24, 11, 32, 74, 52, 14, 12, 13, 15, 40],
     "Prioridade · seus alvos de verdade",
-    "Potencial 6+. Fluxo: seguir → comentar 2 ou 3 dias → mandar a DM com a prévia pronta.",
+    "Potencial 6+. Leia a coluna COMO ABORDAR: ela diz o canal e o gancho de cada um. "
+    "Fluxo: seguir → comentar 2 ou 3 dias → mandar a DM com a prévia pronta.",
+    wrap_cols={10, 11},
 )
 
 status_dv = DataValidation(
@@ -395,12 +401,13 @@ status_dv = DataValidation(
     allow_blank=True,
 )
 prio.add_data_validation(status_dv)
-status_dv.add(f"K5:K{ultima_p}")
+status_dv.add(f"L5:L{ultima_p}")
 
 for r, l in zip(range(5, ultima_p + 1), alvos):
     prio.cell(row=r, column=1).alignment = Alignment(horizontal="center")
     prio.cell(row=r, column=8).number_format = "#,##0"
-    for c in (12, 13, 14):
+    prio.cell(row=r, column=10).font = F_NEGRITO
+    for c in (13, 14, 15):
         prio.cell(row=r, column=c).number_format = "DD/MM/YYYY"
     aplicar_link(prio, r, 5, f"https://{l['site']}")
     if l["screenshot"]:
@@ -414,9 +421,9 @@ for r, l in zip(range(5, ultima_p + 1), alvos):
 
 prio.conditional_formatting.add(f"A5:A{ultima_p}", CellIsRule(operator="greaterThanOrEqual", formula=["8"], fill=FILL_QUENTE, font=Font(bold=True, color="0A6B3D")))
 prio.conditional_formatting.add(f"A5:A{ultima_p}", CellIsRule(operator="between", formula=["6", "7"], fill=FILL_MORNO, font=Font(bold=True, color="8A5A12")))
-prio.conditional_formatting.add(f"K5:K{ultima_p}", CellIsRule(operator="equal", formula=['"Ganho"'], fill=PatternFill("solid", fgColor="C8F0D8")))
-prio.conditional_formatting.add(f"K5:K{ultima_p}", CellIsRule(operator="equal", formula=['"Perdido"'], fill=PatternFill("solid", fgColor="F5D5D5")))
-prio.conditional_formatting.add(f"K5:K{ultima_p}", CellIsRule(operator="equal", formula=['"DM enviada"'], fill=PatternFill("solid", fgColor="DCE9F7")))
+prio.conditional_formatting.add(f"L5:L{ultima_p}", CellIsRule(operator="equal", formula=['"Ganho"'], fill=PatternFill("solid", fgColor="C8F0D8")))
+prio.conditional_formatting.add(f"L5:L{ultima_p}", CellIsRule(operator="equal", formula=['"Perdido"'], fill=PatternFill("solid", fgColor="F5D5D5")))
+prio.conditional_formatting.add(f"L5:L{ultima_p}", CellIsRule(operator="equal", formula=['"DM enviada"'], fill=PatternFill("solid", fgColor="DCE9F7")))
 
 
 # ════════════════════════════════════════════════════════════════════════════
