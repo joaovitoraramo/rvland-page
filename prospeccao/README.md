@@ -15,6 +15,18 @@ planilha montada por gerar-planilha.mjs com avaliação visual de cada screensho
   Pode ser site de lead-broker, não negócio real. Confirmar no Google Maps.
 - purrfectgrooming.pet: sede aparente em Doral/Miami, não Orlando.
 
+## Lotes
+
+- dados.json: car wash (Orlando, Tampa, Phoenix, Charlotte)
+- dados-geral.json: 19 nichos em 8 cidades de porte medio
+- dados-afluentes.json: 7 nichos de ticket alto em 10 cidades/suburbios ricos
+  (Scottsdale, Naples, Frisco, Boca Raton, Bellevue, Alpharetta, The Woodlands,
+  Naperville, Cary, Franklin)
+
+A avaliacao visual de cada site vive em avaliacoes.json (potencial, nota do
+site, diagnostico e abordagem). merge-avaliacoes.mjs junta lotes novos sem
+sobrescrever o que ja foi avaliado.
+
 ## Reexecutar
 
     node scripts/prospectar-leads.mjs          # nova varredura (editar CIDADES no topo)
