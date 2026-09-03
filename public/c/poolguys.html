@@ -513,9 +513,15 @@
 
 <div class="rv-faixa">
   <span class="rv-faixa-texto"><strong>This is a concept</strong> &mdash; not your live site.</span>
-  <button type="button" class="rv-convite rv-convite-fone" data-rv-abrir="rv-modal-tela">See it on your phone</button>
-  <button type="button" class="rv-convite rv-convite-pc" data-rv-abrir="rv-modal-tela">See it on a big screen</button>
-  <button type="button" class="rv-preco" data-rv-abrir="rv-modal-preco">What does this cost? &rarr;</button>
+  <span class="rv-acoes">
+    <button type="button" class="rv-convite rv-convite-fone" data-rv-abrir="rv-modal-tela">See it on your phone</button>
+    <button type="button" class="rv-convite rv-convite-pc" data-rv-abrir="rv-modal-tela">
+      <span class="rv-longo">See it on a big screen</span><span class="rv-curto">On desktop</span>
+    </button>
+    <button type="button" class="rv-preco" data-rv-abrir="rv-modal-preco">
+      <span class="rv-longo">What does this cost? &rarr;</span><span class="rv-curto">What&rsquo;s the cost? &rarr;</span>
+    </button>
+  </span>
   <span class="rv-faixa-por">by RVLand Devs</span>
 </div>
 
@@ -606,15 +612,29 @@
   .rv-preco:hover { filter: brightness(1.1); }
   .rv-preco:focus-visible { outline: 2px solid #fff; outline-offset: 2px; }
 
+  .rv-acoes { display: contents; }
+  .rv-curto { display: none; }
+
   /* cada tela convida para a outra */
   .rv-convite-pc, .rv-so-fone { display: none; }
   @media (max-width: 819px) {
     .rv-convite-fone, .rv-so-desktop { display: none; }
     .rv-convite-pc, .rv-so-fone { display: block; }
-    .rv-faixa { padding: 9px 16px; gap: 8px; }
+    .rv-faixa { padding: 10px 16px; gap: 9px; }
     .rv-faixa-por { display: none; }
     .rv-faixa-texto { width: 100%; }
-    .rv-convite, .rv-preco { font-size: 11.5px; padding: 5px 11px; }
+
+    /* os dois botões dividem uma linha só: empilhados viravam três linhas de
+       barra, e barra alta com pílulas soltas não passa credibilidade */
+    .rv-acoes { display: flex; width: 100%; gap: 8px; }
+    .rv-acoes > * { flex: 1; text-align: center; }
+    .rv-longo { display: none; }
+    .rv-curto { display: inline; }
+    .rv-convite, .rv-preco {
+      font-size: 11.5px;
+      padding: 7px 10px;
+      white-space: nowrap;
+    }
   }
 
   .rv-modal[hidden] { display: none; }
