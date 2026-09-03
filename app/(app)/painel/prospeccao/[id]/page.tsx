@@ -26,7 +26,8 @@ import { Btn } from "@/components/painel/ui";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { linkContatoProspect } from "@/lib/dominio/prospeccao";
 import { formatarDataBR } from "@/lib/dominio/tempo";
-import { urlAssinadaPrint } from "@/lib/servicos/prints-prospeccao";
+import { urlAssinadaPrint, urlsDoConceito } from "@/lib/servicos/prints-prospeccao";
+import { CardConceito } from "@/components/painel/card-conceito";
 
 export const metadata = { title: "Prospect" };
 
@@ -48,6 +49,7 @@ export default async function PaginaProspect({
   const mail = linkContatoProspect.email(p.emails);
   const tel = linkContatoProspect.telefone(p.telefone);
   const print = await urlAssinadaPrint(p.screenshot);
+  const arquivosConceito = p.conceito ? await urlsDoConceito(p.conceito.arquivos) : [];
 
   const info = (rotulo: string, valor: React.ReactNode) => (
     <div>
@@ -184,6 +186,10 @@ export default async function PaginaProspect({
               </div>
             </CardContent>
           </Card>
+
+          {p.conceito ? (
+            <CardConceito conceito={p.conceito} arquivos={arquivosConceito} />
+          ) : null}
 
           {/* print da varredura: a prova visual do diagnóstico */}
           <Card>

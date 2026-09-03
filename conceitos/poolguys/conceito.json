@@ -1,0 +1,111 @@
+{
+  "criadoEm": "2026-09-02",
+  "direcao": "Água do deserto. A paleta não veio de moodboard: veio do lugar. O céu lavado das 14h em Scottsdale, o azul da água na sombra do matacão, o azulejo turquesa da linha d'água que toda piscina daqui tem, o granito decomposto do paisagismo e a pedra dos boulders das fotos deles. O risco assumido: o hero NÃO abre com foto de oásis, como todo concorrente. Abre com o inimigo (115°F, poeira de monção, água dura), porque é o inimigo que justifica pagar manutenção semanal.",
+  "assinatura": "O relatório de visita. Todo técnico de piscina deixa um comprovante depois do serviço; nenhum concorrente mostra isso no site. Virou o objeto do hero: um cartão levemente girado, com pH, cloro, alcalinidade, dureza e pressão do filtro em fonte monoespaçada, o que foi feito no dia, o nome do técnico e a data da próxima visita. É o que prova profissionalismo sem precisar dizer 'somos profissionais'.",
+  "paleta": [
+    {
+      "nome": "agua-funda",
+      "hex": "#0A4A5C",
+      "uso": "fundo do hero e da seção de pedido; azul da água na sombra da pedra"
+    },
+    {
+      "nome": "agua-noite",
+      "hex": "#06323E",
+      "uso": "barra do topo, faixa de fatos e rodapé"
+    },
+    {
+      "nome": "turquesa",
+      "hex": "#2BB6C4",
+      "uso": "acento único: CTA, destaque do título, faixa de azulejo, marcadores"
+    },
+    {
+      "nome": "ceu-fundo",
+      "hex": "#F7FAFA",
+      "uso": "fundo das seções claras; céu lavado das 14h, frio, nunca creme"
+    },
+    {
+      "nome": "areia",
+      "hex": "#D9C3A5",
+      "uso": "cabeçalho do relatório; granito decomposto do paisagismo"
+    },
+    {
+      "nome": "pedra",
+      "hex": "#6B5B4E",
+      "uso": "detalhes do relatório; marrom dos matacões"
+    },
+    {
+      "nome": "sol",
+      "hex": "#E8913A",
+      "uso": "botão do formulário, usado UMA vez na página inteira"
+    },
+    {
+      "nome": "tinta",
+      "hex": "#12262C",
+      "uso": "texto principal sobre fundo claro"
+    },
+    {
+      "nome": "tinta-fraca",
+      "hex": "#5A7078",
+      "uso": "texto de apoio"
+    },
+    {
+      "nome": "linha",
+      "hex": "#DCE6E7",
+      "uso": "divisórias e bordas"
+    }
+  ],
+  "tipografia": [
+    {
+      "papel": "display",
+      "fonte": "Archivo 700/800",
+      "nota": "tracking -0.03em; sinalização americana industrial, confiança de serviço, sem cara de moda"
+    },
+    {
+      "papel": "corpo",
+      "fonte": "IBM Plex Sans 400/600",
+      "nota": "caráter técnico sem perder legibilidade; combina com o Archivo sem competir"
+    },
+    {
+      "papel": "dados",
+      "fonte": "IBM Plex Mono 400/600",
+      "nota": "só onde há medição de verdade: pH, ppm, psi, telefone, rotas e datas. A mono é ganha, não decorativa"
+    }
+  ],
+  "secoes": [
+    "Barra: marca + 'Serving the Valley since 1997' + telefone + CTA",
+    "Hero: o inimigo (calor/poeira/água dura) contra o relatório de visita",
+    "Faixa de fatos: 1997 · Family · 4 cities · Weekly",
+    "Três serviços: manutenção, reparos, reformas (com o que entra em cada)",
+    "Pools we take care of: fotos reais do cliente, recortadas do banner antigo",
+    "Where our trucks go: rotas por cidade com o dia da semana",
+    "Pedido de orçamento: formulário curto + telefone",
+    "Rodapé + crédito discreto da RVLand"
+  ],
+  "copy": {
+    "titulo": "Your pool is fighting 115° heat, monsoon dust and hard water. We fight back every week.",
+    "subtitulo": "Family owned since 1997. We service, repair and remodel residential pools across the Valley of the Sun — and we leave a written report after every single visit."
+  },
+  "fonteHtml": "conceitos/poolguys/index.html",
+  "arquivos": [
+    {
+      "rotulo": "Conceito completo (PNG)",
+      "caminho": "poolguys/poolguys-conceito.png"
+    },
+    {
+      "rotulo": "Hero (PNG)",
+      "caminho": "poolguys/poolguys-hero.png"
+    },
+    {
+      "rotulo": "Versão mobile (PNG)",
+      "caminho": "poolguys/poolguys-mobile.png"
+    },
+    {
+      "rotulo": "Conceito (PDF)",
+      "caminho": "poolguys/poolguys-conceito.pdf"
+    },
+    {
+      "rotulo": "Código-fonte do conceito (HTML)",
+      "caminho": "poolguys/poolguys-fonte.html"
+    }
+  ]
+}

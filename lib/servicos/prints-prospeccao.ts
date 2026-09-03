@@ -23,3 +23,20 @@ export const urlAssinadaPrint = cache(async (caminho: string | null): Promise<st
   if (error) return null;
   return data?.signedUrl ?? null;
 });
+
+export const BUCKET_CONCEITOS = "conceitos";
+
+/** URLs assinadas dos arquivos do conceito, na ordem em que foram registrados. */
+export async function urlsDoConceito(
+  arquivos: { rotulo: string; caminho: string }[]
+): Promise<{ rotulo: string; url: string | null }[]> {
+  const cliente = supabaseAdmin();
+  return Promise.all(
+    arquivos.map(async (a) => {
+      const { data, error } = await cliente.storage
+        .from(BUCKET_CONCEITOS)
+        .createSignedUrl(a.caminho, 60 * 60);
+      return { rotulo: a.rotulo, url: error ? null : (data?.signedUrl ?? null) };
+    })
+  );
+}

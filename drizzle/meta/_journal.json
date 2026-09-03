@@ -92,6 +92,13 @@
       "when": 1788399207592,
       "tag": "0012_lush_firelord",
       "breakpoints": true
+    },
+    {
+      "idx": 13,
+      "version": "7",
+      "when": 1788400381462,
+      "tag": "0013_eager_polaris",
+      "breakpoints": true
     }
   ]
 }

@@ -406,6 +406,18 @@ export const leads = pgTable(
   (t) => [index("leads_origem_status_idx").on(t.origem, t.status)]
 );
 
+export type ConceitoProspect = {
+  criadoEm: string;
+  direcao: string;
+  assinatura: string;
+  paleta: { nome: string; hex: string; uso: string }[];
+  tipografia: { papel: string; fonte: string; nota: string }[];
+  secoes: string[];
+  copy: { titulo: string; subtitulo: string };
+  fonteHtml: string;
+  arquivos: { rotulo: string; caminho: string }[];
+};
+
 // ─── Prospecção outbound (leads frios importados da varredura) ──────────────
 
 export const prospeccao = pgTable(
@@ -430,6 +442,8 @@ export const prospeccao = pgTable(
     telefone: text("telefone"),
     // contato corrigido no painel: a importação nunca sobrescreve
     contatoManual: boolean("contato_manual").notNull().default(false),
+    // design system do conceito enviado: se o cliente fechar, continua daqui
+    conceito: jsonb("conceito").$type<ConceitoProspect>(),
     // registro de teste do harness: aparece com selo e fica fora das métricas
     teste: boolean("teste").notNull().default(false),
     diagnostico: text("diagnostico"),
