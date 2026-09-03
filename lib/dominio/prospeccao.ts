@@ -114,6 +114,7 @@ export type LinhaProspeccao = {
   emails: string | null;
   diagnostico: string | null;
   comoAbordar: string | null;
+  teste: boolean;
 };
 
 const COLUNAS_OBRIGATORIAS = ["site", "negocio", "potencial", "nota_site"];
@@ -224,6 +225,8 @@ export function parseCsvProspeccao(conteudo: string): {
       emails: pegar(campos, "emails") || null,
       diagnostico: pegar(campos, "diagnostico_site") || null,
       comoAbordar: pegar(campos, "como_abordar") || null,
+      // fixture do harness: nunca contamina metrica nem lead real
+      teste: ["1", "sim", "true"].includes(pegar(campos, "teste").toLowerCase()),
     });
   }
 

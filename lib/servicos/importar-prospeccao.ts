@@ -55,6 +55,7 @@ export async function importarProspeccao(conteudoCsv: string): Promise<Resultado
           emails: sql`case when ${prospeccao.contatoManual} then ${prospeccao.emails} else excluded.emails end`,
           diagnostico: sql`excluded.diagnostico`,
           comoAbordar: sql`excluded.como_abordar`,
+          teste: sql`excluded.teste`,
           atualizadoEm: new Date(),
         },
       });

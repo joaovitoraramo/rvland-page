@@ -50,15 +50,22 @@ await page.waitForSelector("text=/novo\\(s\\) e/", { timeout: 60000 }).catch(() 
 });
 await tela(page, "02-importado");
 
-const [{ n }] = await sql`select count(*)::int as n from prospeccao`;
+await page.goto(`${BASE}/painel/prospeccao/importar`);
+await page.setInputFiles('input[name="arquivo"]', "prospeccao/fixture-teste.csv");
+await page.click("form:has(input[name=arquivo]) button[type=submit]");
+await page.waitForSelector("text=/preservados/", { timeout: 60000 }).catch(() => falhas.push("fixture nao importou"));
+console.log("fixture de teste importada");
+
+const [{ n }] = await sql`select count(*)::int as n from prospeccao where not teste`;
 console.log(`banco: ${n} prospects`);
 if (n < 100) falhas.push(`esperava 100+ prospects, veio ${n}`);
 
 // reimportar: status e notas nao podem ser perdidos
-const [alvo] = await sql`select id, dominio from prospeccao order by potencial desc limit 1`;
+const [alvo] = await sql`select id, dominio from prospeccao where teste order by potencial desc limit 1`;
+if (!alvo) falhas.push("fixture de teste nao foi importada");
 await sql`update prospeccao set status='negociando', notas='nota de teste' where id=${alvo.id}`;
 await page.goto(`${BASE}/painel/prospeccao/importar`);
-await page.setInputFiles('input[name="arquivo"]', "prospeccao/planilha-leads.csv");
+await page.setInputFiles('input[name="arquivo"]', "prospeccao/fixture-teste.csv");
 await page.click("form:has(input[name=arquivo]) button[type=submit]");
 await page.waitForSelector("text=/preservados/", { timeout: 60000 }).catch(() => {});
 const [depois] = await sql`select status, notas from prospeccao where id=${alvo.id}`;
@@ -71,7 +78,7 @@ if (depois.status !== "negociando" || depois.notas !== "nota de teste") {
 // contato editado a mao tem de sobreviver a reimportacao
 const [semContato] = await sql`
   select id, dominio from prospeccao
-  where (emails is null or emails = '') and (instagram is null or instagram = '')
+  where teste and (emails is null or emails = '') and (instagram is null or instagram = '')
   order by potencial desc limit 1`;
 if (semContato) {
   await page.goto(`${BASE}/painel/prospeccao/${semContato.id}`);
@@ -97,7 +104,7 @@ if (semContato) {
   if (!salvo.contato_manual) falhas.push("contato_manual nao foi marcado");
 
   await page.goto(`${BASE}/painel/prospeccao/importar`);
-  await page.setInputFiles('input[name="arquivo"]', "prospeccao/planilha-leads.csv");
+  await page.setInputFiles('input[name="arquivo"]', "prospeccao/fixture-teste.csv");
   await page.click("form:has(input[name=arquivo]) button[type=submit]");
   await page.waitForSelector("text=/preservados/", { timeout: 60000 }).catch(() => {});
   const [depoisImport] = await sql`select emails, instagram, telefone from prospeccao where id=${semContato.id}`;
@@ -125,6 +132,8 @@ await page.waitForTimeout(1200);
 await tela(page, "04-filtro-quentes");
 
 // detalhe
+await page.goto(`${BASE}/painel/prospeccao?q=harness`);
+await page.waitForTimeout(800);
 await page.click("table a:has-text('Abrir')");
 await page.waitForURL("**/painel/prospeccao/**");
 await tela(page, "05-detalhe");

@@ -76,10 +76,15 @@ export default async function PaginaProspeccao({
   const perfilUsuario = await exigirPermissao("prospeccao.ver");
   const filtros = await searchParams;
 
-  const todos = await db
+  const carteira = await db
     .select()
     .from(prospeccao)
     .orderBy(desc(prospeccao.potencial), desc(prospeccao.seguidores));
+
+  // registros do harness ficam visíveis (com selo) mas fora das métricas,
+  // senão o funil e os KPIs mentem
+  const todos = carteira.filter((p) => !p.teste);
+  const deTeste = carteira.filter((p) => p.teste);
 
   // ── métricas sobre a carteira inteira (o filtro é só da tabela) ───────────
   const quentes = todos.filter((p) => p.potencial >= 8);
@@ -112,7 +117,7 @@ export default async function PaginaProspeccao({
 
   // ── filtro da tabela ──────────────────────────────────────────────────────
   const busca = (filtros.q ?? "").trim().toLowerCase();
-  const lista = todos.filter((p) => {
+  const lista = [...todos, ...deTeste].filter((p) => {
     if (filtros.status && p.status !== filtros.status) return false;
     if (filtros.temp && temperaturaDe(p.potencial) !== filtros.temp) return false;
     if (filtros.nicho && p.nicho !== filtros.nicho) return false;
@@ -127,7 +132,7 @@ export default async function PaginaProspeccao({
 
   const podeImportar = pode(perfilUsuario, "prospeccao.importar");
 
-  if (todos.length === 0) {
+  if (carteira.length === 0) {
     return (
       <>
         <PageHeader trilha="prospecção" titulo="Prospecção" />
@@ -282,9 +287,10 @@ export default async function PaginaProspeccao({
 
       <div className="rv-entrar-3">
         <div className="rv-eyebrow mb-3">
-          {lista.length === todos.length
-            ? `${todos.length} prospects`
-            : `${lista.length} de ${todos.length} prospects`}
+          {lista.length === carteira.length
+            ? `${carteira.length} prospects`
+            : `${lista.length} de ${carteira.length} prospects`}
+          {deTeste.length > 0 ? ` · ${deTeste.length} de teste (fora das métricas)` : ""}
         </div>
 
         {lista.length === 0 ? (
@@ -315,8 +321,15 @@ export default async function PaginaProspeccao({
                       <MedidorPotencial valor={p.potencial} tamanho="sm" />
                     </TableCell>
                     <TableCell rotulo="negócio">
-                      <span className="block max-w-[22rem] truncate font-medium text-white">
-                        {p.negocio}
+                      <span className="flex items-center gap-2">
+                        <span className="max-w-[20rem] truncate font-medium text-white">
+                          {p.negocio}
+                        </span>
+                        {p.teste ? (
+                          <span className="shrink-0 rounded-md border border-[rgba(255,194,77,0.35)] bg-[rgba(255,194,77,0.12)] px-1.5 py-0.5 text-[10px] font-semibold uppercase tracking-wider text-[#FFD58A]">
+                            teste
+                          </span>
+                        ) : null}
                       </span>
                       <span className="rv-num block truncate text-xs text-white/35">{p.dominio}</span>
                     </TableCell>

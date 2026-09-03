@@ -64,6 +64,13 @@ export default async function PaginaProspect({
 
   return (
     <>
+      {p.teste ? (
+        <div className="rv-entrar mb-4 rounded-xl border border-[rgba(255,194,77,0.3)] bg-[rgba(255,194,77,0.09)] px-4 py-2.5 text-sm text-[#FFD58A]">
+          <strong className="font-semibold">Registro de teste.</strong> Criado pelo harness
+          automatizado, não conta nas métricas e não é um negócio real.
+        </div>
+      ) : null}
+
       <PageHeader
         trilha="prospecção / detalhe"
         titulo={p.negocio}

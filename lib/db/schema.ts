@@ -430,6 +430,8 @@ export const prospeccao = pgTable(
     telefone: text("telefone"),
     // contato corrigido no painel: a importação nunca sobrescreve
     contatoManual: boolean("contato_manual").notNull().default(false),
+    // registro de teste do harness: aparece com selo e fica fora das métricas
+    teste: boolean("teste").notNull().default(false),
     diagnostico: text("diagnostico"),
     comoAbordar: text("como_abordar"),
     // funil comercial, movido pelo João no painel

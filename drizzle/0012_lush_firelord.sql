@@ -1,0 +1,1 @@
+ALTER TABLE "prospeccao" ADD COLUMN "teste" boolean DEFAULT false NOT NULL;
