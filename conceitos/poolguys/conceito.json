@@ -110,7 +110,17 @@
     {
       "rotulo": "Código-fonte do conceito (HTML)",
       "caminho": "poolguys/poolguys-fonte.html"
+    },
+    {
+      "rotulo": "Site atual no celular (prova do problema)",
+      "caminho": "poolguys/site-atual-mobile.png"
     }
   ],
-  "notaMobile": "Barra do topo reduzida a marca + telefone abaixo de 620px (o texto de apoio e o CTA quebravam em quatro linhas e vazavam da tela); cartão de relatório sem rotação no celular."
+  "notaMobile": "Barra do topo reduzida a marca + telefone abaixo de 620px (o texto de apoio e o CTA quebravam em quatro linhas e vazavam da tela); cartão de relatório sem rotação no celular.",
+  "abordagem": {
+    "canal": "e-mail poolguys@att.net",
+    "assunto": "Your website is cut off on phones",
+    "gancho": "O site nao tem meta viewport: renderiza a 920px numa tela de 390px. Titulo corta no meio, menu sai da tela, e nao existe formulario nenhum no site. Verificavel pelo proprio dono em 5 segundos.",
+    "arquivo": "conceitos/poolguys/email.md"
+  }
 }
