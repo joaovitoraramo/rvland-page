@@ -8,7 +8,13 @@ import { db, prospeccao } from "@/lib/db";
 import { exigirPermissao } from "@/lib/auth";
 import { registrarAuditoria } from "@/lib/audit";
 import { hojeSP } from "@/lib/dominio/tempo";
-import { ETAPAS_FUNIL, ROTULO_STATUS_PROSPECT } from "@/lib/dominio/prospeccao";
+import {
+  ETAPAS_FUNIL,
+  linkContatoProspect,
+  normalizarEmails,
+  normalizarInstagram,
+  ROTULO_STATUS_PROSPECT,
+} from "@/lib/dominio/prospeccao";
 import { importarProspeccao } from "@/lib/servicos/importar-prospeccao";
 
 export type EstadoProspect = { ok?: string; erro?: string };
@@ -114,4 +120,62 @@ export async function importarPlanilha(
   return {
     ok: `${resultado.criados} novo(s) e ${resultado.atualizados} atualizado(s)${aviso}. Status e notas foram preservados.`,
   };
+}
+
+export type EstadoContato = { ok?: string; erro?: string };
+
+/**
+ * Contato corrigido à mão. Marca contatoManual para a reimportação da planilha
+ * não apagar o que o João achou garimpando o site ou o Google Maps.
+ */
+export async function salvarContato(
+  id: string,
+  _estado: EstadoContato,
+  formData: FormData
+): Promise<EstadoContato> {
+  const perfil = await exigirPermissao("prospeccao.editar");
+
+  const [atual] = await db.select().from(prospeccao).where(eq(prospeccao.id, id));
+  if (!atual) return { erro: "Prospect não encontrado." };
+
+  const emails = normalizarEmails(String(formData.get("emails") ?? ""));
+  const instagram = normalizarInstagram(String(formData.get("instagram") ?? ""));
+  const telefoneCru = String(formData.get("telefone") ?? "").trim();
+  const seguidoresCru = String(formData.get("seguidores") ?? "").replace(/\D/g, "");
+
+  if (String(formData.get("emails") ?? "").trim() && !emails) {
+    return { erro: "E-mail inválido. Use algo como nome@empresa.com." };
+  }
+  if (telefoneCru && !linkContatoProspect.telefone(telefoneCru)) {
+    return { erro: "Telefone curto demais. Inclua o DDD (e o + se for de fora dos EUA)." };
+  }
+
+  await db
+    .update(prospeccao)
+    .set({
+      emails,
+      instagram,
+      telefone: telefoneCru || null,
+      seguidores: seguidoresCru ? Number(seguidoresCru) : null,
+      contatoManual: true,
+      atualizadoEm: new Date(),
+    })
+    .where(eq(prospeccao.id, id));
+
+  await registrarAuditoria({
+    ator: perfil,
+    acao: "prospeccao.contato_editado",
+    entidade: "prospeccao",
+    entidadeId: id,
+    detalhes: {
+      dominio: atual.dominio,
+      emails,
+      instagram,
+      telefone: telefoneCru || null,
+    },
+  });
+
+  revalidatePath("/painel/prospeccao");
+  revalidatePath(`/painel/prospeccao/${id}`);
+  return { ok: "Contato salvo. A reimportação da planilha não vai sobrescrever." };
 }

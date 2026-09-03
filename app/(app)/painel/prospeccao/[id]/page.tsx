@@ -9,17 +9,19 @@ import {
   ImageOff,
   Instagram,
   Mail,
+  Phone,
   Sparkles,
   Target,
 } from "lucide-react";
 
 import { db, prospeccao } from "@/lib/db";
 import { exigirPermissao, pode } from "@/lib/auth";
-import { atualizarProspect } from "../actions";
+import { atualizarProspect, salvarContato } from "../actions";
 import { PageHeader } from "@/components/painel/page-header";
 import { BadgeProspect } from "@/components/painel/badge-prospect";
 import { MedidorPotencial } from "@/components/painel/graficos";
 import { FormProspect } from "@/components/painel/form-prospect";
+import { FormContatoProspect } from "@/components/painel/form-contato-prospect";
 import { Btn } from "@/components/painel/ui";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { linkContatoProspect } from "@/lib/dominio/prospeccao";
@@ -44,6 +46,7 @@ export default async function PaginaProspect({
 
   const ig = linkContatoProspect.instagram(p.instagram);
   const mail = linkContatoProspect.email(p.emails);
+  const tel = linkContatoProspect.telefone(p.telefone);
   const print = await urlAssinadaPrint(p.screenshot);
 
   const info = (rotulo: string, valor: React.ReactNode) => (
@@ -83,6 +86,13 @@ export default async function PaginaProspect({
               <Btn asChild>
                 <a href={mail}>
                   <Mail className="size-4" /> E-mail
+                </a>
+              </Btn>
+            ) : null}
+            {tel ? (
+              <Btn asChild>
+                <a href={tel}>
+                  <Phone className="size-4" /> {p.telefone}
                 </a>
               </Btn>
             ) : null}
@@ -163,7 +173,7 @@ export default async function PaginaProspect({
                 {info("agendamento online", p.temBooking ? "sim" : "não")}
                 {info("copyright", p.anoCopyright ?? "—")}
                 {info("perfil da cidade", p.perfilCidade)}
-                {info("e-mail", <span className="break-all">{p.emails ?? "—"}</span>)}
+                {info("qualidade do site", `${p.notaSite} de 10`)}
               </div>
             </CardContent>
           </Card>
@@ -204,7 +214,24 @@ export default async function PaginaProspect({
           </Card>
         </div>
 
-        <Card className="lg:sticky lg:top-4 lg:self-start">
+        <div className="space-y-4 lg:sticky lg:top-4 lg:self-start">
+        <Card>
+          <CardHeader>
+            <CardTitle className="text-base text-white">Contato</CardTitle>
+          </CardHeader>
+          <CardContent>
+            <FormContatoProspect
+              acao={salvarContato.bind(null, p.id)}
+              emails={p.emails}
+              instagram={p.instagram}
+              telefone={p.telefone}
+              seguidores={p.seguidores}
+              manual={p.contatoManual}
+            />
+          </CardContent>
+        </Card>
+
+        <Card>
           <CardHeader>
             <CardTitle className="text-base text-white">Acompanhamento</CardTitle>
           </CardHeader>
@@ -218,6 +245,7 @@ export default async function PaginaProspect({
             )}
           </CardContent>
         </Card>
+        </div>
       </div>
     </>
   );

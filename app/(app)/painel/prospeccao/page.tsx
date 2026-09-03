@@ -6,6 +6,7 @@ import {
   Globe,
   Instagram,
   Mail,
+  Phone,
   MessageSquare,
   Radar,
   Trophy,
@@ -307,6 +308,7 @@ export default async function PaginaProspeccao({
               {lista.map((p) => {
                 const ig = linkContatoProspect.instagram(p.instagram);
                 const mail = linkContatoProspect.email(p.emails);
+                const tel = linkContatoProspect.telefone(p.telefone);
                 return (
                   <TableRow key={p.id}>
                     <TableCell rotulo="potencial">
@@ -354,6 +356,15 @@ export default async function PaginaProspeccao({
                             className="grid size-8 place-items-center rounded-lg border border-[rgba(0,255,138,0.2)] bg-[rgba(0,255,138,0.07)] text-[#7DFFC4] transition-colors hover:border-[rgba(0,255,138,0.45)]"
                           >
                             <Mail className="size-3.5" />
+                          </a>
+                        ) : null}
+                        {tel ? (
+                          <a
+                            href={tel}
+                            title={p.telefone ?? undefined}
+                            className="grid size-8 place-items-center rounded-lg border border-white/12 bg-white/[0.05] text-white/70 transition-colors hover:border-white/25 hover:text-white"
+                          >
+                            <Phone className="size-3.5" />
                           </a>
                         ) : null}
                       </span>

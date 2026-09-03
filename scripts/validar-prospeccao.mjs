@@ -68,6 +68,48 @@ if (depois.status !== "negociando" || depois.notas !== "nota de teste") {
   console.log("reimportacao preservou status e notas: OK");
 }
 
+// contato editado a mao tem de sobreviver a reimportacao
+const [semContato] = await sql`
+  select id, dominio from prospeccao
+  where (emails is null or emails = '') and (instagram is null or instagram = '')
+  order by potencial desc limit 1`;
+if (semContato) {
+  await page.goto(`${BASE}/painel/prospeccao/${semContato.id}`);
+  await page.click("button:has-text('Adicionar contato')");
+  await page.waitForSelector("#emails", { state: "visible" });
+  await page.waitForTimeout(600); // React acaba de montar o form; deixa estabilizar
+  await page.fill("#emails", "achado@manualmente.com");
+  await page.fill("#instagram", "https://instagram.com/achadoamao/");
+  await page.fill("#telefone", "(555) 222-3344");
+  // confere que os valores sobreviveram ao render antes de submeter
+  if ((await page.inputValue("#emails")) !== "achado@manualmente.com") {
+    await page.fill("#emails", "achado@manualmente.com");
+  }
+  await page.click("form:has(#emails) button[type=submit]");
+  await page.waitForSelector("text=/vai sobrescrever/", { timeout: 20000 }).catch(() => {
+    falhas.push("nao confirmou o salvamento do contato");
+  });
+  await tela(page, "09-contato-editado");
+
+  const [salvo] = await sql`select emails, instagram, telefone, contato_manual from prospeccao where id=${semContato.id}`;
+  if (salvo.emails !== "achado@manualmente.com") falhas.push(`email nao gravou: ${salvo.emails}`);
+  if (salvo.instagram !== "@achadoamao") falhas.push(`instagram nao normalizou: ${salvo.instagram}`);
+  if (!salvo.contato_manual) falhas.push("contato_manual nao foi marcado");
+
+  await page.goto(`${BASE}/painel/prospeccao/importar`);
+  await page.setInputFiles('input[name="arquivo"]', "prospeccao/planilha-leads.csv");
+  await page.click("form:has(input[name=arquivo]) button[type=submit]");
+  await page.waitForSelector("text=/preservados/", { timeout: 60000 }).catch(() => {});
+  const [depoisImport] = await sql`select emails, instagram, telefone from prospeccao where id=${semContato.id}`;
+  if (depoisImport.emails !== "achado@manualmente.com" || depoisImport.telefone !== "(555) 222-3344") {
+    falhas.push(`reimportacao apagou o contato manual: ${JSON.stringify(depoisImport)}`);
+  } else {
+    console.log("contato manual sobreviveu a reimportacao: OK");
+  }
+} else {
+  console.log("(sem prospect sem contato para testar edicao manual)");
+}
+
 // dashboard
 await page.goto(`${BASE}/painel/prospeccao`);
 await tela(page, "03-dashboard");

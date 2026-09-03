@@ -3,6 +3,8 @@ import {
   agrupar,
   ETAPAS_FUNIL,
   linkContatoProspect,
+  normalizarEmails,
+  normalizarInstagram,
   parseCsvProspeccao,
   ROTULO_STATUS_PROSPECT,
   temperaturaDe,
@@ -109,5 +111,27 @@ describe("linkContatoProspect", () => {
     expect(linkContatoProspect.instagram("@ze")).toBe("https://instagram.com/ze");
     expect(linkContatoProspect.email("a@b.com / c@d.com")).toBe("mailto:a@b.com");
     expect(linkContatoProspect.email(null)).toBeNull();
+  });
+});
+
+describe("contato editado à mão", () => {
+  it("monta link de telefone com DDI dos EUA quando tem 10 dígitos", () => {
+    expect(linkContatoProspect.telefone("(555) 123-4567")).toBe("tel:+15551234567");
+    expect(linkContatoProspect.telefone("+55 41 98489-1365")).toBe("tel:+5541984891365");
+    expect(linkContatoProspect.telefone(null)).toBeNull();
+    expect(linkContatoProspect.telefone("  ")).toBeNull();
+  });
+
+  it("normaliza o @ do instagram e aceita URL colada", () => {
+    expect(normalizarInstagram("zepool")).toBe("@zepool");
+    expect(normalizarInstagram("@zepool")).toBe("@zepool");
+    expect(normalizarInstagram("https://instagram.com/zepool/")).toBe("@zepool");
+    expect(normalizarInstagram("")).toBeNull();
+  });
+
+  it("aceita vários e-mails separados e descarta lixo", () => {
+    expect(normalizarEmails("A@B.com , c@d.com")).toBe("a@b.com / c@d.com");
+    expect(normalizarEmails("sem arroba")).toBeNull();
+    expect(normalizarEmails("")).toBeNull();
   });
 });

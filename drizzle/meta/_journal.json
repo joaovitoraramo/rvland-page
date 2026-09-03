@@ -78,6 +78,13 @@
       "when": 1788395802343,
       "tag": "0010_rls_prospeccao",
       "breakpoints": true
+    },
+    {
+      "idx": 11,
+      "version": "7",
+      "when": 1788398328536,
+      "tag": "0011_zippy_magneto",
+      "breakpoints": true
     }
   ]
 }

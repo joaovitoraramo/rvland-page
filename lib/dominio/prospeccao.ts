@@ -83,6 +83,15 @@ export const linkContatoProspect = {
     const primeiro = emails.split("/")[0]?.trim();
     return primeiro ? `mailto:${primeiro}` : null;
   },
+  telefone(numero: string | null): string | null {
+    if (!numero) return null;
+    const jaTemDDI = numero.trim().startsWith("+");
+    const digitos = numero.replace(/\D/g, "");
+    if (digitos.length < 8) return null;
+    // 10 dígitos sem DDI = número local americano
+    if (!jaTemDDI && digitos.length === 10) return `tel:+1${digitos}`;
+    return `tel:+${digitos}`;
+  },
 };
 
 // ── importação do CSV ───────────────────────────────────────────────────────
@@ -219,4 +228,25 @@ export function parseCsvProspeccao(conteudo: string): {
   }
 
   return { linhas, erros };
+}
+
+// ── contato corrigido à mão no painel ───────────────────────────────────────
+
+/** Aceita handle, @handle ou URL colada do perfil. */
+export function normalizarInstagram(texto: string): string | null {
+  const limpo = texto
+    .trim()
+    .replace(/^https?:\/\/(www\.)?instagram\.com\//i, "")
+    .replace(/^@/, "")
+    .replace(/[/?].*$/, "");
+  return limpo ? `@${limpo}` : null;
+}
+
+/** Um ou mais e-mails separados por vírgula, ponto e vírgula ou barra. */
+export function normalizarEmails(texto: string): string | null {
+  const achados = texto
+    .split(/[,;/\s]+/)
+    .map((e) => e.trim().toLowerCase())
+    .filter((e) => /^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(e));
+  return achados.length > 0 ? [...new Set(achados)].join(" / ") : null;
 }

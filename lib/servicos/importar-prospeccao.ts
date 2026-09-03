@@ -48,9 +48,11 @@ export async function importarProspeccao(conteudoCsv: string): Promise<Resultado
           builder: sql`excluded.builder`,
           temBooking: sql`excluded.tem_booking`,
           anoCopyright: sql`excluded.ano_copyright`,
-          instagram: sql`excluded.instagram`,
-          seguidores: sql`excluded.seguidores`,
-          emails: sql`excluded.emails`,
+          // contato corrigido à mão no painel é soberano: a varredura não
+          // encontrou, o João encontrou, e reimportar não pode apagar isso
+          instagram: sql`case when ${prospeccao.contatoManual} then ${prospeccao.instagram} else excluded.instagram end`,
+          seguidores: sql`case when ${prospeccao.contatoManual} then ${prospeccao.seguidores} else excluded.seguidores end`,
+          emails: sql`case when ${prospeccao.contatoManual} then ${prospeccao.emails} else excluded.emails end`,
           diagnostico: sql`excluded.diagnostico`,
           comoAbordar: sql`excluded.como_abordar`,
           atualizadoEm: new Date(),

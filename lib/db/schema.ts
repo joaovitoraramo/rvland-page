@@ -427,6 +427,9 @@ export const prospeccao = pgTable(
     instagram: text("instagram"),
     seguidores: integer("seguidores"),
     emails: text("emails"),
+    telefone: text("telefone"),
+    // contato corrigido no painel: a importação nunca sobrescreve
+    contatoManual: boolean("contato_manual").notNull().default(false),
     diagnostico: text("diagnostico"),
     comoAbordar: text("como_abordar"),
     // funil comercial, movido pelo João no painel
