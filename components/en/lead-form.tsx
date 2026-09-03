@@ -149,7 +149,7 @@ export function LeadFormEn() {
 
   return (
     <Card className="rounded-2xl border-white/10 bg-[rgba(10,14,20,0.72)] backdrop-blur-md">
-      <CardHeader>
+      <CardHeader className="max-sm:hidden">
         <CardTitle className="text-white">
           <span className="rv-sem-conceito">Get your free concept</span>
           <span className="rv-se-conceito">Start your website</span>
@@ -166,7 +166,7 @@ export function LeadFormEn() {
         </CardDescription>
       </CardHeader>
       <CardContent>
-        <form onSubmit={onSubmit} noValidate className="space-y-4">
+        <form onSubmit={onSubmit} noValidate className="space-y-4 max-sm:space-y-3">
           <div className="hidden" aria-hidden="true">
             <input
               ref={honeypotRef}
@@ -257,7 +257,7 @@ export function LeadFormEn() {
               value={form.mensagem}
               onChange={(e) => set("mensagem")(e.target.value)}
               placeholder="What do you do, and what do you want your website to do for you?"
-              className="min-h-[110px] w-full rounded-xl border-white/10 bg-white/5 text-white placeholder:text-white/35"
+              className="min-h-[110px] w-full rounded-xl border-white/10 bg-white/5 text-white placeholder:text-white/35 max-sm:min-h-[84px]"
             />
           )}
 

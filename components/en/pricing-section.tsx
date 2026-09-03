@@ -77,12 +77,12 @@ export function PricingSection({ pricing }: { pricing: PricingEn }) {
       {/* valor */}
       <div
         key={ativo}
-        className="rv-precos-troca mt-6 rounded-3xl border border-white/10 bg-white/[0.04] p-8 text-center backdrop-blur-md"
+        className="rv-precos-troca mt-6 rounded-3xl border border-white/10 bg-white/[0.04] p-8 text-center backdrop-blur-md max-sm:mt-4 max-sm:p-5"
       >
-        <div className="text-5xl font-semibold tracking-tight text-white md:text-6xl">
+        <div className="text-5xl font-semibold tracking-tight text-white max-sm:text-4xl md:text-6xl">
           {formatarDolares(plano.valorCentavos)}
           {parcelado ? (
-            <span className="text-2xl font-normal text-white/50">/mo</span>
+            <span className="text-2xl font-normal text-white/50 max-sm:text-xl">/mo</span>
           ) : null}
         </div>
         <div className="rv-num mt-2 text-sm text-white/50">
@@ -93,7 +93,7 @@ export function PricingSection({ pricing }: { pricing: PricingEn }) {
             : "one-time payment"}
         </div>
 
-        <ul className="mx-auto mt-6 grid max-w-md gap-x-6 gap-y-2 text-left text-sm text-white/70 sm:grid-cols-2">
+        <ul className="mx-auto mt-6 grid max-w-md gap-x-6 gap-y-2 text-left text-sm text-white/70 max-sm:mt-4 max-sm:gap-y-1.5 max-sm:text-[13px] sm:grid-cols-2">
           {INCLUIDO.map((item) => (
             <li key={item} className="flex items-start gap-2">
               <Check className="mt-0.5 h-4 w-4 shrink-0 text-[rgba(0,255,138,0.9)]" />
@@ -112,7 +112,7 @@ export function PricingSection({ pricing }: { pricing: PricingEn }) {
               /* storage bloqueado: lead segue sem interesse */
             }
           }}
-          className="mt-7 inline-flex h-11 items-center justify-center gap-2 rounded-xl border border-white/10 bg-[rgba(0,255,138,0.16)] px-6 text-sm font-medium text-white transition-all hover:-translate-y-[1px] hover:bg-[rgba(0,255,138,0.22)]"
+          className="mt-7 max-sm:mt-5 max-sm:w-full inline-flex h-11 items-center justify-center gap-2 rounded-xl border border-white/10 bg-[rgba(0,255,138,0.16)] px-6 text-sm font-medium text-white transition-all hover:-translate-y-[1px] hover:bg-[rgba(0,255,138,0.22)]"
         >
           <span className="rv-sem-conceito">Get your free concept</span>
           <span className="rv-se-conceito">Let&apos;s build it</span>
@@ -120,7 +120,7 @@ export function PricingSection({ pricing }: { pricing: PricingEn }) {
         </a>
       </div>
 
-      <p className="mt-5 text-center text-sm text-white/55">{linhaCare}</p>
+      <p className="mt-5 text-center text-sm text-white/55 max-sm:mt-4 max-sm:text-[13px]">{linhaCare}</p>
     </div>
   );
 }

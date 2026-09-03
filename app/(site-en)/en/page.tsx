@@ -194,7 +194,7 @@ export default async function PaginaEn() {
                 <CardContent className="p-6">
                   <div className="mb-3">{item.icon}</div>
                   <div className="font-medium text-white">{item.title}</div>
-                  <p className="mt-1.5 text-sm text-white/60">{item.desc}</p>
+                  <p className="mt-1.5 text-sm text-white/60 max-sm:text-[13px]">{item.desc}</p>
                 </CardContent>
               </Card>
             ))}
@@ -213,14 +213,14 @@ export default async function PaginaEn() {
               One package, no add-ons, no surprise invoices.
             </p>
           </div>
-          <div className="grid gap-3 sm:grid-cols-2 lg:grid-cols-4">
+          <div className="grid gap-3 max-sm:gap-2 sm:grid-cols-2 lg:grid-cols-4">
             {INCLUDED_EN.map((item) => (
               <div
                 key={item.title}
-                className="rounded-2xl border border-white/10 bg-white/[0.04] p-5"
+                className="rounded-2xl border border-white/10 bg-white/[0.04] p-5 max-sm:p-3.5"
               >
                 <div className="text-sm font-medium text-white">{item.title}</div>
-                <p className="mt-1 text-sm text-white/55">{item.desc}</p>
+                <p className="mt-1 text-sm text-white/55 max-sm:text-[13px]">{item.desc}</p>
               </div>
             ))}
           </div>
@@ -250,7 +250,7 @@ export default async function PaginaEn() {
                   0{i + 1}
                 </div>
                 <div className="font-medium text-white">{step.title}</div>
-                <p className="mt-1.5 text-sm text-white/60">{step.desc}</p>
+                <p className="mt-1.5 text-sm text-white/60 max-sm:text-[13px]">{step.desc}</p>
               </div>
             ))}
           </div>
@@ -260,7 +260,7 @@ export default async function PaginaEn() {
       {/* pricing */}
       <section
         id="pricing"
-        className="mx-auto w-full max-w-6xl scroll-mt-6 px-4 py-10 md:px-6 md:py-14"
+        className="mx-auto w-full max-w-6xl scroll-mt-6 px-4 py-10 max-sm:py-8 md:px-6 md:py-14"
       >
         <Reveal>
           <div className="mb-8 text-center">
@@ -273,11 +273,11 @@ export default async function PaginaEn() {
           </div>
           <PricingSection pricing={pricing} />
 
-          <div className="mx-auto mt-10 grid max-w-4xl gap-4 md:grid-cols-3">
+          <div className="mx-auto mt-10 grid max-w-4xl gap-4 max-sm:mt-6 max-sm:gap-2.5 md:grid-cols-3">
             {GARANTIAS.map((g) => (
               <div
                 key={g.title}
-                className="flex items-start gap-3 rounded-2xl border border-white/10 bg-white/[0.04] p-5"
+                className="flex items-start gap-3 rounded-2xl border border-white/10 bg-white/[0.04] p-5 max-sm:p-4"
               >
                 <span className="mt-0.5 shrink-0 text-[rgba(0,255,138,0.9)]">{g.icon}</span>
                 <span>
@@ -298,14 +298,14 @@ export default async function PaginaEn() {
               Questions, answered
             </h2>
           </div>
-          <div className="grid gap-3 md:grid-cols-2">
+          <div className="grid gap-3 max-sm:gap-2 md:grid-cols-2">
             {faq.map((item) => (
               <div
                 key={item.q}
-                className="rounded-2xl border border-white/10 bg-white/[0.04] p-5"
+                className="rounded-2xl border border-white/10 bg-white/[0.04] p-5 max-sm:p-3.5"
               >
                 <div className="font-medium text-white">{item.q}</div>
-                <p className="mt-1.5 text-sm text-white/60">{item.a}</p>
+                <p className="mt-1.5 text-sm text-white/60 max-sm:text-[13px]">{item.a}</p>
               </div>
             ))}
           </div>
@@ -315,7 +315,7 @@ export default async function PaginaEn() {
       {/* contact */}
       <section
         id="contact"
-        className="mx-auto w-full max-w-6xl scroll-mt-6 px-4 py-10 pb-16 md:px-6 md:py-14"
+        className="mx-auto w-full max-w-6xl scroll-mt-6 px-4 py-10 pb-16 max-sm:py-8 max-sm:pb-10 md:px-6 md:py-14"
       >
         <Reveal>
           <div className="grid gap-6 lg:grid-cols-2 lg:items-start">
@@ -332,7 +332,7 @@ export default async function PaginaEn() {
                 You have seen the concept. Tell us where to reach you and we
                 pick up right from there: same day answer, still no calls.
               </p>
-              <ul className="mt-6 space-y-3 text-sm text-white/70">
+              <ul className="mt-6 space-y-3 text-sm text-white/70 max-sm:mt-4 max-sm:space-y-2">
                 <li className="flex items-start gap-2">
                   <span className="mt-[7px] inline-block h-1.5 w-1.5 rounded-full bg-[rgba(0,255,138,0.85)]" />
                   We reply by message on the channel you pick.
