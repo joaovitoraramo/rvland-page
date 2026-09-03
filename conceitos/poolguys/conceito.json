@@ -79,7 +79,7 @@
     "Pools we take care of: fotos reais do cliente, recortadas do banner antigo",
     "Where our trucks go: rotas por cidade com o dia da semana",
     "Pedido de orçamento: formulário curto + telefone",
-    "Rodapé + crédito discreto da RVLand"
+    "Rodape + faixa e credito da RVLand (componente do publicador)"
   ],
   "copy": {
     "titulo": "Your pool is fighting 115° heat, monsoon dust and hard water. We fight back every week.",
@@ -126,5 +126,13 @@
     "arquivo": "conceitos/poolguys/email.md"
   },
   "url": "https://rvland-page.vercel.app/c/poolguys",
-  "demonstracao": "A página hospedada convida a trocar de tela: no desktop, botão \"See it on your phone\" abre modal com QR code; no celular, \"See it on a big screen\" abre modal com o link e botão de copiar. A troca É a demonstração — a peça se refaz sozinha, e o site atual do prospect não faz isso. A faixa tambem leva ao pricing da RVLand (/en?section=pricing) pelo botao \"What does this cost?\", respondendo num clique a pergunta que ele faria por e-mail."
+  "demonstracao": "A página hospedada convida a trocar de tela: no desktop, botão \"See it on your phone\" abre modal com QR code; no celular, \"See it on a big screen\" abre modal com o link e botão de copiar. A troca É a demonstração — a peça se refaz sozinha, e o site atual do prospect não faz isso. A faixa tambem leva ao pricing da RVLand (/en?section=pricing) pelo botao \"What does this cost?\", respondendo num clique a pergunta que ele faria por e-mail.",
+  "cliente": "Poolguys",
+  "faixaCores": {
+    "fundo": "#06232B",
+    "texto": "rgba(255,255,255,0.85)",
+    "acento": "#2BB6C4",
+    "acentoTexto": "#04212A",
+    "modalFundo": "#0E2831"
+  }
 }

@@ -455,16 +455,6 @@
     font-size: 15px;
     color: #fff;
   }
-  .credito {
-    background: #071C24;
-    color: rgba(255,255,255,0.42);
-    padding: 18px 0;
-    font-family: var(--dados);
-    font-size: 12px;
-    letter-spacing: 0.04em;
-  }
-  .credito .env { display: flex; gap: 20px; flex-wrap: wrap; }
-  .credito b { color: var(--turquesa); font-weight: 600; }
 
   @media (max-width: 900px) {
     .hero .env, .areas, .pedido .env { grid-template-columns: 1fr; gap: 44px; }
@@ -516,7 +506,6 @@
 
     .rodape .env { gap: 12px; }
     .rodape-fone { margin-left: 0; }
-    .credito .env { gap: 6px; }
   }
 </style>
 </head>
@@ -524,19 +513,19 @@
 
 <div class="rv-faixa">
   <span class="rv-faixa-texto"><strong>This is a concept</strong> &mdash; not your live site.</span>
-  <button type="button" class="rv-convite rv-convite-fone" data-rv-abrir>See it on your phone</button>
-  <button type="button" class="rv-convite rv-convite-pc" data-rv-abrir>See it on a big screen</button>
-  <a class="rv-preco" href="https://rvland-page.vercel.app/en?section=pricing" target="_blank" rel="noreferrer">What does this cost? &rarr;</a>
+  <button type="button" class="rv-convite rv-convite-fone" data-rv-abrir="rv-modal-tela">See it on your phone</button>
+  <button type="button" class="rv-convite rv-convite-pc" data-rv-abrir="rv-modal-tela">See it on a big screen</button>
+  <button type="button" class="rv-preco" data-rv-abrir="rv-modal-preco">What does this cost? &rarr;</button>
   <span class="rv-faixa-por">by RVLand Devs</span>
 </div>
 
-<div class="rv-modal" id="rv-modal" hidden>
+<div class="rv-modal" id="rv-modal-tela" hidden>
   <div class="rv-modal-fundo" data-rv-fechar></div>
-  <div class="rv-modal-caixa" role="dialog" aria-modal="true" aria-labelledby="rv-modal-titulo">
+  <div class="rv-modal-caixa" role="dialog" aria-modal="true" aria-labelledby="rv-tela-titulo">
     <button type="button" class="rv-modal-x" data-rv-fechar aria-label="Close">&times;</button>
 
     <div class="rv-so-desktop">
-      <h2 id="rv-modal-titulo">Open it on your phone</h2>
+      <h2 id="rv-tela-titulo">Open it on your phone</h2>
       <p>Point your camera at the code. It is the same page &mdash; it rebuilds itself for the smaller screen.</p>
       <img class="rv-qr" src="data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAAWgAAAFoCAYAAAB65WHVAAAAAklEQVR4AewaftIAAAnzSURBVO3Bwa0gN5IFwKfEB2gQDaDtNIAG8aTVVdClCtoSsqcj4o8//xIA2qkA0FIFgJYqALRUAaClCgAtVQBoqQJASxUAWqoA0FIFgJYqALT0k5fGXOHfuWfnjTFX3rhn56kxV964Z6eLMVeeumfnS2OuPHXPzq9qzBX+nXt2nqoA0FIFgJYqALRUAaClCgAtVQBoqQJASxUAWqoA0FIFgJYqALT0k4/ds/M7GHPlV3TPThdjrrxxz85Xxlz5ypgrX7lnp4t7dn4HY658pQJASxUAWqoA0FIFgJYqALRUAaClCgAtVQBoqQJASxUAWvpJI2OudHHPzq9qzJUO7tn5Vd2z85UxV74y5sob9+x0MeZKF/fsdFABoKUKAC1VAGipAkBLFQBaqgDQUgWAlioAtFQBoKUKAC1VAGjpJ7R3z84bY6585Z6dp8Zc6WLMlS7u2fnKmCv876gA0FIFgJYqALRUAaClCgAtVQBoqQJASxUAWqoA0FIFgJYqALT0E9obc+WNe3Y6uGfnS2OuPHXPzhtjrnxlzJWv3LPD/44KAC1VAGipAkBLFQBaqgDQUgWAlioAtFQBoKUKAC1VAGjpJ43cs8M/3bPzxpgrHdyz88aYK13cs/OVMVfeuGfnd3DPDn9XAaClCgAtVQBoqQJASxUAWqoA0FIFgJYqALRUAaClCgAtVQBo6ScfG3OFf2fMlTfu2XlqzJU37tl5asyVN+7ZeWPMla+MufLGPTsdjLnyxj07XxlzhX+nAkBLFQBaqgDQUgWAlioAtFQBoKUKAC1VAGipAkBLFQBa+uPPv4T/KWOufOWena+MufLGPTtPjbnypXt24P9bBYCWKgC0VAGgpQoALVUAaKkCQEsVAFqqANBSBYCWKgC0VAGgpZ+8NObKG/fsfGXMFf7pnp2vjLnylXt23hhz5al7dt4Yc+WNMVeeumfnjTFXurhn5ytjrjx1z84bY650cc/OUxUAWqoA0FIFgJYqALRUAaClCgAtVQBoqQJASxUAWqoA0FIFgJZ+8tI9O18Zc6WLe3b4p3t2urhn56kxV964Z+crY6585Z6dLsZc+R3cs/OVCgAtVQBoqQJASxUAWqoA0FIFgJYqALRUAaClCgAtVQBo6ScvjbnylXt2uhhzpYt7dr4y5sob9+w8NebKG/fs/KrGXHnqnp2vjLnyxj07b4y58tQ9O2+MudLFPTsdVABoqQJASxUAWqoA0FIFgJYqALRUAaClCgAtVQBoqQJASxUAWvrJS/fsvDHmylNjrrxxz85X7tn5ypgrXxpz5Xcw5spT9+y8MeZKF2OudHHPzlNjrnxlzJU37tn5ypgrb9yz81QFgJYqALRUAaClCgAtVQBoqQJASxUAWqoA0FIFgJYqALT0k5fGXHnjnp2nxlx5Y8yVN+7Z+cqYK0/ds/PGmCtv3LPzO7hn56kxV964Z6eLe3aeGnPlS2OufOWeHf6uAkBLFQBaqgDQUgWAlioAtFQBoKUKAC1VAGipAkBLFQBaqgDQ0k9eumfndzDmyhv37Dw15sob9+zw3xpzpYt7dn4HY67wdxUAWqoA0FIFgJYqALRUAaClCgAtVQBoqQJASxUAWqoA0FIFgJZ+8tKYK2/cs/OVe3beGHPlqXt23hhz5Stjrnzlnp03xlx56p6dN8ZceeOena/cs9PFmCu/ont23hhz5al7dt4Yc+WNe3aeGnPlKxUAWqoA0FIFgJYqALRUAaClCgAtVQBoqQJASxUAWqoA0NJPPjbmylP37Pyq7tl5asyVN+7ZeWPMlafGXOninp3fwZgrb9yz8ysac+WNe3b4uwoALVUAaKkCQEsVAFqqANBSBYCWKgC0VAGgpQoALVUAaKkCQEs/eemenTfGXPnKmCtdjLny1D07b4y58pV7dt4Yc+WpMVe+dM/OU/fs/A7GXPnSPTtPjbnylTFX3rhn5yv37HylAkBLFQBaqgDQUgWAlioAtFQBoKUKAC1VAGipAkBLFQBaqgDQ0k9eGnPljXt2nhpz5Y17dt4Yc+Ur9+w8NebKG/fsfGXMlS7u2XljzJUu7tn5ypgrX7ln5yv37Lwx5spT9+y8MebKV+7Z+UoFgJYqALRUAaClCgAtVQBoqQJASxUAWqoA0FIFgJYqALT0k4+NufIrGnOlizFXvnLPDv90z85X7tl5Y8yVp+7Z6WLMlTfu2XlqzJU37tn5ypgrb9yz81QFgJYqALRUAaClCgAtVQBoqQJASxUAWqoA0FIFgJYqALRUAaCln/zCxlx5454d/m7MlTfu2XlqzJUv3bPz1JgrXYy58sY9O18Zc+WNe3a+MubKV8ZceeOenafu2flKBYCWKgC0VAGgpQoALVUAaKkCQEsVAFqqANBSBYCWKgC09JNG7tl5Y8yVN8ZceeqenTfGXPnKPTv8t8Zc+co9O2+MudLFmCu/gzFXnrpn5ysVAFqqANBSBYCWKgC0VAGgpQoALVUAaKkCQEsVAFqqANBSBYCW/vjzL6G1MVf4b92z85UxV964Z+epMVfeuGenizFXvnLPzq+oAkBLFQBaqgDQUgWAlioAtFQBoKUKAC1VAGipAkBLFQBaqgDQ0k9eGnOFf+eenS7u2XljzJUu7tl5asyVN8Zc6WLMlS7GXHnqnh3+nQoALVUAaKkCQEsVAFqqANBSBYCWKgC0VAGgpQoALVUAaOknH7tn53cw5sqvaMyVr9yz88aYK13cs/PGmCtP3bPzxpgrXdyz08E9O18ac+Ur9+w8VQGgpQoALVUAaKkCQEsVAFqqANBSBYCWKgC0VAGgpQoALVUAaOknjYy50sU9O/w7Y650cc/OG2OuvHHPzq9ozJVf0Zgrb9yz85V7dr5SAaClCgAtVQBoqQJASxUAWqoA0FIFgJYqALRUAaClCgAt/QReuGfnqTFXvjTmylfu2eninp2nxlz50j07T4258sY9O13cs/PUmCtv3LPzVAWAlioAtFQBoKUKAC1VAGipAkBLFQBaqgDQUgWAlioAtFQBoKWf0N49O/zTPTtPjbnyxpgrb9yz89SYK1+5Z+dXNebKU/fsvDHmyq+oAkBLFQBaqgDQUgWAlioAtFQBoKUKAC1VAGipAkBLFQBaqgDQ0k8auWeH/9aYK2/cs/PUPTtvjLnyxpgrT92z88aYK13cs9PFmCtP3bPzlTFXvnTPzlNjrnylAkBLFQBaqgDQUgWAlioAtFQBoKUKAC1VAGipAkBLFQBa+snHxlzh3xlz5Y17dr4y5spT9+x0MeZKF/fsvDHmShf37Dw15koX9+x85Z6dr1QAaKkCQEsVAFqqANBSBYCWKgC0VAGgpQoALVUAaKkCQEsVAFr648+/BIB2KgC0VAGgpQoALVUAaKkCQEsVAFqqANBSBYCWKgC0VAGgpf8DGV0n9U7i8hEAAAAASUVORK5CYII=" alt="QR code" width="180" height="180">
     </div>
@@ -553,41 +542,68 @@
   </div>
 </div>
 
+<div class="rv-modal" id="rv-modal-preco" hidden>
+  <div class="rv-modal-fundo" data-rv-fechar></div>
+  <div class="rv-modal-caixa rv-caixa-preco" role="dialog" aria-modal="true" aria-labelledby="rv-preco-titulo">
+    <button type="button" class="rv-modal-x" data-rv-fechar aria-label="Close">&times;</button>
+
+    <span class="rv-selo">Free</span>
+    <h2 id="rv-preco-titulo">This part costs you nothing</h2>
+    <p>
+      I built this concept on my own time. No invoice is coming for it, and it
+      stays yours either way &mdash; even if you close this tab and never reply.
+    </p>
+
+    <hr class="rv-divisor">
+
+    <p class="rv-pergunta">Want it to be your actual website?</p>
+    <p>
+      That is the part with a price: the live site, the client area, the forms,
+      hosting and support. It is all on one page, in plain numbers &mdash; no
+      meeting, no quote to request.
+    </p>
+
+    <a class="rv-botao-preco" href="https://rvland-page.vercel.app/en?section=pricing" target="_blank" rel="noreferrer">See what it costs &rarr;</a>
+    <button type="button" class="rv-depois" data-rv-fechar>Not now &mdash; I'll keep looking</button>
+  </div>
+</div>
+
 <style>
   .rv-faixa {
     position: relative; z-index: 50;
-    background: #0B1220; color: rgba(255,255,255,0.85);
-    font-family: "IBM Plex Mono", ui-monospace, monospace;
+    background: #06232B; color: rgba(255,255,255,0.85);
+    font-family: "IBM Plex Mono", ui-monospace, SFMono-Regular, monospace;
     font-size: 12px; letter-spacing: 0.04em;
     padding: 9px 24px;
     display: flex; align-items: center; gap: 14px; flex-wrap: wrap;
   }
-  .rv-faixa strong { color: #00E5FF; font-weight: 600; }
-  .rv-faixa-por { margin-left: auto; color: rgba(255,255,255,0.4); }
+  .rv-faixa strong { color: #2BB6C4; font-weight: 600; }
+  .rv-faixa-por { margin-left: auto; opacity: 0.5; }
   .rv-convite {
     font: inherit; cursor: pointer;
-    background: rgba(0,229,255,0.12);
-    color: #7FE9F7;
-    border: 1px solid rgba(0,229,255,0.35);
+    background: color-mix(in srgb, #2BB6C4 14%, transparent);
+    color: #2BB6C4;
+    border: 1px solid color-mix(in srgb, #2BB6C4 40%, transparent);
     border-radius: 999px;
     padding: 4px 13px;
     transition: background .15s, border-color .15s;
   }
-  .rv-convite:hover { background: rgba(0,229,255,0.2); border-color: rgba(0,229,255,0.6); }
-  .rv-convite:focus-visible { outline: 2px solid #00E5FF; outline-offset: 2px; }
+  .rv-convite:hover {
+    background: color-mix(in srgb, #2BB6C4 24%, transparent);
+    border-color: color-mix(in srgb, #2BB6C4 65%, transparent);
+  }
+  .rv-convite:focus-visible { outline: 2px solid #2BB6C4; outline-offset: 2px; }
 
-  /* a pergunta que ele faz de qualquer jeito; melhor respondê-la num clique
-     do que esperar o e-mail de volta perguntando */
   .rv-preco {
-    font: inherit; text-decoration: none;
-    background: #00E5FF; color: #06232B;
-    font-weight: 600;
+    font: inherit; cursor: pointer;
+    background: #2BB6C4; color: #04212A;
+    font-weight: 600; border: 0;
     border-radius: 999px;
     padding: 5px 15px;
     white-space: nowrap;
     transition: filter .15s;
   }
-  .rv-preco:hover { filter: brightness(1.08); }
+  .rv-preco:hover { filter: brightness(1.1); }
   .rv-preco:focus-visible { outline: 2px solid #fff; outline-offset: 2px; }
 
   /* cada tela convida para a outra */
@@ -612,26 +628,58 @@
   .rv-modal-fundo { position: absolute; inset: 0; background: rgba(4,14,20,0.78); backdrop-filter: blur(3px); }
   .rv-modal-caixa {
     position: relative;
-    /* width+max-width em vez de min(): dentro do grid a porcentagem nao
-       resolvia contra a area e a caixa estourava a tela no celular */
-    width: 100%;
-    max-width: 400px;
+    width: 100%; max-width: 400px;
     background: #0E2831;
     border: 1px solid rgba(255,255,255,0.12);
     border-radius: 14px;
     padding: 30px 28px 24px;
-    text-align: center;
-    color: #fff;
+    text-align: center; color: #fff;
     box-shadow: 0 30px 80px rgba(0,0,0,0.5);
-    font-family: "IBM Plex Sans", system-ui, sans-serif;
+    font-family: "IBM Plex Sans", system-ui, -apple-system, sans-serif;
+    max-height: calc(100vh - 48px);
+    overflow-y: auto;
   }
+  .rv-caixa-preco { max-width: 440px; text-align: left; }
   .rv-modal-caixa h2 {
-    font-family: "Archivo", system-ui, sans-serif;
+    font-family: "Archivo", system-ui, -apple-system, sans-serif;
     font-weight: 700; font-size: 21px; letter-spacing: -0.02em;
     margin: 0 0 8px;
   }
   .rv-modal-caixa p { margin: 0 0 18px; font-size: 14.5px; line-height: 1.55; color: rgba(255,255,255,0.68); }
   .rv-qr { border-radius: 10px; background: #fff; padding: 10px; display: block; margin: 0 auto 18px; }
+
+  .rv-selo {
+    display: inline-block;
+    background: rgba(0,255,138,0.14); color: #6BF0B4;
+    border: 1px solid rgba(0,255,138,0.3);
+    border-radius: 999px;
+    font-family: "IBM Plex Mono", ui-monospace, SFMono-Regular, monospace;
+    font-size: 10.5px; letter-spacing: 0.12em; text-transform: uppercase;
+    padding: 3px 10px; margin-bottom: 12px;
+  }
+  .rv-divisor { border: 0; border-top: 1px solid rgba(255,255,255,0.1); margin: 4px 0 18px; }
+  .rv-pergunta {
+    font-family: "Archivo", system-ui, -apple-system, sans-serif;
+    font-weight: 700; font-size: 17px; letter-spacing: -0.015em;
+    color: #fff; margin-bottom: 8px;
+  }
+  .rv-botao-preco {
+    display: block; text-align: center; text-decoration: none;
+    background: #2BB6C4; color: #04212A;
+    font-weight: 600; font-size: 15px;
+    border-radius: 8px; padding: 13px 18px;
+    transition: filter .15s;
+  }
+  .rv-botao-preco:hover { filter: brightness(1.1); }
+  .rv-depois {
+    display: block; width: 100%;
+    margin-top: 10px; padding: 9px;
+    background: none; border: 0; cursor: pointer;
+    font-family: "IBM Plex Sans", system-ui, -apple-system, sans-serif;
+    font-size: 13px; color: rgba(255,255,255,0.42);
+  }
+  .rv-depois:hover { color: rgba(255,255,255,0.7); }
+
   .rv-modal-url {
     display: flex; align-items: center; gap: 8px;
     background: rgba(0,0,0,0.28);
@@ -640,15 +688,15 @@
     padding: 8px 8px 8px 12px;
   }
   .rv-modal-url code {
-    font-family: "IBM Plex Mono", ui-monospace, monospace;
+    font-family: "IBM Plex Mono", ui-monospace, SFMono-Regular, monospace;
     font-size: 12px; color: rgba(255,255,255,0.75);
     overflow: hidden; text-overflow: ellipsis; white-space: nowrap;
     flex: 1; text-align: left;
   }
   .rv-copiar {
-    font-family: "IBM Plex Sans", system-ui, sans-serif;
+    font-family: "IBM Plex Sans", system-ui, -apple-system, sans-serif;
     font-size: 12.5px; font-weight: 600; cursor: pointer;
-    background: #00E5FF; color: #06323E;
+    background: #2BB6C4; color: #04212A;
     border: 0; border-radius: 6px; padding: 7px 13px;
     flex-shrink: 0;
   }
@@ -659,36 +707,60 @@
     padding: 4px 8px;
   }
   .rv-modal-x:hover { color: #fff; }
+
+  .rv-rodape {
+    background: #06232B; color: rgba(255,255,255,0.85);
+    font-family: "IBM Plex Mono", ui-monospace, SFMono-Regular, monospace;
+    font-size: 12px; letter-spacing: 0.04em;
+    padding: 18px 24px;
+    display: flex; gap: 8px 20px; flex-wrap: wrap;
+    justify-content: center;
+    opacity: 0.85;
+  }
+  .rv-rodape a { color: #2BB6C4; text-decoration: none; }
+  .rv-rodape a:hover { text-decoration: underline; }
+  .rv-rodape b { color: #2BB6C4; font-weight: 600; }
+
   @media (max-width: 480px) {
     .rv-modal { padding: 16px; }
     .rv-modal-caixa { padding: 26px 20px 20px; }
     .rv-modal-caixa h2 { font-size: 19px; }
+    .rv-pergunta { font-size: 16px; }
     .rv-modal-url code { font-size: 11px; }
+    .rv-rodape { padding: 16px; gap: 6px; text-align: center; }
   }
 </style>
 
 <script>
   (function () {
-    var modal = document.getElementById("rv-modal");
-    function abrir() { modal.hidden = false; }
-    function fechar() { modal.hidden = true; }
+    function fechar() {
+      document.querySelectorAll(".rv-modal").forEach(function (m) { m.hidden = true; });
+    }
     document.querySelectorAll("[data-rv-abrir]").forEach(function (b) {
-      b.addEventListener("click", abrir);
+      b.addEventListener("click", function () {
+        fechar();
+        var alvo = document.getElementById(b.getAttribute("data-rv-abrir"));
+        if (alvo) alvo.hidden = false;
+      });
     });
     document.querySelectorAll("[data-rv-fechar]").forEach(function (b) {
       b.addEventListener("click", fechar);
     });
+    // o preço abre em outra aba; ao voltar, ninguém quer achar o modal aberto
+    var irPreco = document.querySelector(".rv-botao-preco");
+    if (irPreco) irPreco.addEventListener("click", fechar);
     document.addEventListener("keydown", function (e) {
       if (e.key === "Escape") fechar();
     });
     var copiar = document.querySelector("[data-rv-copiar]");
-    copiar.addEventListener("click", function () {
-      var url = document.getElementById("rv-url").textContent;
-      navigator.clipboard.writeText(url).then(function () {
-        copiar.textContent = "Copied";
-        setTimeout(function () { copiar.textContent = "Copy"; }, 1800);
+    if (copiar) {
+      copiar.addEventListener("click", function () {
+        navigator.clipboard.writeText(document.getElementById("rv-url").textContent).then(function () {
+          copiar.textContent = "Copied";
+          setTimeout(function () { copiar.textContent = "Copy"; }, 1800);
+        });
       });
-    });
+    }
   })();
 </script>
 
@@ -896,12 +968,12 @@
   </div>
 </div>
 
-<div class="credito">
-  <div class="env">
-    <span>Website concept prepared for Poolguys</span>
-    <span>&middot;</span>
-    <span>by <b>RVLand Devs</b> &middot; rvland-page.vercel.app/en &middot; @rvlanddevs</span>
-  </div>
+
+<div class="rv-rodape">
+  <span>Website concept prepared for Poolguys</span>
+  <span>by <b>RVLand Devs</b></span>
+  <a href="https://rvland-page.vercel.app/en" target="_blank" rel="noreferrer">rvland-page.vercel.app/en</a>
+  <a href="https://instagram.com/rvlanddevs" target="_blank" rel="noreferrer">@rvlanddevs</a>
 </div>
 
 </body>
