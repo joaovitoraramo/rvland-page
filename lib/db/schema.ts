@@ -68,6 +68,7 @@ export const auditoria = pgTable(
         | "anexo"
         | "servidor"
         | "lead"
+        | "prospeccao"
       >(),
     entidadeId: text("entidade_id"),
     detalhes: jsonb("detalhes").$type<Record<string, unknown>>(),
@@ -403,4 +404,55 @@ export const leads = pgTable(
     atualizadoEm: timestamp("atualizado_em", { withTimezone: true }).notNull().defaultNow(),
   },
   (t) => [index("leads_origem_status_idx").on(t.origem, t.status)]
+);
+
+// ─── Prospecção outbound (leads frios importados da varredura) ──────────────
+
+export const prospeccao = pgTable(
+  "prospeccao",
+  {
+    id: uuid("id").primaryKey().defaultRandom(),
+    dominio: text("dominio").notNull().unique(),
+    negocio: text("negocio").notNull(),
+    nicho: text("nicho").notNull(),
+    cidade: text("cidade").notNull(),
+    perfilCidade: text("perfil_cidade").notNull().default("Média").$type<"Afluente" | "Média">(),
+    site: text("site").notNull(),
+    screenshot: text("screenshot"),
+    potencial: integer("potencial").notNull(),
+    notaSite: integer("nota_site").notNull(),
+    builder: text("builder"),
+    temBooking: boolean("tem_booking").notNull().default(false),
+    anoCopyright: text("ano_copyright"),
+    instagram: text("instagram"),
+    seguidores: integer("seguidores"),
+    emails: text("emails"),
+    diagnostico: text("diagnostico"),
+    comoAbordar: text("como_abordar"),
+    // funil comercial, movido pelo João no painel
+    status: text("status")
+      .notNull()
+      .default("novo")
+      .$type<
+        | "novo"
+        | "seguindo"
+        | "comentou"
+        | "contatado"
+        | "respondeu"
+        | "previa"
+        | "negociando"
+        | "ganho"
+        | "perdido"
+      >(),
+    notas: text("notas"),
+    seguidoEm: date("seguido_em"),
+    comentadoEm: date("comentado_em"),
+    contatadoEm: date("contatado_em"),
+    importadoEm: timestamp("importado_em", { withTimezone: true }).notNull().defaultNow(),
+    atualizadoEm: timestamp("atualizado_em", { withTimezone: true }).notNull().defaultNow(),
+  },
+  (t) => [
+    index("prospeccao_status_idx").on(t.status),
+    index("prospeccao_potencial_idx").on(t.potencial),
+  ]
 );

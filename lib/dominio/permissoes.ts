@@ -42,6 +42,10 @@ export const PERMISSOES = [
 
   { chave: "site.precos", rotulo: "Editar preços do site (/en)", area: "Site" },
 
+  { chave: "prospeccao.ver", rotulo: "Ver prospecção", area: "Prospecção" },
+  { chave: "prospeccao.editar", rotulo: "Mover status e escrever notas", area: "Prospecção" },
+  { chave: "prospeccao.importar", rotulo: "Importar planilha de prospecção", area: "Prospecção" },
+
   { chave: "plataforma.panico", rotulo: "Botão de pânico (suspender bloqueios)", area: "Plataforma" },
   { chave: "plataforma.simulacao", rotulo: "Modo simulação", area: "Plataforma" },
   { chave: "plataforma.usuarios", rotulo: "Gerenciar usuários", area: "Plataforma" },

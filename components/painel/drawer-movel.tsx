@@ -6,6 +6,7 @@ import { usePathname } from "next/navigation";
 import {
   LayoutDashboard,
   Inbox,
+  Radar,
   Users,
   Receipt,
   Server,
@@ -23,6 +24,7 @@ import type { ItemNav } from "@/components/painel/sidebar";
 const ICONES = {
   dashboard: LayoutDashboard,
   clientes: Users,
+  prospeccao: Radar,
   leads: Inbox,
   financeiro: Receipt,
   servidores: Server,

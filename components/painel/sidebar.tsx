@@ -6,6 +6,7 @@ import { usePathname } from "next/navigation";
 import {
   LayoutDashboard,
   Inbox,
+  Radar,
   Users,
   Receipt,
   Server,
@@ -20,12 +21,21 @@ import { Avatar } from "@/components/painel/ui";
 export type ItemNav = {
   href: string;
   rotulo: string;
-  icone: "dashboard" | "clientes" | "leads" | "financeiro" | "servidores" | "config" | "auditoria";
+  icone:
+    | "dashboard"
+    | "clientes"
+    | "prospeccao"
+    | "leads"
+    | "financeiro"
+    | "servidores"
+    | "config"
+    | "auditoria";
 };
 
 const ICONES = {
   dashboard: LayoutDashboard,
   clientes: Users,
+  prospeccao: Radar,
   leads: Inbox,
   financeiro: Receipt,
   servidores: Server,

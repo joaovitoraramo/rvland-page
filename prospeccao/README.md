@@ -40,3 +40,14 @@ sobrescrever o que ja foi avaliado.
 Gera prospeccao-rvland.xlsx a partir do CSV: dashboard com graficos, aba de
 leads filtravel, aba de prioridade com status e datas, lista de Instagram e
 os avisos de verificacao. Precos dos cenarios vem do painel (chave pricing_en).
+
+## Painel
+
+Os dados desta pasta viram a area /painel/prospeccao:
+
+1. Importe prospeccao/planilha-leads.csv em Configuracoes > Prospeccao > Importar
+   (ou direto em /painel/prospeccao/importar). Reimportar preserva status e notas.
+2. Publique os prints com: npx tsx scripts/subir-prints.ts
+   (bucket privado 'prints' no Supabase; o painel mostra por URL assinada)
+
+Permissoes: prospeccao.ver, prospeccao.editar, prospeccao.importar.

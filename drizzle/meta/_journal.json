@@ -64,6 +64,20 @@
       "when": 1788037881102,
       "tag": "0008_sudden_gamora",
       "breakpoints": true
+    },
+    {
+      "idx": 9,
+      "version": "7",
+      "when": 1788395788660,
+      "tag": "0009_cool_pepper_potts",
+      "breakpoints": true
+    },
+    {
+      "idx": 10,
+      "version": "7",
+      "when": 1788395802343,
+      "tag": "0010_rls_prospeccao",
+      "breakpoints": true
     }
   ]
 }

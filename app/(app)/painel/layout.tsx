@@ -25,6 +25,9 @@ export default async function LayoutPainel({ children }: { children: React.React
   if (pode(perfil, "clientes.ver")) {
     itens.push({ href: "/painel/clientes", rotulo: "Clientes", icone: "clientes" });
   }
+  if (pode(perfil, "prospeccao.ver")) {
+    itens.push({ href: "/painel/prospeccao", rotulo: "Prospecção", icone: "prospeccao" });
+  }
   if (pode(perfil, "leads.ver")) {
     itens.push({ href: "/painel/leads", rotulo: "Leads", icone: "leads" });
   }

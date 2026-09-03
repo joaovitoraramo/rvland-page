@@ -13,7 +13,8 @@ type Entidade =
   | "plataforma"
   | "anexo"
   | "servidor"
-  | "lead";
+  | "lead"
+  | "prospeccao";
 
 /**
  * Trilha de auditoria. Nunca lança: falha de auditoria não pode derrubar a
