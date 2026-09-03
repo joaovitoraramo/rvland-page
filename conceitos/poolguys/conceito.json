@@ -1,7 +1,7 @@
 {
   "criadoEm": "2026-09-02",
   "direcao": "Água do deserto. A paleta não veio de moodboard: veio do lugar. O céu lavado das 14h em Scottsdale, o azul da água na sombra do matacão, o azulejo turquesa da linha d'água que toda piscina daqui tem, o granito decomposto do paisagismo e a pedra dos boulders das fotos deles. O risco assumido: o hero NÃO abre com foto de oásis, como todo concorrente. Abre com o inimigo (115°F, poeira de monção, água dura), porque é o inimigo que justifica pagar manutenção semanal.",
-  "assinatura": "O relatório de visita. Todo técnico de piscina deixa um comprovante depois do serviço; nenhum concorrente mostra isso no site. Virou o objeto do hero: um cartão levemente girado, com pH, cloro, alcalinidade, dureza e pressão do filtro em fonte monoespaçada, o que foi feito no dia, o nome do técnico e a data da próxima visita. É o que prova profissionalismo sem precisar dizer 'somos profissionais'.",
+  "assinatura": "A área do cliente. O dono do imóvel entra com login e vê o histórico inteiro de manutenção: as leituras de cada visita (cloro, pH, pressão do filtro), o que foi feito, quando algo saiu da faixa e qual é a próxima visita. Nenhum concorrente da região oferece isso. Deixa de ser site e vira software, o que sustenta preço maior e prende o cliente na renovação.",
   "paleta": [
     {
       "nome": "agua-funda",
@@ -73,7 +73,7 @@
   ],
   "secoes": [
     "Barra: marca + 'Serving the Valley since 1997' + telefone + CTA",
-    "Hero: o inimigo (calor/poeira/água dura) contra o relatório de visita",
+    "Hero: o inimigo (calor/poeira/água dura) contra a área do cliente",
     "Faixa de fatos: 1997 · Family · 4 cities · Weekly",
     "Três serviços: manutenção, reparos, reformas (com o que entra em cada)",
     "Pools we take care of: fotos reais do cliente, recortadas do banner antigo",
@@ -83,7 +83,7 @@
   ],
   "copy": {
     "titulo": "Your pool is fighting 115° heat, monsoon dust and hard water. We fight back every week.",
-    "subtitulo": "Family owned since 1997. We service, repair and remodel residential pools across the Valley of the Sun — and we leave a written report after every single visit."
+    "subtitulo": "Family owned since 1997. We service, repair and remodel residential pools across the Valley of the Sun — and every visit shows up in your client area, with the readings and what we did."
   },
   "fonteHtml": "conceitos/poolguys/index.html",
   "arquivos": [
@@ -126,5 +126,5 @@
     "arquivo": "conceitos/poolguys/email.md"
   },
   "url": "https://rvland-page.vercel.app/c/poolguys",
-  "demonstracao": "A pagina hospedada convida a trocar de tela: no desktop, botao \"See it on your phone\" abre modal com QR code; no celular, \"See it on a big screen\" abre modal com o link e botao de copiar. A troca E a demonstracao — a peca se refaz sozinha, e o site atual do prospect nao faz isso."
+  "demonstracao": "A página hospedada convida a trocar de tela: no desktop, botão \"See it on your phone\" abre modal com QR code; no celular, \"See it on a big screen\" abre modal com o link e botão de copiar. A troca É a demonstração — a peça se refaz sozinha, e o site atual do prospect não faz isso."
 }

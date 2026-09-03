@@ -156,81 +156,107 @@
     color: rgba(255,255,255,0.5);
   }
 
-  /* ── assinatura: o relatório que o técnico deixa ─────────────────────── */
-  .relatorio {
+  /* ── assinatura: a área do cliente ───────────────────────────────────── */
+  /* Não é mais o comprovante de papel: é o produto. O dono do imóvel entra e
+     vê o histórico inteiro, e nenhum concorrente da região oferece isso. */
+  .portal {
     background: #fff;
-    border-radius: 4px;
-    box-shadow: 0 30px 70px rgba(3,26,33,0.4);
+    border-radius: 12px;
+    box-shadow: 0 30px 70px rgba(3,26,33,0.42);
     overflow: hidden;
-    transform: rotate(-1.1deg);
+    border: 1px solid rgba(255,255,255,0.14);
   }
-  .relatorio-topo {
-    background: var(--areia);
-    padding: 16px 24px;
-    display: flex;
-    align-items: baseline;
-    gap: 12px;
-    border-bottom: 2px solid var(--pedra);
+  .portal-barra {
+    background: #F1F5F6;
+    border-bottom: 1px solid var(--linha);
+    padding: 12px 18px;
+    display: flex; align-items: center; gap: 10px;
   }
-  .relatorio-titulo {
+  .portal-marca {
     font-family: var(--display);
-    font-weight: 700;
-    font-size: 15px;
-    letter-spacing: 0.02em;
-    color: var(--tinta);
-    text-transform: uppercase;
+    font-weight: 700; font-size: 13px;
+    letter-spacing: -0.01em; color: var(--tinta);
   }
-  .relatorio-data {
+  .portal-marca span { color: var(--tinta-fraca); font-weight: 500; }
+  .portal-user {
     margin-left: auto;
-    font-family: var(--dados);
-    font-size: 12px;
-    color: var(--pedra);
+    display: flex; align-items: center; gap: 7px;
+    font-size: 12.5px; color: var(--tinta-fraca);
   }
-  .relatorio-corpo { padding: 8px 24px 20px; }
-  .leitura {
-    display: grid;
-    grid-template-columns: 1fr auto auto;
-    align-items: center;
-    gap: 14px;
-    padding: 11px 0;
+  .portal-avatar {
+    width: 24px; height: 24px; border-radius: 50%;
+    background: var(--agua-funda); color: #fff;
+    display: grid; place-items: center;
+    font-family: var(--display); font-size: 11px; font-weight: 700;
+  }
+  .portal-corpo { padding: 20px 22px 22px; }
+  .portal-imovel {
+    font-family: var(--display);
+    font-weight: 700; font-size: 17px;
+    letter-spacing: -0.02em; color: var(--tinta);
+    margin-bottom: 2px;
+  }
+  .portal-visita {
+    font-family: var(--dados);
+    font-size: 11.5px; letter-spacing: 0.06em;
+    text-transform: uppercase; color: var(--tinta-fraca);
+    margin-bottom: 16px;
+  }
+  .portal-numeros {
+    display: grid; grid-template-columns: repeat(3, 1fr);
+    gap: 8px; margin-bottom: 14px;
+  }
+  .metrica {
+    background: #F7FAFA;
+    border: 1px solid var(--linha);
+    border-radius: 8px;
+    padding: 10px 12px;
+  }
+  .metrica-rot {
+    font-family: var(--dados); font-size: 10px;
+    letter-spacing: 0.08em; text-transform: uppercase;
+    color: var(--tinta-fraca);
+  }
+  .metrica-val {
+    font-family: var(--dados); font-weight: 600;
+    font-size: 16px; color: var(--tinta); margin-top: 3px;
+  }
+  .portal-feito {
+    font-size: 13.5px; line-height: 1.5;
+    color: var(--tinta-fraca);
+    padding-bottom: 16px;
     border-bottom: 1px solid var(--linha);
   }
-  .leitura:last-of-type { border-bottom: 0; }
-  .leitura-nome { font-size: 15px; color: var(--tinta-fraca); }
-  .leitura-valor {
-    font-family: var(--dados);
-    font-weight: 600;
-    font-size: 16px;
-    color: var(--tinta);
-    letter-spacing: -0.01em;
+  .portal-hist-rot {
+    font-family: var(--dados); font-size: 10.5px;
+    letter-spacing: 0.1em; text-transform: uppercase;
+    color: var(--tinta-fraca); margin: 14px 0 6px;
   }
-  .ok {
-    width: 20px; height: 20px;
-    border-radius: 50%;
-    background: rgba(43,182,196,0.14);
-    color: var(--agua-funda);
-    display: grid;
-    place-items: center;
-    font-size: 12px;
-    font-weight: 700;
+  .hist {
+    display: flex; align-items: center; gap: 10px;
+    padding: 8px 0; border-bottom: 1px solid #EEF3F4;
+    font-size: 13.5px;
   }
-  .relatorio-feito {
-    margin-top: 16px;
-    padding-top: 16px;
-    border-top: 2px dashed var(--linha);
-    font-size: 14.5px;
+  .hist:last-of-type { border-bottom: 0; }
+  .hist-data {
+    font-family: var(--dados); font-size: 12px;
+    color: var(--tinta-fraca); width: 52px; flex-shrink: 0;
+  }
+  .hist-txt { color: var(--tinta); flex: 1; }
+  .ponto {
+    width: 7px; height: 7px; border-radius: 50%;
+    flex-shrink: 0; background: var(--turquesa);
+  }
+  .ponto-aviso { background: var(--sol); }
+  .portal-prox {
+    margin-top: 14px; padding-top: 13px;
+    border-top: 1px solid var(--linha);
+    display: flex; align-items: center; justify-content: space-between;
+    font-family: var(--dados); font-size: 11.5px;
+    letter-spacing: 0.04em; text-transform: uppercase;
     color: var(--tinta-fraca);
-    line-height: 1.5;
   }
-  .relatorio-feito strong { color: var(--tinta); font-weight: 600; }
-  .relatorio-assina {
-    margin-top: 14px;
-    font-family: var(--dados);
-    font-size: 12px;
-    color: var(--pedra);
-    display: flex;
-    justify-content: space-between;
-  }
+  .portal-prox strong { color: var(--agua-funda); font-weight: 600; }
 
   /* ── faixa de fatos ──────────────────────────────────────────────────── */
   .fatos { background: var(--agua-noite); padding: 26px 0; }
@@ -464,11 +490,10 @@
     .acoes { gap: 14px; }
     .botao { width: 100%; text-align: center; }
 
-    /* sem rotação no celular: a inclinação empurrava o cartão para fora */
-    .relatorio { transform: none; }
-    .relatorio-topo { padding: 14px 18px; flex-wrap: wrap; gap: 6px; }
-    .relatorio-data { margin-left: 0; width: 100%; }
-    .relatorio-corpo { padding: 6px 18px 18px; }
+    .portal-corpo { padding: 18px 16px 18px; }
+    .portal-numeros { gap: 6px; }
+    .metrica { padding: 9px 9px; }
+    .metrica-val { font-size: 15px; }
 
     .secao { padding: 56px 0; }
     .cabeca { margin-bottom: 28px; }
@@ -666,7 +691,7 @@
     <div>
       <div class="sobrancelha">Scottsdale · Paradise Valley · Cave Creek · Phoenix</div>
       <h1 class="titulo">Your pool is fighting 115&deg; heat, monsoon dust and hard water. <em>We fight back every week.</em></h1>
-      <p class="subtitulo">Family owned since 1997. We service, repair and remodel residential pools across the Valley of the Sun &mdash; and we leave a written report after every single visit.</p>
+      <p class="subtitulo">Family owned since 1997. We service, repair and remodel residential pools across the Valley of the Sun &mdash; and every visit shows up in your client area, with the readings and what we did.</p>
       <div class="acoes">
         <span class="botao">Get a free quote</span>
         <span class="botao-fone">or call 480-575-1722</span>
@@ -674,43 +699,40 @@
       <div class="hero-cidades">Weekly routes · Licensed &amp; insured · 29 years in the Valley</div>
     </div>
 
-    <div class="relatorio">
-      <div class="relatorio-topo">
-        <span class="relatorio-titulo">Service report</span>
-        <span class="relatorio-data">TUE 09/02 &middot; 8:42 AM</span>
+    <div class="portal">
+      <div class="portal-barra">
+        <span class="portal-marca">Poolguys <span>&middot; Client area</span></span>
+        <span class="portal-user"><span class="portal-avatar">N</span> Norm N.</span>
       </div>
-      <div class="relatorio-corpo">
-        <div class="leitura">
-          <span class="leitura-nome">Free chlorine</span>
-          <span class="leitura-valor">3.0 ppm</span>
-          <span class="ok">&#10003;</span>
+      <div class="portal-corpo">
+        <div class="portal-imovel">1247 E Desert Willow Dr</div>
+        <div class="portal-visita">Last visit &middot; Tue, Sep 2 &middot; 8:42 AM</div>
+
+        <div class="portal-numeros">
+          <div class="metrica">
+            <div class="metrica-rot">Chlorine</div>
+            <div class="metrica-val">3.0 ppm</div>
+          </div>
+          <div class="metrica">
+            <div class="metrica-rot">pH</div>
+            <div class="metrica-val">7.4</div>
+          </div>
+          <div class="metrica">
+            <div class="metrica-rot">Filter</div>
+            <div class="metrica-val">12 psi</div>
+          </div>
         </div>
-        <div class="leitura">
-          <span class="leitura-nome">pH</span>
-          <span class="leitura-valor">7.4</span>
-          <span class="ok">&#10003;</span>
-        </div>
-        <div class="leitura">
-          <span class="leitura-nome">Total alkalinity</span>
-          <span class="leitura-valor">100 ppm</span>
-          <span class="ok">&#10003;</span>
-        </div>
-        <div class="leitura">
-          <span class="leitura-nome">Calcium hardness</span>
-          <span class="leitura-valor">320 ppm</span>
-          <span class="ok">&#10003;</span>
-        </div>
-        <div class="leitura">
-          <span class="leitura-nome">Filter pressure</span>
-          <span class="leitura-valor">12 psi</span>
-          <span class="ok">&#10003;</span>
-        </div>
-        <div class="relatorio-feito">
-          <strong>Done today:</strong> brushed walls and steps, skimmed monsoon debris, emptied both baskets, backwashed filter, added 2 lb chlorine tabs.
-        </div>
-        <div class="relatorio-assina">
-          <span>TECH: MIKE R.</span>
-          <span>NEXT VISIT: TUE 09/09</span>
+
+        <p class="portal-feito">Brushed walls and steps, skimmed monsoon debris, emptied both baskets, backwashed the filter.</p>
+
+        <div class="portal-hist-rot">Visit history</div>
+        <div class="hist"><span class="ponto"></span><span class="hist-data">Aug 26</span><span class="hist-txt">Everything in range</span></div>
+        <div class="hist"><span class="ponto"></span><span class="hist-data">Aug 19</span><span class="hist-txt">Everything in range</span></div>
+        <div class="hist"><span class="ponto ponto-aviso"></span><span class="hist-data">Aug 12</span><span class="hist-txt">pH ran high &mdash; added acid</span></div>
+
+        <div class="portal-prox">
+          <span>Next visit</span>
+          <strong>Tue, Sep 9</strong>
         </div>
       </div>
     </div>
@@ -733,7 +755,7 @@
     </div>
     <div>
       <div class="fato-num">Weekly</div>
-      <div class="fato-rot">Service with a written report</div>
+      <div class="fato-rot">Service, logged in your client area</div>
     </div>
   </div>
 </div>
@@ -752,7 +774,7 @@
           <li>Chemistry balanced and logged</li>
           <li>Brush, skim, vacuum, baskets</li>
           <li>Filter cleaned and backwashed</li>
-          <li>Written report after each visit</li>
+          <li>Every visit logged in your client area</li>
         </ul>
       </div>
       <div class="servico">

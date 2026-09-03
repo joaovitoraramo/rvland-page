@@ -36,9 +36,10 @@ So I rebuilt your homepage as a concept. Open it on your phone too:
 
 https://rvland-page.vercel.app/c/poolguys
 
-Your real services, your real photos, your number. Plus one thing none of
-your competitors put online: the service report your tech leaves after
-every visit — chlorine, pH, filter pressure, what got done.
+Your real services, your real photos, your number. Plus something none of
+your competitors offer: a client area where the homeowner logs in and sees
+every visit — chlorine, pH, filter pressure, what got done, and when
+you're coming back.
 
 To be clear about what's free: the design is. I built it on my own time
 and no invoice is coming for it, whether you reply or not. Building the
@@ -83,6 +84,8 @@ o remetente.
 ---
 
 ## Por que cada trecho está assim
+
+**O diferencial é software, não papel.** A área do cliente tira você da comparação por preço com o vizinho que também lava piscina: ninguém na região entrega histórico com login. É o que sustenta cobrar mais.
 
 **O gancho é verificável.** O site não tem `<meta name="viewport">`: numa
 tela de 390px ele renderiza a 920px. Não é opinião de design, é fato que
