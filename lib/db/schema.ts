@@ -415,6 +415,8 @@ export type ConceitoProspect = {
   secoes: string[];
   copy: { titulo: string; subtitulo: string };
   fonteHtml: string;
+  url?: string;
+  abordagem?: { canal: string; contato?: string; assunto: string; gancho: string; entrega?: string; arquivo: string };
   arquivos: { rotulo: string; caminho: string }[];
 };
 

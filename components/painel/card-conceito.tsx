@@ -1,4 +1,4 @@
-import { Download, Palette, Sparkle, Type } from "lucide-react";
+import { Download, ExternalLink, Palette, Sparkle, Type } from "lucide-react";
 
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import type { ConceitoProspect } from "@/lib/db";
@@ -30,6 +30,49 @@ export function CardConceito({
       </CardHeader>
 
       <CardContent className="space-y-6">
+        {conceito.url ? (
+          <a
+            href={conceito.url}
+            target="_blank"
+            rel="noreferrer"
+            className="flex items-center gap-2.5 rounded-xl border border-[rgba(0,229,255,0.3)] bg-[rgba(0,229,255,0.09)] px-4 py-3 text-sm font-medium text-[#8AF0FF] transition-colors hover:border-[rgba(0,229,255,0.55)]"
+          >
+            <ExternalLink className="size-4 shrink-0" />
+            <span className="min-w-0 flex-1">
+              <span className="block">Conceito no ar</span>
+              <span className="rv-num block truncate text-xs font-normal text-white/40">
+                {conceito.url}
+              </span>
+            </span>
+          </a>
+        ) : null}
+
+        {conceito.abordagem ? (
+          <div className="rounded-xl border border-white/8 bg-black/20 p-4">
+            <div className="rv-eyebrow mb-2">abordagem</div>
+            <div className="space-y-1.5 text-sm text-white/75">
+              <p>
+                <span className="text-white/40">assunto:</span> {conceito.abordagem.assunto}
+              </p>
+              {conceito.abordagem.contato ? (
+                <p>
+                  <span className="text-white/40">contato:</span> {conceito.abordagem.contato}
+                </p>
+              ) : null}
+              <p>
+                <span className="text-white/40">canal:</span> {conceito.abordagem.canal}
+              </p>
+            </div>
+            <p className="mt-2.5 text-xs leading-relaxed text-white/45">
+              {conceito.abordagem.gancho}
+            </p>
+            <p className="mt-2 text-xs text-white/30">
+              Texto completo em{" "}
+              <code className="rv-num text-white/50">{conceito.abordagem.arquivo}</code>
+            </p>
+          </div>
+        ) : null}
+
         <div>
           <div className="rv-eyebrow mb-1.5">direção</div>
           <p className="text-sm leading-relaxed text-white/75">{conceito.direcao}</p>

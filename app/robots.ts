@@ -11,7 +11,7 @@ export default function robots(): MetadataRoute.Robots {
       {
         userAgent: "*",
         allow: "/",
-        disallow: ["/painel", "/login", "/api/"],
+        disallow: ["/painel", "/login", "/api/", "/c/"],
       },
       {
         userAgent: [
@@ -29,7 +29,7 @@ export default function robots(): MetadataRoute.Robots {
           "CCBot",
         ],
         allow: "/",
-        disallow: ["/painel", "/login", "/api/"],
+        disallow: ["/painel", "/login", "/api/", "/c/"],
       },
     ],
     sitemap: `${SITE_URL}/sitemap.xml`,

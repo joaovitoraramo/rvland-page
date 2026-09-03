@@ -1,0 +1,732 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="robots" content="noindex, nofollow">
+<title>Poolguys — website concept</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Archivo:wght@500;600;700;800&family=IBM+Plex+Mono:wght@400;500;600&family=IBM+Plex+Sans:wght@400;500;600&display=swap" rel="stylesheet">
+<style>
+  /* Paleta tirada do lugar, não de um moodboard: o céu lavado das 14h no
+     deserto, o azul da água na sombra da pedra, o azulejo turquesa da linha
+     d'água, o granito decomposto do paisagismo e a pedra dos matacões. */
+  :root {
+    --agua-funda: #0A4A5C;
+    --agua-noite: #06323E;
+    --turquesa: #2BB6C4;
+    --ceu: #EDF3F4;
+    --ceu-fundo: #F7FAFA;
+    --areia: #D9C3A5;
+    --pedra: #6B5B4E;
+    --sol: #E8913A;
+    --tinta: #12262C;
+    --tinta-fraca: #5A7078;
+    --linha: #DCE6E7;
+
+    --display: "Archivo", system-ui, sans-serif;
+    --corpo: "IBM Plex Sans", system-ui, sans-serif;
+    --dados: "IBM Plex Mono", ui-monospace, monospace;
+  }
+
+  * { box-sizing: border-box; margin: 0; padding: 0; }
+
+  body {
+    background: var(--ceu-fundo);
+    color: var(--tinta);
+    font-family: var(--corpo);
+    font-size: 17px;
+    line-height: 1.6;
+    -webkit-font-smoothing: antialiased;
+  }
+
+  .env { max-width: 1180px; margin: 0 auto; padding: 0 40px; }
+
+  /* ── barra ───────────────────────────────────────────────────────────── */
+  .barra {
+    background: var(--agua-noite);
+    color: #fff;
+    padding: 14px 0;
+  }
+  .barra .env { display: flex; align-items: center; gap: 28px; }
+  .marca {
+    font-family: var(--display);
+    font-weight: 800;
+    font-size: 22px;
+    letter-spacing: -0.02em;
+  }
+  .marca span { color: var(--turquesa); }
+  .barra-nota {
+    font-family: var(--dados);
+    font-size: 12px;
+    letter-spacing: 0.08em;
+    text-transform: uppercase;
+    color: rgba(255,255,255,0.55);
+  }
+  .barra-fone {
+    margin-left: auto;
+    font-family: var(--dados);
+    font-size: 15px;
+    font-weight: 500;
+    color: #fff;
+  }
+  .barra-cta {
+    background: var(--turquesa);
+    color: var(--agua-noite);
+    font-weight: 600;
+    font-size: 14px;
+    padding: 9px 18px;
+    border-radius: 3px;
+  }
+
+  /* ── hero ────────────────────────────────────────────────────────────── */
+  .hero {
+    background:
+      radial-gradient(1100px 500px at 15% -10%, rgba(43,182,196,0.16), transparent 60%),
+      linear-gradient(168deg, var(--agua-funda) 0%, var(--agua-noite) 100%);
+    color: #fff;
+    padding: 92px 0 100px;
+    position: relative;
+    overflow: hidden;
+  }
+  /* linha d'água: a faixa de azulejo turquesa que toda piscina daqui tem */
+  .hero::after {
+    content: "";
+    position: absolute;
+    left: 0; right: 0; bottom: 0;
+    height: 10px;
+    background: repeating-linear-gradient(90deg,
+      var(--turquesa) 0 26px, rgba(43,182,196,0.55) 26px 28px);
+  }
+  .hero .env {
+    display: grid;
+    grid-template-columns: 1.05fr 0.95fr;
+    gap: 72px;
+    align-items: center;
+  }
+
+  .sobrancelha {
+    font-family: var(--dados);
+    font-size: 12px;
+    letter-spacing: 0.16em;
+    text-transform: uppercase;
+    color: var(--turquesa);
+    margin-bottom: 22px;
+  }
+  .titulo {
+    font-family: var(--display);
+    font-weight: 800;
+    font-size: 58px;
+    line-height: 1.04;
+    letter-spacing: -0.032em;
+    margin-bottom: 22px;
+  }
+  .titulo em { font-style: normal; color: var(--turquesa); }
+  .subtitulo {
+    font-size: 19px;
+    line-height: 1.55;
+    color: rgba(255,255,255,0.76);
+    max-width: 30em;
+    margin-bottom: 34px;
+  }
+  .acoes { display: flex; align-items: center; gap: 18px; flex-wrap: wrap; }
+  .botao {
+    background: var(--turquesa);
+    color: var(--agua-noite);
+    font-family: var(--corpo);
+    font-weight: 600;
+    font-size: 16px;
+    padding: 15px 28px;
+    border-radius: 3px;
+    display: inline-block;
+  }
+  .botao-fone {
+    font-family: var(--dados);
+    font-size: 16px;
+    color: #fff;
+    border-bottom: 1px solid rgba(255,255,255,0.35);
+    padding-bottom: 2px;
+  }
+  .hero-cidades {
+    margin-top: 30px;
+    font-family: var(--dados);
+    font-size: 12.5px;
+    letter-spacing: 0.06em;
+    color: rgba(255,255,255,0.5);
+  }
+
+  /* ── assinatura: o relatório que o técnico deixa ─────────────────────── */
+  .relatorio {
+    background: #fff;
+    border-radius: 4px;
+    box-shadow: 0 30px 70px rgba(3,26,33,0.4);
+    overflow: hidden;
+    transform: rotate(-1.1deg);
+  }
+  .relatorio-topo {
+    background: var(--areia);
+    padding: 16px 24px;
+    display: flex;
+    align-items: baseline;
+    gap: 12px;
+    border-bottom: 2px solid var(--pedra);
+  }
+  .relatorio-titulo {
+    font-family: var(--display);
+    font-weight: 700;
+    font-size: 15px;
+    letter-spacing: 0.02em;
+    color: var(--tinta);
+    text-transform: uppercase;
+  }
+  .relatorio-data {
+    margin-left: auto;
+    font-family: var(--dados);
+    font-size: 12px;
+    color: var(--pedra);
+  }
+  .relatorio-corpo { padding: 8px 24px 20px; }
+  .leitura {
+    display: grid;
+    grid-template-columns: 1fr auto auto;
+    align-items: center;
+    gap: 14px;
+    padding: 11px 0;
+    border-bottom: 1px solid var(--linha);
+  }
+  .leitura:last-of-type { border-bottom: 0; }
+  .leitura-nome { font-size: 15px; color: var(--tinta-fraca); }
+  .leitura-valor {
+    font-family: var(--dados);
+    font-weight: 600;
+    font-size: 16px;
+    color: var(--tinta);
+    letter-spacing: -0.01em;
+  }
+  .ok {
+    width: 20px; height: 20px;
+    border-radius: 50%;
+    background: rgba(43,182,196,0.14);
+    color: var(--agua-funda);
+    display: grid;
+    place-items: center;
+    font-size: 12px;
+    font-weight: 700;
+  }
+  .relatorio-feito {
+    margin-top: 16px;
+    padding-top: 16px;
+    border-top: 2px dashed var(--linha);
+    font-size: 14.5px;
+    color: var(--tinta-fraca);
+    line-height: 1.5;
+  }
+  .relatorio-feito strong { color: var(--tinta); font-weight: 600; }
+  .relatorio-assina {
+    margin-top: 14px;
+    font-family: var(--dados);
+    font-size: 12px;
+    color: var(--pedra);
+    display: flex;
+    justify-content: space-between;
+  }
+
+  /* ── faixa de fatos ──────────────────────────────────────────────────── */
+  .fatos { background: var(--agua-noite); padding: 26px 0; }
+  .fatos .env {
+    display: grid;
+    grid-template-columns: repeat(4, 1fr);
+    gap: 28px;
+  }
+  .fato-num {
+    font-family: var(--display);
+    font-weight: 700;
+    font-size: 28px;
+    color: var(--turquesa);
+    letter-spacing: -0.02em;
+  }
+  .fato-rot {
+    font-family: var(--dados);
+    font-size: 11.5px;
+    letter-spacing: 0.1em;
+    text-transform: uppercase;
+    color: rgba(255,255,255,0.5);
+    margin-top: 4px;
+  }
+
+  /* ── seções ──────────────────────────────────────────────────────────── */
+  .secao { padding: 86px 0; }
+  .secao-clara { background: #fff; }
+  .cabeca { max-width: 46em; margin-bottom: 44px; }
+  .cabeca h2 {
+    font-family: var(--display);
+    font-weight: 700;
+    font-size: 36px;
+    line-height: 1.15;
+    letter-spacing: -0.028em;
+    margin-bottom: 12px;
+  }
+  .cabeca p { color: var(--tinta-fraca); font-size: 18px; }
+
+  .servicos { display: grid; grid-template-columns: repeat(3, 1fr); gap: 24px; }
+  .servico {
+    border: 1px solid var(--linha);
+    border-top: 3px solid var(--agua-funda);
+    border-radius: 3px;
+    padding: 30px 28px 32px;
+    background: #fff;
+  }
+  .servico h3 {
+    font-family: var(--display);
+    font-weight: 700;
+    font-size: 21px;
+    letter-spacing: -0.02em;
+    margin-bottom: 10px;
+  }
+  .servico p { color: var(--tinta-fraca); font-size: 16px; margin-bottom: 18px; }
+  .servico ul { list-style: none; }
+  .servico li {
+    font-size: 15px;
+    color: var(--tinta);
+    padding: 7px 0 7px 20px;
+    position: relative;
+    border-top: 1px solid var(--linha);
+  }
+  .servico li::before {
+    content: "";
+    position: absolute;
+    left: 0; top: 15px;
+    width: 8px; height: 8px;
+    background: var(--turquesa);
+    border-radius: 1px;
+  }
+
+  /* ── trabalhos ───────────────────────────────────────────────────────── */
+  .galeria { display: grid; grid-template-columns: repeat(3, 1fr); gap: 16px; }
+  /* as fotos do site atual trazem o slogan antigo queimado no canto direito;
+     a moldura mostra só o trecho limpo, e a imagem entra maior para nao borrar */
+  .foto {
+    position: relative;
+    height: 168px;
+    overflow: hidden;
+    border-radius: 3px;
+    background: var(--agua-funda);
+  }
+  .foto img {
+    position: absolute;
+    /* -52px pula a moldura arredondada que veio queimada no banner original */
+    left: -52px;
+    top: 50%;
+    height: 155%;
+    width: auto;
+    max-width: none;
+    transform: translateY(-50%);
+    display: block;
+  }
+  .galeria-nota {
+    margin-top: 16px;
+    font-family: var(--dados);
+    font-size: 12px;
+    color: var(--tinta-fraca);
+  }
+
+  /* ── áreas ───────────────────────────────────────────────────────────── */
+  .areas { display: grid; grid-template-columns: 1fr 1fr; gap: 60px; align-items: center; }
+  .cidades { display: grid; gap: 2px; }
+  .cidade {
+    display: flex;
+    align-items: baseline;
+    gap: 16px;
+    padding: 15px 0;
+    border-bottom: 1px solid var(--linha);
+  }
+  .cidade-nome {
+    font-family: var(--display);
+    font-weight: 600;
+    font-size: 22px;
+    letter-spacing: -0.02em;
+  }
+  .cidade-nota {
+    margin-left: auto;
+    font-family: var(--dados);
+    font-size: 12.5px;
+    color: var(--tinta-fraca);
+  }
+
+  /* ── pedido ──────────────────────────────────────────────────────────── */
+  .pedido {
+    background: var(--agua-funda);
+    color: #fff;
+    padding: 78px 0;
+  }
+  .pedido .env { display: grid; grid-template-columns: 1fr 1fr; gap: 64px; align-items: start; }
+  .pedido h2 {
+    font-family: var(--display);
+    font-weight: 700;
+    font-size: 36px;
+    line-height: 1.15;
+    letter-spacing: -0.028em;
+    margin-bottom: 14px;
+  }
+  .pedido p { color: rgba(255,255,255,0.75); font-size: 17px; margin-bottom: 22px; }
+  .pedido ul { list-style: none; }
+  .pedido li {
+    font-size: 15.5px;
+    color: rgba(255,255,255,0.82);
+    padding: 9px 0 9px 26px;
+    position: relative;
+  }
+  .pedido li::before {
+    content: "→";
+    position: absolute;
+    left: 0;
+    color: var(--turquesa);
+  }
+  .form { background: #fff; border-radius: 4px; padding: 30px; }
+  .campo { margin-bottom: 16px; }
+  .campo label {
+    display: block;
+    font-family: var(--dados);
+    font-size: 11.5px;
+    letter-spacing: 0.1em;
+    text-transform: uppercase;
+    color: var(--tinta-fraca);
+    margin-bottom: 7px;
+  }
+  .campo .caixa {
+    border: 1px solid var(--linha);
+    border-radius: 3px;
+    padding: 13px 14px;
+    font-size: 16px;
+    color: #9CAFB4;
+    background: #FCFDFD;
+  }
+  .form-linha { display: grid; grid-template-columns: 1fr 1fr; gap: 14px; }
+  .form-botao {
+    background: var(--sol);
+    color: #24160A;
+    font-weight: 600;
+    font-size: 16px;
+    text-align: center;
+    padding: 15px;
+    border-radius: 3px;
+    margin-top: 6px;
+  }
+  .form-nota {
+    margin-top: 14px;
+    font-size: 13.5px;
+    color: var(--tinta-fraca);
+    text-align: center;
+  }
+
+  /* ── rodapé ──────────────────────────────────────────────────────────── */
+  .rodape { background: var(--agua-noite); color: rgba(255,255,255,0.6); padding: 40px 0; }
+  .rodape .env { display: flex; align-items: center; gap: 24px; flex-wrap: wrap; }
+  .rodape-fone {
+    margin-left: auto;
+    font-family: var(--dados);
+    font-size: 15px;
+    color: #fff;
+  }
+  .credito {
+    background: #071C24;
+    color: rgba(255,255,255,0.42);
+    padding: 18px 0;
+    font-family: var(--dados);
+    font-size: 12px;
+    letter-spacing: 0.04em;
+  }
+  .credito .env { display: flex; gap: 20px; flex-wrap: wrap; }
+  .credito b { color: var(--turquesa); font-weight: 600; }
+
+  @media (max-width: 900px) {
+    .hero .env, .areas, .pedido .env { grid-template-columns: 1fr; gap: 44px; }
+    .servicos, .galeria { grid-template-columns: 1fr; }
+    .fatos .env { grid-template-columns: 1fr 1fr; gap: 20px; }
+    .titulo { font-size: 40px; }
+    .env { padding: 0 24px; }
+  }
+
+  @media (max-width: 620px) {
+    /* a barra vira marca + telefone: o texto de apoio e o botão viravam
+       quatro linhas empilhadas e o CTA vazava da tela. O hero logo abaixo
+       já carrega a chamada. */
+    .barra-nota, .barra-cta { display: none; }
+    .barra .env { gap: 16px; }
+    .barra-fone { font-size: 14px; white-space: nowrap; }
+    .marca { font-size: 19px; }
+
+    .hero { padding: 56px 0 64px; }
+    .titulo { font-size: 34px; line-height: 1.08; }
+    .subtitulo { font-size: 17px; }
+    .sobrancelha { font-size: 11px; letter-spacing: 0.12em; }
+    .acoes { gap: 14px; }
+    .botao { width: 100%; text-align: center; }
+
+    /* sem rotação no celular: a inclinação empurrava o cartão para fora */
+    .relatorio { transform: none; }
+    .relatorio-topo { padding: 14px 18px; flex-wrap: wrap; gap: 6px; }
+    .relatorio-data { margin-left: 0; width: 100%; }
+    .relatorio-corpo { padding: 6px 18px 18px; }
+
+    .secao { padding: 56px 0; }
+    .cabeca { margin-bottom: 28px; }
+    .cabeca h2 { font-size: 27px; }
+    .cabeca p { font-size: 16px; }
+
+    .fatos .env { gap: 22px 18px; }
+    .fato-num { font-size: 23px; }
+
+    .foto { height: 150px; }
+
+    .cidade { padding: 13px 0; }
+    .cidade-nome { font-size: 19px; }
+    .cidade-nota { font-size: 11px; }
+
+    .pedido { padding: 56px 0; }
+    .pedido h2 { font-size: 27px; }
+    .form { padding: 22px; }
+    .form-linha { grid-template-columns: 1fr; gap: 0; }
+
+    .rodape .env { gap: 12px; }
+    .rodape-fone { margin-left: 0; }
+    .credito .env { gap: 6px; }
+  }
+</style>
+</head>
+<body>
+
+<div class="rv-faixa-conceito">
+  <span><strong>This is a concept</strong> &mdash; not your live site.</span>
+  <span class="rv-faixa-por">Prepared by RVLand Devs</span>
+</div>
+<style>
+  .rv-faixa-conceito {
+    position: relative; z-index: 50;
+    background: #0B1220; color: rgba(255,255,255,0.85);
+    font-family: "IBM Plex Mono", ui-monospace, monospace;
+    font-size: 12px; letter-spacing: 0.04em;
+    padding: 10px 24px;
+    display: flex; align-items: center; gap: 16px; flex-wrap: wrap;
+  }
+  .rv-faixa-conceito strong { color: #00E5FF; font-weight: 600; }
+  .rv-faixa-por { margin-left: auto; color: rgba(255,255,255,0.45); }
+</style>
+
+
+<div class="barra">
+  <div class="env">
+    <div class="marca">POOL<span>GUYS</span></div>
+    <div class="barra-nota">Serving the Valley since 1997</div>
+    <a class="barra-fone">480-575-1722</a>
+    <span class="barra-cta">Get a free quote</span>
+  </div>
+</div>
+
+<section class="hero">
+  <div class="env">
+    <div>
+      <div class="sobrancelha">Scottsdale · Paradise Valley · Cave Creek · Phoenix</div>
+      <h1 class="titulo">Your pool is fighting 115&deg; heat, monsoon dust and hard water. <em>We fight back every week.</em></h1>
+      <p class="subtitulo">Family owned since 1997. We service, repair and remodel residential pools across the Valley of the Sun &mdash; and we leave a written report after every single visit.</p>
+      <div class="acoes">
+        <span class="botao">Get a free quote</span>
+        <span class="botao-fone">or call 480-575-1722</span>
+      </div>
+      <div class="hero-cidades">Weekly routes · Licensed &amp; insured · 29 years in the Valley</div>
+    </div>
+
+    <div class="relatorio">
+      <div class="relatorio-topo">
+        <span class="relatorio-titulo">Service report</span>
+        <span class="relatorio-data">TUE 09/02 &middot; 8:42 AM</span>
+      </div>
+      <div class="relatorio-corpo">
+        <div class="leitura">
+          <span class="leitura-nome">Free chlorine</span>
+          <span class="leitura-valor">3.0 ppm</span>
+          <span class="ok">&#10003;</span>
+        </div>
+        <div class="leitura">
+          <span class="leitura-nome">pH</span>
+          <span class="leitura-valor">7.4</span>
+          <span class="ok">&#10003;</span>
+        </div>
+        <div class="leitura">
+          <span class="leitura-nome">Total alkalinity</span>
+          <span class="leitura-valor">100 ppm</span>
+          <span class="ok">&#10003;</span>
+        </div>
+        <div class="leitura">
+          <span class="leitura-nome">Calcium hardness</span>
+          <span class="leitura-valor">320 ppm</span>
+          <span class="ok">&#10003;</span>
+        </div>
+        <div class="leitura">
+          <span class="leitura-nome">Filter pressure</span>
+          <span class="leitura-valor">12 psi</span>
+          <span class="ok">&#10003;</span>
+        </div>
+        <div class="relatorio-feito">
+          <strong>Done today:</strong> brushed walls and steps, skimmed monsoon debris, emptied both baskets, backwashed filter, added 2 lb chlorine tabs.
+        </div>
+        <div class="relatorio-assina">
+          <span>TECH: MIKE R.</span>
+          <span>NEXT VISIT: TUE 09/09</span>
+        </div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<div class="fatos">
+  <div class="env">
+    <div>
+      <div class="fato-num">1997</div>
+      <div class="fato-rot">Serving the Valley since</div>
+    </div>
+    <div>
+      <div class="fato-num">Family</div>
+      <div class="fato-rot">Owned and operated</div>
+    </div>
+    <div>
+      <div class="fato-num">4 cities</div>
+      <div class="fato-rot">Scottsdale to Cave Creek</div>
+    </div>
+    <div>
+      <div class="fato-num">Weekly</div>
+      <div class="fato-rot">Service with a written report</div>
+    </div>
+  </div>
+</div>
+
+<section class="secao secao-clara">
+  <div class="env">
+    <div class="cabeca">
+      <h2>Three things we do, and we do them all year</h2>
+      <p>Pools in the desert do not get an off season. Neither do we.</p>
+    </div>
+    <div class="servicos">
+      <div class="servico">
+        <h3>Pool maintenance</h3>
+        <p>The weekly visit that keeps water clear and equipment alive.</p>
+        <ul>
+          <li>Chemistry balanced and logged</li>
+          <li>Brush, skim, vacuum, baskets</li>
+          <li>Filter cleaned and backwashed</li>
+          <li>Written report after each visit</li>
+        </ul>
+      </div>
+      <div class="servico">
+        <h3>Pool repairs</h3>
+        <p>Pumps, heaters, filters and automation, diagnosed and fixed.</p>
+        <ul>
+          <li>Pump and motor replacement</li>
+          <li>Heater and salt cell service</li>
+          <li>Leak detection</li>
+          <li>Upfront pricing before we start</li>
+        </ul>
+      </div>
+      <div class="servico">
+        <h3>Pool remodels</h3>
+        <p>Resurfacing and tile work that makes a tired pool look new.</p>
+        <ul>
+          <li>Pebble and plaster resurfacing</li>
+          <li>Waterline tile and coping</li>
+          <li>Equipment upgrades</li>
+          <li>Photos at every stage</li>
+        </ul>
+      </div>
+    </div>
+  </div>
+</section>
+
+<section class="secao">
+  <div class="env">
+    <div class="cabeca">
+      <h2>Pools we take care of</h2>
+      <p>Real backyards across Scottsdale and Paradise Valley.</p>
+    </div>
+    <div class="galeria">
+      <div class="foto"><img src="/c/poolguys/fotos/g03.jpg" alt="Pool with boulder water feature"></div>
+      <div class="foto"><img src="/c/poolguys/fotos/g05.jpg" alt="Pool with rock waterfall and spa"></div>
+      <div class="foto"><img src="/c/poolguys/fotos/g04.jpg" alt="Desert landscaped pool"></div>
+    </div>
+    <p class="galeria-nota">Photos from your current site. The final build uses fresh, full-resolution shots.</p>
+  </div>
+</section>
+
+<section class="secao secao-clara">
+  <div class="env">
+    <div class="areas">
+      <div>
+        <div class="cabeca" style="margin-bottom: 20px;">
+          <h2>Where our trucks go</h2>
+          <p>Routes are grouped by neighborhood, so your pool gets the same tech on the same day each week.</p>
+        </div>
+      </div>
+      <div class="cidades">
+        <div class="cidade"><span class="cidade-nome">Scottsdale</span><span class="cidade-nota">MON &amp; TUE ROUTES</span></div>
+        <div class="cidade"><span class="cidade-nome">Paradise Valley</span><span class="cidade-nota">TUE &amp; WED ROUTES</span></div>
+        <div class="cidade"><span class="cidade-nome">Cave Creek</span><span class="cidade-nota">THU ROUTES</span></div>
+        <div class="cidade"><span class="cidade-nome">Phoenix</span><span class="cidade-nota">WED &amp; FRI ROUTES</span></div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<section class="pedido">
+  <div class="env">
+    <div>
+      <h2>Tell us about your pool</h2>
+      <p>Send it over and we will come out, look at the water and the equipment, and give you a price. No charge for the visit.</p>
+      <ul>
+        <li>We answer the same day</li>
+        <li>Free on-site quote</li>
+        <li>No contract to start weekly service</li>
+        <li>Same tech, same day, every week</li>
+      </ul>
+    </div>
+    <div class="form">
+      <div class="campo">
+        <label>Name</label>
+        <div class="caixa">Your name</div>
+      </div>
+      <div class="form-linha">
+        <div class="campo">
+          <label>Phone</label>
+          <div class="caixa">(480) 000-0000</div>
+        </div>
+        <div class="campo">
+          <label>City</label>
+          <div class="caixa">Scottsdale</div>
+        </div>
+      </div>
+      <div class="campo">
+        <label>What do you need</label>
+        <div class="caixa">Weekly service, a repair, or a remodel</div>
+      </div>
+      <div class="form-botao">Request my free quote</div>
+      <div class="form-nota">Or call 480-575-1722 &mdash; we pick up.</div>
+    </div>
+  </div>
+</section>
+
+<div class="rodape">
+  <div class="env">
+    <div class="marca">POOL<span>GUYS</span></div>
+    <span>Poolguys Swimming Pool Service, Inc. &middot; Family owned since 1997</span>
+    <span class="rodape-fone">480-575-1722</span>
+  </div>
+</div>
+
+<div class="credito">
+  <div class="env">
+    <span>Website concept prepared for Poolguys</span>
+    <span>&middot;</span>
+    <span>by <b>RVLand Devs</b> &middot; rvland-page.vercel.app/en &middot; @rvlanddevs</span>
+  </div>
+</div>
+
+</body>
+</html>

@@ -119,8 +119,11 @@
   "notaMobile": "Barra do topo reduzida a marca + telefone abaixo de 620px (o texto de apoio e o CTA quebravam em quatro linhas e vazavam da tela); cartão de relatório sem rotação no celular.",
   "abordagem": {
     "canal": "e-mail poolguys@att.net",
+    "contato": "Norm Nelson, President / Owner",
     "assunto": "Your website is cut off on phones",
-    "gancho": "O site nao tem meta viewport: renderiza a 920px numa tela de 390px. Titulo corta no meio, menu sai da tela, e nao existe formulario nenhum no site. Verificavel pelo proprio dono em 5 segundos.",
+    "gancho": "O site nao tem meta viewport: renderiza a 920px numa tela de 390px. Titulo corta no meio, menu sai da tela, e nao existe formulario nenhum. Verificavel pelo proprio dono em 5 segundos.",
+    "entrega": "link para o conceito hospedado, sem anexo (anexo pesa contra a entrega)",
     "arquivo": "conceitos/poolguys/email.md"
-  }
+  },
+  "url": "https://rvland-page.vercel.app/c/poolguys"
 }

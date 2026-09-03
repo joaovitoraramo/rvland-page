@@ -1,51 +1,59 @@
-# E-mail de abordagem — Poolguys (poolguys@att.net)
+# E-mail de abordagem — Poolguys
+
+**Para:** poolguys@att.net
+**Dono:** Norm Nelson, President / Owner
+**Conceito:** https://rvland-page.vercel.app/c/poolguys
 
 ## Assuntos (escolha um)
 
 1. **Your website is cut off on phones** ← recomendado
 2. **Poolguys is losing quotes on mobile**
-3. **I redesigned your homepage — it's free, attached**
+3. **I redesigned your homepage — free, no strings**
 
 O primeiro vence porque é específico, verificável e não parece propaganda.
 Ele abre pensando "é sério?" e testa no próprio celular. Fuja de "URGENT" e
-de emoji no assunto: dispara filtro de spam e queima a confiança na hora.
+de emoji: dispara filtro de spam e queima a confiança na hora.
 
 ---
 
 ## E-mail
 
-**Para:** poolguys@att.net
 **Assunto:** Your website is cut off on phones
 
 ```
-Hi there,
+Hi Norm,
 
 I'm a web designer. I pulled up Poolguys on my phone this morning and the
 site loads at desktop width — the headline cuts off mid-sentence and the
-menu runs off the screen. Worth 5 seconds of your time: open
-azpoolguys.com on your phone right now and see it yourself.
+menu runs off the screen. Worth 5 seconds: open azpoolguys.com on your
+phone right now and see for yourself.
 
 That matters because most people searching "pool service Scottsdale" are
-on a phone. They land, can't read it, and go back to Google. And there's
+on a phone. They land, can't read it, and go back to Google. There's also
 no quote form anywhere on the site, so every lead has to stop and dial.
 
-So I rebuilt your homepage as a concept. It's attached, desktop and phone.
+So I rebuilt your homepage as a concept. Open it on your phone too:
+
+https://rvland-page.vercel.app/c/poolguys
+
 Your real services, your real photos, your number. Plus one thing none of
-your competitors put on their site: the service report your tech leaves
-after every visit — chlorine, pH, filter pressure, what got done.
+your competitors put online: the service report your tech leaves after
+every visit — chlorine, pH, filter pressure, what got done.
+
+To be clear about what's free: the design is. I built it on my own time
+and no invoice is coming for it, whether you reply or not. Building the
+real site is paid work, and we'd only talk numbers if you decide you
+want it.
+
+I won't call you either. Your phone rings all day with customers — you
+don't need a designer tying up that line. Everything by email, on your
+time.
 
 29 years in the Valley deserves better than a page from 2005.
 
-It's free and it's yours either way. If you like it, reply and we'll go
-from there. If not, keep it and ignore me.
-
-Everything happens by message. I don't do sales calls.
-
 — João
-RVLand Devs · rvland-page.vercel.app/en · @rvlanddevs
+RVLand Devs · @rvlanddevs
 ```
-
-**Anexos:** `poolguys-conceito.png` e `poolguys-mobile.pdf`
 
 ---
 
@@ -54,16 +62,17 @@ RVLand Devs · rvland-page.vercel.app/en · @rvlanddevs
 **Assunto:** Re: Your website is cut off on phones
 
 ```
-Hi there,
+Hi Norm,
 
-Following up once on the homepage concept I sent — attaching it again in
-case it got buried.
+Following up once, in case this got buried. The concept is still up:
 
-No pitch here. The one thing worth doing even if you never reply to me:
-open azpoolguys.com on your phone. If you can't read it, neither can the
+https://rvland-page.vercel.app/c/poolguys
+
+No pitch here. The one thing worth doing even if you never reply: open
+azpoolguys.com on your phone. If you can't read it, neither can the
 homeowner in Paradise Valley looking for a pool guy on a Saturday.
 
-Happy to hand over the concept and disappear. Just say the word.
+Happy to hand the design over and disappear. Just say the word.
 
 — João
 ```
@@ -73,40 +82,45 @@ o remetente.
 
 ---
 
-## Por que o e-mail é assim
+## Por que cada trecho está assim
 
 **O gancho é verificável.** O site não tem `<meta name="viewport">`: numa
-tela de 390px ele renderiza a 920px. Isso não é opinião de design, é fato
-que ele confirma sozinho em cinco segundos. Prova que você olhou de
-verdade, e é o que separa de mais um e-mail de agência.
+tela de 390px ele renderiza a 920px. Não é opinião de design, é fato que
+ele confirma sozinho em cinco segundos. Prova que você olhou de verdade,
+e é o que separa isso de mais um e-mail de agência.
 
 **A dor tem valor em dinheiro.** Não é "seu site é feio", é "quem procura
-no celular não consegue ler e volta pro Google". E o site não tem
-formulário: todo orçamento depende de alguém parar e ligar.
+no celular não consegue ler e volta pro Google". E não há formulário: todo
+orçamento depende de alguém parar e ligar.
 
-**Um único elogio, e é verdadeiro.** "29 anos no Valley merecem mais que
-uma página de 2005" respeita o negócio e ataca só o site. Ninguém compra
-de quem diz que o trabalho dele é ruim.
+**Link, não anexo.** Anexo de remetente desconhecido pesa contra a entrega
+e quase nunca é aberto. O link abre no celular dele em um toque, prova na
+prática que o conceito funciona em tela pequena, e ainda leva sua marca.
+A página tem uma faixa dizendo "This is a concept — not your live site"
+para ele não confundir com o site no ar, e está fora do índice do Google.
+
+**O que é grátis está explícito.** "The design is" separa o desenho da
+construção, e dizer na cara que o site é trabalho pago constrói mais
+confiança do que deixar ambíguo. Ambiguidade sobre preço vira desconfiança
+na hora de responder.
+
+**O "sem ligação" usa o motivo dele, não o seu.** "Your phone rings all
+day with customers — you don't need a designer tying up that line" é o
+argumento na cabeça de quem atende chamado o dia todo. Vira consideração,
+não regra sua.
+
+**Um único elogio, e verdadeiro.** "29 anos no Valley merecem mais que uma
+página de 2005" respeita o negócio e ataca só o site. Ninguém compra de
+quem despreza o trabalho dele.
 
 **Urgência sem falsidade.** Nada de "oferta expira". A urgência é que a
 perda acontece toda semana, em silêncio.
 
-**Risco zero para ele.** O conceito é dele de qualquer jeito. Isso derruba
-a defesa de "vem me vender alguma coisa".
-
-**"I don't do sales calls" é o diferencial.** Dono de negócio pequeno
-detesta discovery call. Isso remove a última objeção antes do "não".
-
 ## Antes de enviar
 
-- **Ache o nome do dono** (Google Maps, LinkedIn, "Poolguys Scottsdale
-  owner"). Trocar "Hi there" por "Hi Mike" muda a taxa de resposta de
-  forma desproporcional.
-- **Assine com seu nome real**, não com o nome da empresa.
-- **Não use HTML nem imagem no corpo.** E-mail frio em texto puro cai
-  menos em spam e parece pessoa, não campanha.
-- **Anexo pesa contra a entrega.** Se quiser máxima chance de chegar na
-  caixa de entrada, mande sem anexo e ofereça o conceito por link; ou
-  peça pra RVLand hospedar o conceito e mande a URL.
-- **Envie de manhã, terça a quinta**, horário do Arizona (Phoenix é
-  UTC-7 o ano todo, não muda com horário de verão).
+- Assine com seu nome real, não com o nome da empresa.
+- Texto puro, sem HTML e sem imagem no corpo: e-mail frio formatado cai
+  mais em spam e parece campanha.
+- Envie de manhã, terça a quinta, horário do Arizona (Phoenix é UTC-7 o
+  ano todo, não muda com horário de verão).
+- Se ele responder pedindo para ver mais, aí sim mande os PNGs em anexo.
