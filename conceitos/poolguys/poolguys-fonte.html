@@ -445,6 +445,52 @@
     .titulo { font-size: 40px; }
     .env { padding: 0 24px; }
   }
+
+  @media (max-width: 620px) {
+    /* a barra vira marca + telefone: o texto de apoio e o botão viravam
+       quatro linhas empilhadas e o CTA vazava da tela. O hero logo abaixo
+       já carrega a chamada. */
+    .barra-nota, .barra-cta { display: none; }
+    .barra .env { gap: 16px; }
+    .barra-fone { font-size: 14px; white-space: nowrap; }
+    .marca { font-size: 19px; }
+
+    .hero { padding: 56px 0 64px; }
+    .titulo { font-size: 34px; line-height: 1.08; }
+    .subtitulo { font-size: 17px; }
+    .sobrancelha { font-size: 11px; letter-spacing: 0.12em; }
+    .acoes { gap: 14px; }
+    .botao { width: 100%; text-align: center; }
+
+    /* sem rotação no celular: a inclinação empurrava o cartão para fora */
+    .relatorio { transform: none; }
+    .relatorio-topo { padding: 14px 18px; flex-wrap: wrap; gap: 6px; }
+    .relatorio-data { margin-left: 0; width: 100%; }
+    .relatorio-corpo { padding: 6px 18px 18px; }
+
+    .secao { padding: 56px 0; }
+    .cabeca { margin-bottom: 28px; }
+    .cabeca h2 { font-size: 27px; }
+    .cabeca p { font-size: 16px; }
+
+    .fatos .env { gap: 22px 18px; }
+    .fato-num { font-size: 23px; }
+
+    .foto { height: 150px; }
+
+    .cidade { padding: 13px 0; }
+    .cidade-nome { font-size: 19px; }
+    .cidade-nota { font-size: 11px; }
+
+    .pedido { padding: 56px 0; }
+    .pedido h2 { font-size: 27px; }
+    .form { padding: 22px; }
+    .form-linha { grid-template-columns: 1fr; gap: 0; }
+
+    .rodape .env { gap: 12px; }
+    .rodape-fone { margin-left: 0; }
+    .credito .env { gap: 6px; }
+  }
 </style>
 </head>
 <body>

@@ -104,8 +104,13 @@
       "caminho": "poolguys/poolguys-conceito.pdf"
     },
     {
+      "rotulo": "Versão mobile (PDF)",
+      "caminho": "poolguys/poolguys-mobile.pdf"
+    },
+    {
       "rotulo": "Código-fonte do conceito (HTML)",
       "caminho": "poolguys/poolguys-fonte.html"
     }
-  ]
+  ],
+  "notaMobile": "Barra do topo reduzida a marca + telefone abaixo de 620px (o texto de apoio e o CTA quebravam em quatro linhas e vazavam da tela); cartão de relatório sem rotação no celular."
 }
