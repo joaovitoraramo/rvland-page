@@ -40,6 +40,16 @@ async function main() {
 
   let html = readFileSync(origem, "utf8");
 
+  // Sem meta viewport o celular renderiza a 980px e mostra a página de
+  // desktop encolhida — exatamente o defeito que a gente aponta no site do
+  // prospect. Publicar assim seria vergonhoso, então nem deixa.
+  if (!/<meta\s+name=["']viewport["']/i.test(html)) {
+    throw new Error(
+      `${origem} não tem <meta name="viewport">: no celular ele abriria em ` +
+        `largura de desktop. Acrescente antes de publicar.`
+    );
+  }
+
   // caminhos absolutos: a URL final é /c/<slug>, então "fotos/x.jpg" quebraria
   html = html.replace(/(src|href)="fotos\//g, `$1="/c/${slug}/fotos/`);
 
