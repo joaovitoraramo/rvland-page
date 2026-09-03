@@ -117,6 +117,7 @@ export function mensagemLead(lead: {
   contato: string;
   mensagem: string;
   planoInteresse?: PlanoInteresse | null;
+  conceito?: string | null;
 }): string {
   const origem = lead.origem === "en" ? "EN" : "BR";
   const titulo = lead.negocio ? `🆕 Lead ${origem} — ${lead.negocio}` : `🆕 Lead ${origem}`;
@@ -126,6 +127,9 @@ export function mensagemLead(lead: {
   const linhas = [titulo, `${lead.nome} · ${lead.canal}: ${lead.contato}`];
   if (lead.planoInteresse) {
     linhas.push(`💰 Interesse: ${rotuloPlanoInteresse[lead.planoInteresse]}`);
+  }
+  if (lead.conceito) {
+    linhas.push(`🎯 Veio do conceito /c/${lead.conceito}`);
   }
   linhas.push(`«${corpo}»`);
   return linhas.join("\n");

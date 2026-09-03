@@ -56,6 +56,8 @@ export const esquemaLead = z
     negocio: z.string().trim().max(160).optional(),
     siteAtual: z.string().trim().max(300).optional(),
     planoInteresse: z.enum(PLANOS_INTERESSE).optional(),
+    // de qual conceito ele veio (/en?ref=slug); so letras, numeros e hifen
+    conceito: z.string().trim().regex(/^[a-z0-9-]{1,60}$/).optional(),
     canal: z.enum(TODOS_CANAIS),
     contato: z.string().trim().min(3).max(200),
     mensagem: z.string().trim().min(10).max(4000),

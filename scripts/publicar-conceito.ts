@@ -55,9 +55,11 @@ async function main() {
     color: { dark: "#06323E", light: "#FFFFFF" },
   });
 
+  // ref=<slug> avisa a /en que o visitante já tem o conceito na mão, e marca
+  // o lead com a origem se ele preencher o formulário
   html = html.replace(
     "<body>",
-    `<body>\n${faixaTopo({ url, qr, precos: `${base}/en?section=pricing`, cores: conceito.faixaCores })}`
+    `<body>\n${faixaTopo({ url, qr, precos: `${base}/en?section=pricing&ref=${slug}`, cores: conceito.faixaCores })}`
   );
   html = html.replace("</body>", `${rodapeCredito({ cliente, site: base })}\n</body>`);
 

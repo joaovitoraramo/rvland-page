@@ -390,6 +390,8 @@ export const leads = pgTable(
     negocio: text("negocio"),
     siteAtual: text("site_atual"),
     planoInteresse: text("plano_interesse").$type<"full" | "m6" | "m12">(),
+    // slug do conceito que trouxe o lead (/en?ref=poolguys)
+    conceito: text("conceito"),
     canal: text("canal")
       .notNull()
       .$type<"email" | "sms" | "instagram" | "messenger" | "whatsapp" | "telefone">(),

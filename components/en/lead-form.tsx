@@ -15,6 +15,7 @@ import { Input } from "@/components/ui/input";
 import { Textarea } from "@/components/ui/textarea";
 import { cn } from "@/lib/utils";
 import { criarLead } from "@/lib/acoes/criar-lead";
+import { conceitoGuardado } from "@/components/en/adaptar-conceito";
 
 type CanalEN = "email" | "sms" | "instagram" | "messenger";
 type Field = "nome" | "negocio" | "siteAtual" | "contato" | "mensagem";
@@ -97,6 +98,7 @@ export function LeadFormEn() {
         canal,
         contato: form.contato,
         mensagem: form.mensagem,
+        conceito: conceitoGuardado(),
       });
       if (!result.ok) {
         setGeneralError("Something went wrong. Please try again.");
@@ -148,10 +150,19 @@ export function LeadFormEn() {
   return (
     <Card className="rounded-2xl border-white/10 bg-[rgba(10,14,20,0.72)] backdrop-blur-md">
       <CardHeader>
-        <CardTitle className="text-white">Get your free concept</CardTitle>
+        <CardTitle className="text-white">
+          <span className="rv-sem-conceito">Get your free concept</span>
+          <span className="rv-se-conceito">Start your website</span>
+        </CardTitle>
         <CardDescription className="text-white/70">
-          Tell us about your business and we&apos;ll send a free homepage concept.
-          No strings attached.
+          <span className="rv-sem-conceito">
+            Tell us about your business and we&apos;ll send a free homepage
+            concept. No strings attached.
+          </span>
+          <span className="rv-se-conceito">
+            Tell us where to reach you and we pick up from the concept you
+            already have.
+          </span>
         </CardDescription>
       </CardHeader>
       <CardContent>
@@ -257,7 +268,14 @@ export function LeadFormEn() {
             className="group h-11 w-full rounded-xl border border-white/10 bg-[rgba(0,255,138,0.16)] text-sm font-medium text-white transition-all hover:-translate-y-[1px] hover:bg-[rgba(0,255,138,0.22)]"
           >
             <span className="inline-flex items-center gap-2">
-              {sending ? "Sending..." : "Send it and get my free concept"}
+              {sending ? (
+                "Sending..."
+              ) : (
+                <>
+                  <span className="rv-sem-conceito">Send it and get my free concept</span>
+                  <span className="rv-se-conceito">Send it, let&apos;s get started</span>
+                </>
+              )}
               <ArrowRight className="h-4 w-4 transition-transform duration-200 group-hover:translate-x-0.5" />
             </span>
           </Button>

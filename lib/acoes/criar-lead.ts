@@ -21,6 +21,7 @@ export async function criarLead(entrada: {
   negocio?: string;
   siteAtual?: string;
   planoInteresse?: string;
+  conceito?: string;
   canal: string;
   contato: string;
   mensagem: string;
@@ -38,6 +39,7 @@ export async function criarLead(entrada: {
     negocio: lead.negocio ?? null,
     siteAtual: lead.siteAtual ?? null,
     planoInteresse: lead.planoInteresse ?? null,
+    conceito: lead.conceito ?? null,
     canal: lead.canal,
     contato: lead.contato,
     mensagem: lead.mensagem,
@@ -60,6 +62,7 @@ export async function criarLead(entrada: {
       canal: rotuloCanal[lead.canal],
       contato: lead.contato,
       mensagem: lead.mensagem,
+      conceito: lead.conceito,
     })
   );
 

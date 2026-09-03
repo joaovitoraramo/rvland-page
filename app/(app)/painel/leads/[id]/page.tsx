@@ -65,6 +65,19 @@ export default async function PaginaLead({
               "origem",
               lead.origem === "en" ? "Exterior (/en)" : "Brasil (site PT)"
             )}
+            {lead.conceito
+              ? info(
+                  "veio do conceito",
+                  <a
+                    href={`/c/${lead.conceito}`}
+                    target="_blank"
+                    rel="noreferrer"
+                    className="text-[#8AF0FF] hover:underline"
+                  >
+                    /c/{lead.conceito}
+                  </a>
+                )
+              : null}
             {info("canal preferido", rotuloCanal[lead.canal])}
             {info("contato", <span className="rv-num">{lead.contato}</span>)}
             {lead.siteAtual

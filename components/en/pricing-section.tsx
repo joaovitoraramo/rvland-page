@@ -41,6 +41,10 @@ export function PricingSection({ pricing }: { pricing: PricingEn }) {
 
   return (
     <div className="mx-auto max-w-xl">
+      {/* quem vem de um conceito já tem o desenho: aqui está o que falta */}
+      <p className="rv-se-conceito mb-6 rounded-xl border border-[rgba(0,229,255,0.25)] bg-[rgba(0,229,255,0.07)] px-4 py-3 text-center text-sm text-[#8AF0FF]">
+        You already have your concept. This is what it costs to put it live.
+      </p>
       {/* seletor */}
       <div
         className="relative grid rounded-2xl border border-white/10 bg-black/30 p-1.5"
@@ -110,7 +114,8 @@ export function PricingSection({ pricing }: { pricing: PricingEn }) {
           }}
           className="mt-7 inline-flex h-11 items-center justify-center gap-2 rounded-xl border border-white/10 bg-[rgba(0,255,138,0.16)] px-6 text-sm font-medium text-white transition-all hover:-translate-y-[1px] hover:bg-[rgba(0,255,138,0.22)]"
         >
-          Get your free concept
+          <span className="rv-sem-conceito">Get your free concept</span>
+          <span className="rv-se-conceito">Let&apos;s build it</span>
           <ArrowRight className="h-4 w-4" />
         </a>
       </div>

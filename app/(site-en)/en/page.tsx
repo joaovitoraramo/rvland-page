@@ -23,6 +23,7 @@ import { formatarDolares } from "@/lib/formato";
 import { PricingSection } from "@/components/en/pricing-section";
 import { LeadFormEn } from "@/components/en/lead-form";
 import { RolagemSecao } from "@/components/en/rolagem-secao";
+import { AdaptarConceito } from "@/components/en/adaptar-conceito";
 import { SchemaSiteEn } from "@/components/seo/schema-site";
 
 export const metadata: Metadata = {
@@ -139,7 +140,8 @@ export default async function PaginaEn() {
                 href="#contact"
                 className="inline-flex h-12 items-center justify-center gap-2 rounded-xl border border-white/10 bg-[rgba(0,255,138,0.16)] px-6 text-sm font-medium transition-all hover:-translate-y-[1px] hover:bg-[rgba(0,255,138,0.22)]"
               >
-                Get your free concept
+                <span className="rv-sem-conceito">Get your free concept</span>
+                <span className="rv-se-conceito">Let&apos;s build it</span>
                 <ArrowRight className="h-4 w-4" />
               </a>
               <a
@@ -319,20 +321,29 @@ export default async function PaginaEn() {
           <div className="grid gap-6 lg:grid-cols-2 lg:items-start">
             <div>
               <h2 className="text-3xl font-semibold tracking-tight md:text-4xl">
-                Get your free concept
+                <span className="rv-sem-conceito">Get your free concept</span>
+                <span className="rv-se-conceito">Ready to build it?</span>
               </h2>
-              <p className="mt-3 max-w-md text-white/65">
+              <p className="rv-sem-conceito mt-3 max-w-md text-white/65">
                 Send us your info and we&apos;ll reply with a free homepage
                 concept for your business, before you pay anything.
+              </p>
+              <p className="rv-se-conceito mt-3 max-w-md text-white/65">
+                You have seen the concept. Tell us where to reach you and we
+                pick up right from there: same day answer, still no calls.
               </p>
               <ul className="mt-6 space-y-3 text-sm text-white/70">
                 <li className="flex items-start gap-2">
                   <span className="mt-[7px] inline-block h-1.5 w-1.5 rounded-full bg-[rgba(0,255,138,0.85)]" />
                   We reply by message on the channel you pick.
                 </li>
-                <li className="flex items-start gap-2">
+                <li className="rv-sem-conceito flex items-start gap-2">
                   <span className="mt-[7px] inline-block h-1.5 w-1.5 rounded-full bg-[rgba(0,255,138,0.85)]" />
                   Free concept: you only pay if you love it.
+                </li>
+                <li className="rv-se-conceito flex items-start gap-2">
+                  <span className="mt-[7px] inline-block h-1.5 w-1.5 rounded-full bg-[rgba(0,255,138,0.85)]" />
+                  The concept stays yours, paid or not.
                 </li>
                 <li className="flex items-start gap-2">
                   <span className="mt-[7px] inline-block h-1.5 w-1.5 rounded-full bg-[rgba(0,255,138,0.85)]" />
@@ -367,6 +378,7 @@ export default async function PaginaEn() {
 
       <SchemaSiteEn pricing={pricing} faq={faq} />
       <RolagemSecao />
+      <AdaptarConceito />
     </main>
   );
 }

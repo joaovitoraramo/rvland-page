@@ -652,3 +652,10 @@ body {
 @media (prefers-reduced-motion: reduce) {
   .rv-precos-troca { animation: none; }
 }
+
+/* /en?ref=<conceito>: quem chega do conceito já tem o desenho na mão, então
+   as chamadas deixam de oferecer o conceito e passam a falar de construir.
+   Os dois textos vivem no HTML e o CSS escolhe — assim a página segue estática. */
+.rv-se-conceito { display: none; }
+.veio-de-conceito .rv-sem-conceito { display: none; }
+.veio-de-conceito .rv-se-conceito { display: revert; }
