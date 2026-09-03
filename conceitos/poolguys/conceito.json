@@ -125,5 +125,6 @@
     "entrega": "link para o conceito hospedado, sem anexo (anexo pesa contra a entrega)",
     "arquivo": "conceitos/poolguys/email.md"
   },
-  "url": "https://rvland-page.vercel.app/c/poolguys"
+  "url": "https://rvland-page.vercel.app/c/poolguys",
+  "demonstracao": "A pagina hospedada convida a trocar de tela: no desktop, botao \"See it on your phone\" abre modal com QR code; no celular, \"See it on a big screen\" abre modal com o link e botao de copiar. A troca E a demonstracao — a peca se refaz sozinha, e o site atual do prospect nao faz isso."
 }
