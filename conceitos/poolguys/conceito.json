@@ -126,5 +126,5 @@
     "arquivo": "conceitos/poolguys/email.md"
   },
   "url": "https://rvland-page.vercel.app/c/poolguys",
-  "demonstracao": "A página hospedada convida a trocar de tela: no desktop, botão \"See it on your phone\" abre modal com QR code; no celular, \"See it on a big screen\" abre modal com o link e botão de copiar. A troca É a demonstração — a peça se refaz sozinha, e o site atual do prospect não faz isso."
+  "demonstracao": "A página hospedada convida a trocar de tela: no desktop, botão \"See it on your phone\" abre modal com QR code; no celular, \"See it on a big screen\" abre modal com o link e botão de copiar. A troca É a demonstração — a peça se refaz sozinha, e o site atual do prospect não faz isso. A faixa tambem leva ao pricing da RVLand (/en?section=pricing) pelo botao \"What does this cost?\", respondendo num clique a pergunta que ele faria por e-mail."
 }

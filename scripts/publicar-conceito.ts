@@ -14,12 +14,13 @@ import QRCode from "qrcode";
 /** Faixa + convite para ver a mesma URL no outro tipo de tela. A troca de
  *  dispositivo é a demonstração: a página se refaz sozinha, e é justamente
  *  isso que o site antigo do prospect não faz. */
-function faixa(url: string, qr: string) {
+function faixa(url: string, qr: string, precos: string) {
   return `
 <div class="rv-faixa">
   <span class="rv-faixa-texto"><strong>This is a concept</strong> &mdash; not your live site.</span>
   <button type="button" class="rv-convite rv-convite-fone" data-rv-abrir>See it on your phone</button>
   <button type="button" class="rv-convite rv-convite-pc" data-rv-abrir>See it on a big screen</button>
+  <a class="rv-preco" href="${precos}" target="_blank" rel="noreferrer">What does this cost? &rarr;</a>
   <span class="rv-faixa-por">by RVLand Devs</span>
 </div>
 
@@ -69,14 +70,29 @@ function faixa(url: string, qr: string) {
   .rv-convite:hover { background: rgba(0,229,255,0.2); border-color: rgba(0,229,255,0.6); }
   .rv-convite:focus-visible { outline: 2px solid #00E5FF; outline-offset: 2px; }
 
+  /* a pergunta que ele faz de qualquer jeito; melhor respondê-la num clique
+     do que esperar o e-mail de volta perguntando */
+  .rv-preco {
+    font: inherit; text-decoration: none;
+    background: #00E5FF; color: #06232B;
+    font-weight: 600;
+    border-radius: 999px;
+    padding: 5px 15px;
+    white-space: nowrap;
+    transition: filter .15s;
+  }
+  .rv-preco:hover { filter: brightness(1.08); }
+  .rv-preco:focus-visible { outline: 2px solid #fff; outline-offset: 2px; }
+
   /* cada tela convida para a outra */
   .rv-convite-pc, .rv-so-fone { display: none; }
   @media (max-width: 819px) {
     .rv-convite-fone, .rv-so-desktop { display: none; }
     .rv-convite-pc, .rv-so-fone { display: block; }
-    .rv-faixa { padding: 9px 16px; gap: 10px; }
+    .rv-faixa { padding: 9px 16px; gap: 8px; }
     .rv-faixa-por { display: none; }
     .rv-faixa-texto { width: 100%; }
+    .rv-convite, .rv-preco { font-size: 11.5px; padding: 5px 11px; }
   }
 
   .rv-modal[hidden] { display: none; }
@@ -209,7 +225,7 @@ async function main() {
 
   // a faixa evita o mal-entendido de achar que o site já está no ar, e
   // convida a abrir na outra tela — a troca É a demonstração
-  html = html.replace("<body>", `<body>\n${faixa(url, qr)}`);
+  html = html.replace("<body>", `<body>\n${faixa(url, qr, `${base}/en?section=pricing`)}`);
 
   mkdirSync("public/c", { recursive: true });
   writeFileSync(`public/c/${slug}.html`, html);
