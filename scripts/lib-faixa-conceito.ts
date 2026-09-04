@@ -265,13 +265,15 @@ export function faixaTopo({ url, qr, precos, cores }: Omit<DadosFaixa, "cliente"
     font-family: ${MONO};
     font-size: 12px; letter-spacing: 0.04em;
     padding: 18px 24px;
-    display: flex; gap: 8px 20px; flex-wrap: wrap;
-    justify-content: center;
+    display: flex; align-items: center; justify-content: center;
+    gap: 8px 18px; flex-wrap: wrap;
     opacity: 0.85;
   }
   .rv-rodape a { color: ${c.acento}; text-decoration: none; }
   .rv-rodape a:hover { text-decoration: underline; }
   .rv-rodape b { color: ${c.acento}; font-weight: 600; }
+  .rv-rodape-links { display: inline-flex; align-items: center; gap: 10px; }
+  .rv-rodape-sep { opacity: 0.3; }
 
   @media (max-width: 480px) {
     .rv-modal { padding: 16px; }
@@ -279,7 +281,17 @@ export function faixaTopo({ url, qr, precos, cores }: Omit<DadosFaixa, "cliente"
     .rv-modal-caixa h2 { font-size: 19px; }
     .rv-pergunta { font-size: 16px; }
     .rv-modal-url code { font-size: 11px; }
-    .rv-rodape { padding: 16px; gap: 6px; text-align: center; }
+    /* no celular o flex-wrap quebrava em pontos aleatórios e a assinatura
+       colava na URL; em coluna cada informação ganha a própria linha */
+    .rv-rodape {
+      flex-direction: column;
+      gap: 7px;
+      padding: 20px 20px 22px;
+      text-align: center;
+      line-height: 1.5;
+      font-size: 11.5px;
+    }
+    .rv-rodape-links { gap: 8px; }
   }
 </style>
 
@@ -324,8 +336,11 @@ export function rodapeCredito({ cliente, site }: { cliente: string; site: string
 <div class="rv-rodape">
   <span>Website concept prepared for ${cliente}</span>
   <span>by <b>RVLand Devs</b></span>
-  <a href="${site}/en" target="_blank" rel="noreferrer">${site.replace(/^https?:\/\//, "")}/en</a>
-  <a href="https://instagram.com/rvlanddevs" target="_blank" rel="noreferrer">@rvlanddevs</a>
+  <span class="rv-rodape-links">
+    <a href="${site}/en" target="_blank" rel="noreferrer">${site.replace(/^https?:\/\//, "")}/en</a>
+    <span class="rv-rodape-sep">&middot;</span>
+    <a href="https://instagram.com/rvlanddevs" target="_blank" rel="noreferrer">@rvlanddevs</a>
+  </span>
 </div>
 `;
 }
