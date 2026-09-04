@@ -1,4 +1,5 @@
 import { formatarDolares } from "@/lib/formato";
+import { divisaoCare } from "@/lib/dominio/preco-site";
 
 /**
  * Conteúdo do site internacional (/en). NÃO é tradução do PT: público
@@ -74,6 +75,9 @@ export const STEPS_EN = [
 /** FAQ com os valores vivos do pricing (configurável no painel → revalidate). */
 export function faqEn(care: { valorCentavos: number; mesesInclusos: number }) {
   const mensal = `${formatarDolares(care.valorCentavos)}/month`;
+  const divisao = divisaoCare(care.valorCentavos);
+  const soSuporte = divisao ? formatarDolares(divisao.suporteCentavos) : mensal;
+  const soHosting = divisao ? formatarDolares(divisao.hostingCentavos) : null;
   return [
     {
       q: "Do I own my website?",
@@ -90,6 +94,10 @@ export function faqEn(care: { valorCentavos: number; mesesInclusos: number }) {
     {
       q: `What happens after the first ${care.mesesInclusos} months?`,
       a: `Support & hosting continues at ${mensal}: updates, backups, and changes. You can also move your site elsewhere; it's yours.`,
+    },
+    {
+      q: "I already pay for hosting. Do I have to switch?",
+      a: `No, and we would not ask you to. Keep the hosting you already have, we build on it, and you pay ${soSuporte}/month for support instead of ${formatarDolares(care.valorCentavos)}. Cancelling a plan you already pay for, just to pay us${soHosting ? ` ${soHosting}` : ""} instead, would not make you a dollar. Moving your hosting to us only makes sense in three cases: you do not have hosting yet, nobody answers you when something breaks where you are, or your renewal is coming up and you would rather keep the site, the hosting and the person who fixes it in one place.`,
     },
     {
       q: "Why don't you do calls?",

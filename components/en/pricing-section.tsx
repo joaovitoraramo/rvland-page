@@ -130,8 +130,9 @@ export function PricingSection({ pricing }: { pricing: PricingEn }) {
         {divisao ? (
           <p className="mx-auto mt-2 max-w-sm text-xs leading-relaxed text-white/35">
             Most of that is support: {formatarDolares(divisao.suporteCentavos)} for
-            changes, questions and keeping the site current. Hosting is the small
-            part, {formatarDolares(divisao.hostingCentavos)}.
+            changes, questions and keeping the site current. Hosting is only{" "}
+            {formatarDolares(divisao.hostingCentavos)} &mdash; and if you already have
+            hosting, keep it and pay just the {formatarDolares(divisao.suporteCentavos)}.
           </p>
         ) : null}
       </div>
