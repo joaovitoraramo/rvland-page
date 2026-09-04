@@ -89,7 +89,7 @@ export function CardConceito({
             paleta
           </div>
           <div className="grid gap-1.5">
-            {conceito.paleta.map((c) => (
+            {(conceito.paleta ?? []).map((c) => (
               <div key={c.nome} className="flex items-start gap-2.5">
                 <span
                   className="mt-0.5 size-5 shrink-0 rounded border border-white/15"
@@ -113,7 +113,7 @@ export function CardConceito({
             tipografia
           </div>
           <div className="space-y-2">
-            {conceito.tipografia.map((t) => (
+            {(conceito.tipografia ?? []).map((t) => (
               <div key={t.papel} className="rounded-lg border border-white/8 bg-black/20 p-3">
                 <div className="flex flex-wrap items-baseline gap-x-2">
                   <span className="rv-eyebrow">{t.papel}</span>
@@ -128,7 +128,7 @@ export function CardConceito({
         <div>
           <div className="rv-eyebrow mb-2">estrutura da página</div>
           <ol className="space-y-1.5">
-            {conceito.secoes.map((s, i) => (
+            {(conceito.secoes ?? []).map((s, i) => (
               <li key={s} className="flex gap-2.5 text-[13px] text-white/65">
                 <span className="rv-num shrink-0 text-white/25">
                   {String(i + 1).padStart(2, "0")}
@@ -139,13 +139,17 @@ export function CardConceito({
           </ol>
         </div>
 
-        <div>
-          <div className="rv-eyebrow mb-2">copy do hero</div>
-          <p className="rounded-lg border border-white/8 bg-black/20 p-3 text-sm font-medium leading-snug text-white">
-            {conceito.copy.titulo}
-          </p>
-          <p className="mt-2 text-xs leading-relaxed text-white/50">{conceito.copy.subtitulo}</p>
-        </div>
+        {/* jsonb não é validado em execução e o conceito.json é escrito à mão:
+            um campo faltando não pode derrubar a página inteira do prospect */}
+        {conceito.copy ? (
+          <div>
+            <div className="rv-eyebrow mb-2">copy do hero</div>
+            <p className="rounded-lg border border-white/8 bg-black/20 p-3 text-sm font-medium leading-snug text-white">
+              {conceito.copy.titulo}
+            </p>
+            <p className="mt-2 text-xs leading-relaxed text-white/50">{conceito.copy.subtitulo}</p>
+          </div>
+        ) : null}
 
         <div>
           <div className="rv-eyebrow mb-2">arquivos</div>

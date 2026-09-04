@@ -28,6 +28,8 @@ import { linkContatoProspect } from "@/lib/dominio/prospeccao";
 import { formatarDataBR } from "@/lib/dominio/tempo";
 import { urlAssinadaPrint, urlsDoConceito } from "@/lib/servicos/prints-prospeccao";
 import { CardConceito } from "@/components/painel/card-conceito";
+import { CardVisitasConceito } from "@/components/painel/visitas-conceito";
+import { visitasDoConceito } from "@/lib/servicos/visitas-conceito";
 
 export const metadata = { title: "Prospect" };
 
@@ -50,6 +52,9 @@ export default async function PaginaProspect({
   const tel = linkContatoProspect.telefone(p.telefone);
   const print = await urlAssinadaPrint(p.screenshot);
   const arquivosConceito = p.conceito ? await urlsDoConceito(p.conceito.arquivos) : [];
+  // o slug vive no fim da URL do conceito: /c/<slug>
+  const slugConceito = p.conceito?.url?.split("/c/")[1]?.replace(/\/$/, "") ?? null;
+  const visitas = slugConceito ? await visitasDoConceito(slugConceito) : [];
 
   const info = (rotulo: string, valor: React.ReactNode) => (
     <div>
@@ -190,6 +195,8 @@ export default async function PaginaProspect({
           {p.conceito ? (
             <CardConceito conceito={p.conceito} arquivos={arquivosConceito} />
           ) : null}
+
+          {slugConceito ? <CardVisitasConceito visitas={visitas} /> : null}
 
           {/* print da varredura: a prova visual do diagnóstico */}
           <Card>

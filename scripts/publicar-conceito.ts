@@ -12,6 +12,7 @@ import { cpSync, existsSync, mkdirSync, readFileSync, writeFileSync } from "node
 import QRCode from "qrcode";
 
 import { faixaTopo, rodapeCredito } from "./lib-faixa-conceito";
+import { medidorDeVisitas } from "./lib-medidor-conceito";
 
 const NOINDEX = '<meta name="robots" content="noindex, nofollow">';
 
@@ -61,7 +62,10 @@ async function main() {
     "<body>",
     `<body>\n${faixaTopo({ url, qr, precos: `${base}/en?section=pricing&ref=${slug}`, cores: conceito.faixaCores })}`
   );
-  html = html.replace("</body>", `${rodapeCredito({ cliente, site: base })}\n</body>`);
+  html = html.replace(
+    "</body>",
+    `${rodapeCredito({ cliente, site: base })}${medidorDeVisitas({ slug, api: "/api/c/visita" })}\n</body>`
+  );
 
   mkdirSync("public/c", { recursive: true });
   writeFileSync(`public/c/${slug}.html`, html);

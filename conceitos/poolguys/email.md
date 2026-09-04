@@ -52,7 +52,7 @@ time.
 
 29 years in the Valley deserves better than a page from 2005.
 
-— João
+— John
 RVLand Devs · @rvlanddevs
 ```
 
@@ -75,7 +75,7 @@ homeowner in Paradise Valley looking for a pool guy on a Saturday.
 
 Happy to hand the design over and disappear. Just say the word.
 
-— João
+— John
 ```
 
 Depois desse, pare. Terceira mensagem sem resposta vira incômodo e queima
@@ -121,7 +121,8 @@ perda acontece toda semana, em silêncio.
 
 ## Antes de enviar
 
-- Assine com seu nome real, não com o nome da empresa.
+- A assinatura tem que bater com o remetente: a conta envia como **John
+  Novaz**, então o corpo assina **John**. Nome de pessoa, nunca o da empresa.
 - Texto puro, sem HTML e sem imagem no corpo: e-mail frio formatado cai
   mais em spam e parece campanha.
 - Envie de manhã, terça a quinta, horário do Arizona (Phoenix é UTC-7 o

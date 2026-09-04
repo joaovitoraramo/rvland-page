@@ -1011,5 +1011,80 @@
   </span>
 </div>
 
+<script>
+(function () {
+  try {
+    var CHAVE = "rv-visitante";
+    var DESLIGA = "rv-sem-medida";
+
+    // ?rvland=1 desliga a medição neste navegador para sempre: as visitas do
+    // próprio João não podem virar alerta nem entrar na conta
+    try {
+      if (new URLSearchParams(location.search).get("rvland") === "1") {
+        localStorage.setItem(DESLIGA, "1");
+      }
+      if (localStorage.getItem(DESLIGA)) return;
+    } catch (e) {}
+
+    function id() {
+      var s = "";
+      while (s.length < 24) s += Math.random().toString(36).slice(2);
+      return s.slice(0, 24);
+    }
+
+    var visitante;
+    try {
+      visitante = localStorage.getItem(CHAVE);
+      if (!visitante) { visitante = id(); localStorage.setItem(CHAVE, visitante); }
+    } catch (e) { visitante = id(); }
+
+    var sessao = id();
+    var visiveis = 0;
+    var marcou = false;
+    var ultimo = Date.now();
+
+    function enviar(saindo) {
+      var corpo = JSON.stringify({
+        slug: "poolguys",
+        visitante: visitante,
+        sessao: sessao,
+        segundos: Math.round(visiveis),
+        referencia: document.referrer || null
+      });
+      try {
+        // sendBeacon sobrevive ao fechamento da aba; fetch normal não
+        if (saindo && navigator.sendBeacon) {
+          navigator.sendBeacon("/api/c/visita", new Blob([corpo], { type: "application/json" }));
+        } else {
+          fetch("/api/c/visita", {
+            method: "POST",
+            headers: { "content-type": "application/json" },
+            body: corpo,
+            keepalive: true
+          });
+        }
+      } catch (e) {}
+    }
+
+    function contar() {
+      if (document.visibilityState === "visible") visiveis += (Date.now() - ultimo) / 1000;
+      ultimo = Date.now();
+      if (!marcou && visiveis >= 5) { marcou = true; enviar(false); }
+    }
+
+    setInterval(contar, 1000);
+
+    document.addEventListener("visibilitychange", function () {
+      contar();
+      if (document.visibilityState === "hidden" && marcou) enviar(true);
+    });
+    window.addEventListener("pagehide", function () {
+      contar();
+      if (marcou) enviar(true);
+    });
+  } catch (e) {}
+})();
+</script>
+
 </body>
 </html>

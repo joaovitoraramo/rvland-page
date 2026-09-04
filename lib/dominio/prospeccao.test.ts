@@ -91,7 +91,7 @@ describe("agrupar", () => {
   });
 
   it("devolve vazio sem estourar", () => {
-    expect(agrupar([], (p) => p.nicho)).toEqual([]);
+    expect(agrupar([] as { nicho: string }[], (p) => p.nicho)).toEqual([]);
   });
 });
 

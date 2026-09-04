@@ -479,3 +479,39 @@ export const prospeccao = pgTable(
     index("prospeccao_potencial_idx").on(t.potencial),
   ]
 );
+
+/**
+ * Aberturas dos conceitos hospedados em /c/<slug>.
+ *
+ * Só entra visita de gente: o varredor de link do provedor de e-mail é
+ * descartado antes de gravar (lib/dominio/visitas-conceito), senão o primeiro
+ * "abriram!" viria de um antivírus e o dado mentiria logo na estreia.
+ */
+export const visitasConceito = pgTable(
+  "visitas_conceito",
+  {
+    id: uuid("id").primaryKey().defaultRandom(),
+    slug: text("slug").notNull(),
+    // id anônimo do navegador: distingue pessoas sem identificar ninguém
+    visitante: text("visitante").notNull(),
+    // id de um carregamento: a atualização de tempo cai na mesma linha
+    sessao: text("sessao").notNull(),
+    quando: timestamp("quando", { withTimezone: true }).notNull().defaultNow(),
+    dispositivo: text("dispositivo")
+      .notNull()
+      .default("desconhecido")
+      .$type<"celular" | "tablet" | "computador" | "desconhecido">(),
+    sistema: text("sistema"),
+    cidade: text("cidade"),
+    pais: text("pais"),
+    referencia: text("referencia"),
+    // tempo com a aba visível, somado nas atualizações da mesma visita
+    segundos: integer("segundos").notNull().default(0),
+  },
+  (t) => [
+    index("visitas_conceito_slug_idx").on(t.slug),
+    index("visitas_conceito_quando_idx").on(t.quando),
+    // uma linha por carregamento: a atualização de tempo escreve nela
+    uniqueIndex("visitas_conceito_sessao_idx").on(t.sessao),
+  ]
+);
