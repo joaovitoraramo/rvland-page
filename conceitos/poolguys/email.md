@@ -8,7 +8,7 @@
 
 1. **Your website is cut off on phones** ← recomendado
 2. **Poolguys is losing quotes on mobile**
-3. **I redesigned your homepage — free, no strings**
+3. **I redesigned your homepage, free, no strings**
 
 O primeiro vence porque é específico, verificável e não parece propaganda.
 Ele abre pensando "é sério?" e testa no próprio celular. Fuja de "URGENT" e
@@ -24,7 +24,7 @@ de emoji: dispara filtro de spam e queima a confiança na hora.
 Hi Norm,
 
 I'm a web designer. I pulled up Poolguys on my phone this morning and the
-site loads at desktop width — the headline cuts off mid-sentence and the
+site loads at desktop width. The headline cuts off mid-sentence and the
 menu runs off the screen. Worth 5 seconds: open azpoolguys.com on your
 phone right now and see for yourself.
 
@@ -38,7 +38,7 @@ https://rvland-page.vercel.app/c/poolguys
 
 Your real services, your real photos, your number. Plus something none of
 your competitors offer: a client area where the homeowner logs in and sees
-every visit — chlorine, pH, filter pressure, what got done, and when
+every visit: chlorine, pH, filter pressure, what got done, and when
 you're coming back.
 
 To be clear about what's free: the design is. I built it on my own time
@@ -46,13 +46,13 @@ and no invoice is coming for it, whether you reply or not. Building the
 real site is paid work, and we'd only talk numbers if you decide you
 want it.
 
-I won't call you either. Your phone rings all day with customers — you
+I won't call you either. Your phone rings all day with customers. You
 don't need a designer tying up that line. Everything by email, on your
 time.
 
 29 years in the Valley deserves better than a page from 2005.
 
-— John
+John
 RVLand Devs · @rvlanddevs
 ```
 
@@ -75,7 +75,7 @@ homeowner in Paradise Valley looking for a pool guy on a Saturday.
 
 Happy to hand the design over and disappear. Just say the word.
 
-— John
+John
 ```
 
 Depois desse, pare. Terceira mensagem sem resposta vira incômodo e queima
@@ -99,7 +99,7 @@ orçamento depende de alguém parar e ligar.
 **Link, não anexo.** Anexo de remetente desconhecido pesa contra a entrega
 e quase nunca é aberto. O link abre no celular dele em um toque, prova na
 prática que o conceito funciona em tela pequena, e ainda leva sua marca.
-A página tem uma faixa dizendo "This is a concept — not your live site"
+A página tem uma faixa dizendo "This is a concept, not your live site"
 para ele não confundir com o site no ar, e está fora do índice do Google.
 
 **O que é grátis está explícito.** "The design is" separa o desenho da
@@ -108,7 +108,7 @@ confiança do que deixar ambíguo. Ambiguidade sobre preço vira desconfiança
 na hora de responder.
 
 **O "sem ligação" usa o motivo dele, não o seu.** "Your phone rings all
-day with customers — you don't need a designer tying up that line" é o
+day with customers. You don't need a designer tying up that line" é o
 argumento na cabeça de quem atende chamado o dia todo. Vira consideração,
 não regra sua.
 

@@ -44,7 +44,7 @@ export function faixaTopo({ url, qr, precos, cores }: Omit<DadosFaixa, "cliente"
 
   return `
 <div class="rv-faixa">
-  <span class="rv-faixa-texto"><strong>This is a concept</strong> &mdash; not your live site.</span>
+  <span class="rv-faixa-texto"><strong>This is a concept</strong>, not your live site.</span>
   <span class="rv-acoes">
     <button type="button" class="rv-convite rv-convite-fone" data-rv-abrir="rv-modal-tela">See it on your phone</button>
     <button type="button" class="rv-convite rv-convite-pc" data-rv-abrir="rv-modal-tela">
@@ -64,7 +64,7 @@ export function faixaTopo({ url, qr, precos, cores }: Omit<DadosFaixa, "cliente"
 
     <div class="rv-so-desktop">
       <h2 id="rv-tela-titulo">Open it on your phone</h2>
-      <p>Point your camera at the code. It is the same page &mdash; it rebuilds itself for the smaller screen.</p>
+      <p>Point your camera at the code. It is the same page. It rebuilds itself for the smaller screen.</p>
       <img class="rv-qr" src="${qr}" alt="QR code" width="180" height="180">
     </div>
 
@@ -89,7 +89,7 @@ export function faixaTopo({ url, qr, precos, cores }: Omit<DadosFaixa, "cliente"
     <h2 id="rv-preco-titulo">This part costs you nothing</h2>
     <p>
       I built this concept on my own time. No invoice is coming for it, and it
-      stays yours either way &mdash; even if you close this tab and never reply.
+      stays yours either way, even if you close this tab and never reply.
     </p>
 
     <hr class="rv-divisor">
@@ -97,12 +97,12 @@ export function faixaTopo({ url, qr, precos, cores }: Omit<DadosFaixa, "cliente"
     <p class="rv-pergunta">Want it to be your actual website?</p>
     <p>
       That is the part with a price: the live site, the client area, the forms,
-      hosting and support. It is all on one page, in plain numbers &mdash; no
+      hosting and support. It is all on one page, in plain numbers, with no
       meeting, no quote to request.
     </p>
 
     <a class="rv-botao-preco" href="${precos}" target="_blank" rel="noreferrer">See what it costs &rarr;</a>
-    <button type="button" class="rv-depois" data-rv-fechar>Not now &mdash; I'll keep looking</button>
+    <button type="button" class="rv-depois" data-rv-fechar>Not now, I'll keep looking</button>
   </div>
 </div>
 
