@@ -1,5 +1,10 @@
 import { describe, expect, it } from "vitest";
-import { PRICING_EN_PADRAO, parsePricingEn, totalPlano } from "@/lib/dominio/preco-site";
+import {
+  divisaoCare,
+  PRICING_EN_PADRAO,
+  parsePricingEn,
+  totalPlano,
+} from "@/lib/dominio/preco-site";
 
 describe("parsePricingEn", () => {
   it("aceita JSON válido", () => {
@@ -19,5 +24,18 @@ describe("totalPlano", () => {
   it("multiplica parcela × meses", () => {
     expect(totalPlano(29900, 6)).toBe(179400);
     expect(totalPlano(17900, 12)).toBe(214800);
+  });
+});
+
+describe("divisaoCare", () => {
+  it("separa hospedagem fixa do que sobra em suporte", () => {
+    expect(divisaoCare(5900)).toEqual({ hostingCentavos: 700, suporteCentavos: 5200 });
+    expect(divisaoCare(7900)).toEqual({ hostingCentavos: 700, suporteCentavos: 7200 });
+  });
+
+  it("some quando a conta não faz sentido, em vez de mostrar número errado", () => {
+    expect(divisaoCare(700)).toBeNull();
+    expect(divisaoCare(500)).toBeNull();
+    expect(divisaoCare(1000)).toBeNull();
   });
 });

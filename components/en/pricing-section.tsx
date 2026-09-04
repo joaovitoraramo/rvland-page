@@ -5,7 +5,7 @@ import { ArrowRight, Check } from "lucide-react";
 
 import { cn } from "@/lib/utils";
 import { formatarDolares } from "@/lib/formato";
-import { totalPlano, type PricingEn } from "@/lib/dominio/preco-site";
+import { divisaoCare, totalPlano, type PricingEn } from "@/lib/dominio/preco-site";
 
 type IdPlano = "full" | "m6" | "m12";
 
@@ -37,7 +37,9 @@ export function PricingSection({ pricing }: { pricing: PricingEn }) {
   const plano = pricing.planos[ativo];
   const parcelado = ativo !== "full" ? pricing.planos[ativo as "m6" | "m12"] : null;
 
-  const linhaCare = `Includes ${pricing.care.mesesInclusos} months of support & hosting. After that, just ${formatarDolares(pricing.care.valorCentavos)}/month.`;
+  // a divisão vem do preço configurado: se o care mudar no painel, o texto
+  // continua verdadeiro sozinho
+  const divisao = divisaoCare(pricing.care.valorCentavos);
 
   return (
     <div className="mx-auto max-w-xl">
@@ -120,7 +122,19 @@ export function PricingSection({ pricing }: { pricing: PricingEn }) {
         </a>
       </div>
 
-      <p className="mt-5 text-center text-sm text-white/55 max-sm:mt-4 max-sm:text-[13px]">{linhaCare}</p>
+      <div className="mt-5 text-center max-sm:mt-4">
+        <p className="text-sm text-white/55 max-sm:text-[13px]">
+          Includes {pricing.care.mesesInclusos} months of support &amp; hosting. After
+          that, {formatarDolares(pricing.care.valorCentavos)}/month.
+        </p>
+        {divisao ? (
+          <p className="mx-auto mt-2 max-w-sm text-xs leading-relaxed text-white/35">
+            Most of that is support: {formatarDolares(divisao.suporteCentavos)} for
+            changes, questions and keeping the site current. Hosting is the small
+            part, {formatarDolares(divisao.hostingCentavos)}.
+          </p>
+        ) : null}
+      </div>
     </div>
   );
 }

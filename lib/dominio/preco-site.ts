@@ -45,3 +45,20 @@ export function parsePricingEn(valor: unknown): PricingEn {
 export function totalPlano(valorCentavos: number, parcelas: number): number {
   return valorCentavos * parcelas;
 }
+
+/**
+ * Quanto do plano mensal é servidor. É barato e a gente diz o número: mostrar
+ * que quase tudo vai para suporte humano explica o preço melhor do que
+ * qualquer adjetivo.
+ */
+export const HOSTING_MENSAL_CENTAVOS = 700;
+
+/** Divide o care entre hospedagem e suporte. Null quando a conta não fecha. */
+export function divisaoCare(
+  careCentavos: number
+): { hostingCentavos: number; suporteCentavos: number } | null {
+  const suporteCentavos = careCentavos - HOSTING_MENSAL_CENTAVOS;
+  // sem folga a divisão vira ruído: melhor não mostrar do que mostrar torto
+  if (suporteCentavos < HOSTING_MENSAL_CENTAVOS) return null;
+  return { hostingCentavos: HOSTING_MENSAL_CENTAVOS, suporteCentavos };
+}
