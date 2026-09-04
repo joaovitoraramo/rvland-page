@@ -3,6 +3,7 @@ import { NextResponse } from "next/server";
 import { gerarFaturasDaCompetencia } from "@/lib/servicos/gerar-faturas";
 import { competenciaAtual } from "@/lib/dominio/tempo";
 import { avisarViradasDeLicenca } from "@/lib/servicos/avisos-licenca";
+import { avisarFollowUps } from "@/lib/servicos/follow-ups";
 
 export const dynamic = "force-dynamic";
 
@@ -28,5 +29,13 @@ export async function GET(request: Request) {
     console.error("[cron/faturas] avisos de licença falharam:", err);
   }
 
-  return NextResponse.json({ competencia, ...resultado, avisosLicenca });
+  // Etapa 3: prospects esperando follow-up. Só avisa; quem escreve é o João.
+  let followUps = 0;
+  try {
+    followUps = (await avisarFollowUps()).avisados;
+  } catch (err) {
+    console.error("[cron/faturas] aviso de follow-ups falhou:", err);
+  }
+
+  return NextResponse.json({ competencia, ...resultado, avisosLicenca, followUps });
 }

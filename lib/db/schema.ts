@@ -468,6 +468,10 @@ export const prospeccao = pgTable(
         | "perdido"
       >(),
     notas: text("notas"),
+    // quantas mensagens já saíram: o protocolo para na segunda, e a terceira
+    // sem resposta queima o remetente para todos os próximos prospects
+    disparos: integer("disparos").notNull().default(0),
+    ultimoDisparoEm: date("ultimo_disparo_em"),
     seguidoEm: date("seguido_em"),
     comentadoEm: date("comentado_em"),
     contatadoEm: date("contatado_em"),

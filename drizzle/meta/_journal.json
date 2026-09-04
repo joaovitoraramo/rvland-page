@@ -113,6 +113,13 @@
       "when": 1788530924552,
       "tag": "0015_nifty_gideon",
       "breakpoints": true
+    },
+    {
+      "idx": 16,
+      "version": "7",
+      "when": 1788536727085,
+      "tag": "0016_sour_william_stryker",
+      "breakpoints": true
     }
   ]
 }
