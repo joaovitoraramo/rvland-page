@@ -2,7 +2,7 @@
   "criadoEm": "2026-09-05",
   "cliente": "Youthtopia Med Spa",
   "dominio": "youthtopiamedspa.com",
-  "direcao": "A foto que o site esconde. No wp-content deles existe um editorial de outubro/2025: as onze mulheres da casa em vestidos de festa, na hora dourada, diante do tijolo com fontes de leão e magnólias — Alpharetta em pessoa. A clínica JÁ tem estética de casa de luxo (13 anos, diretora médica DO, VIP membership); o site é que veste Elementor branco com clipart de Halloween e um <title> escrito 'Home'. O conceito não inventa luxo: revela o que a foto prova. Paleta tirada dela — o espresso do ferro forjado, o champanhe da luz de fim de tarde, a porcelana da pele, o rosa das magnólias e dos vestidos. Quase nenhum parágrafo: cliente de alto padrão decide pelo que vê.",
+  "direcao": "A foto que o site esconde. No wp-content deles existe um editorial de outubro/2025: as onze mulheres da casa em vestidos de festa, na hora dourada, diante do tijolo com fontes de leão e magnólias — Alpharetta em pessoa. A clínica JÁ tem estética de casa de luxo (13 anos, diretora médica DO, VIP membership); o site é que veste Elementor branco com clipart de Halloween e um <title> escrito 'Home'. O conceito não inventa luxo: revela o que a foto prova. Paleta tirada dela — o espresso do ferro forjado, o champanhe da luz de fim de tarde, a porcelana da pele, o rosa das magnólias e dos vestidos. Quase nenhum parágrafo: cliente de alto padrão decide pelo que vê. Refeito em 05/09 por legibilidade: a primeira versão tinha 42 textos abaixo de WCAG AA (dourado sobre creme a 2.2:1, cinza-marrom secundário a 3.9:1, corpo em peso 300, tamanhos de 9 a 11px). A regra que ficou: o dourado é acento (linhas, ícones, botões) e só vira texto sobre fundo escuro; sobre creme ele é bronze. Piso de 12px, corpo em 400. Auditoria por scripts/auditar-contraste.mjs: 0 reprovados em desktop e celular.",
   "assinatura": "The Youthtopia Card. O VIP que eles já vendem, reapresentado como cartão preto: a cliente entra na área dela e vê o plano de glow (tratamentos e datas), as fotos de progresso, os pontos e o special do mês desbloqueado antes de todo mundo. O Phorest continua agendando; a área amarra a assinatura mensal, justifica o ticket e prende a renovação — nenhum med spa da região tem.",
   "faixaCores": {
     "fundo": "#201512",
@@ -13,61 +13,91 @@
   },
   "paleta": [
     {
-      "nome": "espresso",
-      "hex": "#201512",
-      "uso": "barra, hero (overlay sobre a foto), faixa de fatos, cartão e rodapé; o ferro forjado do portão na sombra"
+      "nome": "tinta",
+      "hex": "#1C1310",
+      "uso": "texto principal sobre claro"
     },
     {
-      "nome": "espresso-claro",
-      "hex": "#2A1D18",
-      "uso": "cards sobre fundo escuro; o tijolo na sombra"
+      "nome": "tinta-2",
+      "hex": "#4F3F37",
+      "uso": "texto secundário sobre claro: 8.7:1 na porcelana (substitui o #8A776A, que dava 3.9:1)"
     },
     {
-      "nome": "champanhe",
-      "hex": "#C6A15B",
-      "uso": "acento único: CTA, filetes, numeros, chip do cartão; a luz das 18h nos vestidos"
-    },
-    {
-      "nome": "brilho",
-      "hex": "#EAD9B0",
-      "uso": "gradiente do shimmer em títulos escuros e do chip; o reflexo da hora dourada"
+      "nome": "bronze",
+      "hex": "#7A5C2E",
+      "uso": "o dourado quando precisa ser texto sobre claro: etiquetas, cargos, estrelas (5.2:1)"
     },
     {
       "nome": "porcelana",
-      "hex": "#F8F3EC",
-      "uso": "fundo das seções claras; pele com glow, nunca branco de clínica"
+      "hex": "#FAF6F0",
+      "uso": "fundo claro principal"
     },
     {
-      "nome": "rosa-magnolia",
-      "hex": "#F0E2DC",
-      "uso": "fundo da seção do cartão; os vestidos rosa e as magnólias da foto"
+      "nome": "porcelana-2",
+      "hex": "#F3EBE0",
+      "uso": "superfícies e tiles sobre a porcelana"
     },
     {
-      "nome": "tinta",
-      "hex": "#29201B",
-      "uso": "texto principal sobre fundo claro"
-    },
-    {
-      "nome": "tinta-fraca",
-      "hex": "#8A776A",
-      "uso": "texto de apoio e etiquetas"
+      "nome": "rosa",
+      "hex": "#F4E7E1",
+      "uso": "fundo da seção de membership; magnólia, mais clara que a v1"
     },
     {
       "nome": "linha",
-      "hex": "#E6DACB",
-      "uso": "divisórias e bordas em fundo claro"
+      "hex": "#E2D5C4",
+      "uso": "divisórias e bordas no claro"
+    },
+    {
+      "nome": "espresso",
+      "hex": "#1A100D",
+      "uso": "fundo escuro: barra, fatos, setembro, concierge; véu do hero"
+    },
+    {
+      "nome": "espresso-2",
+      "hex": "#241813",
+      "uso": "superfícies sobre o espresso: convite, balão"
+    },
+    {
+      "nome": "marfim",
+      "hex": "#F6EEE3",
+      "uso": "texto sobre escuro"
+    },
+    {
+      "nome": "marfim-2",
+      "hex": "rgba(246,238,227,0.80)",
+      "uso": "texto secundário sobre escuro; nunca abaixo de 80%"
+    },
+    {
+      "nome": "ouro",
+      "hex": "#B8934E",
+      "uso": "linhas, divisórias, ícones, bordas: acento, nunca texto"
+    },
+    {
+      "nome": "ouro-luz",
+      "hex": "#E6CF98",
+      "uso": "texto dourado, SÓ sobre fundo escuro: números dos fatos, etiquetas no escuro, itálico do hero"
+    },
+    {
+      "nome": "ouro-botao",
+      "hex": "#CBA45C",
+      "uso": "fundo dos botões primários, com texto espresso (7.7:1)"
     }
   ],
   "tipografia": [
     {
       "papel": "display",
-      "fonte": "Fraunces 350-600 (optical size ligado)",
-      "nota": "serifada de revista, contraste alto sem virar caricatura; é a voz do luxo na peça, sempre em corpo grande"
+      "fonte": "Fraunces 400/500, opsz 144",
+      "nota": "títulos grandes com o eixo óptico no máximo: contraste de haste alto, o que dá o ar editorial. Itálico só no destaque do hero e no convite. text-wrap: balance nos h1/h2"
     },
     {
-      "papel": "corpo e etiquetas",
-      "fonte": "Jost 300-600",
-      "nota": "geométrica à la Futura, o par clássico das capas de moda; etiquetas SEMPRE em caixa alta com tracking 0.18em"
+      "papel": "corpo",
+      "fonte": "Jost 400/500/600",
+      "nota": "peso 400 no corpo, nunca 300: a v1 usava Light e as hastes finas somavam com a cor fraca. 17px desktop, 16px celular, entrelinha 1.7"
+    },
+    {
+      "papel": "etiqueta",
+      "fonte": "Jost 500, 13px, tracking 0.22em, caixa alta",
+      "nota": "com um traço dourado de 28px antes. Bronze no claro, ouro-luz no escuro. 13px é o piso das etiquetas; 12px só na linha da marca"
     }
   ],
   "secoes": [
@@ -127,5 +157,15 @@
   "copy": {
     "titulo": "Where Alpharetta comes to glow.",
     "subtitulo": "Thirteen years of quiet, medical-grade beauty, in a place that feels nothing like a clinic."
-  }
+  },
+  "regras": [
+    "Dourado nunca é texto sobre fundo claro. Sobre creme vira bronze #7A5C2E.",
+    "Texto secundário sobre claro é tinta-2 #4F3F37, não cinza.",
+    "Sobre escuro, o secundário é marfim a 80% no mínimo.",
+    "Piso de 12px; etiquetas a 13px; corpo em peso 400.",
+    "Texto sobre foto só com véu: no hero, gradiente da esquerda (0.93 a 0.05) mais um de baixo.",
+    "Prova social fora da foto, em faixa sólida.",
+    "Antes de publicar: node scripts/auditar-contraste.mjs <url> 1440 e iphone, meta 0 reprovados."
+  ],
+  "notaMobile": "Header sem quebra de linha (nowrap). Grid do membership com minmax(0,1fr) para o cartão de 420px não vazar. Tiles da loja em grade nome+nota/seta, 96px de altura em vez de 430. Kicker do hero sem o traço e com tracking menor."
 }
