@@ -1,0 +1,125 @@
+{
+  "criadoEm": "2026-09-05",
+  "cliente": "Youthtopia Med Spa",
+  "dominio": "youthtopiamedspa.com",
+  "direcao": "A foto que o site esconde. No wp-content deles existe um editorial de outubro/2025: as onze mulheres da casa em vestidos de festa, na hora dourada, diante do tijolo com fontes de leão e magnólias — Alpharetta em pessoa. A clínica JÁ tem estética de casa de luxo (13 anos, diretora médica DO, VIP membership); o site é que veste Elementor branco com clipart de Halloween e um <title> escrito 'Home'. O conceito não inventa luxo: revela o que a foto prova. Paleta tirada dela — o espresso do ferro forjado, o champanhe da luz de fim de tarde, a porcelana da pele, o rosa das magnólias e dos vestidos. Quase nenhum parágrafo: cliente de alto padrão decide pelo que vê.",
+  "assinatura": "The Youthtopia Card. O VIP que eles já vendem, reapresentado como cartão preto: a cliente entra na área dela e vê o plano de glow (tratamentos e datas), as fotos de progresso, os pontos e o special do mês desbloqueado antes de todo mundo. O Phorest continua agendando; a área amarra a assinatura mensal, justifica o ticket e prende a renovação — nenhum med spa da região tem.",
+  "faixaCores": {
+    "fundo": "#201512",
+    "texto": "rgba(255,255,255,0.85)",
+    "acento": "#C6A15B",
+    "acentoTexto": "#201512",
+    "modalFundo": "#2A1D18"
+  },
+  "paleta": [
+    {
+      "nome": "espresso",
+      "hex": "#201512",
+      "uso": "barra, hero (overlay sobre a foto), faixa de fatos, cartão e rodapé; o ferro forjado do portão na sombra"
+    },
+    {
+      "nome": "espresso-claro",
+      "hex": "#2A1D18",
+      "uso": "cards sobre fundo escuro; o tijolo na sombra"
+    },
+    {
+      "nome": "champanhe",
+      "hex": "#C6A15B",
+      "uso": "acento único: CTA, filetes, numeros, chip do cartão; a luz das 18h nos vestidos"
+    },
+    {
+      "nome": "brilho",
+      "hex": "#EAD9B0",
+      "uso": "gradiente do shimmer em títulos escuros e do chip; o reflexo da hora dourada"
+    },
+    {
+      "nome": "porcelana",
+      "hex": "#F8F3EC",
+      "uso": "fundo das seções claras; pele com glow, nunca branco de clínica"
+    },
+    {
+      "nome": "rosa-magnolia",
+      "hex": "#F0E2DC",
+      "uso": "fundo da seção do cartão; os vestidos rosa e as magnólias da foto"
+    },
+    {
+      "nome": "tinta",
+      "hex": "#29201B",
+      "uso": "texto principal sobre fundo claro"
+    },
+    {
+      "nome": "tinta-fraca",
+      "hex": "#8A776A",
+      "uso": "texto de apoio e etiquetas"
+    },
+    {
+      "nome": "linha",
+      "hex": "#E6DACB",
+      "uso": "divisórias e bordas em fundo claro"
+    }
+  ],
+  "tipografia": [
+    {
+      "papel": "display",
+      "fonte": "Fraunces 350-600 (optical size ligado)",
+      "nota": "serifada de revista, contraste alto sem virar caricatura; é a voz do luxo na peça, sempre em corpo grande"
+    },
+    {
+      "papel": "corpo e etiquetas",
+      "fonte": "Jost 300-600",
+      "nota": "geométrica à la Futura, o par clássico das capas de moda; etiquetas SEMPRE em caixa alta com tracking 0.18em"
+    }
+  ],
+  "secoes": [
+    "Barra: wordmark serif + Menu/Specials/Team/Shop + telefone + Book (Phorest)",
+    "Hero: a foto do editorial em tela cheia, uma frase, prova em uma linha (5.0 · 13 anos · physician-led)",
+    "Faixa de fatos: 13 years · 5.0 Google · DO medical director · 11 specialists",
+    "The menu: tratamentos como menu-degustação em 3 atos (Injectables / Face / Body & Wellness), links reais",
+    "September: o special do mês como convite impresso, VIP desbloqueia primeiro",
+    "The Youthtopia Card: cartão preto + mock da área da cliente (plano, progresso, pontos) — a assinatura",
+    "The house: 6 retratos com credencial em uma linha",
+    "Pull-quote da Emily B. com 5 estrelas",
+    "Shop: as 4 marcas externas como vitrine curada (mantém o marketplace deles)",
+    "Concierge: endereço, horas, telefone, chat do front desk e Instagram"
+  ],
+  "heroCopy": {
+    "kicker": "ALPHARETTA · PHYSICIAN-LED AESTHETICS",
+    "titulo": "Where Alpharetta comes to glow.",
+    "sub": "Thirteen years of quiet, medical-grade beauty — in a place that feels nothing like a clinic.",
+    "ctaPrimario": "Book your visit",
+    "ctaSecundario": "September specials"
+  },
+  "mantidos": [
+    "Booking no Phorest (todos os CTAs de agenda apontam para lá)",
+    "Shop externo (Alastin, ZO Skin Health, SkinMedica, Revision) — é o marketplace deles",
+    "Chat/atendimento: vira o 'text the front desk' do concierge",
+    "Links reais das páginas internas atuais (menu of services, specials, team)"
+  ],
+  "fotosOrigem": "Tudo do wp-content deles: fotos/equipe.jpg é o editorial de out/2025 (hero); tracy-round/mccabe/kim/kendra/jen/julia são os retratos do meet-the-team.",
+  "arquivos": [
+    {
+      "rotulo": "Conceito completo (PNG)",
+      "caminho": "youthtopia/youthtopia-conceito.png"
+    },
+    {
+      "rotulo": "Hero (PNG)",
+      "caminho": "youthtopia/youthtopia-hero.png"
+    },
+    {
+      "rotulo": "Versão mobile (PNG)",
+      "caminho": "youthtopia/youthtopia-mobile.png"
+    },
+    {
+      "rotulo": "Conceito (PDF)",
+      "caminho": "youthtopia/youthtopia-conceito.pdf"
+    },
+    {
+      "rotulo": "Versão mobile (PDF)",
+      "caminho": "youthtopia/youthtopia-mobile.pdf"
+    },
+    {
+      "rotulo": "Código-fonte do conceito (HTML)",
+      "caminho": "youthtopia/youthtopia-fonte.html"
+    }
+  ]
+}

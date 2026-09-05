@@ -1,0 +1,840 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Youthtopia Med Spa website concept</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Fraunces:ital,opsz,wght@0,9..144,350;0,9..144,400;0,9..144,500;0,9..144,600;1,9..144,400;1,9..144,500&family=Jost:wght@300;400;500;600&display=swap" rel="stylesheet">
+<style>
+  /* Paleta tirada da foto que o site deles esconde: o editorial de out/2025
+     na hora dourada — o espresso do ferro forjado, o champanhe da luz das
+     18h, a porcelana da pele e o rosa das magnólias e dos vestidos. */
+  :root {
+    --espresso: #201512;
+    --espresso-claro: #2A1D18;
+    --champanhe: #C6A15B;
+    --brilho: #EAD9B0;
+    --porcelana: #F8F3EC;
+    --rosa-magnolia: #F0E2DC;
+    --tinta: #29201B;
+    --tinta-fraca: #8A776A;
+    --linha: #E6DACB;
+
+    --display: "Fraunces", "Georgia", serif;
+    --corpo: "Jost", system-ui, sans-serif;
+  }
+
+  * { box-sizing: border-box; margin: 0; padding: 0; }
+
+  body {
+    background: var(--porcelana);
+    color: var(--tinta);
+    font-family: var(--corpo);
+    font-size: 17px;
+    font-weight: 300;
+    line-height: 1.65;
+    -webkit-font-smoothing: antialiased;
+  }
+
+  a { color: inherit; text-decoration: none; }
+  img { display: block; max-width: 100%; }
+
+  .env { max-width: 1180px; margin: 0 auto; padding: 0 40px; }
+
+  /* Etiqueta: a voz pequena da casa. Sempre caixa alta, sempre espaçada. */
+  .etiqueta {
+    font-size: 12px;
+    font-weight: 500;
+    letter-spacing: 0.2em;
+    text-transform: uppercase;
+    color: var(--champanhe);
+  }
+
+  /* ── barra ───────────────────────────────────────────────────────────── */
+  .barra {
+    background: var(--espresso);
+    color: rgba(255,255,255,0.92);
+    padding: 18px 0;
+  }
+  .barra .env { display: flex; align-items: center; gap: 34px; }
+  .marca { line-height: 1.05; }
+  .marca-nome {
+    font-family: var(--display);
+    font-weight: 500;
+    font-size: 24px;
+    letter-spacing: 0.02em;
+  }
+  .marca-sub {
+    font-size: 10px;
+    font-weight: 500;
+    letter-spacing: 0.34em;
+    text-transform: uppercase;
+    color: var(--champanhe);
+  }
+  .barra nav { display: flex; gap: 26px; margin-left: 12px; }
+  .barra nav a {
+    font-size: 13px;
+    font-weight: 400;
+    letter-spacing: 0.14em;
+    text-transform: uppercase;
+    color: rgba(255,255,255,0.72);
+  }
+  .barra nav a:hover { color: var(--brilho); }
+  .barra-fone {
+    margin-left: auto;
+    font-size: 15px;
+    font-weight: 400;
+    letter-spacing: 0.04em;
+    color: rgba(255,255,255,0.85);
+  }
+  .btn-ouro {
+    display: inline-block;
+    background: var(--champanhe);
+    color: var(--espresso);
+    font-weight: 500;
+    font-size: 13px;
+    letter-spacing: 0.12em;
+    text-transform: uppercase;
+    padding: 11px 22px;
+    border-radius: 2px;
+    transition: background 0.2s ease;
+  }
+  .btn-ouro:hover { background: var(--brilho); }
+
+  /* ── hero: a foto deles, finalmente em tela cheia ───────────────────── */
+  .hero {
+    position: relative;
+    min-height: 92vh;
+    display: flex;
+    align-items: flex-end;
+    color: #fff;
+    background:
+      linear-gradient(to top,
+        rgba(32,21,18,0.94) 0%,
+        rgba(32,21,18,0.55) 34%,
+        rgba(32,21,18,0.18) 62%,
+        rgba(32,21,18,0.42) 100%),
+      url("fotos/equipe.jpg") center 32% / cover no-repeat;
+  }
+  .hero .env { width: 100%; padding-top: 120px; padding-bottom: 72px; }
+  .hero-kicker { margin-bottom: 18px; }
+  .hero h1 {
+    font-family: var(--display);
+    font-weight: 400;
+    font-size: clamp(44px, 6.4vw, 78px);
+    line-height: 1.04;
+    letter-spacing: -0.01em;
+    max-width: 760px;
+    margin-bottom: 18px;
+  }
+  .hero h1 em {
+    font-style: italic;
+    background: linear-gradient(100deg, var(--brilho) 20%, var(--champanhe) 60%, var(--brilho) 90%);
+    -webkit-background-clip: text;
+    background-clip: text;
+    color: transparent;
+  }
+  .hero-sub {
+    font-size: 19px;
+    font-weight: 300;
+    color: rgba(255,255,255,0.82);
+    max-width: 520px;
+    margin-bottom: 32px;
+  }
+  .hero-ctas { display: flex; align-items: center; gap: 22px; flex-wrap: wrap; }
+  .btn-fantasma {
+    font-size: 13px;
+    font-weight: 400;
+    letter-spacing: 0.12em;
+    text-transform: uppercase;
+    color: rgba(255,255,255,0.85);
+    padding: 11px 2px;
+    border-bottom: 1px solid rgba(198,161,91,0.6);
+  }
+  .btn-fantasma:hover { color: var(--brilho); border-bottom-color: var(--brilho); }
+  .hero-prova {
+    display: flex;
+    gap: 28px;
+    flex-wrap: wrap;
+    margin-top: 44px;
+    padding-top: 22px;
+    border-top: 1px solid rgba(255,255,255,0.22);
+    font-size: 14px;
+    font-weight: 300;
+    letter-spacing: 0.06em;
+    color: rgba(255,255,255,0.78);
+  }
+  .hero-prova b { font-weight: 500; color: var(--brilho); }
+
+  /* ── faixa de fatos ──────────────────────────────────────────────────── */
+  .fatos { background: var(--espresso); color: #fff; padding: 34px 0; }
+  .fatos .env {
+    display: grid;
+    grid-template-columns: repeat(4, 1fr);
+    gap: 28px;
+    text-align: center;
+  }
+  .fato-num {
+    font-family: var(--display);
+    font-weight: 400;
+    font-size: 34px;
+    color: var(--brilho);
+    line-height: 1.1;
+  }
+  .fato-rotulo {
+    font-size: 11.5px;
+    font-weight: 400;
+    letter-spacing: 0.18em;
+    text-transform: uppercase;
+    color: rgba(255,255,255,0.55);
+    margin-top: 4px;
+  }
+
+  /* ── cabeçalho de seção ─────────────────────────────────────────────── */
+  section { padding: 96px 0; }
+  .cabeca { max-width: 640px; margin-bottom: 56px; }
+  .cabeca .etiqueta { display: block; margin-bottom: 14px; }
+  .cabeca h2 {
+    font-family: var(--display);
+    font-weight: 400;
+    font-size: clamp(32px, 4vw, 46px);
+    line-height: 1.12;
+    letter-spacing: -0.005em;
+  }
+  .cabeca p { margin-top: 14px; color: var(--tinta-fraca); font-size: 17px; }
+
+  /* ── o menu: tratamentos como menu-degustação ───────────────────────── */
+  .menu-grade {
+    display: grid;
+    grid-template-columns: repeat(3, 1fr);
+    gap: 44px;
+  }
+  .ato { border-top: 1px solid var(--champanhe); padding-top: 22px; }
+  .ato-num {
+    font-family: var(--display);
+    font-style: italic;
+    font-size: 15px;
+    color: var(--champanhe);
+  }
+  .ato h3 {
+    font-family: var(--display);
+    font-weight: 500;
+    font-size: 26px;
+    margin: 6px 0 18px;
+  }
+  .ato ul { list-style: none; }
+  .ato li { border-bottom: 1px solid var(--linha); }
+  .ato li a {
+    display: flex;
+    justify-content: space-between;
+    align-items: baseline;
+    gap: 12px;
+    padding: 11px 0;
+    transition: padding-left 0.18s ease;
+  }
+  .ato li a:hover { padding-left: 8px; }
+  .ato li a:hover .prato { color: var(--champanhe); }
+  .prato { font-size: 16.5px; font-weight: 400; }
+  .prato-nota {
+    font-size: 12px;
+    font-weight: 300;
+    letter-spacing: 0.06em;
+    color: var(--tinta-fraca);
+    white-space: nowrap;
+  }
+  .menu-cta { margin-top: 46px; display: flex; align-items: center; gap: 24px; flex-wrap: wrap; }
+  .btn-tinta {
+    display: inline-block;
+    background: var(--espresso);
+    color: var(--porcelana);
+    font-weight: 400;
+    font-size: 13px;
+    letter-spacing: 0.12em;
+    text-transform: uppercase;
+    padding: 13px 26px;
+    border-radius: 2px;
+  }
+  .btn-tinta:hover { background: var(--espresso-claro); }
+  .nota-suave { font-size: 14px; color: var(--tinta-fraca); }
+
+  /* ── setembro: o convite ────────────────────────────────────────────── */
+  .setembro { background: var(--espresso); }
+  .convite {
+    max-width: 700px;
+    margin: 0 auto;
+    text-align: center;
+    color: #fff;
+    border: 1px solid rgba(198,161,91,0.55);
+    outline: 1px solid rgba(198,161,91,0.2);
+    outline-offset: 6px;
+    padding: 64px 48px;
+    background:
+      radial-gradient(480px 220px at 50% -60px, rgba(198,161,91,0.14), transparent 70%),
+      var(--espresso-claro);
+  }
+  .convite .etiqueta { display: block; margin-bottom: 16px; }
+  .convite h2 {
+    font-family: var(--display);
+    font-weight: 400;
+    font-size: clamp(30px, 4vw, 42px);
+    line-height: 1.15;
+  }
+  .convite h2 em { font-style: italic; color: var(--brilho); }
+  .convite-lista {
+    display: flex;
+    justify-content: center;
+    gap: 14px 26px;
+    flex-wrap: wrap;
+    margin: 26px 0 8px;
+    font-size: 14px;
+    font-weight: 400;
+    letter-spacing: 0.16em;
+    text-transform: uppercase;
+    color: rgba(255,255,255,0.85);
+  }
+  .convite-lista span::before { content: "·"; color: var(--champanhe); margin-right: 26px; }
+  .convite-lista span:first-child::before { content: ""; margin: 0; }
+  .convite-nota { font-size: 14px; color: rgba(255,255,255,0.55); margin-bottom: 30px; }
+  .convite-ctas { display: flex; justify-content: center; align-items: center; gap: 22px; flex-wrap: wrap; }
+
+  /* ── the youthtopia card: a assinatura ──────────────────────────────── */
+  .clube { background: var(--rosa-magnolia); }
+  .clube-grade {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 64px;
+    align-items: center;
+  }
+  .cartao-palco { display: flex; justify-content: center; padding: 30px 0; }
+  .cartao {
+    width: 380px;
+    max-width: 100%;
+    aspect-ratio: 1.586;
+    border-radius: 14px;
+    padding: 26px 28px;
+    color: var(--brilho);
+    background:
+      radial-gradient(340px 200px at 82% -30%, rgba(198,161,91,0.28), transparent 65%),
+      linear-gradient(128deg, #33231C 0%, var(--espresso) 58%, #191009 100%);
+    box-shadow: 0 34px 60px -24px rgba(32,21,18,0.55);
+    transform: rotate(-4deg);
+    display: flex;
+    flex-direction: column;
+    justify-content: space-between;
+  }
+  .cartao-topo { display: flex; justify-content: space-between; align-items: flex-start; }
+  .cartao-marca {
+    font-family: var(--display);
+    font-weight: 500;
+    font-size: 19px;
+    letter-spacing: 0.03em;
+    color: #fff;
+  }
+  .cartao-marca small {
+    display: block;
+    font-family: var(--corpo);
+    font-weight: 500;
+    font-size: 9px;
+    letter-spacing: 0.32em;
+    color: var(--champanhe);
+  }
+  .chip {
+    width: 44px;
+    height: 32px;
+    border-radius: 6px;
+    background: linear-gradient(135deg, var(--brilho), var(--champanhe) 55%, #A5844A);
+    box-shadow: inset 0 0 0 1px rgba(32,21,18,0.35);
+  }
+  .cartao-nome {
+    font-size: 14px;
+    font-weight: 400;
+    letter-spacing: 0.22em;
+    text-transform: uppercase;
+    color: rgba(255,255,255,0.85);
+  }
+  .cartao-rodape {
+    display: flex;
+    justify-content: space-between;
+    font-size: 10.5px;
+    letter-spacing: 0.18em;
+    text-transform: uppercase;
+    color: rgba(234,217,176,0.75);
+  }
+  .clube h2 {
+    font-family: var(--display);
+    font-weight: 400;
+    font-size: clamp(30px, 3.6vw, 42px);
+    line-height: 1.12;
+    margin: 12px 0 18px;
+  }
+  .clube-sub { color: var(--tinta-fraca); max-width: 460px; margin-bottom: 30px; }
+
+  /* mock da área da cliente */
+  .area {
+    background: #fff;
+    border: 1px solid var(--linha);
+    border-radius: 10px;
+    box-shadow: 0 24px 44px -30px rgba(32,21,18,0.35);
+    overflow: hidden;
+  }
+  .area-topo {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    padding: 14px 20px;
+    background: var(--porcelana);
+    border-bottom: 1px solid var(--linha);
+    font-size: 12px;
+    font-weight: 500;
+    letter-spacing: 0.16em;
+    text-transform: uppercase;
+    color: var(--tinta-fraca);
+  }
+  .area-pontos { color: var(--champanhe); }
+  .area-corpo { padding: 20px; display: grid; gap: 14px; }
+  .passo { display: flex; gap: 14px; align-items: baseline; }
+  .passo-ponto {
+    width: 10px; height: 10px; border-radius: 50%;
+    background: var(--champanhe);
+    flex-shrink: 0;
+    position: relative;
+    top: 1px;
+  }
+  .passo-ponto.vazio { background: transparent; border: 1.5px solid var(--champanhe); }
+  .passo b { font-weight: 500; }
+  .passo span { color: var(--tinta-fraca); font-size: 14px; }
+  .area-nota {
+    margin: 4px 20px 18px;
+    padding: 11px 14px;
+    background: var(--rosa-magnolia);
+    border-radius: 6px;
+    font-size: 13.5px;
+    color: var(--tinta);
+  }
+
+  /* ── the house: retratos ────────────────────────────────────────────── */
+  .casa-grade {
+    display: grid;
+    grid-template-columns: repeat(6, 1fr);
+    gap: 30px 22px;
+  }
+  .pessoa { text-align: center; }
+  .pessoa img {
+    width: 100%;
+    max-width: 150px;
+    margin: 0 auto 14px;
+    border-radius: 50%;
+    border: 2px solid var(--champanhe);
+    padding: 5px;
+    background: #fff;
+  }
+  .pessoa-nome { font-family: var(--display); font-weight: 500; font-size: 18px; line-height: 1.2; }
+  .pessoa-cargo {
+    font-size: 11.5px;
+    font-weight: 400;
+    letter-spacing: 0.14em;
+    text-transform: uppercase;
+    color: var(--tinta-fraca);
+    margin-top: 4px;
+  }
+
+  /* ── a citação ──────────────────────────────────────────────────────── */
+  .voz { background: var(--porcelana); padding-top: 20px; }
+  .voz-molde { max-width: 860px; margin: 0 auto; text-align: center; }
+  .estrelas { color: var(--champanhe); font-size: 20px; letter-spacing: 0.3em; margin-bottom: 26px; }
+  .voz blockquote {
+    font-family: var(--display);
+    font-style: italic;
+    font-weight: 400;
+    font-size: clamp(24px, 3.2vw, 34px);
+    line-height: 1.35;
+    color: var(--tinta);
+  }
+  .voz figcaption {
+    margin-top: 24px;
+    font-size: 13px;
+    font-weight: 500;
+    letter-spacing: 0.2em;
+    text-transform: uppercase;
+    color: var(--tinta-fraca);
+  }
+
+  /* ── shop: vitrine curada, links deles mesmos ───────────────────────── */
+  .vitrine-grade {
+    display: grid;
+    grid-template-columns: repeat(4, 1fr);
+    gap: 22px;
+  }
+  .marca-tile {
+    border: 1px solid var(--linha);
+    background: #fff;
+    padding: 34px 26px 30px;
+    transition: transform 0.2s ease, box-shadow 0.2s ease;
+  }
+  .marca-tile:hover {
+    transform: translateY(-4px);
+    box-shadow: 0 22px 36px -26px rgba(32,21,18,0.4);
+  }
+  .marca-tile-nome {
+    font-family: var(--display);
+    font-weight: 500;
+    font-size: 21px;
+    line-height: 1.2;
+  }
+  .marca-tile-nota {
+    font-size: 12px;
+    letter-spacing: 0.1em;
+    text-transform: uppercase;
+    color: var(--tinta-fraca);
+    margin-top: 8px;
+  }
+  .marca-tile-seta { margin-top: 22px; color: var(--champanhe); font-size: 18px; }
+
+  /* ── concierge ──────────────────────────────────────────────────────── */
+  .concierge { background: var(--espresso); color: rgba(255,255,255,0.85); }
+  .concierge .cabeca h2 { color: #fff; }
+  .concierge-grade {
+    display: grid;
+    grid-template-columns: 1.2fr 1fr 1fr;
+    gap: 54px;
+  }
+  .concierge h4 {
+    font-size: 12px;
+    font-weight: 500;
+    letter-spacing: 0.2em;
+    text-transform: uppercase;
+    color: var(--champanhe);
+    margin-bottom: 16px;
+  }
+  .concierge address { font-style: normal; line-height: 1.7; }
+  .concierge a:hover { color: var(--brilho); }
+  .link-fino { border-bottom: 1px solid rgba(198,161,91,0.5); padding-bottom: 1px; }
+  .horas { width: 100%; border-collapse: collapse; font-size: 15px; }
+  .horas td { padding: 5px 0; border-bottom: 1px solid rgba(255,255,255,0.1); }
+  .horas td:last-child { text-align: right; color: rgba(255,255,255,0.6); }
+  .balao {
+    margin-top: 22px;
+    background: var(--espresso-claro);
+    border: 1px solid rgba(198,161,91,0.4);
+    border-radius: 12px 12px 12px 2px;
+    padding: 14px 18px;
+    font-size: 14.5px;
+    max-width: 300px;
+  }
+  .balao b { color: var(--brilho); font-weight: 500; }
+
+  /* ── rodapé próprio ─────────────────────────────────────────────────── */
+  .rodape { background: #191009; color: rgba(255,255,255,0.55); padding: 22px 0; font-size: 13.5px; }
+  .rodape .env { display: flex; align-items: center; gap: 26px; flex-wrap: wrap; }
+  .rodape .marca-nome { font-size: 17px; color: rgba(255,255,255,0.9); }
+  .rodape-fone { margin-left: auto; }
+
+  /* ── responsivo ─────────────────────────────────────────────────────── */
+  @media (max-width: 1024px) {
+    .barra nav { display: none; }
+    .menu-grade { grid-template-columns: 1fr; gap: 34px; }
+    .casa-grade { grid-template-columns: repeat(3, 1fr); }
+    .vitrine-grade { grid-template-columns: repeat(2, 1fr); }
+    .clube-grade { grid-template-columns: 1fr; gap: 44px; }
+    .concierge-grade { grid-template-columns: 1fr 1fr; gap: 40px; }
+  }
+  @media (max-width: 640px) {
+    .env { padding: 0 24px; }
+    section { padding: 68px 0; }
+    .barra .env { gap: 16px; }
+    .barra-fone { display: none; }
+    .hero { background-position: 42% 30%; }
+    .hero .env { padding-bottom: 56px; }
+    .fatos .env { grid-template-columns: 1fr 1fr; gap: 22px; }
+    .casa-grade { grid-template-columns: repeat(2, 1fr); }
+    .vitrine-grade { grid-template-columns: 1fr; }
+    .concierge-grade { grid-template-columns: 1fr; }
+    .convite { padding: 44px 26px; }
+    .cartao { transform: rotate(0); }
+    .rodape-fone { margin-left: 0; }
+  }
+</style>
+</head>
+<body>
+
+<!-- barra -->
+<header class="barra">
+  <div class="env">
+    <div class="marca">
+      <div class="marca-nome">Youthtopia</div>
+      <div class="marca-sub">Med Spa · Alpharetta</div>
+    </div>
+    <nav>
+      <a href="#menu">Treatments</a>
+      <a href="#setembro">Specials</a>
+      <a href="#clube">Membership</a>
+      <a href="#casa">The house</a>
+      <a href="#vitrine">Shop</a>
+    </nav>
+    <a class="barra-fone" href="tel:+17706370428">(770) 637-0428</a>
+    <a class="btn-ouro" href="https://phorest.com/book/salons/youthtopiamedspa">Book now</a>
+  </div>
+</header>
+
+<!-- hero: a foto que estava escondida no wp-content deles -->
+<section class="hero">
+  <div class="env">
+    <div class="etiqueta hero-kicker">Alpharetta · Physician-led aesthetics</div>
+    <h1>Where Alpharetta<br>comes to <em>glow</em>.</h1>
+    <p class="hero-sub">Thirteen years of quiet, medical-grade beauty, in a
+      place that feels nothing like a clinic.</p>
+    <div class="hero-ctas">
+      <a class="btn-ouro" href="https://phorest.com/book/salons/youthtopiamedspa">Book your visit</a>
+      <a class="btn-fantasma" href="https://youthtopiamedspa.com/monthly-specials/">September specials</a>
+    </div>
+    <div class="hero-prova">
+      <span><b>★ 5.0</b> on Google</span>
+      <span><b>13 years</b> in Alpharetta</span>
+      <span>Medical director <b>Dr. Jessica McCabe, DO</b></span>
+    </div>
+  </div>
+</section>
+
+<!-- faixa de fatos -->
+<div class="fatos">
+  <div class="env">
+    <div><div class="fato-num">13</div><div class="fato-rotulo">Years in Alpharetta</div></div>
+    <div><div class="fato-num">5.0</div><div class="fato-rotulo">Google rating</div></div>
+    <div><div class="fato-num">11</div><div class="fato-rotulo">Specialists in house</div></div>
+    <div><div class="fato-num">DO</div><div class="fato-rotulo">Physician-led, always</div></div>
+  </div>
+</div>
+
+<!-- o menu -->
+<section id="menu">
+  <div class="env">
+    <div class="cabeca">
+      <span class="etiqueta">The menu</span>
+      <h2>Treatments, curated like a tasting menu.</h2>
+      <p>Every protocol below is performed in-house by our injectors, nurses
+        and aestheticians. Never franchised, never rushed.</p>
+    </div>
+    <div class="menu-grade">
+      <div class="ato">
+        <span class="ato-num">Act I</span>
+        <h3>Injectables</h3>
+        <ul>
+          <li><a href="https://youthtopiamedspa.com/botox-and-dysport-2/"><span class="prato">Botox &amp; Dysport</span><span class="prato-nota">smooth</span></a></li>
+          <li><a href="https://youthtopiamedspa.com/juvederm-2/"><span class="prato">Juvederm</span><span class="prato-nota">volume</span></a></li>
+          <li><a href="https://youthtopiamedspa.com/restylane/"><span class="prato">Restylane</span><span class="prato-nota">contour</span></a></li>
+          <li><a href="https://youthtopiamedspa.com/kybella/"><span class="prato">Kybella</span><span class="prato-nota">define</span></a></li>
+        </ul>
+      </div>
+      <div class="ato">
+        <span class="ato-num">Act II</span>
+        <h3>Face</h3>
+        <ul>
+          <li><a href="https://youthtopiamedspa.com/halo-laser-treatment/"><span class="prato">Halo™ Laser</span><span class="prato-nota">resurface</span></a></li>
+          <li><a href="https://youthtopiamedspa.com/bbl/"><span class="prato">BBL</span><span class="prato-nota">even tone</span></a></li>
+          <li><a href="https://youthtopiamedspa.com/the-vivace/"><span class="prato">Vivace® Ultra</span><span class="prato-nota">tighten</span></a></li>
+          <li><a href="https://youthtopiamedspa.com/sofwave/"><span class="prato">Sofwave™</span><span class="prato-nota">lift</span></a></li>
+          <li><a href="https://youthtopiamedspa.com/facials/"><span class="prato">HydraFacial &amp; Peels</span><span class="prato-nota">glow</span></a></li>
+        </ul>
+      </div>
+      <div class="ato">
+        <span class="ato-num">Act III</span>
+        <h3>Body &amp; Wellness</h3>
+        <ul>
+          <li><a href="https://youthtopiamedspa.com/coolsculpting/"><span class="prato">CoolSculpting</span><span class="prato-nota">sculpt</span></a></li>
+          <li><a href="https://youthtopiamedspa.com/laser-therapies/laser-hair-removal/"><span class="prato">Laser Hair Removal</span><span class="prato-nota">bare</span></a></li>
+          <li><a href="https://youthtopiamedspa.com/thermiva/"><span class="prato">ThermiVa</span><span class="prato-nota">renew</span></a></li>
+          <li><a href="https://youthtopiamedspa.com/tirzepatide/"><span class="prato">Tirzepatide Program</span><span class="prato-nota">wellness</span></a></li>
+        </ul>
+      </div>
+    </div>
+    <div class="menu-cta">
+      <a class="btn-tinta" href="https://youthtopiamedspa.com/menu-of-services/">See the full menu</a>
+      <span class="nota-suave">New here? $50 off your first appointment.</span>
+    </div>
+  </div>
+</section>
+
+<!-- setembro: o convite -->
+<section class="setembro" id="setembro">
+  <div class="env">
+    <div class="convite">
+      <span class="etiqueta">This month at the house</span>
+      <h2>September at <em>Youthtopia</em></h2>
+      <div class="convite-lista">
+        <span>Halo</span><span>BBL</span><span>Injectables</span><span>Laser Hair</span>
+      </div>
+      <p class="convite-nota">Members see it first. Specials unlock for VIP before anyone else.</p>
+      <div class="convite-ctas">
+        <a class="btn-ouro" href="https://youthtopiamedspa.com/monthly-specials/">View September specials</a>
+        <a class="btn-fantasma" href="https://youthtopiamedspa.com/vip_membership">Become a member</a>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- the youthtopia card -->
+<section class="clube" id="clube">
+  <div class="env">
+    <div class="clube-grade">
+      <div>
+        <span class="etiqueta">Membership</span>
+        <h2>A membership that feels like a black card.</h2>
+        <p class="clube-sub">VIP members carry their whole story with the
+          house: the plan, the progress, the perks. Sign in and it's all
+          there. No calls, no guessing.</p>
+        <div class="area">
+          <div class="area-topo">
+            <span>Your glow plan</span>
+            <span class="area-pontos">1,250 pts</span>
+          </div>
+          <div class="area-corpo">
+            <div class="passo"><span class="passo-ponto"></span><div><b>Sofwave™ session</b> <span>· done, Aug 14</span></div></div>
+            <div class="passo"><span class="passo-ponto"></span><div><b>Halo™ Laser</b> <span>· booked, Sep 12 at 10:30</span></div></div>
+            <div class="passo"><span class="passo-ponto vazio"></span><div><b>BBL touch-up</b> <span>· suggested for October</span></div></div>
+          </div>
+          <div class="area-nota">✨ September specials are unlocked for you.</div>
+        </div>
+      </div>
+      <div class="cartao-palco">
+        <div class="cartao">
+          <div class="cartao-topo">
+            <div class="cartao-marca">Youthtopia<small>Med Spa</small></div>
+            <div class="chip"></div>
+          </div>
+          <div class="cartao-nome">Emily B. · Member</div>
+          <div class="cartao-rodape">
+            <span>VIP since 2023</span>
+            <span>Alpharetta, GA</span>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- the house -->
+<section id="casa">
+  <div class="env">
+    <div class="cabeca">
+      <span class="etiqueta">The house</span>
+      <h2>Injectors, nurses and aestheticians, under a medical director.</h2>
+    </div>
+    <div class="casa-grade">
+      <div class="pessoa"><img src="fotos/tracy-round.png" alt="Tracy Olson"><div class="pessoa-nome">Tracy Olson</div><div class="pessoa-cargo">Founder</div></div>
+      <div class="pessoa"><img src="fotos/mccabe.png" alt="Dr. Jessica McCabe"><div class="pessoa-nome">Jessica McCabe</div><div class="pessoa-cargo">DO · Medical Director</div></div>
+      <div class="pessoa"><img src="fotos/kim.png" alt="Kim Murphy"><div class="pessoa-nome">Kim Murphy</div><div class="pessoa-cargo">PA · Injector</div></div>
+      <div class="pessoa"><img src="fotos/kendra.png" alt="Kendra Dixon"><div class="pessoa-nome">Kendra Dixon</div><div class="pessoa-cargo">RN · Injector</div></div>
+      <div class="pessoa"><img src="fotos/jen.png" alt="Jen Bogan"><div class="pessoa-nome">Jen Bogan</div><div class="pessoa-cargo">RN · Injector</div></div>
+      <div class="pessoa"><img src="fotos/julia.png" alt="Julia Weirbach"><div class="pessoa-nome">Julia Weirbach</div><div class="pessoa-cargo">NP · Wellness</div></div>
+    </div>
+    <div class="menu-cta">
+      <a class="btn-tinta" href="https://youthtopiamedspa.com/meet-the-team/">Meet the whole team</a>
+      <span class="nota-suave">Eleven specialists. One standard.</span>
+    </div>
+  </div>
+</section>
+
+<!-- a citação -->
+<section class="voz">
+  <div class="env">
+    <figure class="voz-molde">
+      <div class="estrelas">★★★★★</div>
+      <blockquote>“Hands down one of the best experiences I've had. You can
+        truly tell why this business has been around for 13 years.”</blockquote>
+      <figcaption>Emily B. · Google review</figcaption>
+    </figure>
+  </div>
+</section>
+
+<!-- shop -->
+<section id="vitrine">
+  <div class="env">
+    <div class="cabeca">
+      <span class="etiqueta">The shop</span>
+      <h2>The ritual continues at home.</h2>
+      <p>Medical-grade skincare, curated by our providers and delivered by
+        the brands themselves.</p>
+    </div>
+    <div class="vitrine-grade">
+      <a class="marca-tile" href="https://alastin.com">
+        <div class="marca-tile-nome">Alastin<br>Skincare</div>
+        <div class="marca-tile-nota">Pre &amp; post-procedure</div>
+        <div class="marca-tile-seta">↗</div>
+      </a>
+      <a class="marca-tile" href="https://zoskinhealth.com">
+        <div class="marca-tile-nome">ZO Skin<br>Health</div>
+        <div class="marca-tile-nota">Daily protocols</div>
+        <div class="marca-tile-seta">↗</div>
+      </a>
+      <a class="marca-tile" href="https://www.brilliantconnections.com">
+        <div class="marca-tile-nome">SkinMedica</div>
+        <div class="marca-tile-nota">Growth-factor science</div>
+        <div class="marca-tile-seta">↗</div>
+      </a>
+      <a class="marca-tile" href="https://www.revisionskincare.com">
+        <div class="marca-tile-nome">Revision<br>Skincare</div>
+        <div class="marca-tile-nota">Clinically proven</div>
+        <div class="marca-tile-seta">↗</div>
+      </a>
+    </div>
+    <div class="menu-cta">
+      <a class="btn-tinta" href="https://youthtopiamedspa.com/giftcard">Gift cards</a>
+      <span class="nota-suave">The easiest yes you'll ever give someone.</span>
+    </div>
+  </div>
+</section>
+
+<!-- concierge -->
+<section class="concierge">
+  <div class="env">
+    <div class="cabeca">
+      <span class="etiqueta">Concierge</span>
+      <h2>Come glow with us.</h2>
+    </div>
+    <div class="concierge-grade">
+      <div>
+        <h4>Visit</h4>
+        <address>
+          33 Teasley St, Suite 115<br>
+          Alpharetta, GA 30009<br><br>
+          <a class="link-fino" href="https://maps.google.com/?q=33+Teasley+St+Ste+115,+Alpharetta,+GA+30009">Open in Maps</a>
+        </address>
+        <div class="balao"><b>Front desk:</b> Questions about a treatment?
+          Text us. A real person answers.</div>
+      </div>
+      <div>
+        <h4>Hours</h4>
+        <table class="horas">
+          <tr><td>Monday</td><td>10 – 5</td></tr>
+          <tr><td>Tue – Thu</td><td>9 – 6</td></tr>
+          <tr><td>Friday</td><td>9 – 4</td></tr>
+          <tr><td>Saturday</td><td>By appointment</td></tr>
+          <tr><td>Sunday</td><td>Closed</td></tr>
+        </table>
+      </div>
+      <div>
+        <h4>Talk to us</h4>
+        <p>
+          <a class="link-fino" href="tel:+17706370428">(770) 637-0428</a><br><br>
+          <a class="link-fino" href="mailto:info@youthtopiamedspa.com">info@youthtopiamedspa.com</a><br><br>
+          <a class="link-fino" href="https://instagram.com/youthtopiamedspa">@youthtopiamedspa</a> · 6.1k
+        </p>
+        <p style="margin-top:22px"><a class="btn-ouro" href="https://phorest.com/book/salons/youthtopiamedspa">Book your visit</a></p>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- rodapé -->
+<div class="rodape">
+  <div class="env">
+    <span class="marca-nome">Youthtopia</span>
+    <span>Med Spa · Alpharetta, GA · Est. 2011</span>
+    <span class="rodape-fone">(770) 637-0428</span>
+  </div>
+</div>
+
+</body>
+</html>

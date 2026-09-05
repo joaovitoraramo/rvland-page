@@ -44,6 +44,8 @@ async function main() {
 
   // caminhos absolutos: a URL final é /c/<slug>, então "fotos/x.jpg" quebraria
   html = html.replace(/(src|href)="fotos\//g, `$1="/c/${slug}/fotos/`);
+  // ...e tambem os fundos em CSS: url("fotos/x.jpg") dentro de <style>
+  html = html.replace(/url\((["']?)fotos\//g, `url($1/c/${slug}/fotos/`);
 
   // proposta privada não entra no índice do Google
   html = html.replace('<meta charset="utf-8">', `<meta charset="utf-8">\n${NOINDEX}`);
