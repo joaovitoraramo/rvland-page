@@ -504,9 +504,10 @@
   }
   .marca-tile:hover { transform: translateY(-4px); border-color: rgba(184,147,78,0.5); }
   .marca-tile-nome { font-family: var(--display); font-weight: 500; font-size: 23px; line-height: 1.15; color: var(--tinta); }
-  .marca-tile-nota { font-size: 13px; font-weight: 500; letter-spacing: 0.12em; text-transform: uppercase; color: var(--tinta-2); }
+  .marca-tile-nota { font-size: 13px; font-weight: 500; letter-spacing: 0.12em; text-transform: uppercase; color: var(--tinta-2); margin-bottom: 18px; }
+  /* a folga fica na nota, não no círculo: padding aqui deformava a seta em oval */
   .marca-tile-seta {
-    margin-top: auto; padding-top: 18px; box-sizing: content-box;
+    margin-top: auto; flex: none;
     width: 40px; height: 40px; border-radius: 50%;
     display: inline-flex; align-items: center; justify-content: center;
     color: var(--bronze); font-size: 18px;
@@ -751,7 +752,7 @@
       align-items: center; column-gap: 16px; padding: 18px 20px; gap: 4px 16px;
     }
     .marca-tile-nome { grid-area: nome; font-size: 21px; }
-    .marca-tile-nota { grid-area: nota; }
+    .marca-tile-nota { grid-area: nota; margin-bottom: 0; }
     .marca-tile-seta { grid-area: seta; margin-top: 0; }
     .concierge-grade { grid-template-columns: 1fr; gap: 14px; }
     /* de ladinho como no desktop, só um pouco menos para não vazar */
