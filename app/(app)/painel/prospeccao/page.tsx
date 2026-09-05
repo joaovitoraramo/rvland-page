@@ -40,6 +40,8 @@ import {
   ETAPAS_FUNIL,
   linkContatoProspect,
   ROTULO_STATUS_PROSPECT,
+  temEmail,
+  temInstagram,
   temperaturaDe,
   type StatusProspect,
 } from "@/lib/dominio/prospeccao";
@@ -70,6 +72,8 @@ export default async function PaginaProspeccao({
     nicho?: string;
     cidade?: string;
     perfil?: string;
+    insta?: string;
+    email?: string;
     q?: string;
   }>;
 }) {
@@ -123,6 +127,8 @@ export default async function PaginaProspeccao({
     if (filtros.nicho && p.nicho !== filtros.nicho) return false;
     if (filtros.cidade && p.cidade !== filtros.cidade) return false;
     if (filtros.perfil && p.perfilCidade !== filtros.perfil) return false;
+    if (filtros.insta && temInstagram(p) !== (filtros.insta === "sim")) return false;
+    if (filtros.email && temEmail(p) !== (filtros.email === "sim")) return false;
     if (busca) {
       const alvo = `${p.negocio} ${p.dominio} ${p.instagram ?? ""} ${p.emails ?? ""}`.toLowerCase();
       if (!alvo.includes(busca)) return false;
@@ -273,9 +279,19 @@ export default async function PaginaProspeccao({
           ))}
         </select>
         <select name="perfil" defaultValue={filtros.perfil ?? ""} className="!w-full sm:!w-40">
-          <option value="">Qualquer cidade</option>
+          <option value="">Qualquer perfil</option>
           <option value="Afluente">Afluente</option>
           <option value="Média">Média</option>
+        </select>
+        <select name="insta" defaultValue={filtros.insta ?? ""} className="!w-full sm:!w-44">
+          <option value="">Instagram: todos</option>
+          <option value="sim">Com Instagram</option>
+          <option value="nao">Sem Instagram</option>
+        </select>
+        <select name="email" defaultValue={filtros.email ?? ""} className="!w-full sm:!w-44">
+          <option value="">E-mail: todos</option>
+          <option value="sim">Com e-mail</option>
+          <option value="nao">Sem e-mail</option>
         </select>
         <Btn type="submit" className="max-sm:w-full">Filtrar</Btn>
         {Object.values(filtros).some(Boolean) ? (

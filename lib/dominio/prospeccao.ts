@@ -253,3 +253,20 @@ export function normalizarEmails(texto: string): string | null {
     .filter((e) => /^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(e));
   return achados.length > 0 ? [...new Set(achados)].join(" / ") : null;
 }
+
+/**
+ * A varredura grava "-" quando não achou contato, então string não vazia não
+ * basta: sem estes dois, filtrar por "possui e-mail" traria gente inalcançável.
+ */
+const SEM_DADO = new Set(["", "-", "—", "n/a", "na", "null"]);
+
+export function temInstagram(p: { instagram: string | null }): boolean {
+  const v = (p.instagram ?? "").trim().toLowerCase();
+  return v.length > 0 && !SEM_DADO.has(v);
+}
+
+export function temEmail(p: { emails: string | null }): boolean {
+  const v = (p.emails ?? "").trim().toLowerCase();
+  // sem arroba não dá para disparar nada
+  return v.length > 0 && !SEM_DADO.has(v) && v.includes("@");
+}

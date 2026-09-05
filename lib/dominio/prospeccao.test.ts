@@ -9,6 +9,8 @@ import {
   ROTULO_STATUS_PROSPECT,
   temperaturaDe,
   type ProspectResumo,
+  temEmail,
+  temInstagram,
 } from "@/lib/dominio/prospeccao";
 
 const CSV = `potencial,negocio,nicho,cidade,perfil_cidade,site,nota_site,builder,booking,ano_copyright,instagram,seguidores_ig,emails,diagnostico_site,como_abordar,screenshot
@@ -133,5 +135,33 @@ describe("contato editado à mão", () => {
     expect(normalizarEmails("A@B.com , c@d.com")).toBe("a@b.com / c@d.com");
     expect(normalizarEmails("sem arroba")).toBeNull();
     expect(normalizarEmails("")).toBeNull();
+  });
+});
+
+describe("temContato", () => {
+  it("reconhece quem tem instagram", () => {
+    expect(temInstagram({ instagram: "@azpoolguys" })).toBe(true);
+    expect(temInstagram({ instagram: "azpoolguys" })).toBe(true);
+  });
+
+  it("trata vazio, espaço e nulo como não tem", () => {
+    expect(temInstagram({ instagram: null })).toBe(false);
+    expect(temInstagram({ instagram: "" })).toBe(false);
+    expect(temInstagram({ instagram: "   " })).toBe(false);
+    // a varredura grava traço quando não achou nada
+    expect(temInstagram({ instagram: "-" })).toBe(false);
+  });
+
+  it("reconhece quem tem e-mail, inclusive vários", () => {
+    expect(temEmail({ emails: "poolguys@att.net" })).toBe(true);
+    expect(temEmail({ emails: "a@x.com, b@x.com" })).toBe(true);
+  });
+
+  it("não considera texto sem arroba como e-mail", () => {
+    expect(temEmail({ emails: null })).toBe(false);
+    expect(temEmail({ emails: "" })).toBe(false);
+    expect(temEmail({ emails: "  " })).toBe(false);
+    expect(temEmail({ emails: "-" })).toBe(false);
+    expect(temEmail({ emails: "sem email" })).toBe(false);
   });
 });
