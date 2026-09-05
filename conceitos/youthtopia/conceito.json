@@ -131,24 +131,27 @@
     "Hero: foto do editorial quase inteira (rostos, muro, leão); o painel de vidro escuro atravessa a borda de baixo, 322px sobre a foto e 112px pendurado sobre a seção seguinte, com kicker/h1/sub/pílulas à esquerda e os quatro números à direita",
     "The menu como bento: Injectables (4 col), Face (8 col, 2 colunas), Body (5 col), convite de setembro como tile escuro (7 col)",
     "Membership: seção escura com orbes, texto + área da cliente em vidro, cartão VIP em perspectiva 3D",
+    "Cupom de novos clientes como ticket de vidro ($50 off) logo abaixo do bento, com canhoto pontilhado",
     "The house: 6 tiles de vidro com retrato circular, nome e cargo",
     "Citação num painel de vidro claro",
     "The shop: 4 tiles de vidro com botão redondo de seta",
     "Concierge: 3 painéis de vidro escuro (Visit + balão do front desk, Hours, Talk to us)",
-    "Rodapé próprio + faixa e crédito da RVLand (componente do publicador)"
+    "Rodapé próprio + faixa e crédito da RVLand (componente do publicador)",
+    "Mapa do Google com filtro sépia-escuro no topo do Concierge, chip de vidro com endereço e Directions",
+    "Chat fictício flutuante (Text us): avatar, bolha, formulário, consentimento, resposta que deixa claro que nada foi enviado"
   ],
   "heroCopy": {
     "kicker": "ALPHARETTA · PHYSICIAN-LED AESTHETICS",
     "titulo": "Where Alpharetta comes to glow.",
-    "sub": "Thirteen years of quiet, medical-grade beauty, in a place that feels nothing like a clinic.",
+    "sub": "Physician-led aesthetics in Alpharetta since 2011. Medical-grade results, delivered with personal care.",
     "ctaPrimario": "Book your visit",
     "ctaSecundario": "September specials"
   },
   "mantidos": [
     "Booking no Phorest (todos os CTAs de agenda apontam para lá)",
     "Shop externo (Alastin, ZO Skin Health, SkinMedica, Revision) — é o marketplace deles",
-    "Chat/atendimento: vira o 'text the front desk' do concierge",
-    "Links reais das páginas internas atuais (menu of services, specials, team)"
+    "Links reais das páginas internas atuais (menu of services, specials, team)",
+    "O popup 'Need help? Text us' (Aesthetix CRM) virou um chat de vidro fictício, com aviso explícito de preview; no site real liga no CRM deles"
   ],
   "fotosOrigem": "Tudo do wp-content deles: fotos/equipe.jpg é o editorial de out/2025 (hero); tracy-round/mccabe/kim/kendra/jen/julia são os retratos do meet-the-team.",
   "arquivos": [
@@ -181,7 +184,7 @@
   "fonteHtml": "conceitos/youthtopia/index.html",
   "copy": {
     "titulo": "Where Alpharetta comes to glow.",
-    "subtitulo": "Thirteen years of quiet, medical-grade beauty, in a place that feels nothing like a clinic."
+    "subtitulo": "Physician-led aesthetics in Alpharetta since 2011. Medical-grade results, delivered with personal care."
   },
   "regras": [
     "Dourado nunca é texto sobre fundo claro. Sobre creme vira bronze #7A5C2E.",
@@ -200,7 +203,11 @@
     "Nav a 42% no topo da página (foto atrás, véu de 55% ajuda) e 78% ao rolar.",
     "Cartão VIP: hover no desktop; no celular vira com o scroll (rotateY de -26 a +14 conforme atravessa a tela). prefers-reduced-motion desliga os dois.",
     "Dock a 86% de espresso: passa por cima das seções claras e o marfim tem que ler. body ganha padding-bottom de 88px no celular.",
-    "Setembro no celular: badges em grade 2x2 de largura igual, pílulas em largura total. Rodapé do conceito em coluna."
+    "Setembro no celular: badges em grade 2x2 de largura igual, pílulas em largura total. Rodapé do conceito em coluna.",
+    "Cupom de novos clientes num lugar só (ticket de vidro abaixo do bento), nunca pop-up. O chat menciona o $50 na bolha de boas-vindas.",
+    "Mapa: embed do Google (sem chave) com filtro invert/hue-rotate/sepia para casar com o espresso; iframe eager, senão o PNG exportado sai sem mapa. No celular o chip vira barra embaixo do mapa para não esconder o pino.",
+    "Chat fictício sempre com aviso 'Preview only' e resposta dizendo que nada foi enviado. No celular sobe para bottom: 82px, acima do dock.",
+    "Orbes são absolutas com !important: regra `> *` de tile já as transformou em bloco duas vezes."
   ],
-  "notaMobile": "Foto em bloco de 62vh no topo com o card começando 90px antes do fim; dock de atalhos fixo; cartão VIP inclinado e virando com o scroll; seções a 96px; tiles a 30/24px; setembro em 2x2; rodapé em coluna. Vazamento 0px, 0 reprovados de contraste."
+  "notaMobile": "Foto em bloco de 62vh no topo com o card começando 90px antes do fim; dock de atalhos fixo; cartão VIP inclinado e virando com o scroll; seções a 96px; tiles a 30/24px; setembro em 2x2; rodapé em coluna. Vazamento 0px, 0 reprovados de contraste. Mapa com chip em barra embaixo; chat acima do dock; ticket em coluna com canhoto pontilhado horizontal."
 }

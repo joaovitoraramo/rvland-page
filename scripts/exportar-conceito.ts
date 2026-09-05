@@ -21,7 +21,7 @@ async function main() {
     const pc = await browser.newPage({ viewport: { width: 1440, height: 1000 }, deviceScaleFactor: 2 });
     await pc.goto(url, { waitUntil: "domcontentloaded" });
     await pc.addStyleTag({ content: SEM_FAIXA });
-    await pc.waitForTimeout(3000);
+    await pc.waitForTimeout(7000); // mapa embutido leva uns segundos
     await pc.screenshot({ path: `${destino}/${slug}-conceito.png`, fullPage: true });
     await pc.screenshot({ path: `${destino}/${slug}-hero.png` });
     const altPc = await pc.evaluate(() => document.documentElement.scrollHeight);
@@ -32,14 +32,14 @@ async function main() {
     const fone = await ctxFone.newPage();
     await fone.goto(url, { waitUntil: "domcontentloaded" });
     await fone.addStyleTag({ content: SEM_FAIXA });
-    await fone.waitForTimeout(2500);
+    await fone.waitForTimeout(7000);
     await fone.screenshot({ path: `${destino}/${slug}-mobile.png`, fullPage: true });
     const altFone = await fone.evaluate(() => document.documentElement.scrollHeight);
 
     const pdfPc = await browser.newPage({ viewport: { width: 1440, height: 1000 } });
     await pdfPc.goto(url, { waitUntil: "domcontentloaded" });
     await pdfPc.addStyleTag({ content: SEM_FAIXA });
-    await pdfPc.waitForTimeout(2500);
+    await pdfPc.waitForTimeout(7000);
     await pdfPc.pdf({
       path: `${destino}/${slug}-conceito.pdf`,
       width: "1440px",
@@ -52,7 +52,7 @@ async function main() {
     const pdfFone = await ctxPdfFone.newPage();
     await pdfFone.goto(url, { waitUntil: "domcontentloaded" });
     await pdfFone.addStyleTag({ content: SEM_FAIXA });
-    await pdfFone.waitForTimeout(2500);
+    await pdfFone.waitForTimeout(7000);
     await pdfFone.pdf({
       path: `${destino}/${slug}-mobile.pdf`,
       width: "390px",

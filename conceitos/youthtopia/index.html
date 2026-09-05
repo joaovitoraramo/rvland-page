@@ -82,7 +82,7 @@
   }
   /* luz difusa atrás das seções: nunca toca o texto, só o clima */
   .orbe {
-    position: absolute;
+    position: absolute !important; /* regra `> *` de tile nenhum pode virar isto em bloco */
     border-radius: 50%;
     filter: blur(90px);
     pointer-events: none;
@@ -344,6 +344,43 @@
   .secao-cta { margin-top: 44px; display: flex; align-items: center; gap: 22px; flex-wrap: wrap; }
   .nota-suave { font-size: 16px; color: var(--tinta-2); }
 
+  /* ── o cupom: um ticket de vidro, um lugar só, sem pop-up ────────────── */
+  .oferta {
+    position: relative; overflow: hidden;
+    margin-top: 22px;
+    border-radius: 32px;
+    padding: 36px 44px;
+    display: grid;
+    grid-template-columns: minmax(0, 1fr) auto;
+    align-items: center;
+    gap: 40px;
+  }
+  .oferta .orbe { width: 360px; height: 360px; right: 30%; top: -200px; filter: blur(70px); }
+  .oferta > *:not(.orbe) { position: relative; z-index: 1; }
+  .oferta-valor {
+    font-family: var(--display); font-weight: 400; font-variation-settings: "opsz" 144;
+    font-size: clamp(52px, 5vw, 72px); line-height: 1; color: var(--tinta); margin: 12px 0 12px;
+    display: flex; align-items: baseline; gap: 10px;
+  }
+  .oferta-valor small { font-size: 0.42em; font-style: italic; color: var(--bronze); }
+  .oferta p { color: var(--tinta-2); font-size: 17px; max-width: 520px; }
+  /* canhoto: linha pontilhada e dois recortes, como ticket de verdade */
+  .oferta-canhoto {
+    position: relative;
+    padding-left: 40px;
+    border-left: 1px dashed rgba(184,147,78,0.7);
+    display: flex; flex-direction: column; gap: 10px; align-items: stretch;
+  }
+  .oferta-canhoto::before, .oferta-canhoto::after {
+    content: ""; position: absolute; left: -11px; width: 22px; height: 22px; border-radius: 50%;
+    background: var(--rosa); box-shadow: inset 0 0 0 1px var(--vidro-claro-borda);
+  }
+  .oferta-canhoto::before { top: -47px; }
+  .oferta-canhoto::after { bottom: -47px; }
+  .oferta-canhoto .pilula { justify-content: center; }
+  .pilula-vidro.claro { color: var(--tinta); background: rgba(26,16,13,0.05); border-color: rgba(26,16,13,0.16); }
+  .pilula-vidro.claro:hover { background: rgba(26,16,13,0.09); }
+
   /* ── o cartão: palco escuro, vidro e brilho ─────────────────────────── */
   .clube { background: var(--espresso); color: var(--marfim); }
   .clube .orbe-rosa { width: 760px; height: 760px; right: -240px; top: -200px; opacity: 0.55; }
@@ -508,6 +545,100 @@
   .rodape .marca-nome { font-size: 18px; }
   .rodape-fone { margin-left: auto; color: var(--marfim); }
 
+  /* ── mapa: americanos gostam de ver onde é ──────────────────────────── */
+  .mapa {
+    position: relative; overflow: hidden;
+    height: 340px; margin-bottom: 20px;
+    border-radius: var(--raio-g);
+    border: 1px solid rgba(230,207,152,0.22);
+    box-shadow: 0 40px 80px -40px rgba(0,0,0,0.7);
+    background: var(--espresso-2);
+  }
+  .mapa iframe {
+    display: block; width: 100%; height: 100%; border: 0;
+    /* o mapa do Google é claro; este filtro o traz para o espresso da seção */
+    filter: invert(0.92) hue-rotate(185deg) brightness(0.88) contrast(0.9) sepia(0.32);
+  }
+  .mapa-chip {
+    position: absolute; left: 20px; bottom: 20px; z-index: 1;
+    display: flex; align-items: center; gap: 22px;
+    padding: 16px 18px 16px 22px; border-radius: 22px;
+    background: rgba(26,16,13,0.86);
+    border: 1px solid rgba(230,207,152,0.24);
+    -webkit-backdrop-filter: blur(16px); backdrop-filter: blur(16px);
+    color: var(--marfim);
+  }
+  .mapa-chip strong { display: block; font-weight: 600; font-size: 16px; }
+  .mapa-chip span { display: block; font-size: 14px; color: var(--marfim-2); margin-top: 2px; }
+  .mapa-chip .pilula { padding: 12px 20px; }
+
+  /* ── chat fictício: o "Text us" deles, em vidro ──────────────────────── */
+  .chat { position: fixed; right: 22px; bottom: 22px; z-index: 45; display: flex; flex-direction: column; align-items: flex-end; gap: 12px; }
+  .chat-botao {
+    display: inline-flex; align-items: center; gap: 12px;
+    padding: 8px 20px 8px 8px; border-radius: 999px; cursor: pointer;
+    font: inherit; font-size: 13px; font-weight: 600; letter-spacing: 0.1em; text-transform: uppercase;
+    color: var(--marfim); background: rgba(26,16,13,0.86);
+    border: 1px solid rgba(230,207,152,0.3);
+    -webkit-backdrop-filter: blur(18px); backdrop-filter: blur(18px);
+    box-shadow: 0 24px 50px -22px rgba(0,0,0,0.7), 0 0 0 0 rgba(203,164,92,0.0);
+    transition: transform 0.25s ease, box-shadow 0.25s ease;
+  }
+  .chat-botao:hover { transform: translateY(-2px); box-shadow: 0 28px 56px -22px rgba(0,0,0,0.75), 0 0 0 6px rgba(203,164,92,0.12); }
+  .chat-botao img { width: 40px; height: 40px; border-radius: 50%; object-fit: cover; border: 1px solid var(--ouro); }
+  .chat-botao .ponto { width: 8px; height: 8px; border-radius: 50%; background: #7ED9A0; box-shadow: 0 0 0 4px rgba(126,217,160,0.18); }
+  .chat-painel {
+    width: 380px; max-width: calc(100vw - 28px); max-height: min(720px, calc(100vh - 120px));
+    overflow: auto; border-radius: 28px;
+    background: rgba(26,16,13,0.9);
+    border: 1px solid rgba(230,207,152,0.24);
+    -webkit-backdrop-filter: blur(24px) saturate(140%); backdrop-filter: blur(24px) saturate(140%);
+    box-shadow: 0 50px 90px -40px rgba(0,0,0,0.85), inset 0 1px 0 rgba(255,255,255,0.08);
+    color: var(--marfim);
+    transform-origin: bottom right;
+    animation: chat-abre 0.35s cubic-bezier(.2,.8,.2,1) both;
+  }
+  @keyframes chat-abre { from { opacity: 0; transform: translateY(14px) scale(0.96); } to { opacity: 1; transform: none; } }
+  .chat-topo {
+    display: flex; align-items: center; gap: 14px;
+    padding: 18px 18px 16px 20px; border-bottom: 1px solid rgba(246,238,227,0.12);
+  }
+  .chat-topo img { width: 44px; height: 44px; border-radius: 50%; object-fit: cover; border: 1px solid var(--ouro); }
+  .chat-topo strong { display: block; font-family: var(--display); font-weight: 500; font-size: 19px; line-height: 1.1; }
+  .chat-topo small { display: block; font-size: 13px; color: var(--marfim-2); margin-top: 3px; }
+  .chat-fechar {
+    margin-left: auto; width: 36px; height: 36px; border-radius: 50%; cursor: pointer;
+    background: rgba(246,238,227,0.08); border: 1px solid rgba(246,238,227,0.16);
+    color: var(--marfim); font-size: 20px; line-height: 1;
+  }
+  .chat-aviso {
+    margin: 14px 18px 0; padding: 10px 14px; border-radius: 14px;
+    background: rgba(230,207,152,0.12); border: 1px solid rgba(230,207,152,0.3);
+    font-size: 13px; line-height: 1.5; color: var(--marfim);
+  }
+  .chat-aviso b { color: var(--ouro-luz); font-weight: 600; }
+  .chat-corpo { padding: 14px 18px 18px; display: grid; gap: 12px; }
+  .bolha {
+    max-width: 92%; padding: 12px 16px; border-radius: 18px 18px 18px 4px;
+    background: rgba(246,238,227,0.10); border: 1px solid rgba(246,238,227,0.12);
+    font-size: 15px; line-height: 1.55; color: var(--marfim);
+  }
+  .bolha-ok { border-color: rgba(230,207,152,0.4); background: rgba(230,207,152,0.12); }
+  .chat-form { display: grid; gap: 10px; }
+  .chat-form input, .chat-form select, .chat-form textarea {
+    width: 100%; font: inherit; font-size: 15px; color: var(--marfim);
+    background: rgba(246,238,227,0.08); border: 1px solid rgba(246,238,227,0.18);
+    border-radius: 14px; padding: 12px 14px; outline: none; color-scheme: dark;
+  }
+  .chat-form input:focus, .chat-form select:focus, .chat-form textarea:focus { border-color: var(--ouro-luz); box-shadow: 0 0 0 3px rgba(230,207,152,0.16); }
+  .chat-form ::placeholder { color: var(--marfim-2); }
+  .chat-form textarea { resize: vertical; min-height: 78px; }
+  .chat-consent { display: flex; gap: 10px; align-items: flex-start; font-size: 13px; line-height: 1.5; color: var(--marfim-2); }
+  .chat-consent input { width: 18px; height: 18px; margin-top: 2px; flex-shrink: 0; accent-color: var(--ouro-botao); }
+  .chat-form .pilula { justify-content: center; }
+  .chat-erro { font-size: 13px; color: #F3B8A6; }
+  .chat-rodape { padding: 0 18px 16px; font-size: 12px; color: var(--marfim-2); text-align: center; }
+
   /* ── reveal no scroll: começa visível, só ganha o movimento ao entrar ── */
   @keyframes sobe { from { opacity: 0; transform: translateY(18px); } to { opacity: 1; transform: none; } }
   [data-rv].rv-in { animation: sobe 0.8s cubic-bezier(.2,.8,.2,1) both; }
@@ -604,6 +735,28 @@
     .rodape .env { flex-direction: column; align-items: flex-start; gap: 8px; }
     .rodape-fone { margin-left: 0; }
     .cartao-rodape { font-size: 12px; letter-spacing: 0.12em; gap: 14px; }
+    .oferta { grid-template-columns: 1fr; gap: 24px; padding: 28px 22px; border-radius: 24px; }
+    .oferta-canhoto { padding-left: 0; padding-top: 24px; border-left: 0; border-top: 1px dashed rgba(184,147,78,0.7); }
+    .oferta-canhoto::before, .oferta-canhoto::after { top: -11px; bottom: auto; }
+    .oferta-canhoto::before { left: -33px; }
+    .oferta-canhoto::after { left: auto; right: -33px; }
+    .oferta p { font-size: 16px; }
+    /* no celular o chip flutuante engolia o mapa: vira barra embaixo dele */
+    .mapa { height: auto; margin-bottom: 14px; display: flex; flex-direction: column; }
+    .mapa iframe { height: 250px; flex: none; }
+    .mapa-chip {
+      position: static; border-radius: 0; border: 0; border-top: 1px solid rgba(230,207,152,0.24);
+      -webkit-backdrop-filter: none; backdrop-filter: none; background: var(--espresso-2);
+      flex-direction: row; align-items: center; justify-content: space-between; gap: 14px; padding: 14px 16px;
+    }
+    .mapa-chip strong { font-size: 15px; }
+    .mapa-chip span { font-size: 13px; }
+    .mapa-chip .pilula { padding: 11px 16px; font-size: 12px; flex-shrink: 0; }
+    /* o chat sobe para não brigar com o dock */
+    .chat { right: 12px; bottom: 82px; }
+    .chat-botao span.rotulo { display: none; }
+    .chat-botao { padding: 6px; }
+    .chat-painel { width: calc(100vw - 24px); max-height: calc(100vh - 170px); border-radius: 24px; }
   }
 </style>
 </head>
@@ -645,8 +798,8 @@
       <div>
         <div class="etiqueta hero-kicker">Alpharetta · Physician-led aesthetics</div>
         <h1>Where Alpharetta comes to <em>glow</em>.</h1>
-        <p class="hero-sub">Thirteen years of quiet, medical-grade beauty, in a
-          place that feels nothing like a clinic.</p>
+        <p class="hero-sub">Physician-led aesthetics in Alpharetta since 2011.
+          Medical-grade results, delivered with personal care.</p>
         <div class="hero-ctas">
           <a class="pilula pilula-ouro" href="https://phorest.com/book/salons/youthtopiamedspa">Book your visit</a>
           <a class="pilula pilula-vidro" href="#setembro">September specials</a>
@@ -723,9 +876,18 @@
         </div>
       </div>
     </div>
-    <div class="secao-cta" data-rv>
-      <a class="pilula pilula-tinta" href="https://youthtopiamedspa.com/menu-of-services/">See the full menu</a>
-      <span class="nota-suave">New here? $50 off your first appointment.</span>
+    <div class="oferta vidro" id="oferta" data-rv>
+      <div class="orbe orbe-ouro"></div>
+      <div>
+        <span class="etiqueta">New clients only</span>
+        <div class="oferta-valor">$50 <small>off</small></div>
+        <p>On all services during your first appointment. Mention it when you
+          book, or show this screen at the front desk.</p>
+      </div>
+      <div class="oferta-canhoto">
+        <a class="pilula pilula-ouro" href="https://phorest.com/book/salons/youthtopiamedspa">Book with the offer</a>
+        <a class="pilula pilula-vidro claro" href="https://youthtopiamedspa.com/menu-of-services/">See the full menu</a>
+      </div>
     </div>
   </div>
 </section>
@@ -856,13 +1018,24 @@
       <span class="etiqueta">Concierge</span>
       <h2>Come glow with us.</h2>
     </div>
+    <div class="mapa" data-rv>
+      <iframe src="https://www.google.com/maps?q=33+Teasley+St+Suite+115,+Alpharetta,+GA+30009&z=16&output=embed"
+        title="Map: 33 Teasley St, Suite 115, Alpharetta, GA" loading="eager"
+        referrerpolicy="no-referrer-when-downgrade"></iframe>
+      <div class="mapa-chip">
+        <div>
+          <strong>33 Teasley St, Suite 115</strong>
+          <span>Alpharetta, GA 30009</span>
+        </div>
+        <a class="pilula pilula-ouro" href="https://maps.google.com/?q=33+Teasley+St+Ste+115,+Alpharetta,+GA+30009" target="_blank" rel="noreferrer">Directions</a>
+      </div>
+    </div>
     <div class="concierge-grade">
       <div class="painel vidro-escuro" data-rv>
         <h4>Visit</h4>
         <address>
           33 Teasley St, Suite 115<br>
-          Alpharetta, GA 30009<br><br>
-          <a class="link-fino" href="https://maps.google.com/?q=33+Teasley+St+Ste+115,+Alpharetta,+GA+30009">Open in Maps</a>
+          Alpharetta, GA 30009
         </address>
         <div class="balao"><b>Front desk:</b> Questions about a treatment?
           Text us. A real person answers.</div>
@@ -899,7 +1072,84 @@
   </div>
 </div>
 
+<!-- chat fictício: o "Need help? Text us" deles, redesenhado. Não envia nada. -->
+<div class="chat" id="chat">
+  <section class="chat-painel" id="chat-painel" hidden aria-label="Text the front desk">
+    <header class="chat-topo">
+      <img src="fotos/kim.png" alt="">
+      <div>
+        <strong>Youthtopia front desk</strong>
+        <small>A real person texts you back, usually within the hour</small>
+      </div>
+      <button class="chat-fechar" type="button" aria-label="Close" data-chat-fechar>×</button>
+    </header>
+    <div class="chat-aviso"><b>Preview only.</b> Nothing is sent from this concept. On your live site this connects to your front desk (Aesthetix CRM or any provider) and real texts go out.</div>
+    <div class="chat-corpo">
+      <div class="bolha">Hi! Tell us what you need and we'll text you back shortly. New here? Ask about <b>$50 off</b> your first visit.</div>
+      <form class="chat-form" novalidate>
+        <input name="nome" placeholder="Name" autocomplete="name">
+        <input name="fone" placeholder="Phone" inputmode="tel" autocomplete="tel">
+        <select name="tratamento">
+          <option value="">Treatment of interest</option>
+          <option>Botox &amp; Dysport</option>
+          <option>Fillers (Juvederm, Restylane)</option>
+          <option>Halo™ Laser</option>
+          <option>BBL</option>
+          <option>Sofwave™ / Vivace®</option>
+          <option>HydraFacial &amp; Peels</option>
+          <option>CoolSculpting</option>
+          <option>Laser Hair Removal</option>
+          <option>Tirzepatide Program</option>
+          <option>Not sure yet</option>
+        </select>
+        <textarea name="msg" placeholder="Preferred day and time, questions..."></textarea>
+        <label class="chat-consent"><input type="checkbox" name="ok"> <span>I agree to receive texts about my request. Message rates may apply.</span></label>
+        <div class="chat-erro" hidden></div>
+        <button class="pilula pilula-ouro" type="submit">Send</button>
+      </form>
+      <div class="bolha bolha-ok" hidden></div>
+    </div>
+    <div class="chat-rodape">Concept by RVLand Devs · connects to your CRM on the live site</div>
+  </section>
+  <button class="chat-botao" type="button" aria-expanded="false" aria-controls="chat-painel" data-chat-abre>
+    <img src="fotos/kim.png" alt="">
+    <span class="ponto" aria-hidden="true"></span>
+    <span class="rotulo">Text us</span>
+  </button>
+</div>
+
 <script>
+  // Chat fictício: abre, fecha, valida o mínimo e responde deixando claro que
+  // nada foi enviado. No site real este formulário liga no CRM da casa.
+  (function () {
+    var painel = document.getElementById("chat-painel");
+    var botao = document.querySelector("[data-chat-abre]");
+    var form = painel.querySelector(".chat-form");
+    var erro = painel.querySelector(".chat-erro");
+    var ok = painel.querySelector(".bolha-ok");
+    function abrir(aberto) {
+      painel.hidden = !aberto;
+      botao.setAttribute("aria-expanded", String(aberto));
+      botao.querySelector(".rotulo").textContent = aberto ? "Close" : "Text us";
+      if (aberto) { var n = form.querySelector("[name=nome]"); if (n) setTimeout(function () { n.focus(); }, 60); }
+    }
+    botao.addEventListener("click", function () { abrir(painel.hidden); });
+    painel.querySelector("[data-chat-fechar]").addEventListener("click", function () { abrir(false); });
+    document.addEventListener("keydown", function (e) { if (e.key === "Escape" && !painel.hidden) abrir(false); });
+    form.addEventListener("submit", function (e) {
+      e.preventDefault();
+      var nome = form.nome.value.trim(), fone = form.fone.value.trim();
+      var faltas = [];
+      if (!nome) faltas.push("your name");
+      if (fone.replace(/\D/g, "").length < 10) faltas.push("a phone number");
+      if (!form.ok.checked) faltas.push("the consent box");
+      if (faltas.length) { erro.textContent = "Please add " + faltas.join(", ") + "."; erro.hidden = false; return; }
+      erro.hidden = true;
+      form.hidden = true;
+      ok.innerHTML = "Thanks, <b>" + nome.replace(/[<>&]/g, "") + "</b>! On the live site the front desk would text you back at <b>" + fone.replace(/[<>&]/g, "") + "</b>. In this preview, nothing was sent.";
+      ok.hidden = false;
+    });
+  })();
   // Nav quase transparente enquanto a foto está no topo; vidro ao rolar.
   (function () {
     var nav = document.querySelector(".nav");
