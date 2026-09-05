@@ -2,8 +2,8 @@
   "criadoEm": "2026-09-05",
   "cliente": "Youthtopia Med Spa",
   "dominio": "youthtopiamedspa.com",
-  "direcao": "A foto que o site esconde. No wp-content deles existe um editorial de outubro/2025: as onze mulheres da casa em vestidos de festa, na hora dourada, diante do tijolo com fontes de leão e magnólias — Alpharetta em pessoa. A clínica JÁ tem estética de casa de luxo (13 anos, diretora médica DO, VIP membership); o site é que veste Elementor branco com clipart de Halloween e um <title> escrito 'Home'. O conceito não inventa luxo: revela o que a foto prova. Paleta tirada dela — o espresso do ferro forjado, o champanhe da luz de fim de tarde, a porcelana da pele, o rosa das magnólias e dos vestidos. Quase nenhum parágrafo: cliente de alto padrão decide pelo que vê. Refeito em 05/09 por legibilidade: a primeira versão tinha 42 textos abaixo de WCAG AA (dourado sobre creme a 2.2:1, cinza-marrom secundário a 3.9:1, corpo em peso 300, tamanhos de 9 a 11px). A regra que ficou: o dourado é acento (linhas, ícones, botões) e só vira texto sobre fundo escuro; sobre creme ele é bronze. Piso de 12px, corpo em 400. Auditoria por scripts/auditar-contraste.mjs: 0 reprovados em desktop e celular.",
-  "assinatura": "The Youthtopia Card. O VIP que eles já vendem, reapresentado como cartão preto: a cliente entra na área dela e vê o plano de glow (tratamentos e datas), as fotos de progresso, os pontos e o special do mês desbloqueado antes de todo mundo. O Phorest continua agendando; a área amarra a assinatura mensal, justifica o ticket e prende a renovação — nenhum med spa da região tem.",
+  "direcao": "Água da hora dourada, em vidro. A paleta continua a da foto que o site deles esconde (editorial de out/2025: espresso do ferro, champanhe da luz, porcelana da pele, rosa das magnólias). O que mudou na v3 é a composição: nada de retângulo chapado. Painéis de vidro fosco (backdrop-filter) sobre a foto e sobre as seções, cantos de 28 a 36px, orbes de luz desfocadas atrás de cada seção, pílulas em vez de botões retos, o cartão VIP em perspectiva 3D com brilho dourado, retratos circulares dentro de tiles de vidro, tratamentos em grade bento com o convite de setembro como tile escuro. Nav de vidro fixa que flutua sobre a foto. Reveal suave no scroll. Histórico: v1 tinha 42 textos ilegíveis (dourado sobre creme a 2.2:1, secundário a 3.9:1, corpo em 300); v2 corrigiu a cor mas ficou quadrada; v3 é esta.",
+  "assinatura": "O cartão preto. A cliente VIP entra e vê o plano, o progresso e os pontos num painel de vidro escuro; ao lado, o cartão físico em perspectiva com chip dourado e brilho. Nenhum concorrente da região entrega isso. Deixa de ser site e vira software, o que sustenta preço.",
   "faixaCores": {
     "fundo": "#201512",
     "texto": "rgba(255,255,255,0.85)",
@@ -81,6 +81,31 @@
       "nome": "ouro-botao",
       "hex": "#CBA45C",
       "uso": "fundo dos botões primários, com texto espresso (7.7:1)"
+    },
+    {
+      "nome": "vidro-escuro",
+      "hex": "rgba(26,16,13,0.60)",
+      "uso": "painéis sobre foto e sobre seções escuras, com blur(24px) saturate(140%) e borda rgba(246,238,227,0.16)"
+    },
+    {
+      "nome": "vidro-claro",
+      "hex": "rgba(255,252,247,0.68)",
+      "uso": "tiles sobre seções claras, blur(22px) saturate(150%), borda rgba(26,16,13,0.09), realce interno branco a 60%"
+    },
+    {
+      "nome": "nav-vidro",
+      "hex": "rgba(26,16,13,0.78)",
+      "uso": "nav fixa; 78% porque ela rola sobre as seções claras e o marfim precisa continuar lendo (a 62% dava 3.7:1)"
+    },
+    {
+      "nome": "orbe-ouro",
+      "hex": "rgba(203,164,92,0.32)",
+      "uso": "luz difusa atrás das seções, blur(90px); nunca atrás de texto"
+    },
+    {
+      "nome": "orbe-rosa",
+      "hex": "rgba(232,190,190,0.45)",
+      "uso": "luz difusa, idem"
     }
   ],
   "tipografia": [
@@ -101,16 +126,16 @@
     }
   ],
   "secoes": [
-    "Barra: wordmark serif + Menu/Specials/Team/Shop + telefone + Book (Phorest)",
-    "Hero: a foto do editorial em tela cheia, uma frase, prova em uma linha (5.0 · 13 anos · physician-led)",
-    "Faixa de fatos: 13 years · 5.0 Google · DO medical director · 11 specialists",
-    "The menu: tratamentos como menu-degustação em 3 atos (Injectables / Face / Body & Wellness), links reais",
-    "September: o special do mês como convite impresso, VIP desbloqueia primeiro",
-    "The Youthtopia Card: cartão preto + mock da área da cliente (plano, progresso, pontos) — a assinatura",
-    "The house: 6 retratos com credencial em uma linha",
-    "Pull-quote da Emily B. com 5 estrelas",
-    "Shop: as 4 marcas externas como vitrine curada (mantém o marketplace deles)",
-    "Concierge: endereço, horas, telefone, chat do front desk e Instagram"
+    "Nav de vidro fixa: marca + 5 âncoras em pílula + telefone + Book now",
+    "Hero: foto do editorial em tela cheia, painel de vidro escuro à esquerda com kicker, h1, sub e duas pílulas",
+    "Faixa de fatos flutuando sobre a borda do hero (13 · 5.0 · 11 · DO)",
+    "The menu como bento: Injectables (4 col), Face (8 col, 2 colunas), Body (5 col), convite de setembro como tile escuro (7 col)",
+    "Membership: seção escura com orbes, texto + área da cliente em vidro, cartão VIP em perspectiva 3D",
+    "The house: 6 tiles de vidro com retrato circular, nome e cargo",
+    "Citação num painel de vidro claro",
+    "The shop: 4 tiles de vidro com botão redondo de seta",
+    "Concierge: 3 painéis de vidro escuro (Visit + balão do front desk, Hours, Talk to us)",
+    "Rodapé próprio + faixa e crédito da RVLand (componente do publicador)"
   ],
   "heroCopy": {
     "kicker": "ALPHARETTA · PHYSICIAN-LED AESTHETICS",
@@ -165,7 +190,12 @@
     "Piso de 12px; etiquetas a 13px; corpo em peso 400.",
     "Texto sobre foto só com véu: no hero, gradiente da esquerda (0.93 a 0.05) mais um de baixo.",
     "Prova social fora da foto, em faixa sólida.",
-    "Antes de publicar: node scripts/auditar-contraste.mjs <url> 1440 e iphone, meta 0 reprovados."
+    "Antes de publicar: node scripts/auditar-contraste.mjs <url> 1440 e iphone, meta 0 reprovados.",
+    "Vidro sempre com tom próprio por baixo (nunca só blur): escuro a 60% no mínimo sobre foto, claro a 68% sobre creme.",
+    "Orbes são absolutas e fora do fluxo; qualquer regra `> *` nos tiles precisa de :not(.orbe), senão a orbe vira bloco e infla o tile.",
+    "Painel do hero com max-width 640px: a foto fica inteira à direita.",
+    "Reveal começa visível; a classe só adiciona a animação. O exportador tira print sem rolar.",
+    "Botões são pílulas (999px). Cantos de tile 28px, de painel grande 36px, 22/26 no celular."
   ],
-  "notaMobile": "Header sem quebra de linha (nowrap). Grid do membership com minmax(0,1fr) para o cartão de 420px não vazar. Tiles da loja em grade nome+nota/seta, 96px de altura em vez de 430. Kicker do hero sem o traço e com tracking menor."
+  "notaMobile": "Nav 68px sem telefone; painel do hero ocupa a largura com as duas pílulas em largura total; faixa de fatos 2x2; bento vira coluna única; cartão sem perspectiva; tiles da loja em grade nome+nota/seta; concierge empilhado. Vazamento 0px."
 }

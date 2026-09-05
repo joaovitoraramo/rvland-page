@@ -9,29 +9,37 @@
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
 <link href="https://fonts.googleapis.com/css2?family=Fraunces:ital,opsz,wght@0,9..144,400;0,9..144,500;0,9..144,600;1,9..144,400;1,9..144,500&family=Jost:wght@400;500;600&display=swap" rel="stylesheet">
 <style>
-  /* Paleta tirada da foto que o site deles esconde: o editorial de out/2025
-     na hora dourada. A regra que faz o luxo ler bem: o dourado é ACENTO
-     (linhas, ícones, botões) e só vira texto sobre fundo escuro. Sobre creme
-     ele fica bronze; o cinza-marrom secundário sumiu e virou tinta de verdade.
-     Piso de 13px em todo texto. Corpo em peso 400, nunca 300. */
+  /* Terceira versão: mesma paleta aprovada (a da foto da hora dourada), mas a
+     composição vai embora. Vidro fosco em cima da foto e das seções, cantos
+     grandes, luz difusa atrás, pílulas em vez de retângulos, profundidade em
+     camadas. A regra de legibilidade continua: dourado é acento e só vira
+     texto no escuro; sobre creme é bronze; piso de 12px; corpo em 400. */
   :root {
-    --tinta: #1C1310;        /* texto principal sobre claro */
-    --tinta-2: #4F3F37;      /* secundário sobre claro: 8.7:1 na porcelana */
-    --bronze: #7A5C2E;       /* o dourado quando precisa ser texto no claro */
+    --tinta: #1C1310;
+    --tinta-2: #4F3F37;
+    --bronze: #7A5C2E;
 
     --porcelana: #FAF6F0;
-    --porcelana-2: #F3EBE0;  /* superfícies e tiles */
-    --rosa: #F4E7E1;         /* magnólia, mais clara que antes */
+    --porcelana-2: #F3EBE0;
+    --rosa: #F4E7E1;
     --linha: #E2D5C4;
 
     --espresso: #1A100D;
     --espresso-2: #241813;
     --espresso-3: #30211B;
-    --marfim: #F6EEE3;                       /* texto sobre escuro */
-    --marfim-2: rgba(246,238,227,0.80);      /* secundário sobre escuro */
-    --ouro: #B8934E;                         /* linhas e ícones */
-    --ouro-luz: #E6CF98;                     /* texto dourado, só no escuro */
+    --marfim: #F6EEE3;
+    --marfim-2: rgba(246,238,227,0.80);
+    --ouro: #B8934E;
+    --ouro-luz: #E6CF98;
     --ouro-botao: #CBA45C;
+
+    /* vidro */
+    --vidro-escuro: rgba(26,16,13,0.60);
+    --vidro-escuro-borda: rgba(246,238,227,0.16);
+    --vidro-claro: rgba(255,252,247,0.68);
+    --vidro-claro-borda: rgba(26,16,13,0.09);
+    --raio: 28px;
+    --raio-g: 36px;
 
     --display: "Fraunces", "Georgia", serif;
     --corpo: "Jost", system-ui, sans-serif;
@@ -39,7 +47,6 @@
 
   * { box-sizing: border-box; margin: 0; padding: 0; }
   html { scroll-behavior: smooth; }
-
   body {
     background: var(--porcelana);
     color: var(--tinta);
@@ -49,650 +56,500 @@
     line-height: 1.7;
     -webkit-font-smoothing: antialiased;
     text-rendering: optimizeLegibility;
+    overflow-x: hidden;
   }
-
   a { color: inherit; text-decoration: none; }
   img { display: block; max-width: 100%; }
+  .env { max-width: 1240px; margin: 0 auto; padding: 0 40px; }
 
-  .env { max-width: 1200px; margin: 0 auto; padding: 0 44px; }
+  /* ── utilitários de vidro e luz ─────────────────────────────────────── */
+  .vidro {
+    -webkit-backdrop-filter: blur(22px) saturate(150%);
+    backdrop-filter: blur(22px) saturate(150%);
+    border: 1px solid var(--vidro-claro-borda);
+    background: var(--vidro-claro);
+    box-shadow:
+      0 30px 60px -34px rgba(26,16,13,0.35),
+      inset 0 1px 0 rgba(255,255,255,0.6);
+  }
+  .vidro-escuro {
+    -webkit-backdrop-filter: blur(24px) saturate(140%);
+    backdrop-filter: blur(24px) saturate(140%);
+    border: 1px solid var(--vidro-escuro-borda);
+    background: var(--vidro-escuro);
+    box-shadow:
+      0 40px 80px -40px rgba(0,0,0,0.6),
+      inset 0 1px 0 rgba(255,255,255,0.10);
+  }
+  /* luz difusa atrás das seções: nunca toca o texto, só o clima */
+  .orbe {
+    position: absolute;
+    border-radius: 50%;
+    filter: blur(90px);
+    pointer-events: none;
+    z-index: 0;
+  }
+  .orbe-ouro { background: rgba(203,164,92,0.32); }
+  .orbe-rosa { background: rgba(232,190,190,0.45); }
+  section, .faixa-fatos { position: relative; isolation: isolate; }
+  section > .env { position: relative; z-index: 1; }
 
-  /* Etiqueta: a voz pequena da casa. Caixa alta, espaçada, e legível. */
   .etiqueta {
     display: inline-flex;
     align-items: center;
-    gap: 14px;
+    gap: 12px;
     font-size: 13px;
     font-weight: 500;
     letter-spacing: 0.22em;
     text-transform: uppercase;
     color: var(--bronze);
   }
-  .etiqueta::before {
-    content: "";
-    width: 28px;
-    height: 1px;
-    background: var(--ouro);
-  }
+  .etiqueta::before { content: ""; width: 26px; height: 1px; background: var(--ouro); }
   .escuro .etiqueta { color: var(--ouro-luz); }
 
-  /* ── barra ───────────────────────────────────────────────────────────── */
-  .barra {
-    background: var(--espresso);
-    color: var(--marfim);
-    padding: 22px 0;
-    border-bottom: 1px solid rgba(184,147,78,0.28);
-  }
-  .barra .env { display: flex; align-items: center; gap: 32px; }
-  .barra nav a, .barra-fone, .barra .btn-ouro, .marca-sub { white-space: nowrap; }
-  .marca { line-height: 1.05; }
-  .marca-nome {
-    font-family: var(--display);
-    font-weight: 500;
-    font-size: 26px;
-    letter-spacing: 0.01em;
-    color: var(--marfim);
-  }
-  .marca-sub {
-    font-size: 12px;
-    font-weight: 500;
-    letter-spacing: 0.34em;
-    text-transform: uppercase;
-    color: var(--ouro-luz);
-    margin-top: 3px;
-  }
-  .barra nav { display: flex; gap: 26px; margin-left: 6px; }
-  .barra nav a {
-    font-size: 13px;
-    font-weight: 500;
-    letter-spacing: 0.16em;
-    text-transform: uppercase;
-    color: var(--marfim-2);
-    transition: color 0.2s ease;
-  }
-  .barra nav a:hover { color: var(--ouro-luz); }
-  .barra-fone {
-    margin-left: auto;
-    font-size: 15px;
-    font-weight: 500;
-    letter-spacing: 0.04em;
-    color: var(--marfim);
-  }
-
-  /* ── botões ──────────────────────────────────────────────────────────── */
-  .btn-ouro {
-    display: inline-block;
-    background: var(--ouro-botao);
-    color: var(--espresso);
+  /* ── botões pílula ───────────────────────────────────────────────────── */
+  .pilula {
+    display: inline-flex;
+    align-items: center;
+    gap: 10px;
+    border-radius: 999px;
     font-weight: 600;
     font-size: 13px;
-    letter-spacing: 0.14em;
-    text-transform: uppercase;
-    padding: 14px 26px;
-    border-radius: 2px;
-    transition: background 0.2s ease, transform 0.2s ease;
-  }
-  .btn-ouro:hover { background: var(--ouro-luz); transform: translateY(-1px); }
-  .btn-tinta {
-    display: inline-block;
-    background: var(--espresso);
-    color: var(--marfim);
-    font-weight: 500;
-    font-size: 13px;
-    letter-spacing: 0.14em;
+    letter-spacing: 0.12em;
     text-transform: uppercase;
     padding: 15px 28px;
-    border-radius: 2px;
-    transition: background 0.2s ease;
+    transition: transform 0.25s ease, box-shadow 0.25s ease, background 0.25s ease, color 0.25s ease;
+    white-space: nowrap;
   }
-  .btn-tinta:hover { background: var(--espresso-3); }
-  .btn-fantasma {
-    font-size: 13px;
-    font-weight: 500;
-    letter-spacing: 0.14em;
-    text-transform: uppercase;
+  .pilula:hover { transform: translateY(-2px); }
+  .pilula-ouro {
+    background: linear-gradient(135deg, var(--ouro-luz), var(--ouro-botao) 60%, #B48D47);
+    color: var(--espresso);
+    box-shadow: 0 14px 30px -14px rgba(203,164,92,0.7);
+  }
+  .pilula-ouro:hover { box-shadow: 0 20px 40px -14px rgba(203,164,92,0.85); }
+  .pilula-tinta { background: var(--espresso); color: var(--marfim); }
+  .pilula-tinta:hover { background: var(--espresso-3); }
+  .pilula-vidro {
     color: var(--marfim);
-    padding: 12px 0 8px;
-    border-bottom: 1px solid var(--ouro);
-    transition: color 0.2s ease, border-color 0.2s ease;
+    background: rgba(246,238,227,0.10);
+    border: 1px solid rgba(246,238,227,0.28);
+    -webkit-backdrop-filter: blur(12px);
+    backdrop-filter: blur(12px);
   }
-  .btn-fantasma:hover { color: var(--ouro-luz); border-bottom-color: var(--ouro-luz); }
-  .btn-fantasma.claro { color: var(--tinta); border-bottom-color: var(--ouro); }
-  .btn-fantasma.claro:hover { color: var(--bronze); }
+  .pilula-vidro:hover { background: rgba(246,238,227,0.18); }
 
-  /* ── hero: a foto deles, finalmente em tela cheia ───────────────────── */
-  .hero {
-    position: relative;
-    min-height: 94vh;
-    display: flex;
-    align-items: center;
+  /* ── nav de vidro, fixa ──────────────────────────────────────────────── */
+  .nav {
+    position: sticky;
+    top: 0;
+    z-index: 40; /* abaixo do modal da faixa da RVLand */
+    -webkit-backdrop-filter: blur(20px) saturate(150%);
+    backdrop-filter: blur(20px) saturate(150%);
+    /* 78%: quando a nav rola sobre as seções claras, o vidro precisa continuar
+       escuro o bastante para o marfim ler (a 62% dava 3.7:1 sobre a porcelana) */
+    background: rgba(26,16,13,0.78);
+    border-bottom: 1px solid rgba(230,207,152,0.16);
     color: var(--marfim);
-    background:
-      url("/c/youthtopia/fotos/equipe.jpg") center 30% / cover no-repeat;
-    isolation: isolate;
   }
-  /* dois véus: um da esquerda (onde o texto mora) e um do rodapé. O texto
-     nunca disputa com a foto; a foto continua inteira do lado direito. */
+  .nav .env { display: flex; align-items: center; gap: 30px; height: 78px; }
+  .marca { line-height: 1.05; }
+  .marca-nome { font-family: var(--display); font-weight: 500; font-size: 25px; color: var(--marfim); }
+  .marca-sub {
+    font-size: 12px; font-weight: 500; letter-spacing: 0.3em; text-transform: uppercase;
+    color: var(--ouro-luz); margin-top: 2px; white-space: nowrap;
+  }
+  .nav nav { display: flex; gap: 6px; margin-left: 8px; }
+  .nav nav a {
+    font-size: 13px; font-weight: 500; letter-spacing: 0.14em; text-transform: uppercase;
+    color: var(--marfim-2); padding: 9px 14px; border-radius: 999px; white-space: nowrap;
+    transition: background 0.2s ease, color 0.2s ease;
+  }
+  .nav nav a:hover { background: rgba(246,238,227,0.10); color: var(--marfim); }
+  .nav-fone { margin-left: auto; font-size: 15px; font-weight: 500; color: var(--marfim); white-space: nowrap; }
+  .nav .pilula { padding: 12px 22px; }
+
+  /* ── hero: a foto inteira, e o texto num painel de vidro ────────────── */
+  .hero {
+    min-height: 100vh;
+    margin-top: -78px; /* a nav de vidro flutua sobre a foto */
+    padding-top: 78px;
+    display: flex;
+    align-items: flex-end;
+    color: var(--marfim);
+    background: url("/c/youthtopia/fotos/equipe.jpg") center 28% / cover no-repeat;
+    overflow: hidden;
+  }
   .hero::before {
     content: "";
-    position: absolute;
-    inset: 0;
-    z-index: -1;
+    position: absolute; inset: 0; z-index: 0;
     background:
-      linear-gradient(to right,
-        rgba(26,16,13,0.93) 0%,
-        rgba(26,16,13,0.84) 30%,
-        rgba(26,16,13,0.48) 55%,
-        rgba(26,16,13,0.12) 78%,
-        rgba(26,16,13,0.05) 100%),
-      linear-gradient(to top,
-        rgba(26,16,13,0.85) 0%,
-        rgba(26,16,13,0.25) 30%,
-        rgba(26,16,13,0.00) 55%);
+      linear-gradient(to top, rgba(26,16,13,0.82) 0%, rgba(26,16,13,0.35) 38%, rgba(26,16,13,0.08) 70%),
+      linear-gradient(to right, rgba(26,16,13,0.35) 0%, rgba(26,16,13,0) 50%);
   }
-  .hero .env { width: 100%; padding-top: 110px; padding-bottom: 96px; }
-  .hero-molde { max-width: 640px; }
-  .hero-kicker { margin-bottom: 26px; }
-  .hero h1, .cabeca h2, .clube h2, .convite h2 { text-wrap: balance; }
+  .hero .orbe-ouro { width: 560px; height: 560px; right: -160px; top: -120px; opacity: 0.55; }
+  .hero .env {
+    width: 100%;
+    padding-top: 120px;
+    padding-bottom: 110px;
+  }
+  .hero-vidro {
+    max-width: 640px; /* o painel mora à esquerda; a foto continua inteira à direita */
+    border-radius: var(--raio-g);
+    padding: 46px 48px 44px;
+  }
+  .hero-kicker { margin-bottom: 22px; }
   .hero h1 {
     font-family: var(--display);
     font-weight: 400;
     font-variation-settings: "opsz" 144;
-    font-size: clamp(50px, 7vw, 92px);
+    font-size: clamp(46px, 5.6vw, 76px);
     line-height: 1.0;
     letter-spacing: -0.015em;
     color: var(--marfim);
-    margin-bottom: 26px;
-    text-shadow: 0 2px 30px rgba(26,16,13,0.35);
+    text-wrap: balance;
+    margin-bottom: 22px;
   }
-  .hero h1 em {
-    font-style: italic;
-    font-weight: 400;
-    color: var(--ouro-luz);
-  }
-  .hero-sub {
-    font-size: 20px;
-    font-weight: 400;
-    line-height: 1.6;
-    color: var(--marfim);
-    max-width: 500px;
-    margin-bottom: 38px;
-  }
-  .hero-ctas { display: flex; align-items: center; gap: 28px; flex-wrap: wrap; }
+  .hero h1 em { font-style: italic; color: var(--ouro-luz); }
+  .hero-sub { font-size: 19px; line-height: 1.6; color: var(--marfim); max-width: 470px; margin-bottom: 32px; }
+  .hero-ctas { display: flex; align-items: center; gap: 14px; flex-wrap: wrap; }
 
-  /* ── faixa de fatos: a prova social, fora da foto ───────────────────── */
+
+  /* ── faixa de fatos: flutua sobre a borda do hero ───────────────────── */
+  .faixa-fatos { z-index: 2; margin-top: -52px; }
+  .faixa-fatos .env { position: relative; z-index: 1; }
   .fatos {
-    background: var(--espresso);
-    color: var(--marfim);
-    padding: 44px 0;
-    border-top: 1px solid rgba(184,147,78,0.35);
-    border-bottom: 1px solid rgba(184,147,78,0.2);
-  }
-  .fatos .env {
+    border-radius: var(--raio-g);
+    background: linear-gradient(180deg, var(--espresso-2), var(--espresso));
+    border: 1px solid rgba(230,207,152,0.22);
+    box-shadow: 0 40px 80px -40px rgba(26,16,13,0.7), inset 0 1px 0 rgba(255,255,255,0.06);
+    padding: 36px 40px;
     display: grid;
     grid-template-columns: repeat(4, 1fr);
-    gap: 32px;
+    gap: 24px;
+    color: var(--marfim);
     text-align: center;
   }
   .fato { position: relative; }
   .fato + .fato::before {
-    content: "";
-    position: absolute;
-    left: -16px;
-    top: 10%;
-    height: 80%;
-    width: 1px;
-    background: rgba(184,147,78,0.28);
+    content: ""; position: absolute; left: -12px; top: 12%; height: 76%; width: 1px;
+    background: linear-gradient(to bottom, transparent, rgba(230,207,152,0.4), transparent);
   }
   .fato-num {
-    font-family: var(--display);
-    font-weight: 400;
-    font-variation-settings: "opsz" 144;
-    font-size: 46px;
-    color: var(--ouro-luz);
-    line-height: 1;
+    font-family: var(--display); font-weight: 400; font-variation-settings: "opsz" 144;
+    font-size: 44px; line-height: 1; color: var(--ouro-luz);
   }
   .fato-rotulo {
-    font-size: 13px;
-    font-weight: 500;
-    letter-spacing: 0.2em;
-    text-transform: uppercase;
-    color: var(--marfim-2);
-    margin-top: 12px;
+    font-size: 13px; font-weight: 500; letter-spacing: 0.2em; text-transform: uppercase;
+    color: var(--marfim-2); margin-top: 10px;
   }
 
   /* ── cabeçalho de seção ─────────────────────────────────────────────── */
-  section { padding: 120px 0; }
-  .cabeca { max-width: 680px; margin-bottom: 64px; }
-  .cabeca .etiqueta { margin-bottom: 20px; }
+  section { padding: 128px 0; overflow: hidden; }
+  .cabeca { max-width: 700px; margin-bottom: 56px; }
+  .cabeca .etiqueta { margin-bottom: 18px; }
   .cabeca h2 {
-    font-family: var(--display);
-    font-weight: 400;
-    font-variation-settings: "opsz" 144;
-    font-size: clamp(36px, 4.4vw, 56px);
-    line-height: 1.08;
-    letter-spacing: -0.01em;
-    color: var(--tinta);
+    font-family: var(--display); font-weight: 400; font-variation-settings: "opsz" 144;
+    font-size: clamp(38px, 4.6vw, 60px); line-height: 1.04; letter-spacing: -0.015em;
+    color: var(--tinta); text-wrap: balance;
   }
-  .cabeca p {
-    margin-top: 20px;
-    color: var(--tinta-2);
-    font-size: 18px;
-    line-height: 1.7;
-    max-width: 560px;
-  }
+  .cabeca p { margin-top: 20px; color: var(--tinta-2); font-size: 18px; max-width: 560px; }
   .escuro .cabeca h2 { color: var(--marfim); }
   .escuro .cabeca p { color: var(--marfim-2); }
 
-  /* ── o menu: tratamentos como menu-degustação ───────────────────────── */
-  .menu-grade {
+  /* ── o menu como bento ───────────────────────────────────────────────── */
+  .menu { background: linear-gradient(180deg, var(--porcelana) 0%, var(--rosa) 100%); }
+  .menu .orbe-rosa { width: 620px; height: 620px; left: -220px; top: 140px; }
+  .menu .orbe-ouro { width: 520px; height: 520px; right: -180px; bottom: -120px; opacity: 0.6; }
+  .bento {
     display: grid;
-    grid-template-columns: repeat(3, 1fr);
-    gap: 56px;
+    grid-template-columns: repeat(12, 1fr);
+    gap: 22px;
   }
-  .ato { border-top: 1px solid var(--ouro); padding-top: 26px; }
-  .ato-num {
-    font-family: var(--display);
-    font-style: italic;
-    font-size: 17px;
-    color: var(--bronze);
+  .tile {
+    border-radius: 32px;
+    padding: 36px 36px 34px;
+    transition: transform 0.3s ease, box-shadow 0.3s ease;
   }
-  .ato h3 {
-    font-family: var(--display);
-    font-weight: 500;
-    font-size: 30px;
-    line-height: 1.1;
-    margin: 8px 0 22px;
-    color: var(--tinta);
+  .tile:hover { transform: translateY(-4px); }
+  .tile-4 { grid-column: span 4; }
+  .tile-5 { grid-column: span 5; }
+  .tile-7 { grid-column: span 7; }
+  .tile-8 { grid-column: span 8; }
+  .ato-num { font-family: var(--display); font-style: italic; font-size: 17px; color: var(--bronze); }
+  .tile h3 {
+    font-family: var(--display); font-weight: 500; font-size: 30px; line-height: 1.1;
+    margin: 6px 0 20px; color: var(--tinta);
   }
-  .ato ul { list-style: none; }
-  .ato li { border-bottom: 1px solid var(--linha); }
-  .ato li a {
-    display: flex;
-    justify-content: space-between;
-    align-items: baseline;
-    gap: 14px;
-    padding: 14px 0;
-    transition: padding-left 0.18s ease;
+  .tile ul { list-style: none; }
+  .tile.duas ul { columns: 2; column-gap: 40px; }
+  .tile li { break-inside: avoid; border-bottom: 1px solid rgba(26,16,13,0.09); }
+  .tile li a {
+    display: flex; justify-content: space-between; align-items: baseline; gap: 14px;
+    padding: 13px 0; transition: padding-left 0.18s ease;
   }
-  .ato li a:hover { padding-left: 8px; }
-  .ato li a:hover .prato { color: var(--bronze); }
+  .tile li a:hover { padding-left: 6px; }
+  .tile li a:hover .prato { color: var(--bronze); }
   .prato { font-size: 17px; font-weight: 500; color: var(--tinta); }
-  .prato-nota {
-    font-size: 14px;
-    font-weight: 400;
-    letter-spacing: 0.06em;
-    color: var(--tinta-2);
-    white-space: nowrap;
+  .prato-nota { font-size: 14px; letter-spacing: 0.06em; color: var(--tinta-2); white-space: nowrap; }
+
+  /* o convite de setembro é um tile escuro dentro do bento */
+  .tile-setembro {
+    position: relative; overflow: hidden;
+    color: var(--marfim);
+    background: linear-gradient(135deg, var(--espresso-3) 0%, var(--espresso) 60%, #120A07 100%);
+    border: 1px solid rgba(230,207,152,0.28);
+    box-shadow: 0 40px 80px -40px rgba(26,16,13,0.7), inset 0 1px 0 rgba(255,255,255,0.08);
+    display: flex; flex-direction: column; justify-content: space-between; gap: 30px;
   }
-  .secao-cta { margin-top: 56px; display: flex; align-items: center; gap: 26px; flex-wrap: wrap; }
+  .tile-setembro .orbe { width: 380px; height: 380px; right: -120px; top: -140px; filter: blur(70px); }
+  .tile-setembro > *:not(.orbe) { position: relative; z-index: 1; }
+  .tile-setembro h3 {
+    font-family: var(--display); font-weight: 400; font-variation-settings: "opsz" 144;
+    font-size: clamp(32px, 3.2vw, 44px); line-height: 1.05; color: var(--marfim); margin: 10px 0 0;
+  }
+  .tile-setembro h3 em { font-style: italic; color: var(--ouro-luz); }
+  .especiais { display: flex; flex-wrap: wrap; gap: 10px; margin-top: 18px; }
+  .especial {
+    border-radius: 999px; padding: 9px 16px;
+    font-size: 13px; font-weight: 500; letter-spacing: 0.14em; text-transform: uppercase;
+    color: var(--marfim); background: rgba(246,238,227,0.08); border: 1px solid rgba(230,207,152,0.3);
+  }
+  .tile-setembro p { color: var(--marfim-2); font-size: 16px; }
+  .tile-setembro .ctas { display: flex; gap: 12px; flex-wrap: wrap; }
+  .secao-cta { margin-top: 44px; display: flex; align-items: center; gap: 22px; flex-wrap: wrap; }
   .nota-suave { font-size: 16px; color: var(--tinta-2); }
 
-  /* ── setembro: o convite ────────────────────────────────────────────── */
-  .setembro { background: var(--espresso); }
-  .convite {
-    max-width: 760px;
-    margin: 0 auto;
-    text-align: center;
-    color: var(--marfim);
-    border: 1px solid rgba(184,147,78,0.6);
-    outline: 1px solid rgba(184,147,78,0.22);
-    outline-offset: 7px;
-    padding: 72px 56px;
-    background: var(--espresso-2);
-  }
-  .convite .etiqueta { margin-bottom: 22px; }
-  .convite .etiqueta::before, .convite .etiqueta::after {
-    content: ""; width: 28px; height: 1px; background: var(--ouro);
-  }
-  .convite h2 {
-    font-family: var(--display);
-    font-weight: 400;
-    font-variation-settings: "opsz" 144;
-    font-size: clamp(36px, 4.6vw, 54px);
-    line-height: 1.1;
-    color: var(--marfim);
-  }
-  .convite h2 em { font-style: italic; color: var(--ouro-luz); }
-  .convite-lista {
-    display: flex;
-    justify-content: center;
-    gap: 14px 30px;
-    flex-wrap: wrap;
-    margin: 30px 0 14px;
-    font-size: 15px;
-    font-weight: 500;
-    letter-spacing: 0.18em;
-    text-transform: uppercase;
-    color: var(--marfim);
-  }
-  .convite-lista span::before { content: "·"; color: var(--ouro); margin-right: 30px; }
-  .convite-lista span:first-child::before { content: ""; margin: 0; }
-  .convite-nota { font-size: 16px; color: var(--marfim-2); margin-bottom: 36px; }
-  .convite-ctas { display: flex; justify-content: center; align-items: center; gap: 28px; flex-wrap: wrap; }
-
-  /* ── the youthtopia card: a assinatura ──────────────────────────────── */
-  .clube { background: var(--rosa); }
+  /* ── o cartão: palco escuro, vidro e brilho ─────────────────────────── */
+  .clube { background: var(--espresso); color: var(--marfim); }
+  .clube .orbe-rosa { width: 760px; height: 760px; right: -240px; top: -200px; opacity: 0.55; }
+  .clube .orbe-ouro { width: 520px; height: 520px; left: -200px; bottom: -180px; }
   .clube-grade {
     display: grid;
-    grid-template-columns: minmax(0, 1.05fr) minmax(0, 1fr);
+    grid-template-columns: minmax(0, 1fr) minmax(0, 1fr);
     gap: 72px;
     align-items: center;
   }
   .clube h2 {
-    font-family: var(--display);
-    font-weight: 400;
-    font-variation-settings: "opsz" 144;
-    font-size: clamp(36px, 4vw, 52px);
-    line-height: 1.08;
-    letter-spacing: -0.01em;
-    margin: 20px 0 20px;
-    color: var(--tinta);
+    font-family: var(--display); font-weight: 400; font-variation-settings: "opsz" 144;
+    font-size: clamp(38px, 4.2vw, 56px); line-height: 1.04; letter-spacing: -0.015em;
+    margin: 18px 0 18px; color: var(--marfim); text-wrap: balance;
   }
-  .clube-sub { color: var(--tinta-2); font-size: 18px; max-width: 480px; margin-bottom: 34px; }
+  .clube-sub { color: var(--marfim-2); font-size: 18px; max-width: 480px; margin-bottom: 32px; }
 
-  .cartao-palco { display: flex; justify-content: center; padding: 36px 0; }
+  /* área da cliente: painel de vidro escuro */
+  .area { border-radius: var(--raio); overflow: hidden; }
+  .area-topo {
+    display: flex; justify-content: space-between; align-items: center;
+    padding: 16px 24px; border-bottom: 1px solid rgba(246,238,227,0.12);
+    font-size: 13px; font-weight: 600; letter-spacing: 0.18em; text-transform: uppercase;
+    color: var(--marfim-2);
+  }
+  .area-pontos { color: var(--ouro-luz); }
+  .area-corpo { padding: 22px 24px; display: grid; gap: 16px; }
+  .passo { display: flex; gap: 14px; align-items: baseline; font-size: 16px; }
+  .passo-ponto { width: 10px; height: 10px; border-radius: 50%; background: var(--ouro-luz); flex-shrink: 0; position: relative; top: 1px; box-shadow: 0 0 0 4px rgba(230,207,152,0.16); }
+  .passo-ponto.vazio { background: transparent; border: 1.5px solid var(--ouro-luz); box-shadow: none; }
+  .passo b { font-weight: 600; color: var(--marfim); }
+  .passo span { color: var(--marfim-2); font-size: 15px; }
+  .area-nota {
+    margin: 2px 24px 24px; padding: 13px 16px; border-radius: 14px;
+    background: rgba(230,207,152,0.12); border: 1px solid rgba(230,207,152,0.28);
+    font-size: 15px; font-weight: 500; color: var(--marfim);
+  }
+
+  /* o cartão em si, com perspectiva */
+  .cartao-palco { display: flex; justify-content: center; padding: 30px 0; perspective: 1400px; }
   .cartao {
-    width: min(420px, 100%);
+    width: min(440px, 100%);
     aspect-ratio: 1.586;
-    border-radius: 16px;
+    border-radius: 22px;
     padding: 30px 32px;
     color: var(--marfim);
     background:
-      radial-gradient(380px 220px at 85% -20%, rgba(203,164,92,0.30), transparent 65%),
-      linear-gradient(128deg, #3A2820 0%, var(--espresso) 55%, #120A07 100%);
+      linear-gradient(115deg, rgba(255,255,255,0.10) 0%, rgba(255,255,255,0) 40%),
+      radial-gradient(420px 240px at 85% -20%, rgba(203,164,92,0.34), transparent 65%),
+      linear-gradient(128deg, #3A2820 0%, var(--espresso) 55%, #0E0705 100%);
+    border: 1px solid rgba(230,207,152,0.32);
     box-shadow:
-      0 40px 70px -28px rgba(26,16,13,0.6),
-      inset 0 0 0 1px rgba(230,207,152,0.18);
-    transform: rotate(-3deg);
-    display: flex;
-    flex-direction: column;
-    justify-content: space-between;
+      0 60px 100px -40px rgba(0,0,0,0.8),
+      0 0 0 1px rgba(0,0,0,0.4),
+      0 30px 80px -30px rgba(203,164,92,0.35);
+    transform: rotateY(-14deg) rotateX(8deg) rotateZ(-2deg);
+    transform-style: preserve-3d;
+    transition: transform 0.6s cubic-bezier(.2,.8,.2,1);
+    display: flex; flex-direction: column; justify-content: space-between;
   }
+  .cartao-palco:hover .cartao { transform: rotateY(-6deg) rotateX(3deg) rotateZ(-1deg); }
   .cartao-topo { display: flex; justify-content: space-between; align-items: flex-start; }
-  .cartao-marca {
-    font-family: var(--display);
-    font-weight: 500;
-    font-size: 22px;
-    letter-spacing: 0.02em;
-    color: var(--marfim);
-    line-height: 1.1;
-  }
+  .cartao-marca { font-family: var(--display); font-weight: 500; font-size: 22px; line-height: 1.1; color: var(--marfim); }
   .cartao-marca small {
-    display: block;
-    font-family: var(--corpo);
-    font-weight: 500;
-    font-size: 13px;
-    letter-spacing: 0.3em;
-    text-transform: uppercase;
-    color: var(--ouro-luz);
-    margin-top: 6px;
+    display: block; font-family: var(--corpo); font-weight: 500; font-size: 12px;
+    letter-spacing: 0.3em; text-transform: uppercase; color: var(--ouro-luz); margin-top: 6px;
   }
-  .chip {
-    width: 48px;
-    height: 36px;
-    border-radius: 7px;
+  .chip-cartao {
+    width: 48px; height: 36px; border-radius: 8px;
     background: linear-gradient(135deg, var(--ouro-luz), var(--ouro-botao) 55%, #9A7A44);
-    box-shadow: inset 0 0 0 1px rgba(26,16,13,0.35);
+    box-shadow: inset 0 0 0 1px rgba(26,16,13,0.35), 0 4px 10px -4px rgba(0,0,0,0.6);
   }
-  .cartao-nome {
-    font-size: 16px;
-    font-weight: 500;
-    letter-spacing: 0.24em;
-    text-transform: uppercase;
-    color: var(--marfim);
-  }
+  .cartao-nome { font-size: 16px; font-weight: 500; letter-spacing: 0.24em; text-transform: uppercase; color: var(--marfim); }
   .cartao-rodape {
-    display: flex;
-    justify-content: space-between;
-    font-size: 13px;
-    font-weight: 500;
-    letter-spacing: 0.18em;
-    text-transform: uppercase;
-    color: var(--ouro-luz);
+    display: flex; justify-content: space-between;
+    font-size: 13px; font-weight: 500; letter-spacing: 0.18em; text-transform: uppercase; color: var(--ouro-luz);
   }
 
-  /* mock da área da cliente */
-  .area {
-    background: var(--porcelana);
-    border: 1px solid var(--linha);
-    border-radius: 12px;
-    box-shadow: 0 28px 50px -34px rgba(26,16,13,0.4);
-    overflow: hidden;
+  /* ── the house: tiles de vidro com retrato circular ─────────────────── */
+  .casa { background: linear-gradient(180deg, var(--rosa) 0%, var(--porcelana) 60%); }
+  .casa .orbe-ouro { width: 560px; height: 560px; left: 30%; top: -260px; opacity: 0.5; }
+  .casa-grade { display: grid; grid-template-columns: repeat(6, 1fr); gap: 18px; }
+  .pessoa {
+    border-radius: var(--raio);
+    padding: 22px 16px 22px;
+    text-align: center;
+    transition: transform 0.3s ease;
   }
-  .area-topo {
-    display: flex;
-    justify-content: space-between;
-    align-items: center;
-    padding: 16px 22px;
-    background: var(--porcelana-2);
-    border-bottom: 1px solid var(--linha);
-    font-size: 13px;
-    font-weight: 600;
-    letter-spacing: 0.18em;
-    text-transform: uppercase;
-    color: var(--tinta-2);
-  }
-  .area-pontos { color: var(--bronze); }
-  .area-corpo { padding: 22px; display: grid; gap: 16px; }
-  .passo { display: flex; gap: 14px; align-items: baseline; font-size: 16px; }
-  .passo-ponto {
-    width: 10px; height: 10px; border-radius: 50%;
-    background: var(--ouro);
-    flex-shrink: 0;
-    position: relative;
-    top: 1px;
-  }
-  .passo-ponto.vazio { background: transparent; border: 1.5px solid var(--ouro); }
-  .passo b { font-weight: 600; color: var(--tinta); }
-  .passo span { color: var(--tinta-2); font-size: 15px; }
-  .area-nota {
-    margin: 4px 22px 22px;
-    padding: 13px 16px;
-    background: var(--rosa);
-    border-radius: 8px;
-    font-size: 15px;
-    font-weight: 500;
-    color: var(--tinta);
-  }
-
-  /* ── the house: retratos ────────────────────────────────────────────── */
-  .casa-grade {
-    display: grid;
-    grid-template-columns: repeat(6, 1fr);
-    gap: 34px 24px;
-  }
-  .pessoa { text-align: center; }
+  .pessoa:hover { transform: translateY(-4px); }
   .pessoa img {
-    width: 100%;
-    max-width: 156px;
-    margin: 0 auto 16px;
-    border-radius: 50%;
-    border: 1px solid var(--ouro);
-    padding: 6px;
-    background: var(--porcelana);
+    width: 100%; max-width: 132px; aspect-ratio: 1; object-fit: cover;
+    margin: 0 auto 16px; border-radius: 50%;
+    border: 1px solid var(--ouro); padding: 5px; background: var(--porcelana);
+    box-shadow: 0 18px 30px -20px rgba(26,16,13,0.5);
   }
-  .pessoa-nome {
-    font-family: var(--display);
-    font-weight: 500;
-    font-size: 19px;
-    line-height: 1.2;
-    color: var(--tinta);
-  }
-  .pessoa-cargo {
-    font-size: 13px;
-    font-weight: 500;
-    letter-spacing: 0.14em;
-    text-transform: uppercase;
-    color: var(--bronze);
-    margin-top: 6px;
-  }
+  .pessoa-nome { font-family: var(--display); font-weight: 500; font-size: 18px; line-height: 1.2; color: var(--tinta); }
+  .pessoa-cargo { font-size: 12.5px; font-weight: 500; letter-spacing: 0.12em; text-transform: uppercase; color: var(--bronze); margin-top: 6px; }
 
-  /* ── a citação ──────────────────────────────────────────────────────── */
-  .voz { background: var(--porcelana); padding-top: 24px; }
-  .voz-molde { max-width: 900px; margin: 0 auto; text-align: center; }
-  .estrelas { color: var(--bronze); font-size: 24px; letter-spacing: 0.32em; margin-bottom: 30px; }
+  /* ── a citação, num painel de vidro ─────────────────────────────────── */
+  .voz { padding-top: 0; }
+  .voz .orbe-rosa { width: 520px; height: 520px; right: -160px; top: 0; opacity: 0.6; }
+  .voz-molde {
+    max-width: 920px; margin: 0 auto; text-align: center;
+    border-radius: var(--raio-g); padding: 60px 64px;
+  }
+  .estrelas { color: var(--bronze); font-size: 22px; letter-spacing: 0.32em; margin-bottom: 26px; }
   .voz blockquote {
-    font-family: var(--display);
-    font-style: italic;
-    font-weight: 400;
-    font-variation-settings: "opsz" 144;
-    font-size: clamp(26px, 3.4vw, 40px);
-    line-height: 1.32;
-    color: var(--tinta);
+    font-family: var(--display); font-style: italic; font-weight: 400; font-variation-settings: "opsz" 144;
+    font-size: clamp(26px, 3.2vw, 38px); line-height: 1.3; color: var(--tinta); text-wrap: balance;
   }
-  .voz figcaption {
-    margin-top: 28px;
-    font-size: 13px;
-    font-weight: 600;
-    letter-spacing: 0.22em;
-    text-transform: uppercase;
-    color: var(--tinta-2);
-  }
+  .voz figcaption { margin-top: 26px; font-size: 13px; font-weight: 600; letter-spacing: 0.22em; text-transform: uppercase; color: var(--tinta-2); }
 
-  /* ── shop: vitrine curada, links deles mesmos ───────────────────────── */
-  .vitrine-grade {
-    display: grid;
-    grid-template-columns: repeat(4, 1fr);
-    gap: 24px;
-  }
+  /* ── shop: tiles com botão redondo ───────────────────────────────────── */
+  .vitrine { background: var(--porcelana); }
+  .vitrine .orbe-ouro { width: 480px; height: 480px; left: -160px; bottom: -200px; opacity: 0.5; }
+  .vitrine-grade { display: grid; grid-template-columns: repeat(4, 1fr); gap: 18px; }
   .marca-tile {
-    border: 1px solid var(--linha);
-    background: var(--porcelana-2);
-    padding: 38px 30px 32px;
-    transition: transform 0.2s ease, box-shadow 0.2s ease, border-color 0.2s ease;
+    border-radius: var(--raio); padding: 32px 28px 28px;
+    display: flex; flex-direction: column; gap: 10px;
+    transition: transform 0.3s ease, border-color 0.3s ease, box-shadow 0.3s ease;
   }
-  .marca-tile:hover {
-    transform: translateY(-4px);
-    border-color: var(--ouro);
-    box-shadow: 0 26px 40px -28px rgba(26,16,13,0.45);
+  .marca-tile:hover { transform: translateY(-4px); border-color: rgba(184,147,78,0.5); }
+  .marca-tile-nome { font-family: var(--display); font-weight: 500; font-size: 23px; line-height: 1.15; color: var(--tinta); }
+  .marca-tile-nota { font-size: 13px; font-weight: 500; letter-spacing: 0.12em; text-transform: uppercase; color: var(--tinta-2); }
+  .marca-tile-seta {
+    margin-top: 18px; width: 40px; height: 40px; border-radius: 50%;
+    display: inline-flex; align-items: center; justify-content: center;
+    color: var(--bronze); font-size: 18px;
+    background: rgba(26,16,13,0.05); border: 1px solid rgba(26,16,13,0.12);
+    transition: background 0.25s ease, color 0.25s ease;
   }
-  .marca-tile-nome {
-    font-family: var(--display);
-    font-weight: 500;
-    font-size: 23px;
-    line-height: 1.15;
-    color: var(--tinta);
-  }
-  .marca-tile-nota {
-    font-size: 13px;
-    font-weight: 500;
-    letter-spacing: 0.12em;
-    text-transform: uppercase;
-    color: var(--tinta-2);
-    margin-top: 12px;
-  }
-  .marca-tile-seta { margin-top: 26px; color: var(--bronze); font-size: 20px; }
+  .marca-tile:hover .marca-tile-seta { background: var(--espresso); color: var(--ouro-luz); border-color: var(--espresso); }
 
-  /* ── concierge ──────────────────────────────────────────────────────── */
+  /* ── concierge: três painéis de vidro no escuro ─────────────────────── */
   .concierge { background: var(--espresso); color: var(--marfim); }
-  .concierge-grade {
-    display: grid;
-    grid-template-columns: 1.2fr 1fr 1fr;
-    gap: 60px;
+  .concierge .orbe-ouro { width: 640px; height: 640px; right: -240px; top: -220px; opacity: 0.7; }
+  .concierge .orbe-rosa { width: 520px; height: 520px; left: -220px; bottom: -220px; opacity: 0.35; }
+  .concierge-grade { display: grid; grid-template-columns: 1.15fr 1fr 1fr; gap: 18px; }
+  .painel { border-radius: var(--raio); padding: 30px 30px 30px; }
+  .painel h4 {
+    font-size: 13px; font-weight: 600; letter-spacing: 0.22em; text-transform: uppercase;
+    color: var(--ouro-luz); margin-bottom: 18px;
   }
-  .concierge h4 {
-    font-size: 13px;
-    font-weight: 600;
-    letter-spacing: 0.22em;
-    text-transform: uppercase;
-    color: var(--ouro-luz);
-    margin-bottom: 20px;
-  }
-  .concierge address { font-style: normal; line-height: 1.75; font-size: 17px; color: var(--marfim); }
-  .concierge a:hover { color: var(--ouro-luz); }
+  .painel address { font-style: normal; line-height: 1.75; font-size: 17px; color: var(--marfim); }
+  .painel a:hover { color: var(--ouro-luz); }
   .link-fino { border-bottom: 1px solid var(--ouro); padding-bottom: 2px; }
   .horas { width: 100%; border-collapse: collapse; font-size: 16px; }
-  .horas td { padding: 8px 0; border-bottom: 1px solid rgba(246,238,227,0.14); color: var(--marfim); }
+  .horas td { padding: 9px 0; border-bottom: 1px solid rgba(246,238,227,0.12); color: var(--marfim); }
+  .horas tr:last-child td { border-bottom: 0; }
   .horas td:last-child { text-align: right; color: var(--marfim-2); }
   .balao {
-    margin-top: 26px;
-    background: var(--espresso-2);
-    border: 1px solid rgba(184,147,78,0.5);
-    border-radius: 14px 14px 14px 3px;
-    padding: 16px 20px;
-    font-size: 15.5px;
-    line-height: 1.6;
-    max-width: 320px;
-    color: var(--marfim);
+    margin-top: 22px; padding: 14px 18px; border-radius: 16px 16px 16px 4px;
+    background: rgba(230,207,152,0.10); border: 1px solid rgba(230,207,152,0.3);
+    font-size: 15.5px; line-height: 1.6; color: var(--marfim);
   }
   .balao b { color: var(--ouro-luz); font-weight: 600; }
-  .fala { font-size: 17px; line-height: 1.75; }
+  .fala { font-size: 17px; line-height: 1.8; }
 
-  /* ── rodapé próprio ─────────────────────────────────────────────────── */
   .rodape { background: #120A07; color: var(--marfim-2); padding: 26px 0; font-size: 14px; }
-  .rodape .env { display: flex; align-items: center; gap: 28px; flex-wrap: wrap; }
-  .rodape .marca-nome { font-size: 18px; color: var(--marfim); }
+  .rodape .env { display: flex; align-items: center; gap: 26px; flex-wrap: wrap; }
+  .rodape .marca-nome { font-size: 18px; }
   .rodape-fone { margin-left: auto; color: var(--marfim); }
 
+  /* ── reveal no scroll: começa visível, só ganha o movimento ao entrar ── */
+  @keyframes sobe { from { opacity: 0; transform: translateY(18px); } to { opacity: 1; transform: none; } }
+  [data-rv].rv-in { animation: sobe 0.8s cubic-bezier(.2,.8,.2,1) both; }
+  @media (prefers-reduced-motion: reduce) {
+    [data-rv].rv-in { animation: none; }
+    .cartao, .cartao-palco:hover .cartao { transform: none; }
+  }
+
   /* ── responsivo ─────────────────────────────────────────────────────── */
-  @media (max-width: 1024px) {
-    .barra nav { display: none; }
-    .menu-grade { grid-template-columns: 1fr; gap: 40px; }
+  @media (max-width: 1100px) {
+    .nav nav { display: none; }
+    .tile-4, .tile-5, .tile-7, .tile-8 { grid-column: span 6; }
     .casa-grade { grid-template-columns: repeat(3, 1fr); }
     .vitrine-grade { grid-template-columns: repeat(2, 1fr); }
-    .clube-grade { grid-template-columns: minmax(0, 1fr); gap: 52px; }
-    .concierge-grade { grid-template-columns: 1fr 1fr; gap: 44px; }
-    .fato + .fato::before { display: none; }
+    .clube-grade { grid-template-columns: minmax(0, 1fr); gap: 48px; }
+    .cartao { transform: rotateY(-8deg) rotateX(4deg) rotateZ(-1deg); }
+    .concierge-grade { grid-template-columns: 1fr 1fr; }
   }
   @media (max-width: 640px) {
-    .env { padding: 0 24px; }
+    :root { --raio: 22px; --raio-g: 26px; }
+    .env { padding: 0 20px; }
     body { font-size: 16px; }
-    section { padding: 80px 0; }
-    .barra { padding: 18px 0; }
-    .barra .env { gap: 16px; }
-    .barra-fone { display: none; }
-    .hero { min-height: 88vh; background-position: 58% 30%; align-items: flex-end; }
-    /* no celular a foto fica atrás do texto inteiro: o véu vem de baixo */
-    .hero::before {
-      background:
-        linear-gradient(to top,
-          rgba(26,16,13,0.96) 0%,
-          rgba(26,16,13,0.90) 42%,
-          rgba(26,16,13,0.55) 68%,
-          rgba(26,16,13,0.15) 100%);
-    }
-    .hero .env { padding-top: 60px; padding-bottom: 56px; }
-    .hero h1 { font-size: clamp(44px, 12vw, 56px); }
-    .hero-sub { font-size: 18px; }
-    .hero-ctas { gap: 18px 24px; }
-    .fatos { padding: 36px 0; }
-    .fatos .env { grid-template-columns: 1fr 1fr; gap: 28px 20px; }
-    .fato-num { font-size: 40px; }
-    .cabeca { margin-bottom: 44px; }
-    .cabeca p { font-size: 17px; }
-    .ato h3 { font-size: 28px; }
-    .casa-grade { grid-template-columns: repeat(2, 1fr); gap: 30px 20px; }
-    .vitrine-grade { grid-template-columns: 1fr; }
-    .concierge-grade { grid-template-columns: 1fr; gap: 40px; }
-    .convite { padding: 52px 26px; }
-    .convite-lista { gap: 10px 22px; }
-    .convite-lista span::before { margin-right: 22px; }
-    .cartao { transform: rotate(0); padding: 26px 26px; }
-    .cartao-nome { font-size: 15px; letter-spacing: 0.2em; }
-    .rodape-fone { margin-left: 0; }
-    .secao-cta { gap: 18px; }
+    section { padding: 84px 0; }
+    .nav .env { height: 68px; gap: 14px; }
+    .nav-fone { display: none; }
+    .nav .pilula { padding: 11px 18px; }
+    .marca-nome { font-size: 22px; }
     .marca-sub { font-size: 12px; letter-spacing: 0.22em; }
-    .barra .btn-ouro { padding: 12px 18px; }
-    /* o kicker do hero quebra em duas linhas no celular: sem o traço na
-       frente, a segunda linha não fica órfã de alinhamento */
-    .hero-kicker::before { display: none; }
+    .hero { margin-top: -68px; padding-top: 68px; min-height: 92vh; background-position: 58% 28%; }
+    .hero .env { padding-top: 40px; padding-bottom: 76px; }
+    .hero-vidro { padding: 28px 24px 26px; }
     .hero-kicker { letter-spacing: 0.18em; }
-    /* tiles da loja em linha: nome à esquerda, seta à direita, 3 linhas de
-       conteúdo não justificam uma caixa de 430px */
+    .hero-kicker::before { display: none; }
+    .hero h1 { font-size: clamp(40px, 11vw, 52px); }
+    .hero-sub { font-size: 17px; margin-bottom: 26px; }
+    .hero-ctas { gap: 10px; }
+    .hero-ctas .pilula { flex: 1 1 100%; justify-content: center; padding: 14px 20px; font-size: 12.5px; }
+    .faixa-fatos { margin-top: -40px; }
+    .fatos { grid-template-columns: 1fr 1fr; gap: 22px 16px; padding: 28px 22px; }
+    .fato + .fato::before { display: none; }
+    .fato-num { font-size: 38px; }
+    .cabeca { margin-bottom: 36px; }
+    .cabeca p { font-size: 17px; }
+    .bento { gap: 14px; }
+    .tile-4, .tile-5, .tile-7, .tile-8 { grid-column: span 12; }
+    .tile { padding: 26px 22px 24px; border-radius: 24px; }
+    .tile.duas ul { columns: 1; }
+    .tile h3 { font-size: 27px; }
+    .casa-grade { grid-template-columns: repeat(2, 1fr); gap: 12px; }
+    .pessoa { padding: 18px 10px 18px; }
+    .pessoa img { max-width: 108px; }
+    .voz-molde { padding: 36px 24px; }
+    .vitrine-grade { grid-template-columns: 1fr; gap: 12px; }
     .marca-tile {
-      display: grid;
-      grid-template-columns: minmax(0, 1fr) auto;
+      display: grid; grid-template-columns: minmax(0, 1fr) auto;
       grid-template-areas: "nome seta" "nota seta";
-      align-items: center;
-      column-gap: 18px;
-      padding: 20px 22px;
+      align-items: center; column-gap: 16px; padding: 18px 20px; gap: 4px 16px;
     }
-    /* o <br> vira espaço, não some: "Alastin Skincare" numa linha só */
-    .marca-tile-nome br { content: ""; }
-    .marca-tile-nome br::after { content: " "; }
     .marca-tile-nome { grid-area: nome; font-size: 21px; }
-    .marca-tile-nota { grid-area: nota; margin-top: 4px; }
+    .marca-tile-nota { grid-area: nota; }
     .marca-tile-seta { grid-area: seta; margin-top: 0; }
+    .concierge-grade { grid-template-columns: 1fr; gap: 14px; }
+    .painel { padding: 24px 22px; }
+    .cartao { transform: none; padding: 24px 24px; }
+    .cartao-palco { perspective: none; padding: 10px 0; }
+    .rodape-fone { margin-left: 0; }
+    .secao-cta { gap: 16px; }
   }
 </style>
 </head>
@@ -984,8 +841,8 @@
 </script>
 
 
-<!-- barra -->
-<header class="barra">
+<!-- nav de vidro -->
+<header class="nav">
   <div class="env">
     <div class="marca">
       <div class="marca-nome">Youthtopia</div>
@@ -998,48 +855,53 @@
       <a href="#casa">The house</a>
       <a href="#vitrine">Shop</a>
     </nav>
-    <a class="barra-fone" href="tel:+17706370428">(770) 637-0428</a>
-    <a class="btn-ouro" href="https://phorest.com/book/salons/youthtopiamedspa">Book now</a>
+    <a class="nav-fone" href="tel:+17706370428">(770) 637-0428</a>
+    <a class="pilula pilula-ouro" href="https://phorest.com/book/salons/youthtopiamedspa">Book now</a>
   </div>
 </header>
 
-<!-- hero: a foto que estava escondida no wp-content deles -->
+<!-- hero -->
 <section class="hero escuro">
+  <div class="orbe orbe-ouro"></div>
   <div class="env">
-    <div class="hero-molde">
+    <div class="hero-vidro vidro-escuro" data-rv>
       <div class="etiqueta hero-kicker">Alpharetta · Physician-led aesthetics</div>
       <h1>Where Alpharetta comes to <em>glow</em>.</h1>
       <p class="hero-sub">Thirteen years of quiet, medical-grade beauty, in a
         place that feels nothing like a clinic.</p>
       <div class="hero-ctas">
-        <a class="btn-ouro" href="https://phorest.com/book/salons/youthtopiamedspa">Book your visit</a>
-        <a class="btn-fantasma" href="https://youthtopiamedspa.com/monthly-specials/">September specials</a>
+        <a class="pilula pilula-ouro" href="https://phorest.com/book/salons/youthtopiamedspa">Book your visit</a>
+        <a class="pilula pilula-vidro" href="#setembro">September specials</a>
       </div>
     </div>
   </div>
 </section>
 
-<!-- faixa de fatos: a prova social, com fundo sólido e não sobre a foto -->
-<div class="fatos">
+<!-- fatos flutuando sobre a borda do hero -->
+<div class="faixa-fatos">
   <div class="env">
-    <div class="fato"><div class="fato-num">13</div><div class="fato-rotulo">Years in Alpharetta</div></div>
-    <div class="fato"><div class="fato-num">5.0</div><div class="fato-rotulo">Google rating</div></div>
-    <div class="fato"><div class="fato-num">11</div><div class="fato-rotulo">Specialists in house</div></div>
-    <div class="fato"><div class="fato-num">DO</div><div class="fato-rotulo">Physician-led, always</div></div>
+    <div class="fatos" data-rv>
+      <div class="fato"><div class="fato-num">13</div><div class="fato-rotulo">Years in Alpharetta</div></div>
+      <div class="fato"><div class="fato-num">5.0</div><div class="fato-rotulo">Google rating</div></div>
+      <div class="fato"><div class="fato-num">11</div><div class="fato-rotulo">Specialists in house</div></div>
+      <div class="fato"><div class="fato-num">DO</div><div class="fato-rotulo">Physician-led, always</div></div>
+    </div>
   </div>
 </div>
 
-<!-- o menu -->
-<section id="menu">
+<!-- o menu, como bento -->
+<section class="menu" id="menu">
+  <div class="orbe orbe-rosa"></div>
+  <div class="orbe orbe-ouro"></div>
   <div class="env">
-    <div class="cabeca">
+    <div class="cabeca" data-rv>
       <span class="etiqueta">The menu</span>
       <h2>Treatments, curated like a tasting menu.</h2>
       <p>Every protocol below is performed in-house by our injectors, nurses
         and aestheticians. Never franchised, never rushed.</p>
     </div>
-    <div class="menu-grade">
-      <div class="ato">
+    <div class="bento">
+      <div class="tile tile-4 vidro" data-rv>
         <span class="ato-num">Act I</span>
         <h3>Injectables</h3>
         <ul>
@@ -1049,7 +911,7 @@
           <li><a href="https://youthtopiamedspa.com/kybella/"><span class="prato">Kybella</span><span class="prato-nota">define</span></a></li>
         </ul>
       </div>
-      <div class="ato">
+      <div class="tile tile-8 vidro duas" data-rv>
         <span class="ato-num">Act II</span>
         <h3>Face</h3>
         <ul>
@@ -1060,7 +922,7 @@
           <li><a href="https://youthtopiamedspa.com/facials/"><span class="prato">HydraFacial &amp; Peels</span><span class="prato-nota">glow</span></a></li>
         </ul>
       </div>
-      <div class="ato">
+      <div class="tile tile-5 vidro" data-rv>
         <span class="ato-num">Act III</span>
         <h3>Body &amp; Wellness</h3>
         <ul>
@@ -1070,43 +932,44 @@
           <li><a href="https://youthtopiamedspa.com/tirzepatide/"><span class="prato">Tirzepatide Program</span><span class="prato-nota">wellness</span></a></li>
         </ul>
       </div>
+      <div class="tile tile-7 tile-setembro escuro" id="setembro" data-rv>
+        <div class="orbe orbe-ouro"></div>
+        <div>
+          <span class="etiqueta">This month at the house</span>
+          <h3>September at <em>Youthtopia</em></h3>
+          <div class="especiais">
+            <span class="especial">Halo</span><span class="especial">BBL</span><span class="especial">Injectables</span><span class="especial">Laser Hair</span>
+          </div>
+        </div>
+        <div>
+          <p>Members see it first. Specials unlock for VIP before anyone else.</p>
+          <div class="ctas" style="margin-top:18px">
+            <a class="pilula pilula-ouro" href="https://youthtopiamedspa.com/monthly-specials/">View specials</a>
+            <a class="pilula pilula-vidro" href="https://youthtopiamedspa.com/vip_membership">Become a member</a>
+          </div>
+        </div>
+      </div>
     </div>
-    <div class="secao-cta">
-      <a class="btn-tinta" href="https://youthtopiamedspa.com/menu-of-services/">See the full menu</a>
+    <div class="secao-cta" data-rv>
+      <a class="pilula pilula-tinta" href="https://youthtopiamedspa.com/menu-of-services/">See the full menu</a>
       <span class="nota-suave">New here? $50 off your first appointment.</span>
     </div>
   </div>
 </section>
 
-<!-- setembro: o convite -->
-<section class="setembro escuro" id="setembro">
-  <div class="env">
-    <div class="convite">
-      <span class="etiqueta">This month at the house</span>
-      <h2>September at <em>Youthtopia</em></h2>
-      <div class="convite-lista">
-        <span>Halo</span><span>BBL</span><span>Injectables</span><span>Laser Hair</span>
-      </div>
-      <p class="convite-nota">Members see it first. Specials unlock for VIP before anyone else.</p>
-      <div class="convite-ctas">
-        <a class="btn-ouro" href="https://youthtopiamedspa.com/monthly-specials/">View September specials</a>
-        <a class="btn-fantasma" href="https://youthtopiamedspa.com/vip_membership">Become a member</a>
-      </div>
-    </div>
-  </div>
-</section>
-
 <!-- the youthtopia card -->
-<section class="clube" id="clube">
+<section class="clube escuro" id="clube">
+  <div class="orbe orbe-rosa"></div>
+  <div class="orbe orbe-ouro"></div>
   <div class="env">
     <div class="clube-grade">
-      <div>
+      <div data-rv>
         <span class="etiqueta">Membership</span>
         <h2>A membership that feels like a black card.</h2>
         <p class="clube-sub">VIP members carry their whole story with the
           house: the plan, the progress, the perks. Sign in and it's all
           there. No calls, no guessing.</p>
-        <div class="area">
+        <div class="area vidro-escuro">
           <div class="area-topo">
             <span>Your glow plan</span>
             <span class="area-pontos">1,250 pts</span>
@@ -1119,11 +982,11 @@
           <div class="area-nota">✨ September specials are unlocked for you.</div>
         </div>
       </div>
-      <div class="cartao-palco">
+      <div class="cartao-palco" data-rv>
         <div class="cartao">
           <div class="cartao-topo">
             <div class="cartao-marca">Youthtopia<small>Med Spa</small></div>
-            <div class="chip"></div>
+            <div class="chip-cartao"></div>
           </div>
           <div class="cartao-nome">Emily B. · Member</div>
           <div class="cartao-rodape">
@@ -1137,22 +1000,23 @@
 </section>
 
 <!-- the house -->
-<section id="casa">
+<section class="casa" id="casa">
+  <div class="orbe orbe-ouro"></div>
   <div class="env">
-    <div class="cabeca">
+    <div class="cabeca" data-rv>
       <span class="etiqueta">The house</span>
       <h2>Injectors, nurses and aestheticians, under a medical director.</h2>
     </div>
     <div class="casa-grade">
-      <div class="pessoa"><img src="/c/youthtopia/fotos/tracy-round.png" alt="Tracy Olson"><div class="pessoa-nome">Tracy Olson</div><div class="pessoa-cargo">Founder</div></div>
-      <div class="pessoa"><img src="/c/youthtopia/fotos/mccabe.png" alt="Dr. Jessica McCabe"><div class="pessoa-nome">Jessica McCabe</div><div class="pessoa-cargo">DO · Medical Director</div></div>
-      <div class="pessoa"><img src="/c/youthtopia/fotos/kim.png" alt="Kim Murphy"><div class="pessoa-nome">Kim Murphy</div><div class="pessoa-cargo">PA · Injector</div></div>
-      <div class="pessoa"><img src="/c/youthtopia/fotos/kendra.png" alt="Kendra Dixon"><div class="pessoa-nome">Kendra Dixon</div><div class="pessoa-cargo">RN · Injector</div></div>
-      <div class="pessoa"><img src="/c/youthtopia/fotos/jen.png" alt="Jen Bogan"><div class="pessoa-nome">Jen Bogan</div><div class="pessoa-cargo">RN · Injector</div></div>
-      <div class="pessoa"><img src="/c/youthtopia/fotos/julia.png" alt="Julia Weirbach"><div class="pessoa-nome">Julia Weirbach</div><div class="pessoa-cargo">NP · Wellness</div></div>
+      <div class="pessoa vidro" data-rv><img src="/c/youthtopia/fotos/tracy-round.png" alt="Tracy Olson"><div class="pessoa-nome">Tracy Olson</div><div class="pessoa-cargo">Founder</div></div>
+      <div class="pessoa vidro" data-rv><img src="/c/youthtopia/fotos/mccabe.png" alt="Dr. Jessica McCabe"><div class="pessoa-nome">Jessica McCabe</div><div class="pessoa-cargo">DO · Medical Director</div></div>
+      <div class="pessoa vidro" data-rv><img src="/c/youthtopia/fotos/kim.png" alt="Kim Murphy"><div class="pessoa-nome">Kim Murphy</div><div class="pessoa-cargo">PA · Injector</div></div>
+      <div class="pessoa vidro" data-rv><img src="/c/youthtopia/fotos/kendra.png" alt="Kendra Dixon"><div class="pessoa-nome">Kendra Dixon</div><div class="pessoa-cargo">RN · Injector</div></div>
+      <div class="pessoa vidro" data-rv><img src="/c/youthtopia/fotos/jen.png" alt="Jen Bogan"><div class="pessoa-nome">Jen Bogan</div><div class="pessoa-cargo">RN · Injector</div></div>
+      <div class="pessoa vidro" data-rv><img src="/c/youthtopia/fotos/julia.png" alt="Julia Weirbach"><div class="pessoa-nome">Julia Weirbach</div><div class="pessoa-cargo">NP · Wellness</div></div>
     </div>
-    <div class="secao-cta">
-      <a class="btn-tinta" href="https://youthtopiamedspa.com/meet-the-team/">Meet the whole team</a>
+    <div class="secao-cta" data-rv>
+      <a class="pilula pilula-tinta" href="https://youthtopiamedspa.com/meet-the-team/">Meet the whole team</a>
       <span class="nota-suave">Eleven specialists. One standard.</span>
     </div>
   </div>
@@ -1160,8 +1024,9 @@
 
 <!-- a citação -->
 <section class="voz">
+  <div class="orbe orbe-rosa"></div>
   <div class="env">
-    <figure class="voz-molde">
+    <figure class="voz-molde vidro" data-rv>
       <div class="estrelas" aria-hidden="true">★★★★★</div>
       <blockquote>“Hands down one of the best experiences I've had. You can
         truly tell why this business has been around for 13 years.”</blockquote>
@@ -1171,38 +1036,39 @@
 </section>
 
 <!-- shop -->
-<section id="vitrine">
+<section class="vitrine" id="vitrine">
+  <div class="orbe orbe-ouro"></div>
   <div class="env">
-    <div class="cabeca">
+    <div class="cabeca" data-rv>
       <span class="etiqueta">The shop</span>
       <h2>The ritual continues at home.</h2>
       <p>Medical-grade skincare, curated by our providers and delivered by
         the brands themselves.</p>
     </div>
     <div class="vitrine-grade">
-      <a class="marca-tile" href="https://alastin.com">
+      <a class="marca-tile vidro" href="https://alastin.com" data-rv>
         <div class="marca-tile-nome">Alastin<br>Skincare</div>
         <div class="marca-tile-nota">Pre &amp; post-procedure</div>
         <div class="marca-tile-seta">↗</div>
       </a>
-      <a class="marca-tile" href="https://zoskinhealth.com">
+      <a class="marca-tile vidro" href="https://zoskinhealth.com" data-rv>
         <div class="marca-tile-nome">ZO Skin<br>Health</div>
         <div class="marca-tile-nota">Daily protocols</div>
         <div class="marca-tile-seta">↗</div>
       </a>
-      <a class="marca-tile" href="https://www.brilliantconnections.com">
+      <a class="marca-tile vidro" href="https://www.brilliantconnections.com" data-rv>
         <div class="marca-tile-nome">SkinMedica</div>
         <div class="marca-tile-nota">Growth-factor science</div>
         <div class="marca-tile-seta">↗</div>
       </a>
-      <a class="marca-tile" href="https://www.revisionskincare.com">
+      <a class="marca-tile vidro" href="https://www.revisionskincare.com" data-rv>
         <div class="marca-tile-nome">Revision<br>Skincare</div>
         <div class="marca-tile-nota">Clinically proven</div>
         <div class="marca-tile-seta">↗</div>
       </a>
     </div>
-    <div class="secao-cta">
-      <a class="btn-tinta" href="https://youthtopiamedspa.com/giftcard">Gift cards</a>
+    <div class="secao-cta" data-rv>
+      <a class="pilula pilula-tinta" href="https://youthtopiamedspa.com/giftcard">Gift cards</a>
       <span class="nota-suave">The easiest yes you'll ever give someone.</span>
     </div>
   </div>
@@ -1210,13 +1076,15 @@
 
 <!-- concierge -->
 <section class="concierge escuro">
+  <div class="orbe orbe-ouro"></div>
+  <div class="orbe orbe-rosa"></div>
   <div class="env">
-    <div class="cabeca">
+    <div class="cabeca" data-rv>
       <span class="etiqueta">Concierge</span>
       <h2>Come glow with us.</h2>
     </div>
     <div class="concierge-grade">
-      <div>
+      <div class="painel vidro-escuro" data-rv>
         <h4>Visit</h4>
         <address>
           33 Teasley St, Suite 115<br>
@@ -1226,7 +1094,7 @@
         <div class="balao"><b>Front desk:</b> Questions about a treatment?
           Text us. A real person answers.</div>
       </div>
-      <div>
+      <div class="painel vidro-escuro" data-rv>
         <h4>Hours</h4>
         <table class="horas">
           <tr><td>Monday</td><td>10 – 5</td></tr>
@@ -1236,14 +1104,14 @@
           <tr><td>Sunday</td><td>Closed</td></tr>
         </table>
       </div>
-      <div>
+      <div class="painel vidro-escuro" data-rv>
         <h4>Talk to us</h4>
         <p class="fala">
           <a class="link-fino" href="tel:+17706370428">(770) 637-0428</a><br><br>
           <a class="link-fino" href="mailto:info@youthtopiamedspa.com">info@youthtopiamedspa.com</a><br><br>
           <a class="link-fino" href="https://instagram.com/youthtopiamedspa">@youthtopiamedspa</a> · 6.1k
         </p>
-        <p style="margin-top:26px"><a class="btn-ouro" href="https://phorest.com/book/salons/youthtopiamedspa">Book your visit</a></p>
+        <p style="margin-top:24px"><a class="pilula pilula-ouro" href="https://phorest.com/book/salons/youthtopiamedspa">Book your visit</a></p>
       </div>
     </div>
   </div>
@@ -1257,6 +1125,21 @@
     <span class="rodape-fone">(770) 637-0428</span>
   </div>
 </div>
+
+<script>
+  // Reveal ao entrar na tela. Tudo começa visível: quem tira print da página
+  // inteira (o exportador) ou navega sem JS vê o layout completo do mesmo jeito.
+  (function () {
+    if (!("IntersectionObserver" in window)) return;
+    var alvos = document.querySelectorAll("[data-rv]");
+    var obs = new IntersectionObserver(function (entradas) {
+      entradas.forEach(function (e) {
+        if (e.isIntersecting) { e.target.classList.add("rv-in"); obs.unobserve(e.target); }
+      });
+    }, { rootMargin: "0px 0px -8% 0px", threshold: 0.12 });
+    alvos.forEach(function (el) { obs.observe(el); });
+  })();
+</script>
 
 
 <div class="rv-rodape">

@@ -23,21 +23,42 @@ const resultado = await p.evaluate(() => {
     return m ? [+m[1], +m[2], +m[3], m[4] === undefined ? 1 : +m[4]] : null;
   };
   const blend = (fg, bg) => { const a = fg[3]; return [0,1,2].map(i => Math.round(fg[i]*a + bg[i]*(1-a))); };
-  // fundo efetivo: sobe a árvore até achar cor opaca; imagem de fundo = desconhecido
+  // Fundo efetivo: sobe a árvore acumulando camadas. Cor sólida é uma camada;
+  // gradiente vira VÁRIAS candidatas (uma por parada de cor), porque o texto
+  // precisa ler sobre a pior delas. Só url() de imagem é de fato desconhecido.
+  const paradasDe = (bgImage) => {
+    const cores = [];
+    const re = /rgba?\([^)]+\)/g;
+    let m;
+    while ((m = re.exec(bgImage))) { const c = parse(m[0]); if (c) cores.push(c); }
+    return cores;
+  };
   const fundoDe = (el) => {
-    let cor = [255,255,255,1], img = false, n = el;
-    const camadas = [];
+    let img = false, n = el;
+    const camadas = []; // cada camada: lista de candidatas rgba
     while (n && n !== document.documentElement) {
       const cs = getComputedStyle(n);
       const bg = parse(cs.backgroundColor);
-      if (cs.backgroundImage !== "none" && !cs.backgroundImage.startsWith("linear-gradient(rgba(0, 0, 0, 0)")) img = true;
-      if (bg && bg[3] > 0) camadas.push(bg);
-      if (bg && bg[3] >= 1) break;
+      const bi = cs.backgroundImage;
+      if (bi !== "none") {
+        if (bi.includes("url(")) img = true;
+        const paradas = paradasDe(bi).filter(c => c[3] > 0);
+        if (paradas.length) camadas.push(paradas);
+      }
+      if (bg && bg[3] > 0) camadas.push([bg]);
+      const opaco = (bg && bg[3] >= 1) || (bi !== "none" && !bi.includes("url(") && paradasDe(bi).every(c => c[3] >= 1) && paradasDe(bi).length > 0);
+      if (opaco) break;
       n = n.parentElement;
     }
-    let base = [255,255,255];
-    for (const c of camadas.reverse()) base = blend(c, base);
-    return { cor: base, img };
+    // combina de baixo para cima; a cada camada, todas as candidatas anteriores
+    // recebem todas as paradas novas (produto cartesiano, limitado)
+    let candidatas = [[255,255,255]];
+    for (const camada of camadas.reverse()) {
+      const proximas = [];
+      for (const base of candidatas) for (const c of camada) proximas.push(blend(c, base));
+      candidatas = proximas.slice(0, 64);
+    }
+    return { candidatas, img };
   };
   const ratio = (a, b) => { const [l1, l2] = [lum(a), lum(b)].sort((x, y) => y - x); return (l1 + 0.05) / (l2 + 0.05); };
 
@@ -54,13 +75,18 @@ const resultado = await p.evaluate(() => {
     const r = el.getBoundingClientRect();
     if (r.width === 0 || r.height === 0) continue;
     const fg = parse(cs.color); if (!fg) continue;
-    const { cor: bgc, img } = fundoDe(el);
-    const fgb = blend(fg, bgc);
+    const { candidatas, img } = fundoDe(el);
+    // a pior candidata é a que vale: o texto tem que ler em todo o gradiente
+    let bgc = candidatas[0], fgb = blend(fg, bgc), c = Infinity;
+    for (const cand of candidatas) {
+      const f = blend(fg, cand);
+      const r = ratio(f, cand);
+      if (r < c) { c = r; bgc = cand; fgb = f; }
+    }
     const tam = parseFloat(cs.fontSize);
     const peso = +cs.fontWeight || 400;
     const grande = tam >= 24 || (tam >= 18.66 && peso >= 700);
     const minimo = grande ? 3 : 4.5;
-    const c = ratio(fgb, bgc);
     const chave = `${t.slice(0, 40)}|${cs.color}|${bgc}`;
     if (vistos.has(chave)) continue;
     vistos.set(chave, { texto: t.slice(0, 48), tam: Math.round(tam * 10) / 10, contraste: Math.round(c * 100) / 100, minimo, ok: c >= minimo, sobreImagem: img, cor: cs.color, fundo: `rgb(${bgc.join(",")})` });
