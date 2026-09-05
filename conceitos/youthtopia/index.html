@@ -572,8 +572,8 @@
   .mapa-chip span { display: block; font-size: 14px; color: var(--marfim-2); margin-top: 2px; }
   .mapa-chip .pilula { padding: 12px 20px; }
 
-  /* ── chat fictício: o "Text us" deles, em vidro ──────────────────────── */
-  .chat { position: fixed; right: 22px; bottom: 22px; z-index: 45; display: flex; flex-direction: column; align-items: flex-end; gap: 12px; }
+  /* ── chat fictício, modelo Instagram: conversa guiada, não formulário ─── */
+  .chat { position: fixed; right: 22px; bottom: 22px; z-index: 55; /* acima da faixa da RVLand (50): no celular o chat é tela cheia */ display: flex; flex-direction: column; align-items: flex-end; gap: 12px; }
   .chat-botao {
     display: inline-flex; align-items: center; gap: 12px;
     padding: 8px 20px 8px 8px; border-radius: 999px; cursor: pointer;
@@ -581,16 +581,17 @@
     color: var(--marfim); background: rgba(26,16,13,0.86);
     border: 1px solid rgba(230,207,152,0.3);
     -webkit-backdrop-filter: blur(18px); backdrop-filter: blur(18px);
-    box-shadow: 0 24px 50px -22px rgba(0,0,0,0.7), 0 0 0 0 rgba(203,164,92,0.0);
+    box-shadow: 0 24px 50px -22px rgba(0,0,0,0.7);
     transition: transform 0.25s ease, box-shadow 0.25s ease;
   }
   .chat-botao:hover { transform: translateY(-2px); box-shadow: 0 28px 56px -22px rgba(0,0,0,0.75), 0 0 0 6px rgba(203,164,92,0.12); }
   .chat-botao img { width: 40px; height: 40px; border-radius: 50%; object-fit: cover; border: 1px solid var(--ouro); }
   .chat-botao .ponto { width: 8px; height: 8px; border-radius: 50%; background: #7ED9A0; box-shadow: 0 0 0 4px rgba(126,217,160,0.18); }
   .chat-painel {
-    width: 380px; max-width: calc(100vw - 28px); max-height: min(720px, calc(100vh - 120px));
-    overflow: auto; border-radius: 28px;
-    background: rgba(26,16,13,0.9);
+    width: 380px; height: 560px; max-width: calc(100vw - 28px); max-height: calc(100vh - 100px);
+    padding: 0; /* era <section> e herdava os 128px de padding das seções */
+    display: flex; flex-direction: column; overflow: hidden; border-radius: 28px;
+    background: rgba(26,16,13,0.92);
     border: 1px solid rgba(230,207,152,0.24);
     -webkit-backdrop-filter: blur(24px) saturate(140%); backdrop-filter: blur(24px) saturate(140%);
     box-shadow: 0 50px 90px -40px rgba(0,0,0,0.85), inset 0 1px 0 rgba(255,255,255,0.08);
@@ -598,46 +599,76 @@
     transform-origin: bottom right;
     animation: chat-abre 0.35s cubic-bezier(.2,.8,.2,1) both;
   }
+  .chat-painel[hidden] { display: none; }
   @keyframes chat-abre { from { opacity: 0; transform: translateY(14px) scale(0.96); } to { opacity: 1; transform: none; } }
   .chat-topo {
-    display: flex; align-items: center; gap: 14px;
-    padding: 18px 18px 16px 20px; border-bottom: 1px solid rgba(246,238,227,0.12);
+    display: flex; align-items: center; gap: 12px; flex: none;
+    padding: 14px 14px 12px 16px; border-bottom: 1px solid rgba(246,238,227,0.12);
   }
-  .chat-topo img { width: 44px; height: 44px; border-radius: 50%; object-fit: cover; border: 1px solid var(--ouro); }
-  .chat-topo strong { display: block; font-family: var(--display); font-weight: 500; font-size: 19px; line-height: 1.1; }
-  .chat-topo small { display: block; font-size: 13px; color: var(--marfim-2); margin-top: 3px; }
-  .chat-fechar {
-    margin-left: auto; width: 36px; height: 36px; border-radius: 50%; cursor: pointer;
+  .chat-voltar { display: none; }
+  .chat-topo img { width: 42px; height: 42px; border-radius: 50%; object-fit: cover; border: 1px solid var(--ouro); }
+  .chat-topo strong { display: block; font-family: var(--display); font-weight: 500; font-size: 18px; line-height: 1.1; }
+  .chat-topo small { display: flex; align-items: center; gap: 6px; font-size: 12.5px; color: var(--marfim-2); margin-top: 3px; }
+  .chat-topo small::before { content: ""; width: 7px; height: 7px; border-radius: 50%; background: #7ED9A0; }
+  .chat-fechar, .chat-voltar {
+    width: 36px; height: 36px; border-radius: 50%; cursor: pointer; flex: none;
     background: rgba(246,238,227,0.08); border: 1px solid rgba(246,238,227,0.16);
-    color: var(--marfim); font-size: 20px; line-height: 1;
+    color: var(--marfim); font-size: 20px; line-height: 1; display: inline-flex; align-items: center; justify-content: center;
   }
-  .chat-aviso {
-    margin: 14px 18px 0; padding: 10px 14px; border-radius: 14px;
-    background: rgba(230,207,152,0.12); border: 1px solid rgba(230,207,152,0.3);
-    font-size: 13px; line-height: 1.5; color: var(--marfim);
+  .chat-fechar { margin-left: auto; }
+  .chat-preview {
+    flex: none; margin: 10px 14px 0; padding: 8px 12px; border-radius: 12px;
+    background: rgba(230,207,152,0.12); border: 1px solid rgba(230,207,152,0.28);
+    font-size: 12.5px; line-height: 1.45; color: var(--marfim);
   }
-  .chat-aviso b { color: var(--ouro-luz); font-weight: 600; }
-  .chat-corpo { padding: 14px 18px 18px; display: grid; gap: 12px; }
+  .chat-preview b { color: var(--ouro-luz); font-weight: 600; }
+  .chat-fio { flex: 1; overflow-y: auto; padding: 14px 14px 6px; display: flex; flex-direction: column; gap: 8px; scroll-behavior: smooth; }
   .bolha {
-    max-width: 92%; padding: 12px 16px; border-radius: 18px 18px 18px 4px;
+    max-width: 84%; padding: 11px 14px; border-radius: 18px 18px 18px 4px;
     background: rgba(246,238,227,0.10); border: 1px solid rgba(246,238,227,0.12);
-    font-size: 15px; line-height: 1.55; color: var(--marfim);
+    font-size: 15px; line-height: 1.5; color: var(--marfim);
+    animation: bolha-entra 0.25s ease both;
   }
-  .bolha-ok { border-color: rgba(230,207,152,0.4); background: rgba(230,207,152,0.12); }
-  .chat-form { display: grid; gap: 10px; }
-  .chat-form input, .chat-form select, .chat-form textarea {
-    width: 100%; font: inherit; font-size: 15px; color: var(--marfim);
+  .bolha b { color: var(--ouro-luz); font-weight: 600; }
+  .bolha.eu {
+    align-self: flex-end; border-radius: 18px 18px 4px 18px;
+    background: linear-gradient(135deg, rgba(230,207,152,0.22), rgba(203,164,92,0.18));
+    border-color: rgba(230,207,152,0.32);
+  }
+  @keyframes bolha-entra { from { opacity: 0; transform: translateY(6px); } to { opacity: 1; transform: none; } }
+  .digitando { display: inline-flex; gap: 4px; padding: 13px 16px; }
+  .digitando i { width: 6px; height: 6px; border-radius: 50%; background: var(--marfim-2); animation: pisca 1s infinite; }
+  .digitando i:nth-child(2) { animation-delay: 0.15s; } .digitando i:nth-child(3) { animation-delay: 0.3s; }
+  @keyframes pisca { 0%, 60%, 100% { opacity: 0.25; } 30% { opacity: 1; } }
+  .chat-chips { flex: none; display: flex; flex-wrap: wrap; gap: 8px; padding: 4px 14px 8px; }
+  .chat-chips:empty { display: none; }
+  .chip-resp {
+    cursor: pointer; font: inherit; font-size: 13.5px; font-weight: 500; color: var(--marfim);
+    padding: 9px 14px; border-radius: 999px;
+    background: rgba(246,238,227,0.08); border: 1px solid rgba(230,207,152,0.4);
+    transition: background 0.2s ease, transform 0.2s ease;
+  }
+  .chip-resp:hover { background: rgba(230,207,152,0.18); transform: translateY(-1px); }
+  .chat-composer {
+    flex: none; display: flex; align-items: center; gap: 8px;
+    padding: 10px 12px 12px; border-top: 1px solid rgba(246,238,227,0.12);
+  }
+  .chat-composer input {
+    flex: 1; min-width: 0; font: inherit; font-size: 15px; color: var(--marfim);
     background: rgba(246,238,227,0.08); border: 1px solid rgba(246,238,227,0.18);
-    border-radius: 14px; padding: 12px 14px; outline: none; color-scheme: dark;
+    border-radius: 999px; padding: 12px 16px; outline: none;
   }
-  .chat-form input:focus, .chat-form select:focus, .chat-form textarea:focus { border-color: var(--ouro-luz); box-shadow: 0 0 0 3px rgba(230,207,152,0.16); }
-  .chat-form ::placeholder { color: var(--marfim-2); }
-  .chat-form textarea { resize: vertical; min-height: 78px; }
-  .chat-consent { display: flex; gap: 10px; align-items: flex-start; font-size: 13px; line-height: 1.5; color: var(--marfim-2); }
-  .chat-consent input { width: 18px; height: 18px; margin-top: 2px; flex-shrink: 0; accent-color: var(--ouro-botao); }
-  .chat-form .pilula { justify-content: center; }
-  .chat-erro { font-size: 13px; color: #F3B8A6; }
-  .chat-rodape { padding: 0 18px 16px; font-size: 12px; color: var(--marfim-2); text-align: center; }
+  .chat-composer input:focus { border-color: var(--ouro-luz); box-shadow: 0 0 0 3px rgba(230,207,152,0.16); }
+  .chat-composer input::placeholder { color: var(--marfim-2); }
+  .chat-composer input:disabled { opacity: 0.5; }
+  .chat-enviar {
+    width: 44px; height: 44px; border-radius: 50%; flex: none; cursor: pointer;
+    background: linear-gradient(135deg, var(--ouro-luz), var(--ouro-botao) 60%, #B48D47);
+    border: 0; color: var(--espresso); font-size: 18px; display: inline-flex; align-items: center; justify-content: center;
+    box-shadow: 0 10px 20px -10px rgba(203,164,92,0.7);
+  }
+  .chat-enviar:disabled { opacity: 0.4; cursor: default; }
+  .chat-rodape { flex: none; padding: 0 14px 10px; font-size: 11.5px; color: var(--marfim-2); text-align: center; }
 
   /* ── reveal no scroll: começa visível, só ganha o movimento ao entrar ── */
   @keyframes sobe { from { opacity: 0; transform: translateY(18px); } to { opacity: 1; transform: none; } }
@@ -752,11 +783,26 @@
     .mapa-chip strong { font-size: 15px; }
     .mapa-chip span { font-size: 13px; }
     .mapa-chip .pilula { padding: 11px 16px; font-size: 12px; flex-shrink: 0; }
-    /* o chat sobe para não brigar com o dock */
+    /* o chat fechado sobe para não brigar com o dock; aberto, vira a tela
+       inteira (modelo Instagram) e botão e dock somem */
     .chat { right: 12px; bottom: 82px; }
     .chat-botao span.rotulo { display: none; }
     .chat-botao { padding: 6px; }
-    .chat-painel { width: calc(100vw - 24px); max-height: calc(100vh - 170px); border-radius: 24px; }
+    .chat-painel {
+      position: fixed; inset: 0; width: auto; height: 100dvh; max-width: none; max-height: none;
+      border-radius: 0; border: 0; transform-origin: center bottom;
+      background: rgba(26,16,13,0.97);
+    }
+    .chat-topo { padding: 12px 14px 12px 8px; padding-top: max(12px, env(safe-area-inset-top)); }
+    .chat-voltar { display: inline-flex; background: transparent; border: 0; font-size: 26px; }
+    .chat-fechar { display: none; }
+    .chat-fio { padding: 16px 16px 8px; gap: 10px; }
+    .bolha { max-width: 82%; font-size: 16px; }
+    .chat-composer { padding: 10px 12px; padding-bottom: max(12px, env(safe-area-inset-bottom)); }
+    .chat-composer input { font-size: 16px; padding: 13px 16px; } /* 16px evita o zoom do iOS */
+    .chat-rodape { padding-bottom: max(8px, env(safe-area-inset-bottom)); }
+    body.chat-aberto { overflow: hidden; }
+    body.chat-aberto .dock, body.chat-aberto .chat-botao { display: none; }
   }
 </style>
 </head>
@@ -1072,45 +1118,27 @@
   </div>
 </div>
 
-<!-- chat fictício: o "Need help? Text us" deles, redesenhado. Não envia nada. -->
+<!-- chat fictício: o "Need help? Text us" deles, em modelo Instagram. Não envia nada. -->
 <div class="chat" id="chat">
-  <section class="chat-painel" id="chat-painel" hidden aria-label="Text the front desk">
+  <div class="chat-painel" id="chat-painel" role="dialog" aria-label="Text the front desk" hidden>
     <header class="chat-topo">
+      <button class="chat-voltar" type="button" aria-label="Close" data-chat-fechar>‹</button>
       <img src="fotos/kim.png" alt="">
       <div>
-        <strong>Youthtopia front desk</strong>
-        <small>A real person texts you back, usually within the hour</small>
+        <strong>Youthtopia</strong>
+        <small>Front desk · replies within the hour</small>
       </div>
       <button class="chat-fechar" type="button" aria-label="Close" data-chat-fechar>×</button>
     </header>
-    <div class="chat-aviso"><b>Preview only.</b> Nothing is sent from this concept. On your live site this connects to your front desk (Aesthetix CRM or any provider) and real texts go out.</div>
-    <div class="chat-corpo">
-      <div class="bolha">Hi! Tell us what you need and we'll text you back shortly. New here? Ask about <b>$50 off</b> your first visit.</div>
-      <form class="chat-form" novalidate>
-        <input name="nome" placeholder="Name" autocomplete="name">
-        <input name="fone" placeholder="Phone" inputmode="tel" autocomplete="tel">
-        <select name="tratamento">
-          <option value="">Treatment of interest</option>
-          <option>Botox &amp; Dysport</option>
-          <option>Fillers (Juvederm, Restylane)</option>
-          <option>Halo™ Laser</option>
-          <option>BBL</option>
-          <option>Sofwave™ / Vivace®</option>
-          <option>HydraFacial &amp; Peels</option>
-          <option>CoolSculpting</option>
-          <option>Laser Hair Removal</option>
-          <option>Tirzepatide Program</option>
-          <option>Not sure yet</option>
-        </select>
-        <textarea name="msg" placeholder="Preferred day and time, questions..."></textarea>
-        <label class="chat-consent"><input type="checkbox" name="ok"> <span>I agree to receive texts about my request. Message rates may apply.</span></label>
-        <div class="chat-erro" hidden></div>
-        <button class="pilula pilula-ouro" type="submit">Send</button>
-      </form>
-      <div class="bolha bolha-ok" hidden></div>
-    </div>
+    <div class="chat-preview"><b>Preview.</b> Nothing is sent from this concept. On your live site this connects to your front desk (Aesthetix CRM or any provider).</div>
+    <div class="chat-fio" id="chat-fio" aria-live="polite"></div>
+    <div class="chat-chips" id="chat-chips"></div>
+    <form class="chat-composer" id="chat-composer" novalidate>
+      <input id="chat-input" placeholder="Message…" autocomplete="off">
+      <button class="chat-enviar" type="submit" aria-label="Send">➤</button>
+    </form>
     <div class="chat-rodape">Concept by RVLand Devs · connects to your CRM on the live site</div>
-  </section>
+  </div>
   <button class="chat-botao" type="button" aria-expanded="false" aria-controls="chat-painel" data-chat-abre>
     <img src="fotos/kim.png" alt="">
     <span class="ponto" aria-hidden="true"></span>
@@ -1119,36 +1147,106 @@
 </div>
 
 <script>
-  // Chat fictício: abre, fecha, valida o mínimo e responde deixando claro que
-  // nada foi enviado. No site real este formulário liga no CRM da casa.
+  // Chat fictício em conversa guiada: a Kim pergunta, a visitante responde
+  // pela barra ou por chips. Nada é enviado; a última mensagem diz isso.
   (function () {
     var painel = document.getElementById("chat-painel");
     var botao = document.querySelector("[data-chat-abre]");
-    var form = painel.querySelector(".chat-form");
-    var erro = painel.querySelector(".chat-erro");
-    var ok = painel.querySelector(".bolha-ok");
+    var fio = document.getElementById("chat-fio");
+    var chips = document.getElementById("chat-chips");
+    var form = document.getElementById("chat-composer");
+    var input = document.getElementById("chat-input");
+    var enviar = form.querySelector(".chat-enviar");
+    var passo = 0, dados = {}, iniciado = false;
+
+    function rolar() { fio.scrollTop = fio.scrollHeight; }
+    function bolha(html, eu) {
+      var b = document.createElement("div");
+      b.className = "bolha" + (eu ? " eu" : "");
+      b.innerHTML = html; fio.appendChild(b); rolar(); return b;
+    }
+    function limpo(t) { return String(t).replace(/[<>&]/g, ""); }
+    function kim(html, depois) {
+      var d = document.createElement("div");
+      d.className = "bolha digitando"; d.innerHTML = "<i></i><i></i><i></i>";
+      fio.appendChild(d); rolar();
+      setTimeout(function () { d.remove(); bolha(html, false); if (depois) depois(); }, 650);
+    }
+    function opcoes(lista, cb) {
+      chips.innerHTML = "";
+      lista.forEach(function (t) {
+        var c = document.createElement("button");
+        c.type = "button"; c.className = "chip-resp"; c.textContent = t;
+        c.addEventListener("click", function () { chips.innerHTML = ""; cb(t); });
+        chips.appendChild(c);
+      });
+    }
+    function barra(placeholder, tipo) {
+      input.disabled = false; enviar.disabled = false;
+      input.placeholder = placeholder; input.value = "";
+      input.setAttribute("inputmode", tipo === "tel" ? "tel" : "text");
+      setTimeout(function () { input.focus({ preventScroll: true }); }, 80);
+    }
+    function travar() { input.disabled = true; enviar.disabled = true; input.placeholder = "Preview ended"; }
+
+    function comecar() {
+      iniciado = true; passo = 0; dados = {}; fio.innerHTML = ""; chips.innerHTML = "";
+      kim("Hi! I'm Kim at the front desk. What's your name?", function () { barra("Your name", "text"); });
+    }
+    function responder(texto) {
+      texto = texto.trim(); if (!texto) return;
+      bolha(limpo(texto), true);
+      input.disabled = true; enviar.disabled = true;
+      if (passo === 0) {
+        dados.nome = texto; passo = 1;
+        kim("Nice to meet you, <b>" + limpo(texto) + "</b>. Best number to text you back?", function () { barra("(770) 000-0000", "tel"); });
+      } else if (passo === 1) {
+        if (texto.replace(/\D/g, "").length < 10) {
+          kim("That looks short. Could you send the full number with area code?", function () { barra("(770) 000-0000", "tel"); });
+          return;
+        }
+        dados.fone = texto; passo = 2;
+        kim("Got it. What are you looking into?", function () {
+          opcoes(["Botox & fillers", "Halo & lasers", "Facials & peels", "Body & wellness", "Not sure yet"], function (t) {
+            bolha(t, true); dados.interesse = t; passo = 3;
+            kim("Perfect. Anything else? A preferred day, a question… or skip.", function () {
+              barra("Optional", "text");
+              opcoes(["Skip"], function () { bolha("Skip", true); consentir(); });
+            });
+          });
+        });
+      } else if (passo === 3) {
+        dados.msg = texto; chips.innerHTML = ""; consentir();
+      }
+    }
+    function consentir() {
+      passo = 4; input.disabled = true; enviar.disabled = true;
+      kim("One last thing: OK to text you at <b>" + limpo(dados.fone) + "</b>? Message rates may apply.", function () {
+        opcoes(["Yes, text me", "No thanks"], function (t) {
+          bolha(t, true);
+          if (t === "Yes, text me") {
+            kim("Thanks, <b>" + limpo(dados.nome) + "</b>! On the live site the front desk would text you shortly about " + limpo(dados.interesse).toLowerCase() + ". <b>In this preview, nothing was sent.</b>", function () {
+              kim("New here? Ask about <b>$50 off</b> your first visit.", function () { travar(); opcoes(["Start over"], comecar); });
+            });
+          } else {
+            kim("No problem. You can always call <b>(770) 637-0428</b>. In this preview, nothing was sent.", function () { travar(); opcoes(["Start over"], comecar); });
+          }
+        });
+      });
+    }
+
     function abrir(aberto) {
       painel.hidden = !aberto;
+      document.body.classList.toggle("chat-aberto", aberto);
       botao.setAttribute("aria-expanded", String(aberto));
       botao.querySelector(".rotulo").textContent = aberto ? "Close" : "Text us";
-      if (aberto) { var n = form.querySelector("[name=nome]"); if (n) setTimeout(function () { n.focus(); }, 60); }
+      if (aberto && !iniciado) comecar();
+      else if (aberto) rolar();
     }
     botao.addEventListener("click", function () { abrir(painel.hidden); });
-    painel.querySelector("[data-chat-fechar]").addEventListener("click", function () { abrir(false); });
+    painel.querySelectorAll("[data-chat-fechar]").forEach(function (b) { b.addEventListener("click", function () { abrir(false); }); });
     document.addEventListener("keydown", function (e) { if (e.key === "Escape" && !painel.hidden) abrir(false); });
-    form.addEventListener("submit", function (e) {
-      e.preventDefault();
-      var nome = form.nome.value.trim(), fone = form.fone.value.trim();
-      var faltas = [];
-      if (!nome) faltas.push("your name");
-      if (fone.replace(/\D/g, "").length < 10) faltas.push("a phone number");
-      if (!form.ok.checked) faltas.push("the consent box");
-      if (faltas.length) { erro.textContent = "Please add " + faltas.join(", ") + "."; erro.hidden = false; return; }
-      erro.hidden = true;
-      form.hidden = true;
-      ok.innerHTML = "Thanks, <b>" + nome.replace(/[<>&]/g, "") + "</b>! On the live site the front desk would text you back at <b>" + fone.replace(/[<>&]/g, "") + "</b>. In this preview, nothing was sent.";
-      ok.hidden = false;
-    });
+    form.addEventListener("submit", function (e) { e.preventDefault(); if (!input.disabled) responder(input.value); });
   })();
   // Nav quase transparente enquanto a foto está no topo; vidro ao rolar.
   (function () {

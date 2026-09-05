@@ -138,7 +138,7 @@
     "Concierge: 3 painéis de vidro escuro (Visit + balão do front desk, Hours, Talk to us)",
     "Rodapé próprio + faixa e crédito da RVLand (componente do publicador)",
     "Mapa do Google com filtro sépia-escuro no topo do Concierge, chip de vidro com endereço e Directions",
-    "Chat fictício flutuante (Text us): avatar, bolha, formulário, consentimento, resposta que deixa claro que nada foi enviado"
+    "Chat fictício em modelo Instagram (Text us): conversa guiada pela Kim (nome, telefone, interesse em chips, recado opcional, consentimento em chips), indicador de digitando, resposta final dizendo que nada foi enviado. Tela cheia no celular, com dock e botão escondidos."
   ],
   "heroCopy": {
     "kicker": "ALPHARETTA · PHYSICIAN-LED AESTHETICS",
@@ -153,7 +153,7 @@
     "Links reais das páginas internas atuais (menu of services, specials, team)",
     "O popup 'Need help? Text us' (Aesthetix CRM) virou um chat de vidro fictício, com aviso explícito de preview; no site real liga no CRM deles"
   ],
-  "fotosOrigem": "Tudo do wp-content deles: fotos/equipe.jpg é o editorial de out/2025 (hero); tracy-round/mccabe/kim/kendra/jen/julia são os retratos do meet-the-team.",
+  "fotosOrigem": "fotos/equipe.jpg é o editorial de out/2025, pego na fonte em 2560x1707: https://youthtopiamedspa.com/wp-content/uploads/2025/10/tracy-72-scaled.jpg (o WordPress limita a 2560; a v1 usava uma cópia de 1536). Reencodado em JPEG q88, sem retoque de IA: Real-ESRGAN 4x rodou e ficou de fora de propósito, porque inventa detalhe em pele e num hero com onze rostos isso é risco para uma clínica. Retratos (tracy-round, mccabe, kim, kendra, jen, julia) são do meet-the-team deles.",
   "arquivos": [
     {
       "rotulo": "Conceito completo (PNG)",
@@ -207,7 +207,10 @@
     "Cupom de novos clientes num lugar só (ticket de vidro abaixo do bento), nunca pop-up. O chat menciona o $50 na bolha de boas-vindas.",
     "Mapa: embed do Google (sem chave) com filtro invert/hue-rotate/sepia para casar com o espresso; iframe eager, senão o PNG exportado sai sem mapa. No celular o chip vira barra embaixo do mapa para não esconder o pino.",
     "Chat fictício sempre com aviso 'Preview only' e resposta dizendo que nada foi enviado. No celular sobe para bottom: 82px, acima do dock.",
-    "Orbes são absolutas com !important: regra `> *` de tile já as transformou em bloco duas vezes."
+    "Orbes são absolutas com !important: regra `> *` de tile já as transformou em bloco duas vezes.",
+    "O painel do chat é <div role=dialog>, nunca <section>: a regra global section { padding } vazou para dentro dele e centralizou o conteúdo.",
+    "Chat no celular: tela cheia (inset 0, 100dvh), body travado, dock e botão somem; input a 16px para o iOS não dar zoom.",
+    "Foto do hero: sempre buscar a original na API de mídia do WordPress (wp-json/wp/v2/media) antes de pensar em upscale; comparar por hash perceptual."
   ],
-  "notaMobile": "Foto em bloco de 62vh no topo com o card começando 90px antes do fim; dock de atalhos fixo; cartão VIP inclinado e virando com o scroll; seções a 96px; tiles a 30/24px; setembro em 2x2; rodapé em coluna. Vazamento 0px, 0 reprovados de contraste. Mapa com chip em barra embaixo; chat acima do dock; ticket em coluna com canhoto pontilhado horizontal."
+  "notaMobile": "Foto em bloco de 62vh no topo com o card começando 90px antes do fim; dock de atalhos fixo; cartão VIP inclinado e virando com o scroll; seções a 96px; tiles a 30/24px; setembro em 2x2; rodapé em coluna. Vazamento 0px, 0 reprovados de contraste. Mapa com chip em barra embaixo; chat fechado acima do dock e, aberto, em tela cheia; ticket em coluna com canhoto pontilhado horizontal."
 }
