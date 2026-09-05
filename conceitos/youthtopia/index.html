@@ -90,7 +90,7 @@
   }
   .orbe-ouro { background: rgba(203,164,92,0.32); }
   .orbe-rosa { background: rgba(232,190,190,0.45); }
-  section, .faixa-fatos { position: relative; isolation: isolate; }
+  section { position: relative; isolation: isolate; }
   section > .env { position: relative; z-index: 1; }
 
   .etiqueta {
@@ -151,6 +151,9 @@
     border-bottom: 1px solid rgba(230,207,152,0.16);
     color: var(--marfim);
   }
+  .nav { transition: background 0.35s ease, border-color 0.35s ease; }
+  /* no topo da página a nav some quase toda: a foto é a protagonista */
+  .nav.no-topo { background: rgba(26,16,13,0.42); border-bottom-color: transparent; }
   .nav .env { display: flex; align-items: center; gap: 30px; height: 78px; }
   .marca { line-height: 1.05; }
   .marca-nome { font-family: var(--display); font-weight: 500; font-size: 25px; color: var(--marfim); }
@@ -168,79 +171,101 @@
   .nav-fone { margin-left: auto; font-size: 15px; font-weight: 500; color: var(--marfim); white-space: nowrap; }
   .nav .pilula { padding: 12px 22px; }
 
-  /* ── hero: a foto inteira, e o texto num painel de vidro ────────────── */
+  /* ── dock de atalhos no celular: vidro escuro fixo no rodapé ─────────── */
+  .dock { display: none; }
+  @media (max-width: 1100px) {
+    .dock {
+      display: flex;
+      position: fixed; left: 14px; right: 14px; bottom: 14px; z-index: 35;
+      padding: 6px; border-radius: 999px;
+      -webkit-backdrop-filter: blur(22px) saturate(140%);
+      backdrop-filter: blur(22px) saturate(140%);
+      /* 86%: o dock passa por cima das seções claras e o marfim tem que ler */
+      background: rgba(26,16,13,0.86);
+      border: 1px solid rgba(230,207,152,0.22);
+      box-shadow: 0 24px 50px -20px rgba(0,0,0,0.7), inset 0 1px 0 rgba(255,255,255,0.08);
+    }
+    .dock a {
+      flex: 1; text-align: center; white-space: nowrap;
+      font-size: 12px; font-weight: 600; letter-spacing: 0.08em; text-transform: uppercase;
+      color: var(--marfim-2); padding: 12px 4px; border-radius: 999px;
+      transition: background 0.25s ease, color 0.25s ease;
+    }
+    .dock a.ativo { background: rgba(230,207,152,0.16); color: var(--ouro-luz); }
+    body { padding-bottom: 88px; }
+  }
+
+  /* ── hero: a foto é o luxo, então o card sai de cima dela ──────────────
+     O painel atravessa a borda de baixo: metade sobre a foto, metade sobre
+     a seção seguinte. Os 65% de cima ficam foto pura (rostos, muro, leão).
+     Os quatro números moram dentro do painel, à direita. */
   .hero {
-    min-height: 100vh;
-    margin-top: -78px; /* a nav de vidro flutua sobre a foto */
+    min-height: 92vh;
+    margin-top: -78px;
     padding-top: 78px;
+    padding-bottom: 0;   /* section {} dá 128px; aqui o card é quem fecha a seção */
     display: flex;
     align-items: flex-end;
     color: var(--marfim);
-    background: url("fotos/equipe.jpg") center 28% / cover no-repeat;
-    overflow: hidden;
+    overflow: visible;   /* o card pendura para fora */
+    z-index: 2;          /* e pinta por cima da seção seguinte */
   }
-  .hero::before {
+  .hero-fundo {
+    position: absolute; inset: 0; z-index: 0; overflow: hidden;
+    background: url("fotos/equipe.jpg") center 30% / cover no-repeat;
+  }
+  /* véu leve: só um apoio para a nav no topo e para o card na base */
+  .hero-fundo::before {
     content: "";
-    position: absolute; inset: 0; z-index: 0;
+    position: absolute; inset: 0;
     background:
-      linear-gradient(to top, rgba(26,16,13,0.82) 0%, rgba(26,16,13,0.35) 38%, rgba(26,16,13,0.08) 70%),
-      linear-gradient(to right, rgba(26,16,13,0.35) 0%, rgba(26,16,13,0) 50%);
+      linear-gradient(to bottom, rgba(26,16,13,0.55) 0%, rgba(26,16,13,0.10) 120px, rgba(26,16,13,0) 220px),
+      linear-gradient(to top, rgba(26,16,13,0.62) 0%, rgba(26,16,13,0.18) 26%, rgba(26,16,13,0) 48%);
   }
-  .hero .orbe-ouro { width: 560px; height: 560px; right: -160px; top: -120px; opacity: 0.55; }
-  .hero .env {
-    width: 100%;
-    padding-top: 120px;
-    padding-bottom: 110px;
-  }
+  .hero-fundo .orbe-ouro { width: 560px; height: 560px; right: -160px; top: -120px; opacity: 0.4; }
+  .hero .env { width: 100%; padding-top: 120px; padding-bottom: 0; position: relative; z-index: 1; }
   .hero-vidro {
-    max-width: 640px; /* o painel mora à esquerda; a foto continua inteira à direita */
     border-radius: var(--raio-g);
-    padding: 46px 48px 44px;
+    padding: 44px 48px 42px;
+    margin-bottom: -112px;   /* pendura sobre a seção seguinte */
+    display: grid;
+    grid-template-columns: minmax(0, 1.25fr) minmax(0, 1fr);
+    gap: 48px;
+    align-items: end;
   }
-  .hero-kicker { margin-bottom: 22px; }
+  .hero-kicker { margin-bottom: 20px; }
   .hero h1 {
     font-family: var(--display);
     font-weight: 400;
     font-variation-settings: "opsz" 144;
-    font-size: clamp(46px, 5.6vw, 76px);
+    font-size: clamp(44px, 5vw, 68px);
     line-height: 1.0;
     letter-spacing: -0.015em;
     color: var(--marfim);
     text-wrap: balance;
-    margin-bottom: 22px;
+    margin-bottom: 20px;
   }
   .hero h1 em { font-style: italic; color: var(--ouro-luz); }
-  .hero-sub { font-size: 19px; line-height: 1.6; color: var(--marfim); max-width: 470px; margin-bottom: 32px; }
-  .hero-ctas { display: flex; align-items: center; gap: 14px; flex-wrap: wrap; }
+  .hero-sub { font-size: 18px; line-height: 1.6; color: var(--marfim); max-width: 460px; margin-bottom: 28px; }
+  .hero-ctas { display: flex; align-items: center; gap: 12px; flex-wrap: wrap; }
 
-
-  /* ── faixa de fatos: flutua sobre a borda do hero ───────────────────── */
-  .faixa-fatos { z-index: 2; margin-top: -52px; }
-  .faixa-fatos .env { position: relative; z-index: 1; }
-  .fatos {
-    border-radius: var(--raio-g);
-    background: linear-gradient(180deg, var(--espresso-2), var(--espresso));
-    border: 1px solid rgba(230,207,152,0.22);
-    box-shadow: 0 40px 80px -40px rgba(26,16,13,0.7), inset 0 1px 0 rgba(255,255,255,0.06);
-    padding: 36px 40px;
+  /* os quatro números, dentro do painel */
+  .hero-fatos {
     display: grid;
-    grid-template-columns: repeat(4, 1fr);
-    gap: 24px;
-    color: var(--marfim);
-    text-align: center;
-  }
-  .fato { position: relative; }
-  .fato + .fato::before {
-    content: ""; position: absolute; left: -12px; top: 12%; height: 76%; width: 1px;
-    background: linear-gradient(to bottom, transparent, rgba(230,207,152,0.4), transparent);
+    grid-template-columns: 1fr 1fr;
+    gap: 22px 28px;
+    padding-left: 44px;
+    border-left: 1px solid rgba(230,207,152,0.22);
+    align-self: stretch;
+    align-content: center;
   }
   .fato-num {
     font-family: var(--display); font-weight: 400; font-variation-settings: "opsz" 144;
-    font-size: 44px; line-height: 1; color: var(--ouro-luz);
+    font-size: 42px; line-height: 1; color: var(--ouro-luz);
   }
   .fato-rotulo {
-    font-size: 13px; font-weight: 500; letter-spacing: 0.2em; text-transform: uppercase;
-    color: var(--marfim-2); margin-top: 10px;
+    font-size: 12.5px; font-weight: 500; letter-spacing: 0.18em; text-transform: uppercase;
+    color: var(--marfim-2); margin-top: 8px;
   }
 
   /* ── cabeçalho de seção ─────────────────────────────────────────────── */
@@ -257,7 +282,7 @@
   .escuro .cabeca p { color: var(--marfim-2); }
 
   /* ── o menu como bento ───────────────────────────────────────────────── */
-  .menu { background: linear-gradient(180deg, var(--porcelana) 0%, var(--rosa) 100%); }
+  .menu { background: linear-gradient(180deg, var(--porcelana) 0%, var(--rosa) 100%); padding-top: calc(128px + 112px); }
   .menu .orbe-rosa { width: 620px; height: 620px; left: -220px; top: 140px; }
   .menu .orbe-ouro { width: 520px; height: 520px; right: -180px; bottom: -120px; opacity: 0.6; }
   .bento {
@@ -444,7 +469,8 @@
   .marca-tile-nome { font-family: var(--display); font-weight: 500; font-size: 23px; line-height: 1.15; color: var(--tinta); }
   .marca-tile-nota { font-size: 13px; font-weight: 500; letter-spacing: 0.12em; text-transform: uppercase; color: var(--tinta-2); }
   .marca-tile-seta {
-    margin-top: 18px; width: 40px; height: 40px; border-radius: 50%;
+    margin-top: auto; padding-top: 18px; box-sizing: content-box;
+    width: 40px; height: 40px; border-radius: 50%;
     display: inline-flex; align-items: center; justify-content: center;
     color: var(--bronze); font-size: 18px;
     background: rgba(26,16,13,0.05); border: 1px solid rgba(26,16,13,0.12);
@@ -493,6 +519,8 @@
   /* ── responsivo ─────────────────────────────────────────────────────── */
   @media (max-width: 1100px) {
     .nav nav { display: none; }
+    .hero-vidro { grid-template-columns: 1fr; gap: 32px; }
+    .hero-fatos { padding-left: 0; border-left: 0; padding-top: 26px; border-top: 1px solid rgba(230,207,152,0.22); grid-template-columns: repeat(4, 1fr); }
     .tile-4, .tile-5, .tile-7, .tile-8 { grid-column: span 6; }
     .casa-grade { grid-template-columns: repeat(3, 1fr); }
     .vitrine-grade { grid-template-columns: repeat(2, 1fr); }
@@ -504,32 +532,52 @@
     :root { --raio: 22px; --raio-g: 26px; }
     .env { padding: 0 20px; }
     body { font-size: 16px; }
-    section { padding: 84px 0; }
+    section { padding: 96px 0; }
     .nav .env { height: 68px; gap: 14px; }
     .nav-fone { display: none; }
     .nav .pilula { padding: 11px 18px; }
     .marca-nome { font-size: 22px; }
     .marca-sub { font-size: 12px; letter-spacing: 0.22em; }
-    .hero { margin-top: -68px; padding-top: 68px; min-height: 92vh; background-position: 58% 28%; }
-    .hero .env { padding-top: 40px; padding-bottom: 76px; }
-    .hero-vidro { padding: 28px 24px 26px; }
+    /* no celular o card é mais alto que a tela: em vez de cobrir a foto, a
+       foto vira um bloco de 62vh no topo e o card começa 90px antes do fim
+       dela; o resto do card fica sobre espresso */
+    .hero { margin-top: -68px; padding-top: 68px; padding-bottom: 0; min-height: 0; background: var(--espresso); }
+    .hero-fundo { inset: 0 0 auto 0; height: 62vh; background-position: 58% 22%; }
+    .hero-fundo::before {
+      background:
+        linear-gradient(to bottom, rgba(26,16,13,0.55) 0%, rgba(26,16,13,0.10) 90px, rgba(26,16,13,0) 160px),
+        linear-gradient(to top, var(--espresso) 0%, rgba(26,16,13,0.6) 18%, rgba(26,16,13,0) 45%);
+    }
+    .hero .env { padding-top: calc(62vh - 68px - 90px); }
+    .hero-vidro { padding: 26px 22px 24px; margin-bottom: -88px; gap: 22px; }
+    .hero-fatos { grid-template-columns: 1fr 1fr; gap: 16px 12px; padding-top: 20px; }
+    .fato-num { font-size: 34px; }
+    .fato-rotulo { font-size: 12px; letter-spacing: 0.14em; }
+    .menu { padding-top: calc(84px + 88px); }
     .hero-kicker { letter-spacing: 0.18em; }
     .hero-kicker::before { display: none; }
     .hero h1 { font-size: clamp(40px, 11vw, 52px); }
     .hero-sub { font-size: 17px; margin-bottom: 26px; }
     .hero-ctas { gap: 10px; }
     .hero-ctas .pilula { flex: 1 1 100%; justify-content: center; padding: 14px 20px; font-size: 12.5px; }
-    .faixa-fatos { margin-top: -40px; }
-    .fatos { grid-template-columns: 1fr 1fr; gap: 22px 16px; padding: 28px 22px; }
-    .fato + .fato::before { display: none; }
-    .fato-num { font-size: 38px; }
-    .cabeca { margin-bottom: 36px; }
-    .cabeca p { font-size: 17px; }
+    .cabeca { margin-bottom: 40px; }
+    .cabeca h2 { font-size: clamp(34px, 9.6vw, 42px); }
+    .cabeca p { font-size: 17px; margin-top: 16px; }
+    .secao-cta { margin-top: 36px; flex-direction: column; align-items: flex-start; gap: 14px; }
     .bento { gap: 14px; }
     .tile-4, .tile-5, .tile-7, .tile-8 { grid-column: span 12; }
-    .tile { padding: 26px 22px 24px; border-radius: 24px; }
+    .tile { padding: 30px 24px 26px; border-radius: 24px; }
     .tile.duas ul { columns: 1; }
-    .tile h3 { font-size: 27px; }
+    .tile h3 { font-size: 27px; margin-bottom: 14px; }
+    .tile li a { padding: 14px 0; }
+    /* setembro: badges em grade de largura igual e pílulas em largura total */
+    .tile-setembro { padding: 32px 24px 28px; gap: 26px; }
+    .tile-setembro h3 { font-size: 34px; }
+    .especiais { display: grid; grid-template-columns: 1fr 1fr; gap: 8px; margin-top: 16px; }
+    .especial { text-align: center; padding: 11px 8px; font-size: 12.5px; }
+    .tile-setembro .ctas { flex-direction: column; gap: 10px; }
+    .tile-setembro .ctas .pilula { justify-content: center; }
+    .tile-setembro p { font-size: 16px; line-height: 1.65; }
     .casa-grade { grid-template-columns: repeat(2, 1fr); gap: 12px; }
     .pessoa { padding: 18px 10px 18px; }
     .pessoa img { max-width: 108px; }
@@ -544,11 +592,18 @@
     .marca-tile-nota { grid-area: nota; }
     .marca-tile-seta { grid-area: seta; margin-top: 0; }
     .concierge-grade { grid-template-columns: 1fr; gap: 14px; }
-    .painel { padding: 24px 22px; }
-    .cartao { transform: none; padding: 24px 24px; }
-    .cartao-palco { perspective: none; padding: 10px 0; }
+    /* de ladinho como no desktop, só um pouco menos para não vazar */
+    .cartao { transform: rotateY(-12deg) rotateX(6deg) rotateZ(-2deg); padding: 24px 24px; transition: transform 0.12s linear; }
+    .cartao-palco { perspective: 1000px; padding: 24px 12px 12px; }
+    .clube-grade { gap: 44px; }
+    .clube h2 { font-size: clamp(34px, 9.6vw, 42px); }
+    .clube-sub { font-size: 17px; margin-bottom: 28px; }
+    .area-corpo { padding: 22px 20px; gap: 18px; }
+    .painel { padding: 28px 24px; }
+    .rodape { padding: 30px 0; }
+    .rodape .env { flex-direction: column; align-items: flex-start; gap: 8px; }
     .rodape-fone { margin-left: 0; }
-    .secao-cta { gap: 16px; }
+    .cartao-rodape { font-size: 12px; letter-spacing: 0.12em; gap: 14px; }
   }
 </style>
 </head>
@@ -573,34 +628,39 @@
   </div>
 </header>
 
+<!-- atalhos no celular -->
+<nav class="dock" aria-label="Shortcuts">
+  <a href="#menu" data-sec="menu">Menu</a>
+  <a href="#setembro" data-sec="setembro">Specials</a>
+  <a href="#clube" data-sec="clube">VIP</a>
+  <a href="#casa" data-sec="casa">Team</a>
+  <a href="#vitrine" data-sec="vitrine">Shop</a>
+</nav>
+
 <!-- hero -->
 <section class="hero escuro">
-  <div class="orbe orbe-ouro"></div>
+  <div class="hero-fundo"><div class="orbe orbe-ouro"></div></div>
   <div class="env">
     <div class="hero-vidro vidro-escuro" data-rv>
-      <div class="etiqueta hero-kicker">Alpharetta · Physician-led aesthetics</div>
-      <h1>Where Alpharetta comes to <em>glow</em>.</h1>
-      <p class="hero-sub">Thirteen years of quiet, medical-grade beauty, in a
-        place that feels nothing like a clinic.</p>
-      <div class="hero-ctas">
-        <a class="pilula pilula-ouro" href="https://phorest.com/book/salons/youthtopiamedspa">Book your visit</a>
-        <a class="pilula pilula-vidro" href="#setembro">September specials</a>
+      <div>
+        <div class="etiqueta hero-kicker">Alpharetta · Physician-led aesthetics</div>
+        <h1>Where Alpharetta comes to <em>glow</em>.</h1>
+        <p class="hero-sub">Thirteen years of quiet, medical-grade beauty, in a
+          place that feels nothing like a clinic.</p>
+        <div class="hero-ctas">
+          <a class="pilula pilula-ouro" href="https://phorest.com/book/salons/youthtopiamedspa">Book your visit</a>
+          <a class="pilula pilula-vidro" href="#setembro">September specials</a>
+        </div>
+      </div>
+      <div class="hero-fatos">
+        <div class="fato"><div class="fato-num">13</div><div class="fato-rotulo">Years in Alpharetta</div></div>
+        <div class="fato"><div class="fato-num">5.0</div><div class="fato-rotulo">Google rating</div></div>
+        <div class="fato"><div class="fato-num">11</div><div class="fato-rotulo">Specialists in house</div></div>
+        <div class="fato"><div class="fato-num">DO</div><div class="fato-rotulo">Physician-led, always</div></div>
       </div>
     </div>
   </div>
 </section>
-
-<!-- fatos flutuando sobre a borda do hero -->
-<div class="faixa-fatos">
-  <div class="env">
-    <div class="fatos" data-rv>
-      <div class="fato"><div class="fato-num">13</div><div class="fato-rotulo">Years in Alpharetta</div></div>
-      <div class="fato"><div class="fato-num">5.0</div><div class="fato-rotulo">Google rating</div></div>
-      <div class="fato"><div class="fato-num">11</div><div class="fato-rotulo">Specialists in house</div></div>
-      <div class="fato"><div class="fato-num">DO</div><div class="fato-rotulo">Physician-led, always</div></div>
-    </div>
-  </div>
-</div>
 
 <!-- o menu, como bento -->
 <section class="menu" id="menu">
@@ -840,6 +900,55 @@
 </div>
 
 <script>
+  // Nav quase transparente enquanto a foto está no topo; vidro ao rolar.
+  (function () {
+    var nav = document.querySelector(".nav");
+    function topo() { nav.classList.toggle("no-topo", window.scrollY < 40); }
+    topo();
+    window.addEventListener("scroll", topo, { passive: true });
+  })();
+  // Sem mouse, o scroll é que vira o cartão: conforme ele atravessa a tela,
+  // entra mais inclinado por baixo, fica quase de frente no centro e vira
+  // para o outro lado ao sair. Só em telas de toque / estreitas; no desktop
+  // o hover continua mandando.
+  (function () {
+    var palco = document.querySelector(".cartao-palco");
+    var cartao = document.querySelector(".cartao");
+    if (!palco || !cartao) return;
+    if (matchMedia("(prefers-reduced-motion: reduce)").matches) return;
+    var mq = matchMedia("(max-width: 1100px), (hover: none)");
+    var pendente = false;
+    function virar() {
+      pendente = false;
+      if (!mq.matches) { cartao.style.transform = ""; return; }
+      var r = palco.getBoundingClientRect();
+      var centro = r.top + r.height / 2;
+      var t = (centro - innerHeight / 2) / innerHeight;   // +0.5 embaixo, -0.5 em cima
+      t = Math.max(-0.6, Math.min(0.6, t));
+      var ry = -6 + t * 34;    // embaixo: -6+20 = +14 (virado para a direita); em cima: -26
+      var rx = 4 + t * 12;
+      var rz = -2 + t * -4;
+      cartao.style.transform = "rotateY(" + ry.toFixed(1) + "deg) rotateX(" + rx.toFixed(1) + "deg) rotateZ(" + rz.toFixed(1) + "deg)";
+    }
+    function pedir() { if (!pendente) { pendente = true; requestAnimationFrame(virar); } }
+    window.addEventListener("scroll", pedir, { passive: true });
+    window.addEventListener("resize", pedir);
+    virar();
+  })();
+  // Dock: o atalho da seção visível acende.
+  (function () {
+    var links = document.querySelectorAll(".dock a[data-sec]");
+    if (!links.length || !("IntersectionObserver" in window)) return;
+    var obs = new IntersectionObserver(function (entradas) {
+      entradas.forEach(function (e) {
+        if (!e.isIntersecting) return;
+        links.forEach(function (l) { l.classList.toggle("ativo", l.dataset.sec === e.target.id); });
+      });
+    }, { rootMargin: "-40% 0px -50% 0px", threshold: 0 });
+    ["menu", "setembro", "clube", "casa", "vitrine"].forEach(function (id) {
+      var el = document.getElementById(id); if (el) obs.observe(el);
+    });
+  })();
   // Reveal ao entrar na tela. Tudo começa visível: quem tira print da página
   // inteira (o exportador) ou navega sem JS vê o layout completo do mesmo jeito.
   (function () {

@@ -12,6 +12,10 @@ const ctx = larguraArg === "iphone"
 const p = await ctx.newPage();
 await p.goto(url, { waitUntil: "networkidle" });
 await p.waitForTimeout(2000);
+// rola um pouco: nav fixa e afins são auditadas no estado em que passam a
+// maior parte da página (sobre as seções), não no estado só-do-topo
+await p.evaluate(() => window.scrollTo(0, 120));
+await p.waitForTimeout(600);
 
 const resultado = await p.evaluate(() => {
   const lum = ([r, g, b]) => {
@@ -40,6 +44,15 @@ const resultado = await p.evaluate(() => {
       const cs = getComputedStyle(n);
       const bg = parse(cs.backgroundColor);
       const bi = cs.backgroundImage;
+      // camada de fundo: um filho absoluto que cobre o pai inteiro com foto
+      // (ex.: .hero-fundo) é o fundo real de tudo que está dentro do pai
+      for (const f of n.children) {
+        if (f === el || f.contains(el)) continue;
+        const fc = getComputedStyle(f);
+        if (fc.position !== "absolute" || !fc.backgroundImage.includes("url(")) continue;
+        const rp = n.getBoundingClientRect(), rf = f.getBoundingClientRect();
+        if (rf.width >= rp.width * 0.9 && rf.height >= rp.height * 0.9) img = true;
+      }
       if (bi !== "none") {
         if (bi.includes("url(")) img = true;
         const paradas = paradasDe(bi).filter(c => c[3] > 0);

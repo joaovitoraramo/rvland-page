@@ -126,9 +126,9 @@
     }
   ],
   "secoes": [
+    "Dock de vidro fixo no rodapé (só celular): Menu · Specials · VIP · Team · Shop, item ativo acende com a seção",
     "Nav de vidro fixa: marca + 5 âncoras em pílula + telefone + Book now",
-    "Hero: foto do editorial em tela cheia, painel de vidro escuro à esquerda com kicker, h1, sub e duas pílulas",
-    "Faixa de fatos flutuando sobre a borda do hero (13 · 5.0 · 11 · DO)",
+    "Hero: foto do editorial quase inteira (rostos, muro, leão); o painel de vidro escuro atravessa a borda de baixo, 322px sobre a foto e 112px pendurado sobre a seção seguinte, com kicker/h1/sub/pílulas à esquerda e os quatro números à direita",
     "The menu como bento: Injectables (4 col), Face (8 col, 2 colunas), Body (5 col), convite de setembro como tile escuro (7 col)",
     "Membership: seção escura com orbes, texto + área da cliente em vidro, cartão VIP em perspectiva 3D",
     "The house: 6 tiles de vidro com retrato circular, nome e cargo",
@@ -195,7 +195,12 @@
     "Orbes são absolutas e fora do fluxo; qualquer regra `> *` nos tiles precisa de :not(.orbe), senão a orbe vira bloco e infla o tile.",
     "Painel do hero com max-width 640px: a foto fica inteira à direita.",
     "Reveal começa visível; a classe só adiciona a animação. O exportador tira print sem rolar.",
-    "Botões são pílulas (999px). Cantos de tile 28px, de painel grande 36px, 22/26 no celular."
+    "Botões são pílulas (999px). Cantos de tile 28px, de painel grande 36px, 22/26 no celular.",
+    "A foto do hero é a protagonista: o card nunca cobre rostos. Desktop: card atravessa a borda de baixo. Celular: foto em bloco de 62vh, card começa 90px antes do fim dela, resto sobre espresso.",
+    "Nav a 42% no topo da página (foto atrás, véu de 55% ajuda) e 78% ao rolar.",
+    "Cartão VIP: hover no desktop; no celular vira com o scroll (rotateY de -26 a +14 conforme atravessa a tela). prefers-reduced-motion desliga os dois.",
+    "Dock a 86% de espresso: passa por cima das seções claras e o marfim tem que ler. body ganha padding-bottom de 88px no celular.",
+    "Setembro no celular: badges em grade 2x2 de largura igual, pílulas em largura total. Rodapé do conceito em coluna."
   ],
-  "notaMobile": "Nav 68px sem telefone; painel do hero ocupa a largura com as duas pílulas em largura total; faixa de fatos 2x2; bento vira coluna única; cartão sem perspectiva; tiles da loja em grade nome+nota/seta; concierge empilhado. Vazamento 0px."
+  "notaMobile": "Foto em bloco de 62vh no topo com o card começando 90px antes do fim; dock de atalhos fixo; cartão VIP inclinado e virando com o scroll; seções a 96px; tiles a 30/24px; setembro em 2x2; rodapé em coluna. Vazamento 0px, 0 reprovados de contraste."
 }
