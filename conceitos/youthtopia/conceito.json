@@ -85,7 +85,7 @@
   "heroCopy": {
     "kicker": "ALPHARETTA · PHYSICIAN-LED AESTHETICS",
     "titulo": "Where Alpharetta comes to glow.",
-    "sub": "Thirteen years of quiet, medical-grade beauty — in a place that feels nothing like a clinic.",
+    "sub": "Thirteen years of quiet, medical-grade beauty, in a place that feels nothing like a clinic.",
     "ctaPrimario": "Book your visit",
     "ctaSecundario": "September specials"
   },
@@ -121,5 +121,11 @@
       "rotulo": "Código-fonte do conceito (HTML)",
       "caminho": "youthtopia/youthtopia-fonte.html"
     }
-  ]
+  ],
+  "url": "https://rvland-page.vercel.app/c/youthtopia",
+  "fonteHtml": "conceitos/youthtopia/index.html",
+  "copy": {
+    "titulo": "Where Alpharetta comes to glow.",
+    "subtitulo": "Thirteen years of quiet, medical-grade beauty, in a place that feels nothing like a clinic."
+  }
 }

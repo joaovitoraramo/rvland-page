@@ -33,6 +33,21 @@ async function main() {
   if (!existsSync(caminhoJson)) throw new Error(`não achei ${caminhoJson}`);
   const conceito = JSON.parse(readFileSync(caminhoJson, "utf8"));
 
+  // Sem 'url' o painel não acha as aberturas (o slug sai dela) e o aviso do
+  // Telegram não sabe de quem é a visita; sem 'copy' o card fica sem a copy do
+  // hero. Registrar pela metade é pior que não registrar, porque parece pronto.
+  const faltando = ["url", "cliente", "copy", "arquivos"].filter((k) => !conceito[k]);
+  if (faltando.length > 0) {
+    throw new Error(
+      `${caminhoJson} está sem: ${faltando.join(", ")}. ` +
+        `'url' deve ser a URL publicada (https://.../c/<slug>) e 'copy' ` +
+        `precisa de { titulo, subtitulo }.`
+    );
+  }
+  if (!/\/c\/[a-z0-9-]+$/.test(conceito.url)) {
+    throw new Error(`url do conceito fora do formato .../c/<slug>: ${conceito.url}`);
+  }
+
   const url = process.env.NEXT_PUBLIC_SUPABASE_URL;
   const chave = process.env.SUPABASE_SERVICE_ROLE_KEY;
   if (!url || !chave) throw new Error("credenciais do Supabase ausentes");

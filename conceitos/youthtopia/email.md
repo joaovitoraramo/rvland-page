@@ -42,8 +42,8 @@ https://rvland-page.vercel.app/c/youthtopia
 The design is yours to keep either way. If it's not for you, no hard
 feelings and I won't follow up more than once.
 
-João
-RVLand · rvland-page.vercel.app
+John
+RVLand Devs · @rvlanddevs
 ```
 
 ## DM (Instagram)
@@ -66,6 +66,16 @@ If it's not for you, no worries at all 🤍
   site é troco perto do LTV de UMA cliente nova. Não falar de preço no
   primeiro contato; a faixa do conceito já leva ao pricing quando ela
   clicar em "What does this cost?".
-- Se responder ao e-mail: oferecer 15 min por telefone, mostrar o mobile
-  (o PNG `youthtopia-mobile.png`) e o cartão VIP como a ideia que nenhum
-  concorrente da região tem.
+- Se responder: seguir por mensagem, nunca por telefone. A /en promete
+  "No calls, no meetings. That's a promise." e o e-mail da Poolguys repete
+  isso; oferecer 15 minutos de ligação aqui quebraria o diferencial que
+  sustenta a operação. Mandar o PNG `youthtopia-mobile.png` e apresentar o
+  cartão VIP como a ideia que nenhum concorrente da região tem.
+
+## Antes de enviar
+
+- Assina **John**, batendo com o remetente John Novaz <contato.rvlandd@gmail.com>.
+- Depois de disparar, marcar em `prospeccao`: status `contatado`, `contatado_em`,
+  `disparos` e nota concatenada. O cron cobra o follow-up entre 5 e 7 dias.
+- Um follow-up só. O terceiro contato sem resposta queima o remetente.
+- Janela: terça a quinta de manhã, horário de Alpharetta (GA é UTC-4 no verão).
