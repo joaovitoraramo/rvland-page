@@ -210,7 +210,8 @@
     "Orbes são absolutas com !important: regra `> *` de tile já as transformou em bloco duas vezes.",
     "O painel do chat é <div role=dialog>, nunca <section>: a regra global section { padding } vazou para dentro dele e centralizou o conteúdo.",
     "Chat no celular: tela cheia (inset 0, 100dvh), body travado, dock e botão somem; input a 16px para o iOS não dar zoom.",
-    "Foto do hero: sempre buscar a original na API de mídia do WordPress (wp-json/wp/v2/media) antes de pensar em upscale; comparar por hash perceptual."
+    "Foto do hero: sempre buscar a original na API de mídia do WordPress (wp-json/wp/v2/media) antes de pensar em upscale; comparar por hash perceptual.",
+    "Teclado no celular: o painel do chat segue window.visualViewport (altura e offsetTop) em resize/scroll e no focus do input; meta viewport com interactive-widget=resizes-content para o Android. Sem isso, no iOS a barra de digitar fica atrás do teclado."
   ],
   "notaMobile": "Foto em bloco de 62vh no topo com o card começando 90px antes do fim; dock de atalhos fixo; cartão VIP inclinado e virando com o scroll; seções a 96px; tiles a 30/24px; setembro em 2x2; rodapé em coluna. Vazamento 0px, 0 reprovados de contraste. Mapa com chip em barra embaixo; chat fechado acima do dock e, aberto, em tela cheia; ticket em coluna com canhoto pontilhado horizontal."
 }
