@@ -35,7 +35,7 @@ would, on a phone, and this is what shows up in the first three seconds:
 
 Worth checking on your own phone. It takes ten seconds.
 
-Here is the thing: Youthtopia is a luxury brand. More than a decade in
+Here is the thing: Youthtopia is a premium brand. More than a decade in
 Alpharetta, a physician as medical director, a 5.0 on Google, a VIP
 membership, and that October editorial of your team in front of the
 brick wall at golden hour. That photo alone says more than any
@@ -49,7 +49,9 @@ desktop:
 https://rvland-page.vercel.app/c/youthtopia
 
 It keeps what already works for you: the text chat (redesigned, still
-Aesthetix underneath), the $50 new-client offer, the Phorest booking.
+Aesthetix underneath), the Phorest booking, and the $50 new-client
+offer. If you want, offers like that become campaigns you edit yourself
+in a small admin panel, no developer needed.
 
 The design is yours to keep either way. I built it on my own time and
 no invoice is coming for it. Building the real site is paid work, and
@@ -105,8 +107,8 @@ selo da Academy e "For Practitioners" antes do nome da clínica, título
 branco sobre faixa branca com o balão do chat por cima. Ela confere em
 dez segundos e o e-mail já está certo antes de eu pedir qualquer coisa.
 
-**Depois vira para o luxo.** A lista de defeitos sozinha soa como venda.
-O que dá peso é a segunda parte: a marca **é** de luxo (o editorial, a
+**Depois vira para o premium.** A lista de defeitos sozinha soa como venda.
+O que dá peso é a segunda parte: a marca **é** premium (o editorial, a
 diretora médica, o 5.0, o VIP) e a primeira tela conta outra história.
 "Tem que parecer desde o primeiro pixel" é a frase que ela vai repetir
 para si mesma.
@@ -116,7 +118,8 @@ está no site. Mostrar o ativo dela trabalhando é irresistível; ninguém
 compra de quem despreza o trabalho dela.
 
 **O que já funciona fica.** Chat (Aesthetix), cupom de $50 e Phorest
-continuam. Tira o medo de "vou ter que trocar tudo".
+continuam. Tira o medo de "vou ter que trocar tudo". E o cupom vira
+campanha editável num painel próprio: é o gancho do recorrente.
 
 **Link, não anexo.** Anexo de remetente desconhecido pesa contra a
 entrega. O link abre no celular dela em um toque e prova na prática que
