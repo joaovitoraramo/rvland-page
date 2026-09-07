@@ -1447,7 +1447,13 @@
     var enviar = form.querySelector(".chat-enviar");
     var passo = 0, dados = {}, iniciado = false;
 
-    function rolar() { fio.scrollTop = fio.scrollHeight; }
+    // Rola depois do layout assentar: os chips chegam após a bolha e encolhem
+    // o fio, e sem isto a pergunta sobe para fora da área visível.
+    function rolar() { requestAnimationFrame(function () { fio.scrollTop = fio.scrollHeight; }); }
+    if ("ResizeObserver" in window) {
+      var ro = new ResizeObserver(rolar);
+      ro.observe(chips); ro.observe(fio);
+    }
     function bolha(html, eu) {
       var b = document.createElement("div");
       b.className = "bolha" + (eu ? " eu" : "");
@@ -1473,7 +1479,7 @@
       input.disabled = false; enviar.disabled = false;
       input.placeholder = placeholder; input.value = "";
       input.setAttribute("inputmode", tipo === "tel" ? "tel" : "text");
-      setTimeout(function () { input.focus({ preventScroll: true }); }, 80);
+      setTimeout(function () { input.focus({ preventScroll: true }); rolar(); }, 80);
     }
     function travar() { input.disabled = true; enviar.disabled = true; input.placeholder = "Preview ended"; }
 
