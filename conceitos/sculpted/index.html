@@ -126,7 +126,32 @@
   .mega-rodape span { font-size: 13px; color: var(--tinta-2); margin-right: 6px; }
   .chip { display: inline-block; border-radius: 999px; padding: 7px 13px; font-size: 13.5px; font-weight: 600; color: var(--tinta); background: rgba(15,34,56,0.05); border: 1px solid rgba(15,34,56,0.12); transition: background 0.2s ease, color 0.2s ease, transform 0.2s var(--suave); }
   .chip:hover { background: var(--meia-noite); color: var(--marfim); border-color: var(--meia-noite); transform: translateY(-1px); }
+  .mega-nota, .menu-nota, .rodape-nota { display: flex; align-items: center; gap: 10px; font-size: 13.5px; color: var(--tinta-2); line-height: 1.45; }
+  .mega-nota { grid-column: 1 / -1; border-top: 1px solid var(--linha); padding-top: 14px; margin-top: -8px; }
+  .mega-nota svg, .menu-nota svg, .rodape-nota svg { width: 16px; height: 16px; flex: none; color: var(--safira-escura); }
+  .mega-nota b, .menu-nota b, .rodape-nota b { font-weight: 700; color: var(--tinta); }
+  .rodape-nota { color: var(--marfim-2); padding: 18px 0 0; }
+  .rodape-nota svg { color: var(--gelo-luz); } .rodape-nota b { color: var(--marfim); }
   .menu-cel { display: none; }
+
+  /* aviso ao sair para o site atual: só a home foi refeita */
+  .aviso { position: fixed; inset: 0; z-index: 70; display: flex; align-items: center; justify-content: center; padding: 20px; }
+  .aviso[hidden] { display: none; }
+  .aviso-fundo { position: absolute; inset: 0; background: rgba(12,31,53,0.45); -webkit-backdrop-filter: blur(6px); backdrop-filter: blur(6px); animation: fundo-entra 0.3s ease both; }
+  @keyframes fundo-entra { from { opacity: 0; } to { opacity: 1; } }
+  .aviso-caixa { position: relative; width: min(480px, 100%); border-radius: 28px; padding: 30px 30px 26px; background: rgba(255,255,255,0.92); -webkit-backdrop-filter: blur(30px) saturate(150%); backdrop-filter: blur(30px) saturate(150%); border: 1px solid rgba(255,255,255,0.9); box-shadow: 0 50px 100px -40px rgba(12,31,53,0.6), inset 0 1px 0 #fff; animation: chat-abre 0.35s var(--suave) both; }
+  .aviso-selo { display: inline-flex; align-items: center; gap: 8px; border-radius: 999px; padding: 6px 12px; font-size: 12.5px; font-weight: 700; color: var(--safira-escura); background: rgba(4,107,210,0.08); margin-bottom: 16px; }
+  .aviso-selo svg { width: 14px; height: 14px; }
+  .aviso-caixa h3 { font-size: 24px; margin-bottom: 10px; }
+  .aviso-caixa p { font-size: 15.5px; color: var(--tinta-2); line-height: 1.55; }
+  .aviso-caixa p + p { margin-top: 10px; }
+  .aviso-caixa p b { color: var(--tinta); font-weight: 700; }
+  .aviso-acoes { margin-top: 22px; display: flex; gap: 10px; flex-wrap: wrap; }
+  .aviso-fechar { position: absolute; top: 16px; right: 16px; width: 36px; height: 36px; border-radius: 50%; border: 1px solid var(--linha); background: rgba(15,34,56,0.04); cursor: pointer; display: inline-flex; align-items: center; justify-content: center; }
+  .aviso-fechar svg { width: 16px; height: 16px; }
+  .toast { position: fixed; left: 50%; bottom: 28px; z-index: 70; transform: translateX(-50%); max-width: calc(100vw - 32px); border-radius: 999px; padding: 12px 18px; font-size: 14px; font-weight: 600; color: var(--marfim); background: rgba(12,31,53,0.92); border: 1px solid rgba(169,209,255,0.3); box-shadow: 0 24px 50px -22px rgba(0,0,0,0.7); animation: chat-abre 0.3s var(--suave) both; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
+  .toast[hidden] { display: none; }
+  .toast b { color: var(--gelo-luz); font-weight: 700; }
 
   /* ── hero ────────────────────────────────────────────────────────────── */
   .hero { padding: 56px 0 40px; overflow: visible; }
@@ -415,7 +440,7 @@
     .nav-burger svg { width: 18px; height: 18px; }
     .mega { display: none !important; }
     .menu-cel[data-aberto="true"] { display: block; position: fixed; inset: 0; z-index: 60; overflow-y: auto; background: rgba(238,243,248,0.97); -webkit-backdrop-filter: blur(20px); backdrop-filter: blur(20px); padding: 0 20px 40px; animation: aba-entra 0.3s var(--suave) both; }
-    .menu-cel-topo { position: sticky; top: 0; display: flex; align-items: center; justify-content: space-between; padding: 16px 0; background: rgba(238,243,248,0.97); border-bottom: 1px solid var(--linha); margin-bottom: 8px; }
+    .menu-cel-topo { position: sticky; top: 0; z-index: 2; display: flex; align-items: center; justify-content: space-between; padding: 16px 0; background: rgba(238,243,248,0.97); border-bottom: 1px solid var(--linha); margin-bottom: 8px; }
     .menu-cel-topo img { height: 44px; }
     .menu-cel-topo .btn { padding: 10px 18px; font-size: 14px; }
     .grupo { border-bottom: 1px solid var(--linha); }
@@ -499,6 +524,12 @@
     .rodape-grade { grid-template-columns: 1fr 1fr; gap: 22px; }
     .cartao { transform: rotateY(-12deg) rotateX(6deg) rotateZ(-2deg); padding: 24px; transition: transform 0.12s linear; }
     .cartao-palco { perspective: 1000px; padding: 16px 12px 8px; }
+    .aviso { align-items: flex-end; padding: 0; }
+    .aviso-caixa { width: 100%; border-radius: 28px 28px 0 0; padding: 26px 22px; padding-bottom: max(22px, env(safe-area-inset-bottom)); animation: folha-sobe 0.4s var(--suave) both; }
+    @keyframes folha-sobe { from { transform: translateY(30px); opacity: 0; } to { transform: none; opacity: 1; } }
+    .aviso-acoes .btn { flex: 1 1 100%; }
+    .toast { bottom: 96px; }
+    .menu-nota { margin-top: 22px; padding: 14px 16px; border-radius: 16px; background: rgba(255,255,255,0.7); }
     .chat { right: 12px; bottom: 82px; }
     .chat-botao span.rotulo { display: none; } .chat-botao { padding: 4px; } .chat-botao img { width: 46px; height: 46px; } .chat-botao .ponto { position: absolute; right: 3px; bottom: 3px; box-shadow: 0 0 0 2px var(--meia-noite); }
     .chat-painel { position: fixed; inset: 0; width: auto; height: 100dvh; max-width: none; max-height: none; border-radius: 0; border: 0; background: rgba(12,31,53,0.97); }
@@ -508,7 +539,7 @@
     .chat-fio { padding: 16px 16px 8px; gap: 10px; } .bolha { max-width: 82%; font-size: 16px; }
     .chat-composer { padding: 10px 12px; padding-bottom: max(12px, env(safe-area-inset-bottom)); } .chat-composer input { font-size: 16px; padding: 13px 16px; }
     .chat-rodape { display: none; }
-    body.chat-aberto, body.menu-aberto { overflow: hidden; }
+    body.chat-aberto, body.menu-aberto, body.aviso-aberto { overflow: hidden; }
     body.chat-aberto .dock, body.chat-aberto .chat-botao, body.menu-aberto .dock, body.menu-aberto .chat-botao { display: none; }
   }
 </style>
@@ -608,6 +639,7 @@
         <a class="chip" href="https://sculptedcontours.com/treatments/male-breast-reduction/">Male breast</a>
         <a class="chip" href="https://sculptedcontours.com/treatments/total-body/">Total body</a>
       </div>
+      <div class="mega-nota"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="9"/><path d="M12 8h.01M11 12h1v4h1"/></svg><span><b>Links open your current pages.</b> This concept redesigns the homepage. In the full version, every page gets this design.</span></div>
     </div>
   </div>
 
@@ -647,6 +679,7 @@
         <a href="https://sculptedcontours.com/contact/information/">Join the Insider list</a>
         <a href="tel:+14048728578">404.872.8578</a>
       </div>
+      <div class="mega-nota"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="9"/><path d="M12 8h.01M11 12h1v4h1"/></svg><span><b>Links open your current pages.</b> This concept redesigns the homepage. In the full version, every page gets this design.</span></div>
     </div>
   </div>
 
@@ -743,6 +776,7 @@
     <li><a href="https://sculptedcontours.com/contact/information/">Newsletter sign up</a></li>
     <li><a href="tel:+14048728578">404.872.8578</a></li>
   </ul></details>
+  <p class="menu-nota"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="9"/><path d="M12 8h.01M11 12h1v4h1"/></svg><span><b>Links open your current pages.</b> This concept redesigns the homepage. In the full version, every page gets this design.</span></p>
   <a class="btn btn-safira" href="https://sculptedcontours.com/contact/schedule-consultation/">Book a free consultation</a>
 </div>
 
@@ -1197,12 +1231,27 @@
       <div><h5>Areas &amp; results</h5><ul><li><a href="https://sculptedcontours.com/treatments/abdomen/">Abdomen</a></li><li><a href="https://sculptedcontours.com/treatments/flanks/">Flanks</a></li><li><a href="https://sculptedcontours.com/treatments/arms/">Arms</a></li><li><a href="https://sculptedcontours.com/treatments/legs/">Legs</a></li><li><a href="https://sculptedcontours.com/treatments/double-chin/">Double chin</a></li><li><a href="https://sculptedcontours.com/treatments/">All areas</a></li><li><a href="https://sculptedcontours.com/results/">Results galleries</a></li></ul></div>
       <div><h5>About &amp; contact</h5><ul><li><a href="https://sculptedcontours.com/about-us/">About us</a></li><li><a href="https://sculptedcontours.com/about-us/staff/">Meet our experts</a></li><li><a href="https://sculptedcontours.com/the-contour-club-vip-membership-program/">Contour Club</a></li><li><a href="https://sculptedcontours.com/about-us/specials-promotions/">Specials</a></li><li><a href="https://sculptedcontours.com/events/">Events</a></li><li><a href="https://sculptedcontours.com/about-us/financing/">Financing</a></li><li><a href="https://sculptedcontours.com/reviews/">Reviews</a></li><li><a href="https://sculptedcontours.com/blog">Blog</a></li><li><a href="https://sculptedcontours.com/videos/">Videos</a></li><li><a href="https://sculptedcontours.com/about-us/news-media/">News &amp; media</a></li><li><a href="https://sculptedcontours.com/faqs/">FAQs</a></li><li><a href="https://sculptedcontours.com/contact/">Contact</a></li></ul></div>
     </div>
+    <p class="rodape-nota"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="9"/><path d="M12 8h.01M11 12h1v4h1"/></svg><span><b>Every link on this page opens your current site.</b> This concept covers the homepage. The full version rebuilds all your pages, treatments, results, blog and contact, in this same design.</span></p>
     <div class="rodape-fim">
       <span>3005 Royal Blvd S, Suite 150, Alpharetta, GA 30022</span>
       <span><a href="https://sculptedcontours.com/privacy-policy/">Privacy policy</a> · <a href="https://sculptedcontours.com/terms-and-conditions/">Terms</a></span>
     </div>
   </div>
 </footer>
+
+<!-- aviso ao sair para o site atual -->
+<div class="aviso" id="aviso" role="dialog" aria-modal="true" aria-labelledby="aviso-titulo" hidden>
+  <div class="aviso-fundo" data-aviso-fecha></div>
+  <div class="aviso-caixa">
+    <button class="aviso-fechar" type="button" aria-label="Close" data-aviso-fecha><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round"><path d="M6 6l12 12M18 6L6 18"/></svg></button>
+    <span class="aviso-selo"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><path d="M14 4h6v6M20 4l-9 9M18 14v5a1 1 0 01-1 1H5a1 1 0 01-1-1V7a1 1 0 011-1h5"/></svg>Leaving the concept</span>
+    <h3 id="aviso-titulo">This link opens your current site</h3>
+    <p>This concept redesigns the <b>homepage only</b>. Treatment pages, results galleries, blog and contact keep your current design for now.</p>
+    <p>In the <b>full version</b>, every page is rebuilt to match this one, same glass style, same menus, same care.</p>
+    <div class="aviso-acoes"><a class="btn btn-safira" id="aviso-seguir" href="#" target="_blank" rel="noreferrer">Open current page</a><button class="btn btn-claro" type="button" data-aviso-fecha>Stay on the concept</button></div>
+  </div>
+</div>
+<div class="toast" id="toast" hidden aria-live="polite"><b>Opening your current site.</b> This page is not redesigned yet.</div>
 
 <!-- chat de concierge, fictício -->
 <div class="chat" id="chat">
@@ -1280,6 +1329,26 @@
     document.addEventListener("click", function (e) { if (!e.target.closest(".mega") && !e.target.closest("[data-mega]")) fechar(); });
     document.addEventListener("keydown", function (e) { if (e.key === "Escape") fechar(); });
     addEventListener("scroll", function () { if (aberto) fechar(); }, { passive: true });
+  })();
+  // Links para o site atual: a primeira vez abre a folha explicando que só a
+  // home foi refeita; depois, um aviso curto e o link abre em nova aba.
+  (function () {
+    var aviso = document.getElementById("aviso"), seguir = document.getElementById("aviso-seguir"), toast = document.getElementById("toast"), tToast = null, jaViu = false;
+    try { jaViu = sessionStorage.getItem("rv-aviso") === "1"; } catch (e) {}
+    function fechar() { aviso.hidden = true; document.body.classList.remove("aviso-aberto"); }
+    function abrir(href) { seguir.href = href; aviso.hidden = false; document.body.classList.add("aviso-aberto"); setTimeout(function () { seguir.focus({ preventScroll: true }); }, 60); }
+    function lembrar() { jaViu = true; try { sessionStorage.setItem("rv-aviso", "1"); } catch (e) {} }
+    function avisar() { toast.hidden = false; clearTimeout(tToast); tToast = setTimeout(function () { toast.hidden = true; }, 2800); }
+    document.addEventListener("click", function (e) {
+      var a = e.target.closest("a[href]"); if (!a || a === seguir) return;
+      if (!/^https?:\/\/(www\.)?sculptedcontours\.com/i.test(a.href)) return;
+      e.preventDefault();
+      if (jaViu) { avisar(); window.open(a.href, "_blank", "noopener"); return; }
+      abrir(a.href);
+    });
+    seguir.addEventListener("click", function () { lembrar(); setTimeout(fechar, 150); });
+    aviso.querySelectorAll("[data-aviso-fecha]").forEach(function (b) { b.addEventListener("click", function () { lembrar(); fechar(); }); });
+    document.addEventListener("keydown", function (e) { if (e.key === "Escape" && !aviso.hidden) { lembrar(); fechar(); } });
   })();
   // Menu do celular.
   (function () {

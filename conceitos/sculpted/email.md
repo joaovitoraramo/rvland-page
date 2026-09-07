@@ -49,9 +49,11 @@ on your phone or desktop:
 
 https://rvland-page.vercel.app/c/sculpted
 
-Everything links to your current pages, your consultation form stays the
-booking path, and the $50 Insider gift and the 150-day program are shown
-the way an offer should be shown, not as a pop-up. If you want, offers
+This is the homepage only. Every menu and link opens your current pages,
+so you can see how the two fit together; in the full build, every page
+gets the same design. Your consultation form stays the booking path, and
+the $50 Insider gift and the 150-day program are shown the way an offer
+should be shown, not as a pop-up. If you want, offers
 like those become campaigns you edit yourself in a small admin panel, no
 developer needed.
 
@@ -117,6 +119,11 @@ que parecer desde o primeiro pixel" é a frase que ela vai repetir.
 **Tudo é dela.** Foto da suíte, selos, números, tratamentos linkados às
 páginas atuais, formulário de consulta como caminho de agendamento. Tira
 o medo de "vou ter que trocar tudo" e prova que eu li o site inteiro.
+
+**Escopo explícito.** O e-mail e o próprio conceito (nota nos menus e no
+rodapé, folha ao clicar num link do site atual) dizem que só a home foi
+refeita e que as outras páginas entram na versão paga. Evita a leitura
+de "o site inteiro está pronto de graça" e já ancora o que é o serviço.
 
 **Kathy é clínica e gestora, não marqueteira.** 25 anos de clínica,
 ex-treinadora da CoolSculpting. Fala-se em prova e resultado, não em

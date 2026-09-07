@@ -101,7 +101,8 @@
     "Transformation Talk: 4 posts do blog, vídeos, News & media / Featured on / FAQs, tudo linkado",
     "Visit us on Royal Boulevard (claro): mapa do Google em monocromia clara centrado por coordenada (34.0545587,-84.2729506), pino próprio navy com pulso, cartão de vidro com endereço + Directions + Open in Google Maps, chip aberto/fechado agora; painéis claros Book a consultation (form + consult form + balão do concierge), Hours (seg-sex 9-6) e Talk to us, Follow (Instagram, Facebook) + 10 cidades atendidas",
     "Rodapé-índice em 6 colunas com todos os links do site (Body, Face & skin, Injectables & men, Areas & results, About & contact) + privacy/terms",
-    "Dock fixo no celular (Treatments, Results, Specials, Club, Visit) e chat de concierge fictício em modelo Instagram, tela cheia no celular, teclado tratado com VisualViewport"
+    "Dock fixo no celular (Treatments, Results, Specials, Club, Visit) e chat de concierge fictício em modelo Instagram, tela cheia no celular, teclado tratado com VisualViewport",
+    "Escopo do conceito explícito: nota nos dois mega-menus, no menu do celular e no rodapé ('Links open your current pages. This concept redesigns the homepage. In the full version, every page gets this design'); ao clicar em qualquer link para sculptedcontours.com, uma folha de vidro (modal no desktop, bottom sheet no celular) explica que só a home foi refeita e que a versão completa reconstrói todas as páginas; da segunda vez em diante, só um toast e o link abre em nova aba"
   ],
   "mantidos": [
     "Agendamento: o formulário de consulta deles (/contact/schedule-consultation/) e o consult form de novos clientes (/new-consult-form/)",
@@ -123,7 +124,8 @@
     "Animações de entrada só com .js [data-revela]; scripts/auditar-contraste.mjs e scripts/exportar-conceito.ts injetam opacity:1 para medir e capturar tudo (elementos com opacity 0 eram pulados na auditoria e sairiam em branco no PNG).",
     "Nada absoluto pode vazar para fora da largura no celular: o brilho do hero virou background da seção porque um ::before com right:-10% esticava o viewport do iPhone para 429px e empurrava o chat para fora.",
     "Mapa: ll= (sem pino do Google) + filter grayscale(1) contrast(.9) brightness(1.05); o cartão de endereço a 10px cobre a caixa 'View larger map' do Google; no celular o chip de horário vai para o canto superior esquerdo pelo mesmo motivo.",
-    "Retratos pequenos do site (Kathy 621px, Sinha 427px) passam por Real-ESRGAN x4 e voltam a 2x para não ficarem moles em cards grandes."
+    "Retratos pequenos do site (Kathy 621px, Sinha 427px) passam por Real-ESRGAN x4 e voltam a 2x para não ficarem moles em cards grandes.",
+    "Todo link para o site atual passa pelo aviso de escopo (interceptado por delegação em a[href*=sculptedcontours.com]); a primeira vez abre a folha, depois toast + nova aba (sessionStorage rv-aviso). O que não foi refeito é entregue só na versão paga, e o site precisa dizer isso sozinho."
   ],
   "arquivos": [
     {
