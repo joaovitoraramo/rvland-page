@@ -41,14 +41,14 @@
     --suave: cubic-bezier(.2,.7,.2,1);
   }
 
-  * { box-sizing: border-box; margin: 0; padding: 0; }
+  * { box-sizing: border-box; margin: 0; padding: 0; -webkit-tap-highlight-color: transparent; }
   html { scroll-behavior: smooth; }
   body { background: var(--gelo); color: var(--tinta); font-family: var(--fonte); font-size: 17px; font-weight: 400; line-height: 1.65; -webkit-font-smoothing: antialiased; overflow-x: hidden; }
   a { color: inherit; text-decoration: none; }
   img { display: block; max-width: 100%; }
   button { font: inherit; color: inherit; }
   .env { max-width: 1240px; margin: 0 auto; padding: 0 40px; }
-  :focus-visible { outline: 2px solid var(--safira); outline-offset: 3px; border-radius: 6px; }
+  :focus-visible { outline: 2px solid var(--safira); outline-offset: 3px; }
   section[id] { scroll-margin-top: 96px; }
 
   /* ── vidro ───────────────────────────────────────────────────────────── */
@@ -405,6 +405,7 @@
     .hero-quadro img, .promo-destaque::after, .chat-botao::after, .mapa-pulso { animation: none; }
     .marco::before { transform: none; }
     .estrelas i { transform: none; opacity: 1; }
+    .menu-cel[data-aberto="true"] .grupo, .menu-cel[data-aberto="true"] > .btn, .grupo[open] li { animation: none; opacity: 1; transform: none; }
   }
 
   /* ── responsivo ─────────────────────────────────────────────────────── */
@@ -418,12 +419,18 @@
     .menu-cel-topo img { height: 44px; }
     .menu-cel-topo .btn { padding: 10px 18px; font-size: 14px; }
     .grupo { border-bottom: 1px solid var(--linha); }
-    .grupo summary { list-style: none; cursor: pointer; display: flex; justify-content: space-between; align-items: center; padding: 16px 4px; font-size: 18px; font-weight: 800; color: var(--tinta); }
+    .menu-cel[data-aberto="true"] .grupo, .menu-cel[data-aberto="true"] > .btn { opacity: 0; transform: translateY(14px); animation: menu-entra 0.55s var(--suave) forwards; animation-delay: calc(var(--i, 0) * 55ms + 80ms); }
+    .grupo[open] li { opacity: 0; transform: translateY(8px); animation: menu-entra 0.4s var(--suave) forwards; animation-delay: calc(var(--j, 0) * 40ms); }
+    @keyframes menu-entra { to { opacity: 1; transform: none; } }
+    .grupo summary { list-style: none; cursor: pointer; display: flex; justify-content: space-between; align-items: center; padding: 16px 12px; margin: 0 -8px; border-radius: 16px; font-size: 18px; font-weight: 800; color: var(--tinta); transition: background 0.2s ease; }
+    .grupo summary:active { background: rgba(15,34,56,0.06); }
+    .grupo summary:focus-visible { outline-offset: -2px; }
     .grupo summary::-webkit-details-marker { display: none; }
     .grupo summary svg { width: 18px; height: 18px; transition: transform 0.2s ease; }
     .grupo[open] summary svg { transform: rotate(180deg); }
-    .grupo ul { list-style: none; padding: 0 4px 14px; display: grid; gap: 2px; }
-    .grupo li a { display: block; padding: 9px 12px; border-radius: 12px; font-size: 15.5px; font-weight: 600; color: var(--tinta); background: rgba(255,255,255,0.7); }
+    .grupo ul { list-style: none; padding: 0 4px 14px; display: grid; gap: 4px; }
+    .grupo li a { display: block; padding: 10px 12px; border-radius: 12px; font-size: 15.5px; font-weight: 600; color: var(--tinta); background: rgba(255,255,255,0.7); transition: background 0.2s ease; }
+    .grupo li a:active { background: rgba(15,34,56,0.06); }
     .grupo li a small { display: block; font-size: 13px; font-weight: 500; color: var(--tinta-2); }
     .menu-cel > .btn { width: 100%; margin-top: 20px; }
     .hero .env { grid-template-columns: 1fr; gap: 28px; }
@@ -1278,6 +1285,8 @@
   (function () {
     var menu = document.getElementById("menu-cel"), abre = document.querySelector("[data-menu-abre]");
     function set(v) { menu.dataset.aberto = String(v); abre.setAttribute("aria-expanded", String(v)); document.body.classList.toggle("menu-aberto", v); }
+    menu.querySelectorAll(".grupo").forEach(function (g, i) { g.style.setProperty("--i", i); g.querySelectorAll("li").forEach(function (li, j) { li.style.setProperty("--j", j); }); });
+    var cta = menu.querySelector(":scope > .btn"); if (cta) cta.style.setProperty("--i", menu.querySelectorAll(".grupo").length);
     abre.addEventListener("click", function () { set(menu.dataset.aberto !== "true"); });
     menu.querySelector("[data-menu-fecha]").addEventListener("click", function () { set(false); });
     menu.querySelectorAll("a").forEach(function (a) { a.addEventListener("click", function () { set(false); }); });
