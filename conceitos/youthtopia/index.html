@@ -606,7 +606,6 @@
     display: flex; align-items: center; gap: 12px; flex: none;
     padding: 14px 14px 12px 16px; border-bottom: 1px solid rgba(246,238,227,0.12);
   }
-  .chat-voltar { display: none; }
   .chat-topo img { width: 42px; height: 42px; border-radius: 50%; object-fit: cover; border: 1px solid var(--ouro); }
   .chat-topo strong { display: block; font-family: var(--display); font-weight: 500; font-size: 18px; line-height: 1.1; }
   .chat-topo small { display: flex; align-items: center; gap: 6px; font-size: 12.5px; color: var(--marfim-2); margin-top: 3px; }
@@ -617,6 +616,8 @@
     color: var(--marfim); font-size: 20px; line-height: 1; display: inline-flex; align-items: center; justify-content: center;
   }
   .chat-fechar { margin-left: auto; }
+  .chat-fechar svg, .chat-voltar svg { width: 18px; height: 18px; display: block; }
+  .chat-voltar { display: none; } /* só no celular; a regra conjunta acima não pode religar */
   .chat-preview {
     flex: none; margin: 10px 14px 0; padding: 8px 12px; border-radius: 12px;
     background: rgba(230,207,152,0.12); border: 1px solid rgba(230,207,152,0.28);
@@ -795,7 +796,8 @@
       background: rgba(26,16,13,0.97);
     }
     .chat-topo { padding: 12px 14px 12px 8px; padding-top: max(12px, env(safe-area-inset-top)); }
-    .chat-voltar { display: inline-flex; background: transparent; border: 0; font-size: 26px; }
+    .chat-voltar { display: inline-flex; background: transparent; border: 0; margin-left: -6px; }
+    .chat-voltar svg { width: 22px; height: 22px; }
     .chat-fechar { display: none; }
     .chat-fio { padding: 16px 16px 8px; gap: 10px; }
     .bolha { max-width: 82%; font-size: 16px; }
@@ -1123,13 +1125,13 @@
 <div class="chat" id="chat">
   <div class="chat-painel" id="chat-painel" role="dialog" aria-label="Text the front desk" hidden>
     <header class="chat-topo">
-      <button class="chat-voltar" type="button" aria-label="Close" data-chat-fechar>‹</button>
+      <button class="chat-voltar" type="button" aria-label="Close" data-chat-fechar><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M15 6l-6 6 6 6"/></svg></button>
       <img src="fotos/kim.png" alt="">
       <div>
         <strong>Youthtopia</strong>
         <small>Front desk · replies within the hour</small>
       </div>
-      <button class="chat-fechar" type="button" aria-label="Close" data-chat-fechar>×</button>
+      <button class="chat-fechar" type="button" aria-label="Close" data-chat-fechar><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" aria-hidden="true"><path d="M6 6l12 12M18 6L6 18"/></svg></button>
     </header>
     <div class="chat-preview"><b>Preview.</b> Nothing is sent from this concept. On your live site this connects to your front desk (Aesthetix CRM or any provider).</div>
     <div class="chat-fio" id="chat-fio" aria-live="polite"></div>
