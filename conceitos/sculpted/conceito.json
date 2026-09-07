@@ -1,0 +1,165 @@
+{
+  "criadoEm": "2026-09-07",
+  "cliente": "Sculpted Contours",
+  "dominio": "sculptedcontours.com",
+  "url": "https://rvland-page.vercel.app/c/sculpted",
+  "fonteHtml": "conceitos/sculpted/index.html",
+  "direcao": "Sapphire & Ice. A paleta é a deles (navy #1D4062, safira #046BD2, gelo #F0F5FA) e as fontes de apoio também (Belleza, Lato); o display é Cormorant Garamond. Vidro fosco sobre foto e seções, luz de safira, platina nas linhas, cantos de 28 a 36px, pílulas, cartão do Contour Club em perspectiva. Frio de propósito: casa de CoolSculpting, e o nome já diz luxury. A prova vem antes do adjetivo: 18.000+ tratamentos, Best of the City 2015-2024, Diamond, única na Geórgia com quatro sistemas, 75 avaliações. O site atual (WordPress/Elementor em GoDaddy) afirma luxo e mostra título branco ilegível sobre foto clara e texto azul cheio de palavra-chave.",
+  "assinatura": "O Contour Club como cartão: VIP a $199/mês com serviço mensal cortesia, upgrades de membro e 10% em skincare, mais uma área da cliente com o plano (sessão 2 de 4, próxima marcada, cortesia do mês). Eles já têm o programa; o conceito o transforma em produto visível.",
+  "faixaCores": {
+    "fundo": "#0B1E33",
+    "texto": "rgba(255,255,255,0.85)",
+    "acento": "#9CCBFF",
+    "acentoTexto": "#0B1E33",
+    "modalFundo": "#12293F"
+  },
+  "paleta": [
+    {
+      "nome": "tinta",
+      "hex": "#0B1E33",
+      "uso": "texto principal sobre claro; também o fundo meia-noite das seções escuras"
+    },
+    {
+      "nome": "tinta-2",
+      "hex": "#3A4B5E",
+      "uso": "secundário sobre claro (~8:1 no gelo)"
+    },
+    {
+      "nome": "safira-t",
+      "hex": "#1967B2",
+      "uso": "rótulos e itálicos sobre claro (5.3:1 no gelo)"
+    },
+    {
+      "nome": "gelo",
+      "hex": "#F0F5FA",
+      "uso": "fundo claro principal (do site deles)"
+    },
+    {
+      "nome": "porcelana",
+      "hex": "#FBFBFB",
+      "uso": "fundo claro alternado (do site deles)"
+    },
+    {
+      "nome": "navy",
+      "hex": "#1D4062",
+      "uso": "a cor da marca; fundo do Contour Club (navy-2 #163452)"
+    },
+    {
+      "nome": "safira",
+      "hex": "#046BD2",
+      "uso": "botões primários em gradiente com #2D8BE6 e #0356A8, texto branco (5.4:1)"
+    },
+    {
+      "nome": "gelo-luz",
+      "hex": "#9CCBFF",
+      "uso": "rótulos, números e itálicos SÓ sobre escuro (~9:1); nunca texto sobre claro"
+    },
+    {
+      "nome": "marfim",
+      "hex": "#F4F7FA",
+      "uso": "texto sobre escuro; secundário a 80%"
+    },
+    {
+      "nome": "platina",
+      "hex": "#C9D3DD",
+      "uso": "chip do cartão e detalhes; nunca texto"
+    },
+    {
+      "nome": "vidro-escuro",
+      "hex": "rgba(11,30,51,0.62)",
+      "uso": "painéis sobre foto e sobre escuro, blur 24px"
+    },
+    {
+      "nome": "vidro-claro",
+      "hex": "rgba(255,255,255,0.66)",
+      "uso": "tiles sobre gelo, blur 22px"
+    }
+  ],
+  "tipografia": [
+    {
+      "papel": "display",
+      "fonte": "Cormorant Garamond 500/600, itálico 400",
+      "nota": "serifa alta e fria; itálico em azul-gelo (escuro) ou safira (claro) para uma palavra por título"
+    },
+    {
+      "papel": "rótulos",
+      "fonte": "Belleza",
+      "nota": "a fonte deles; caixa alta com tracking 0.12 a 0.24em em nav, etiquetas, pílulas e stats"
+    },
+    {
+      "papel": "corpo",
+      "fonte": "Lato 400/700",
+      "nota": "a fonte deles; 17px desktop, 16px celular, entrelinha 1.7"
+    }
+  ],
+  "copy": {
+    "titulo": "Luxury you deserve. Results you can see.",
+    "subtitulo": "Private treatment suites, clinicians who train other clinicians, and more than 18,000 custom treatments since 2014."
+  },
+  "secoes": [
+    "Nav de vidro com o logo branco deles + Body · Face · Skin · Injectables · Results · Contour Club + telefone + Schedule a consultation",
+    "Hero: foto da suíte privativa (teto trabalhado, lustre, poltrona navy, CoolSculpting) com painel de vidro atravessando a borda: tagline deles (Luxury you deserve, Results you desire), 4 stats",
+    "Prêmios em 4 tiles de vidro: Best of the City 2015-2024 (selo), Diamond (selo), Top 40 nos EUA, única na Geórgia com 4 sistemas",
+    "Tratamentos em bento: as 5 categorias reais deles (Body, Face, Skin, Injectables, Men) com os procedimentos linkados ao site, tile escuro do programa CoolSculpting Confidence, chips por área",
+    "Resultados: dois antes/depois reais da galeria deles (abdômen, flancos), seção escura",
+    "A experiência: foto da suíte + 4 tiles (conforto, snacks, iPad/Wi-Fi, quatro áreas de uma vez)",
+    "Contour Club: seção navy com área da cliente em vidro e cartão em perspectiva 3D com o logo",
+    "Equipe: Kathy King, Dr. Pradeep Sinha, Monica Bugg (sem foto no site deles: monograma)",
+    "Citação real do Google (Caroline F.) + selo Excellent · 75 reviews",
+    "Ticket do presente de $50 (oferta real deles: Insider list, mínimo $500)",
+    "Concierge: mapa do Google filtrado para navy, painéis de consulta, horário (seg-sex 9-6) e contato, cidades atendidas",
+    "Chat de concierge fictício em modelo Instagram, com aviso de preview",
+    "Rodapé + faixa e crédito da RVLand (componente do publicador)"
+  ],
+  "mantidos": [
+    "Agendamento: o formulário de consulta deles (/contact/schedule-consultation/)",
+    "Todos os links de tratamento apontam para as páginas atuais do site",
+    "Programa CoolSculpting Confidence e o presente de $50 são ofertas reais do site"
+  ],
+  "fotosOrigem": "Tudo da API de mídia do WordPress deles: clinica.jpg (HD-4-of-40, 2560x1713, a suíte), antes-depois (Lower-Abs-Female-24, Love-Handles-Female-16, 2513x1125), kathy.png e sinha.jpg (retratos do site), logo-branco.png, premios.png (Best of the City 2024), diamond.png. Lobby (Buckhead, antiga) e suite.jpg (texto queimado) ficaram de fora.",
+  "regras": [
+    "Azul-gelo #9CCBFF só vira texto sobre escuro; sobre gelo o rótulo é safira escura #1967B2.",
+    "Secundário sobre claro é #3A4B5E, nunca cinza; sobre escuro marfim a 80% no mínimo. Piso de 12px, corpo em 400.",
+    "Vidro sempre com tom próprio por baixo: escuro a 62% sobre foto, claro a 66% sobre gelo.",
+    "Orbes absolutas com !important; regra `> *` de tile precisa de :not(.orbe).",
+    "Painel do chat é <div role=dialog>, nunca <section>.",
+    "Hero: card atravessa a borda de baixo (112px pendurado); celular com foto em bloco de 62vh.",
+    "Auditar com scripts/auditar-contraste.mjs em 1440 e iphone antes de publicar; meta 0 reprovados.",
+    "Nenhum número que não se prove: 18.000+, Best of the City 2015-2024 e 4 sistemas vêm do site deles; 4.7 com 75 avaliações vem do pino do Google Maps (a query do mapa usa o nome da clínica, que mostra nome e nota no pino).",
+    "Logo: o PNG deles é quadrado com o flourish do S ocupando a altura toda; recortado pela faixa densa das letras (1154x634) para ler na nav a 64px."
+  ],
+  "arquivos": [
+    {
+      "rotulo": "Conceito completo (PNG)",
+      "caminho": "sculpted/sculpted-conceito.png"
+    },
+    {
+      "rotulo": "Hero (PNG)",
+      "caminho": "sculpted/sculpted-hero.png"
+    },
+    {
+      "rotulo": "Versão mobile (PNG)",
+      "caminho": "sculpted/sculpted-mobile.png"
+    },
+    {
+      "rotulo": "Conceito (PDF)",
+      "caminho": "sculpted/sculpted-conceito.pdf"
+    },
+    {
+      "rotulo": "Versão mobile (PDF)",
+      "caminho": "sculpted/sculpted-mobile.pdf"
+    },
+    {
+      "rotulo": "Código-fonte do conceito (HTML)",
+      "caminho": "sculpted/sculpted-fonte.html"
+    }
+  ],
+  "abordagem": {
+    "canal": "e-mail sculpted@sculptedcontours.com (alternativa: pmsculpted@ ou DM @sculptedcontours)",
+    "contato": "Kathy King, Owner / Managing Director",
+    "assunto": "The first 3 seconds on sculptedcontours.com",
+    "gancho": "Primeira tela em 07/09/2026: título branco sobre o teto branco da foto da suíte (metade some), parágrafo escrito para o Google, barra Call us now por cima. Depois vira: 'luxury' aparece três vezes antes de algo legível, e a prova rara (Diamond, 4 sistemas, 10 anos de Best of the City, 4.7) está abaixo da dobra.",
+    "entrega": "link para o conceito hospedado, sem anexo",
+    "arquivo": "conceitos/sculpted/email.md"
+  }
+}

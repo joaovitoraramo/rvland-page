@@ -1,0 +1,1417 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="robots" content="noindex, nofollow">
+<meta name="viewport" content="width=device-width, initial-scale=1, interactive-widget=resizes-content">
+<title>Sculpted Contours website concept</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Cormorant+Garamond:ital,wght@0,400;0,500;0,600;1,400;1,500&family=Belleza&family=Lato:wght@400;700&display=swap" rel="stylesheet">
+<style>
+  /* Sapphire & Ice. A paleta é a deles (navy #1D4062, safira #046BD2, gelo
+     #F0F5FA) e as fontes de apoio também (Belleza, Lato). O que muda é a
+     composição: vidro fosco, luz de safira, platina nas linhas, serifa alta
+     no display. Frio de propósito: é uma casa de CoolSculpting, e o nome já
+     diz luxo. Legibilidade: azul-gelo só vira texto no escuro; sobre gelo é
+     safira escura; piso de 12px; corpo em 400. */
+  :root {
+    --tinta: #0B1E33;        /* texto principal sobre claro */
+    --tinta-2: #3A4B5E;      /* secundário sobre claro: ~8:1 no gelo */
+    --safira-t: #1967B2;     /* rótulos sobre claro: 5.3:1 no gelo */
+
+    --gelo: #F0F5FA;
+    --porcelana: #FBFBFB;
+    --gelo-2: #E4ECF4;
+    --linha: #D3DDE7;
+
+    --meia-noite: #0B1E33;
+    --navy: #1D4062;         /* a cor da marca */
+    --navy-2: #163452;
+    --marfim: #F4F7FA;                       /* texto sobre escuro */
+    --marfim-2: rgba(244,247,250,0.80);
+    --safira: #046BD2;
+    --safira-2: #1967B2;
+    --gelo-luz: #9CCBFF;                     /* rótulos e números no escuro: ~9:1 */
+    --platina: #C9D3DD;
+
+    --vidro-escuro: rgba(11,30,51,0.62);
+    --vidro-escuro-borda: rgba(244,247,250,0.16);
+    --vidro-claro: rgba(255,255,255,0.66);
+    --vidro-claro-borda: rgba(11,30,51,0.09);
+    --raio: 28px;
+    --raio-g: 36px;
+
+    --display: "Cormorant Garamond", "Georgia", serif;
+    --rotulo: "Belleza", "Lato", system-ui, sans-serif;
+    --corpo: "Lato", system-ui, sans-serif;
+  }
+
+  * { box-sizing: border-box; margin: 0; padding: 0; }
+  html { scroll-behavior: smooth; }
+  body {
+    background: var(--gelo); color: var(--tinta);
+    font-family: var(--corpo); font-size: 17px; font-weight: 400; line-height: 1.7;
+    -webkit-font-smoothing: antialiased; text-rendering: optimizeLegibility; overflow-x: hidden;
+  }
+  a { color: inherit; text-decoration: none; }
+  img { display: block; max-width: 100%; }
+  .env { max-width: 1240px; margin: 0 auto; padding: 0 40px; }
+
+  /* ── vidro e luz ─────────────────────────────────────────────────────── */
+  .vidro {
+    -webkit-backdrop-filter: blur(22px) saturate(150%); backdrop-filter: blur(22px) saturate(150%);
+    border: 1px solid var(--vidro-claro-borda); background: var(--vidro-claro);
+    box-shadow: 0 30px 60px -34px rgba(11,30,51,0.35), inset 0 1px 0 rgba(255,255,255,0.7);
+  }
+  .vidro-escuro {
+    -webkit-backdrop-filter: blur(24px) saturate(140%); backdrop-filter: blur(24px) saturate(140%);
+    border: 1px solid var(--vidro-escuro-borda); background: var(--vidro-escuro);
+    box-shadow: 0 40px 80px -40px rgba(0,0,0,0.6), inset 0 1px 0 rgba(255,255,255,0.10);
+  }
+  .orbe { position: absolute !important; border-radius: 50%; filter: blur(90px); pointer-events: none; z-index: 0; }
+  .orbe-safira { background: rgba(4,107,210,0.28); }
+  .orbe-gelo { background: rgba(156,203,255,0.30); }
+  .orbe-platina { background: rgba(201,211,221,0.35); }
+  section { position: relative; isolation: isolate; }
+  section > .env { position: relative; z-index: 1; }
+
+  .etiqueta {
+    display: inline-flex; align-items: center; gap: 12px;
+    font-family: var(--rotulo); font-size: 13px; letter-spacing: 0.24em; text-transform: uppercase;
+    color: var(--safira-t);
+  }
+  .etiqueta::before { content: ""; width: 26px; height: 1px; background: var(--safira-2); }
+  .escuro .etiqueta { color: var(--gelo-luz); }
+  .escuro .etiqueta::before { background: var(--gelo-luz); }
+
+  /* ── pílulas ─────────────────────────────────────────────────────────── */
+  .pilula {
+    display: inline-flex; align-items: center; gap: 10px; border-radius: 999px;
+    font-family: var(--rotulo); font-size: 14px; letter-spacing: 0.14em; text-transform: uppercase;
+    padding: 15px 28px; white-space: nowrap;
+    transition: transform 0.25s ease, box-shadow 0.25s ease, background 0.25s ease, color 0.25s ease;
+  }
+  .pilula:hover { transform: translateY(-2px); }
+  .pilula-safira {
+    background: linear-gradient(135deg, #1971CC, var(--safira) 60%, #0356A8); color: #FFFFFF;
+    box-shadow: 0 14px 30px -14px rgba(4,107,210,0.7);
+  }
+  .pilula-safira:hover { box-shadow: 0 20px 40px -14px rgba(4,107,210,0.85); }
+  .pilula-tinta { background: var(--meia-noite); color: var(--marfim); }
+  .pilula-tinta:hover { background: var(--navy); }
+  .pilula-vidro {
+    color: var(--marfim); background: rgba(244,247,250,0.10); border: 1px solid rgba(244,247,250,0.30);
+    -webkit-backdrop-filter: blur(12px); backdrop-filter: blur(12px);
+  }
+  .pilula-vidro:hover { background: rgba(244,247,250,0.18); }
+  .pilula-vidro.claro { color: var(--tinta); background: rgba(11,30,51,0.05); border-color: rgba(11,30,51,0.18); }
+  .pilula-vidro.claro:hover { background: rgba(11,30,51,0.09); }
+
+  /* ── nav de vidro ────────────────────────────────────────────────────── */
+  .nav {
+    position: sticky; top: 0; z-index: 40;
+    -webkit-backdrop-filter: blur(20px) saturate(150%); backdrop-filter: blur(20px) saturate(150%);
+    background: rgba(11,30,51,0.80); border-bottom: 1px solid rgba(156,203,255,0.16); color: var(--marfim);
+    transition: background 0.35s ease, border-color 0.35s ease;
+  }
+  .nav.no-topo { background: rgba(11,30,51,0.42); border-bottom-color: transparent; }
+  .nav .env { display: flex; align-items: center; gap: 26px; height: 82px; }
+  .marca img { height: 64px; width: auto; }
+  .nav nav { display: flex; gap: 2px; margin-left: 6px; }
+  .nav nav a {
+    font-family: var(--rotulo); font-size: 13.5px; letter-spacing: 0.12em; text-transform: uppercase;
+    color: var(--marfim-2); padding: 9px 12px; border-radius: 999px; white-space: nowrap;
+    transition: background 0.2s ease, color 0.2s ease;
+  }
+  .nav nav a:hover { background: rgba(244,247,250,0.10); color: var(--marfim); }
+  .nav-fone { margin-left: auto; font-family: var(--rotulo); font-size: 15px; letter-spacing: 0.04em; color: var(--marfim); white-space: nowrap; }
+  .nav .pilula { padding: 12px 22px; font-size: 13px; }
+  .nav .pilula .c { display: none; }
+
+  /* ── hero: a suíte privativa, e o painel atravessando a borda ────────── */
+  .hero {
+    min-height: 92vh; margin-top: -82px; padding-top: 82px; padding-bottom: 0;
+    display: flex; align-items: flex-end; color: var(--marfim); overflow: visible; z-index: 2;
+  }
+  .hero-fundo { position: absolute; inset: 0; z-index: 0; overflow: hidden; background: url("/c/sculpted/fotos/clinica.jpg") center 55% / cover no-repeat; }
+  .hero-fundo::before {
+    content: ""; position: absolute; inset: 0;
+    background:
+      linear-gradient(to bottom, rgba(11,30,51,0.55) 0%, rgba(11,30,51,0.12) 120px, rgba(11,30,51,0) 240px),
+      linear-gradient(to top, rgba(11,30,51,0.70) 0%, rgba(11,30,51,0.22) 26%, rgba(11,30,51,0) 50%);
+  }
+  .hero-fundo .orbe-safira { width: 640px; height: 640px; right: -200px; top: -160px; opacity: 0.55; }
+  .hero .env { width: 100%; padding-top: 120px; position: relative; z-index: 1; }
+  .hero-vidro {
+    border-radius: var(--raio-g); padding: 44px 48px 42px; margin-bottom: -112px;
+    display: grid; grid-template-columns: minmax(0, 1.25fr) minmax(0, 1fr); gap: 48px; align-items: end;
+  }
+  .hero-kicker { margin-bottom: 20px; }
+  .hero h1 {
+    font-family: var(--display); font-weight: 500; font-size: clamp(44px, 5.1vw, 70px); line-height: 1.0;
+    letter-spacing: -0.005em; color: var(--marfim); text-wrap: balance; margin-bottom: 20px;
+  }
+  .hero h1 em { font-style: italic; font-weight: 400; color: var(--gelo-luz); }
+  .hero-sub { font-size: 18px; line-height: 1.65; color: var(--marfim); max-width: 480px; margin-bottom: 28px; }
+  .hero-ctas { display: flex; align-items: center; gap: 12px; flex-wrap: wrap; }
+  .hero-fatos {
+    display: grid; grid-template-columns: 1fr 1fr; gap: 22px 28px;
+    padding-left: 44px; border-left: 1px solid rgba(156,203,255,0.24); align-self: stretch; align-content: center;
+  }
+  .fato-num { font-family: var(--display); font-weight: 500; font-size: 44px; line-height: 1; color: var(--gelo-luz); }
+  .fato-rotulo { font-family: var(--rotulo); font-size: 12.5px; letter-spacing: 0.18em; text-transform: uppercase; color: var(--marfim-2); margin-top: 8px; }
+
+  /* ── cabeçalho de seção ─────────────────────────────────────────────── */
+  section { padding: 128px 0; overflow: hidden; }
+  .cabeca { max-width: 720px; margin-bottom: 56px; }
+  .cabeca .etiqueta { margin-bottom: 18px; }
+  .cabeca h2 {
+    font-family: var(--display); font-weight: 500; font-size: clamp(38px, 4.6vw, 60px); line-height: 1.04;
+    letter-spacing: -0.005em; color: var(--tinta); text-wrap: balance;
+  }
+  .cabeca h2 em { font-style: italic; font-weight: 400; color: var(--safira-2); }
+  .cabeca p { margin-top: 20px; color: var(--tinta-2); font-size: 18px; max-width: 580px; }
+  .escuro .cabeca h2 { color: var(--marfim); }
+  .escuro .cabeca h2 em { color: var(--gelo-luz); }
+  .escuro .cabeca p { color: var(--marfim-2); }
+
+  /* ── prêmios: a prova, em vidro, logo abaixo do hero ────────────────── */
+  .premios { background: linear-gradient(180deg, var(--gelo) 0%, var(--porcelana) 100%); padding-top: calc(128px + 112px); padding-bottom: 72px; }
+  .premios .orbe-gelo { width: 600px; height: 600px; left: -220px; top: 120px; }
+  .premios-grade { display: grid; grid-template-columns: repeat(4, 1fr); gap: 18px; }
+  .premio { border-radius: var(--raio); padding: 26px 24px; display: flex; align-items: center; gap: 18px; }
+  .premio img { width: 64px; height: 64px; object-fit: contain; flex: none; border-radius: 14px; }
+  .premio strong { display: block; font-family: var(--display); font-weight: 600; font-size: 21px; line-height: 1.15; color: var(--tinta); }
+  .premio span { display: block; font-size: 13.5px; color: var(--tinta-2); margin-top: 4px; line-height: 1.45; }
+
+  /* ── tratamentos: bento ─────────────────────────────────────────────── */
+  .menu { background: var(--porcelana); padding-top: 72px; }
+  .menu .orbe-safira { width: 560px; height: 560px; right: -200px; top: 160px; opacity: 0.5; }
+  .menu .orbe-gelo { width: 520px; height: 520px; left: -180px; bottom: -120px; }
+  .bento { display: grid; grid-template-columns: repeat(12, 1fr); gap: 20px; }
+  .tile { border-radius: 32px; padding: 34px 34px 32px; transition: transform 0.3s ease; }
+  .tile:hover { transform: translateY(-4px); }
+  .tile-4 { grid-column: span 4; } .tile-5 { grid-column: span 5; } .tile-6 { grid-column: span 6; } .tile-7 { grid-column: span 7; } .tile-8 { grid-column: span 8; } .tile-12 { grid-column: span 12; }
+  .ato-num { font-family: var(--display); font-style: italic; font-size: 18px; color: var(--safira-t); }
+  .tile h3 { font-family: var(--display); font-weight: 600; font-size: 30px; line-height: 1.1; margin: 6px 0 6px; color: var(--tinta); }
+  .tile-sub { font-size: 15px; color: var(--tinta-2); margin-bottom: 16px; }
+  .tile ul { list-style: none; }
+  .tile.duas ul { columns: 2; column-gap: 36px; }
+  .tile li { break-inside: avoid; border-bottom: 1px solid rgba(11,30,51,0.09); }
+  .tile li a { display: flex; justify-content: space-between; align-items: baseline; gap: 14px; padding: 12px 0; transition: padding-left 0.18s ease; }
+  .tile li a:hover { padding-left: 6px; }
+  .tile li a:hover .prato { color: var(--safira-t); }
+  .prato { font-size: 16.5px; font-weight: 700; color: var(--tinta); }
+  .prato-nota { font-size: 13.5px; letter-spacing: 0.04em; color: var(--tinta-2); white-space: nowrap; }
+
+  /* tile escuro: o programa de 150 dias */
+  .tile-programa {
+    position: relative; overflow: hidden; color: var(--marfim);
+    background: linear-gradient(135deg, var(--navy) 0%, var(--meia-noite) 60%, #071424 100%);
+    border: 1px solid rgba(156,203,255,0.28);
+    box-shadow: 0 40px 80px -40px rgba(11,30,51,0.8), inset 0 1px 0 rgba(255,255,255,0.08);
+    display: grid; grid-template-columns: minmax(0, 1.2fr) minmax(0, 1fr); align-items: center; gap: 40px;
+  }
+  .tile-programa .orbe { width: 380px; height: 380px; right: -120px; top: -140px; filter: blur(70px); }
+  .tile-programa > *:not(.orbe) { position: relative; z-index: 1; }
+  .tile-programa h3 { font-family: var(--display); font-weight: 500; font-size: clamp(30px, 3vw, 40px); line-height: 1.06; color: var(--marfim); margin: 10px 0 0; }
+  .tile-programa h3 em { font-style: italic; color: var(--gelo-luz); }
+  .tile-programa p { color: var(--marfim-2); font-size: 16px; }
+  .marcos { display: flex; flex-wrap: wrap; gap: 10px; margin-top: 16px; }
+  .marco { border-radius: 999px; padding: 9px 16px; font-family: var(--rotulo); font-size: 13px; letter-spacing: 0.1em; text-transform: uppercase; color: var(--marfim); background: rgba(244,247,250,0.08); border: 1px solid rgba(156,203,255,0.32); }
+  .tile-programa .ctas { display: flex; gap: 12px; flex-wrap: wrap; }
+
+  /* por área */
+  .areas { margin-top: 20px; border-radius: var(--raio); padding: 26px 30px; display: flex; align-items: center; gap: 18px 14px; flex-wrap: wrap; }
+  .areas .rot { font-family: var(--rotulo); font-size: 13px; letter-spacing: 0.2em; text-transform: uppercase; color: var(--safira-t); margin-right: 8px; }
+  .area { border-radius: 999px; padding: 9px 16px; font-size: 14px; font-weight: 700; color: var(--tinta); background: rgba(11,30,51,0.05); border: 1px solid rgba(11,30,51,0.12); transition: background 0.2s ease, border-color 0.2s ease; }
+  .area:hover { background: var(--meia-noite); color: var(--marfim); border-color: var(--meia-noite); }
+  .secao-cta { margin-top: 44px; display: flex; align-items: center; gap: 22px; flex-wrap: wrap; }
+  .nota-suave { font-size: 16px; color: var(--tinta-2); }
+
+  /* ── resultados: antes e depois deles ───────────────────────────────── */
+  .resultados { background: var(--meia-noite); color: var(--marfim); }
+  .resultados .orbe-safira { width: 700px; height: 700px; left: -260px; top: -240px; opacity: 0.6; }
+  .resultados .orbe-gelo { width: 460px; height: 460px; right: -180px; bottom: -200px; opacity: 0.35; }
+  .res-grade { display: grid; grid-template-columns: 1fr 1fr; gap: 20px; }
+  .res { border-radius: var(--raio); overflow: hidden; }
+  .res img { width: 100%; aspect-ratio: 2513 / 1125; object-fit: cover; }
+  .res-legenda { display: flex; justify-content: space-between; align-items: center; gap: 16px; padding: 16px 22px; }
+  .res-legenda strong { font-family: var(--display); font-weight: 600; font-size: 20px; color: var(--marfim); }
+  .res-legenda span { font-size: 13.5px; color: var(--marfim-2); }
+  .res-nota { margin-top: 18px; font-size: 14px; color: var(--marfim-2); }
+
+  /* ── a experiência: suíte, snacks, iPad ─────────────────────────────── */
+  .experiencia { background: linear-gradient(180deg, var(--porcelana) 0%, var(--gelo) 100%); }
+  .experiencia .orbe-gelo { width: 600px; height: 600px; left: 30%; top: -280px; }
+  .exp-grade { display: grid; grid-template-columns: 1.15fr 1fr; gap: 20px; align-items: stretch; }
+  .exp-foto { border-radius: var(--raio-g); overflow: hidden; min-height: 460px; position: relative; }
+  .exp-foto img { width: 100%; height: 100%; object-fit: cover; object-position: 40% 60%; }
+  .exp-foto .chip-foto { position: absolute; left: 20px; bottom: 20px; border-radius: 18px; padding: 12px 18px; font-family: var(--rotulo); font-size: 13px; letter-spacing: 0.14em; text-transform: uppercase; color: var(--marfim); background: rgba(11,30,51,0.86); border: 1px solid rgba(156,203,255,0.3); }
+  .exp-lista { display: grid; gap: 14px; }
+  .exp { border-radius: var(--raio); padding: 24px 26px; display: flex; gap: 18px; align-items: flex-start; }
+  .exp-ico { width: 44px; height: 44px; border-radius: 50%; flex: none; display: inline-flex; align-items: center; justify-content: center; background: var(--meia-noite); color: var(--gelo-luz); }
+  .exp-ico svg { width: 20px; height: 20px; }
+  .exp strong { display: block; font-family: var(--display); font-weight: 600; font-size: 21px; line-height: 1.15; color: var(--tinta); }
+  .exp span { display: block; font-size: 15px; color: var(--tinta-2); margin-top: 4px; line-height: 1.55; }
+
+  /* ── the contour club: o cartão ─────────────────────────────────────── */
+  .clube { background: var(--navy-2); color: var(--marfim); }
+  .clube .orbe-safira { width: 760px; height: 760px; right: -260px; top: -220px; opacity: 0.6; }
+  .clube .orbe-gelo { width: 520px; height: 520px; left: -200px; bottom: -200px; opacity: 0.35; }
+  .clube-grade { display: grid; grid-template-columns: minmax(0, 1fr) minmax(0, 1fr); gap: 72px; align-items: center; }
+  .clube h2 { font-family: var(--display); font-weight: 500; font-size: clamp(38px, 4.2vw, 56px); line-height: 1.04; margin: 18px 0 18px; color: var(--marfim); text-wrap: balance; }
+  .clube h2 em { font-style: italic; color: var(--gelo-luz); }
+  .clube-sub { color: var(--marfim-2); font-size: 18px; max-width: 480px; margin-bottom: 30px; }
+  .area-cliente { border-radius: var(--raio); overflow: hidden; }
+  .area-topo { display: flex; justify-content: space-between; align-items: center; padding: 16px 24px; border-bottom: 1px solid rgba(244,247,250,0.12); font-family: var(--rotulo); font-size: 13px; letter-spacing: 0.18em; text-transform: uppercase; color: var(--marfim-2); }
+  .area-topo b { color: var(--gelo-luz); font-weight: 400; }
+  .area-corpo { padding: 22px 24px; display: grid; gap: 16px; }
+  .passo { display: flex; gap: 14px; align-items: baseline; font-size: 16px; }
+  .passo-ponto { width: 10px; height: 10px; border-radius: 50%; background: var(--gelo-luz); flex: none; position: relative; top: 1px; box-shadow: 0 0 0 4px rgba(156,203,255,0.16); }
+  .passo-ponto.vazio { background: transparent; border: 1.5px solid var(--gelo-luz); box-shadow: none; }
+  .passo b { font-weight: 700; color: var(--marfim); }
+  .passo span { color: var(--marfim-2); font-size: 15px; }
+  .area-nota { margin: 2px 24px 24px; padding: 13px 16px; border-radius: 14px; background: rgba(156,203,255,0.12); border: 1px solid rgba(156,203,255,0.3); font-size: 15px; font-weight: 700; color: var(--marfim); }
+
+  .cartao-palco { display: flex; justify-content: center; padding: 30px 0; perspective: 1400px; }
+  .cartao {
+    width: min(440px, 100%); aspect-ratio: 1.586; border-radius: 22px; padding: 30px 32px; color: var(--marfim);
+    background:
+      linear-gradient(115deg, rgba(255,255,255,0.12) 0%, rgba(255,255,255,0) 40%),
+      radial-gradient(420px 240px at 85% -20%, rgba(156,203,255,0.32), transparent 65%),
+      linear-gradient(128deg, #24507C 0%, var(--meia-noite) 55%, #050F1C 100%);
+    border: 1px solid rgba(156,203,255,0.34);
+    box-shadow: 0 60px 100px -40px rgba(0,0,0,0.85), 0 0 0 1px rgba(0,0,0,0.4), 0 30px 80px -30px rgba(4,107,210,0.45);
+    transform: rotateY(-14deg) rotateX(8deg) rotateZ(-2deg); transform-style: preserve-3d;
+    transition: transform 0.6s cubic-bezier(.2,.8,.2,1);
+    display: flex; flex-direction: column; justify-content: space-between;
+  }
+  .cartao-palco:hover .cartao { transform: rotateY(-6deg) rotateX(3deg) rotateZ(-1deg); }
+  .cartao-topo { display: flex; justify-content: space-between; align-items: flex-start; }
+  .cartao-topo img { height: 56px; width: auto; }
+  .chip-cartao { width: 48px; height: 36px; border-radius: 8px; background: linear-gradient(135deg, #E8EEF5, var(--platina) 55%, #8A98A8); box-shadow: inset 0 0 0 1px rgba(11,30,51,0.35), 0 4px 10px -4px rgba(0,0,0,0.6); }
+  .cartao-nome { font-family: var(--rotulo); font-size: 16px; letter-spacing: 0.24em; text-transform: uppercase; color: var(--marfim); }
+  .cartao-rodape { display: flex; justify-content: space-between; font-family: var(--rotulo); font-size: 13px; letter-spacing: 0.18em; text-transform: uppercase; color: var(--marfim); }
+
+  /* ── equipe ─────────────────────────────────────────────────────────── */
+  .equipe { background: var(--gelo); }
+  .equipe .orbe-safira { width: 520px; height: 520px; right: -200px; top: -200px; opacity: 0.35; }
+  .equipe-grade { display: grid; grid-template-columns: repeat(3, 1fr); gap: 18px; }
+  .pessoa { border-radius: var(--raio); padding: 28px 26px; display: flex; gap: 20px; align-items: flex-start; transition: transform 0.3s ease; }
+  .pessoa:hover { transform: translateY(-4px); }
+  .pessoa img, .pessoa .mono {
+    width: 88px; height: 88px; border-radius: 50%; object-fit: cover; object-position: top; flex: none;
+    border: 1px solid var(--safira-2); padding: 4px; background: var(--porcelana);
+    box-shadow: 0 18px 30px -20px rgba(11,30,51,0.5);
+  }
+  .pessoa .mono { display: inline-flex; align-items: center; justify-content: center; font-family: var(--display); font-weight: 600; font-size: 30px; color: var(--navy); background: var(--gelo-2); }
+  .pessoa-nome { font-family: var(--display); font-weight: 600; font-size: 22px; line-height: 1.15; color: var(--tinta); }
+  .pessoa-cargo { font-family: var(--rotulo); font-size: 12.5px; letter-spacing: 0.12em; text-transform: uppercase; color: var(--safira-t); margin-top: 6px; }
+  .pessoa p { font-size: 14.5px; color: var(--tinta-2); margin-top: 10px; line-height: 1.55; }
+
+  /* ── citação ────────────────────────────────────────────────────────── */
+  .voz { padding-top: 0; background: var(--gelo); }
+  .voz .orbe-gelo { width: 520px; height: 520px; right: -160px; top: 0; opacity: 0.6; }
+  .voz-molde { max-width: 940px; margin: 0 auto; text-align: center; border-radius: var(--raio-g); padding: 56px 64px; }
+  .estrelas { color: var(--safira-t); font-size: 22px; letter-spacing: 0.32em; margin-bottom: 22px; }
+  .voz blockquote { font-family: var(--display); font-style: italic; font-weight: 500; font-size: clamp(26px, 3.2vw, 38px); line-height: 1.3; color: var(--tinta); text-wrap: balance; }
+  .voz figcaption { margin-top: 24px; font-family: var(--rotulo); font-size: 13px; letter-spacing: 0.22em; text-transform: uppercase; color: var(--tinta-2); }
+  .voz-selo { margin-top: 26px; display: inline-flex; align-items: center; gap: 10px; border-radius: 999px; padding: 10px 18px; font-family: var(--rotulo); font-size: 13px; letter-spacing: 0.12em; text-transform: uppercase; color: var(--marfim); background: var(--meia-noite); }
+  .voz-selo b { color: var(--gelo-luz); font-weight: 400; }
+
+  /* ── o presente de $50: ticket ───────────────────────────────────────── */
+  .oferta-secao { background: linear-gradient(180deg, var(--gelo) 0%, var(--porcelana) 100%); padding-top: 0; }
+  .oferta { position: relative; overflow: hidden; border-radius: 32px; padding: 36px 44px; display: grid; grid-template-columns: minmax(0, 1fr) auto; align-items: center; gap: 40px; }
+  .oferta .orbe { width: 360px; height: 360px; right: 30%; top: -200px; filter: blur(70px); }
+  .oferta > *:not(.orbe) { position: relative; z-index: 1; }
+  .oferta-valor { font-family: var(--display); font-weight: 500; font-size: clamp(52px, 5vw, 72px); line-height: 1; color: var(--tinta); margin: 12px 0 12px; display: flex; align-items: baseline; gap: 12px; }
+  .oferta-valor small { font-size: 0.4em; font-style: italic; color: var(--safira-t); }
+  .oferta p { color: var(--tinta-2); font-size: 16.5px; max-width: 540px; }
+  .oferta-canhoto { position: relative; padding-left: 40px; border-left: 1px dashed rgba(25,103,178,0.6); display: flex; flex-direction: column; gap: 10px; }
+  .oferta-canhoto::before, .oferta-canhoto::after { content: ""; position: absolute; left: -11px; width: 22px; height: 22px; border-radius: 50%; background: var(--porcelana); box-shadow: inset 0 0 0 1px var(--vidro-claro-borda); }
+  .oferta-canhoto::before { top: -47px; } .oferta-canhoto::after { bottom: -47px; }
+  .oferta-canhoto .pilula { justify-content: center; }
+
+  /* ── mapa e concierge ────────────────────────────────────────────────── */
+  .concierge { background: var(--meia-noite); color: var(--marfim); }
+  .concierge .orbe-safira { width: 640px; height: 640px; right: -240px; top: -220px; opacity: 0.7; }
+  .concierge .orbe-gelo { width: 520px; height: 520px; left: -220px; bottom: -220px; opacity: 0.3; }
+  .mapa { position: relative; overflow: hidden; height: 340px; margin-bottom: 20px; border-radius: var(--raio-g); border: 1px solid rgba(156,203,255,0.22); box-shadow: 0 40px 80px -40px rgba(0,0,0,0.7); background: var(--navy-2); }
+  .mapa iframe { display: block; width: 100%; height: 100%; border: 0; filter: invert(0.92) hue-rotate(200deg) brightness(0.86) contrast(0.9) saturate(0.55); }
+  .mapa-chip { position: absolute; left: 20px; bottom: 20px; z-index: 1; display: flex; align-items: center; gap: 22px; padding: 16px 18px 16px 22px; border-radius: 22px; background: rgba(11,30,51,0.88); border: 1px solid rgba(156,203,255,0.24); -webkit-backdrop-filter: blur(16px); backdrop-filter: blur(16px); color: var(--marfim); }
+  .mapa-chip strong { display: block; font-weight: 700; font-size: 16px; }
+  .mapa-chip span { display: block; font-size: 14px; color: var(--marfim-2); margin-top: 2px; }
+  .mapa-chip .pilula { padding: 12px 20px; font-size: 13px; }
+  .concierge-grade { display: grid; grid-template-columns: 1.15fr 1fr 1fr; gap: 18px; }
+  .painel { border-radius: var(--raio); padding: 30px; }
+  .painel h4 { font-family: var(--rotulo); font-size: 13px; letter-spacing: 0.22em; text-transform: uppercase; color: var(--gelo-luz); margin-bottom: 18px; }
+  .painel address { font-style: normal; line-height: 1.75; font-size: 17px; color: var(--marfim); }
+  .painel a:hover { color: var(--gelo-luz); }
+  .link-fino { border-bottom: 1px solid var(--safira-2); padding-bottom: 2px; }
+  .horas { width: 100%; border-collapse: collapse; font-size: 16px; }
+  .horas td { padding: 9px 0; border-bottom: 1px solid rgba(244,247,250,0.12); color: var(--marfim); }
+  .horas tr:last-child td { border-bottom: 0; }
+  .horas td:last-child { text-align: right; color: var(--marfim-2); }
+  .balao { margin-top: 22px; padding: 14px 18px; border-radius: 16px 16px 16px 4px; background: rgba(156,203,255,0.10); border: 1px solid rgba(156,203,255,0.3); font-size: 15.5px; line-height: 1.6; color: var(--marfim); }
+  .balao b { color: var(--gelo-luz); font-weight: 700; }
+  .fala { font-size: 17px; line-height: 1.8; }
+  .cidades { margin-top: 20px; display: flex; flex-wrap: wrap; gap: 8px; }
+  .cidade { border-radius: 999px; padding: 7px 14px; font-size: 13.5px; color: var(--marfim-2); border: 1px solid rgba(244,247,250,0.16); }
+
+  .rodape { background: #071424; color: var(--marfim-2); padding: 26px 0; font-size: 14px; }
+  .rodape .env { display: flex; align-items: center; gap: 26px; flex-wrap: wrap; }
+  .rodape img { height: 52px; width: auto; }
+  .rodape-fone { margin-left: auto; color: var(--marfim); }
+
+  /* ── dock (celular) ─────────────────────────────────────────────────── */
+  .dock { display: none; }
+  @media (max-width: 1100px) {
+    .dock { display: flex; position: fixed; left: 14px; right: 14px; bottom: 14px; z-index: 35; padding: 6px; border-radius: 999px; -webkit-backdrop-filter: blur(22px) saturate(140%); backdrop-filter: blur(22px) saturate(140%); background: rgba(11,30,51,0.88); border: 1px solid rgba(156,203,255,0.22); box-shadow: 0 24px 50px -20px rgba(0,0,0,0.7), inset 0 1px 0 rgba(255,255,255,0.08); }
+    .dock a { flex: 1; text-align: center; white-space: nowrap; font-family: var(--rotulo); font-size: 12px; letter-spacing: 0.08em; text-transform: uppercase; color: var(--marfim-2); padding: 12px 4px; border-radius: 999px; transition: background 0.25s ease, color 0.25s ease; }
+    .dock a.ativo { background: rgba(156,203,255,0.16); color: var(--gelo-luz); }
+    body { padding-bottom: 88px; }
+  }
+
+  /* ── chat de concierge, modelo Instagram ─────────────────────────────── */
+  .chat { position: fixed; right: 22px; bottom: 22px; z-index: 55; display: flex; flex-direction: column; align-items: flex-end; gap: 12px; }
+  .chat-botao { display: inline-flex; align-items: center; gap: 12px; padding: 8px 20px 8px 8px; border-radius: 999px; cursor: pointer; font-family: var(--rotulo); font-size: 13px; letter-spacing: 0.1em; text-transform: uppercase; color: var(--marfim); background: rgba(11,30,51,0.88); border: 1px solid rgba(156,203,255,0.3); -webkit-backdrop-filter: blur(18px); backdrop-filter: blur(18px); box-shadow: 0 24px 50px -22px rgba(0,0,0,0.7); transition: transform 0.25s ease, box-shadow 0.25s ease; }
+  .chat-botao:hover { transform: translateY(-2px); box-shadow: 0 28px 56px -22px rgba(0,0,0,0.75), 0 0 0 6px rgba(4,107,210,0.14); }
+  .chat-botao img { width: 40px; height: 40px; border-radius: 50%; object-fit: cover; object-position: top; border: 1px solid var(--safira-2); }
+  .chat-botao .ponto { width: 8px; height: 8px; border-radius: 50%; background: #7ED9A0; box-shadow: 0 0 0 4px rgba(126,217,160,0.18); }
+  .chat-painel { width: 380px; height: 560px; max-width: calc(100vw - 28px); max-height: calc(100vh - 100px); padding: 0; display: flex; flex-direction: column; overflow: hidden; border-radius: 28px; background: rgba(11,30,51,0.93); border: 1px solid rgba(156,203,255,0.24); -webkit-backdrop-filter: blur(24px) saturate(140%); backdrop-filter: blur(24px) saturate(140%); box-shadow: 0 50px 90px -40px rgba(0,0,0,0.85), inset 0 1px 0 rgba(255,255,255,0.08); color: var(--marfim); transform-origin: bottom right; animation: chat-abre 0.35s cubic-bezier(.2,.8,.2,1) both; }
+  .chat-painel[hidden] { display: none; }
+  @keyframes chat-abre { from { opacity: 0; transform: translateY(14px) scale(0.96); } to { opacity: 1; transform: none; } }
+  .chat-topo { display: flex; align-items: center; gap: 12px; flex: none; padding: 14px 14px 12px 16px; border-bottom: 1px solid rgba(244,247,250,0.12); }
+  .chat-topo img { width: 42px; height: 42px; border-radius: 50%; object-fit: cover; object-position: top; border: 1px solid var(--safira-2); }
+  .chat-topo strong { display: block; font-family: var(--display); font-weight: 600; font-size: 19px; line-height: 1.1; }
+  .chat-selo { display: inline-block; margin-left: 8px; padding: 2px 8px; border-radius: 999px; font-family: var(--rotulo); font-size: 12px; letter-spacing: 0.1em; text-transform: uppercase; color: var(--gelo-luz); border: 1px solid rgba(156,203,255,0.4); vertical-align: middle; }
+  .chat-topo small { display: flex; align-items: center; gap: 6px; font-size: 12.5px; color: var(--marfim-2); margin-top: 3px; }
+  .chat-topo small::before { content: ""; width: 7px; height: 7px; border-radius: 50%; background: #7ED9A0; }
+  .chat-fechar, .chat-voltar { width: 36px; height: 36px; border-radius: 50%; cursor: pointer; flex: none; background: rgba(244,247,250,0.08); border: 1px solid rgba(244,247,250,0.16); color: var(--marfim); display: inline-flex; align-items: center; justify-content: center; }
+  .chat-fechar { margin-left: auto; }
+  .chat-fechar svg, .chat-voltar svg { width: 18px; height: 18px; display: block; }
+  .chat-voltar { display: none; }
+  .chat-fio { flex: 1; overflow-y: auto; padding: 14px 14px 6px; display: flex; flex-direction: column; gap: 8px; scroll-behavior: smooth; }
+  .bolha { max-width: 84%; padding: 11px 14px; border-radius: 18px 18px 18px 4px; background: rgba(244,247,250,0.10); border: 1px solid rgba(244,247,250,0.12); font-size: 15px; line-height: 1.5; color: var(--marfim); animation: bolha-entra 0.25s ease both; }
+  .bolha b { color: var(--gelo-luz); font-weight: 700; }
+  .bolha.eu { align-self: flex-end; border-radius: 18px 18px 4px 18px; background: linear-gradient(135deg, rgba(156,203,255,0.22), rgba(4,107,210,0.22)); border-color: rgba(156,203,255,0.32); }
+  .bolha.sistema { max-width: 100%; border-radius: 14px; font-size: 13px; line-height: 1.5; background: rgba(156,203,255,0.12); border-color: rgba(156,203,255,0.3); }
+  @keyframes bolha-entra { from { opacity: 0; transform: translateY(6px); } to { opacity: 1; transform: none; } }
+  .digitando { display: inline-flex; gap: 4px; padding: 13px 16px; }
+  .digitando i { width: 6px; height: 6px; border-radius: 50%; background: var(--marfim-2); animation: pisca 1s infinite; }
+  .digitando i:nth-child(2) { animation-delay: 0.15s; } .digitando i:nth-child(3) { animation-delay: 0.3s; }
+  @keyframes pisca { 0%, 60%, 100% { opacity: 0.25; } 30% { opacity: 1; } }
+  .chat-chips { flex: none; display: flex; flex-wrap: wrap; gap: 8px; padding: 4px 14px 8px; }
+  .chat-chips:empty { display: none; }
+  .chip-resp { cursor: pointer; font: inherit; font-size: 13.5px; font-weight: 700; color: var(--marfim); padding: 9px 14px; border-radius: 999px; background: rgba(244,247,250,0.08); border: 1px solid rgba(156,203,255,0.4); transition: background 0.2s ease, transform 0.2s ease; }
+  .chip-resp:hover { background: rgba(156,203,255,0.18); transform: translateY(-1px); }
+  .chat-composer { flex: none; display: flex; align-items: center; gap: 8px; padding: 10px 12px 12px; border-top: 1px solid rgba(244,247,250,0.12); }
+  .chat-composer input { flex: 1; min-width: 0; font: inherit; font-size: 15px; color: var(--marfim); background: rgba(244,247,250,0.08); border: 1px solid rgba(244,247,250,0.18); border-radius: 999px; padding: 12px 16px; outline: none; }
+  .chat-composer input:focus { border-color: var(--gelo-luz); box-shadow: 0 0 0 3px rgba(156,203,255,0.16); }
+  .chat-composer input::placeholder { color: var(--marfim-2); }
+  .chat-composer input:disabled { opacity: 0.5; }
+  .chat-enviar { width: 44px; height: 44px; border-radius: 50%; flex: none; cursor: pointer; background: linear-gradient(135deg, #1971CC, var(--safira) 60%, #0356A8); border: 0; color: #FFFFFF; font-size: 18px; display: inline-flex; align-items: center; justify-content: center; box-shadow: 0 10px 20px -10px rgba(4,107,210,0.7); }
+  .chat-enviar:disabled { opacity: 0.4; cursor: default; }
+  .chat-rodape { flex: none; padding: 0 14px 10px; font-size: 12px; color: var(--marfim-2); text-align: center; }
+
+  /* ── reveal ──────────────────────────────────────────────────────────── */
+  @keyframes sobe { from { opacity: 0; transform: translateY(18px); } to { opacity: 1; transform: none; } }
+  [data-rv].rv-in { animation: sobe 0.8s cubic-bezier(.2,.8,.2,1) both; }
+  @media (prefers-reduced-motion: reduce) { [data-rv].rv-in { animation: none; } .cartao, .cartao-palco:hover .cartao { transform: none; } }
+
+  /* ── responsivo ─────────────────────────────────────────────────────── */
+  @media (max-width: 1100px) {
+    .nav nav { display: none; }
+    .hero-vidro { grid-template-columns: 1fr; gap: 32px; }
+    .hero-fatos { padding-left: 0; border-left: 0; padding-top: 26px; border-top: 1px solid rgba(156,203,255,0.24); grid-template-columns: repeat(4, 1fr); }
+    .premios-grade { grid-template-columns: 1fr 1fr; }
+    .tile-4, .tile-5, .tile-6, .tile-7, .tile-8 { grid-column: span 6; } .tile-12 { grid-column: span 12; }
+    .res-grade { grid-template-columns: 1fr; }
+    .exp-grade { grid-template-columns: 1fr; }
+    .exp-foto { min-height: 340px; }
+    .clube-grade { grid-template-columns: minmax(0, 1fr); gap: 48px; }
+    .cartao { transform: rotateY(-8deg) rotateX(4deg) rotateZ(-1deg); }
+    .equipe-grade { grid-template-columns: 1fr; }
+    .concierge-grade { grid-template-columns: 1fr 1fr; }
+  }
+  @media (max-width: 640px) {
+    :root { --raio: 22px; --raio-g: 26px; }
+    .env { padding: 0 20px; }
+    body { font-size: 16px; }
+    section { padding: 96px 0; }
+    .nav .env { height: 70px; gap: 14px; }
+    .marca img { height: 46px; }
+    .nav-fone { display: none; }
+    .nav .pilula { padding: 11px 18px; }
+    .nav .pilula .l { display: none; } .nav .pilula .c { display: inline; }
+    .hero { margin-top: -70px; padding-top: 70px; min-height: 0; background: var(--meia-noite); }
+    .hero-fundo { inset: 0 0 auto 0; height: 62vh; background-position: 45% 50%; }
+    .hero-fundo::before { background: linear-gradient(to bottom, rgba(11,30,51,0.55) 0%, rgba(11,30,51,0.10) 90px, rgba(11,30,51,0) 160px), linear-gradient(to top, var(--meia-noite) 0%, rgba(11,30,51,0.6) 18%, rgba(11,30,51,0) 45%); }
+    .hero .env { padding-top: calc(62vh - 70px - 90px); }
+    .hero-vidro { padding: 26px 22px 24px; margin-bottom: -88px; gap: 22px; }
+    .hero-kicker { letter-spacing: 0.18em; } .hero-kicker::before { display: none; }
+    .hero h1 { font-size: clamp(40px, 11vw, 52px); }
+    .hero-sub { font-size: 17px; margin-bottom: 24px; }
+    .hero-ctas { gap: 10px; } .hero-ctas .pilula { flex: 1 1 100%; justify-content: center; padding: 14px 20px; font-size: 13px; }
+    .hero-fatos { grid-template-columns: 1fr 1fr; gap: 16px 12px; padding-top: 20px; }
+    .fato-num { font-size: 34px; } .fato-rotulo { font-size: 12px; letter-spacing: 0.14em; }
+    .premios { padding-top: calc(96px + 88px); padding-bottom: 56px; }
+    .premios-grade { grid-template-columns: 1fr; gap: 12px; }
+    .premio { padding: 20px 20px; }
+    .menu { padding-top: 56px; }
+    .cabeca { margin-bottom: 40px; } .cabeca h2 { font-size: clamp(34px, 9.6vw, 42px); } .cabeca p { font-size: 17px; margin-top: 16px; }
+    .secao-cta { margin-top: 36px; flex-direction: column; align-items: flex-start; gap: 14px; }
+    .bento { gap: 14px; }
+    .tile-4, .tile-5, .tile-6, .tile-7, .tile-8, .tile-12 { grid-column: span 12; }
+    .tile { padding: 30px 24px 26px; border-radius: 24px; }
+    .tile.duas ul { columns: 1; }
+    .tile h3 { font-size: 27px; }
+    .tile-programa { padding: 32px 24px 28px; gap: 26px; grid-template-columns: 1fr; }
+    .tile-programa h3 { font-size: 32px; }
+    .marcos { display: grid; grid-template-columns: 1fr 1fr; gap: 8px; }
+    .marco { text-align: center; padding: 11px 8px; font-size: 12.5px; }
+    .tile-programa .ctas { flex-direction: column; gap: 10px; } .tile-programa .ctas .pilula { justify-content: center; }
+    .areas { padding: 22px 20px; gap: 12px 8px; }
+    .res-legenda { flex-direction: column; align-items: flex-start; gap: 4px; }
+    .exp { padding: 20px 20px; }
+    .cartao { transform: rotateY(-12deg) rotateX(6deg) rotateZ(-2deg); padding: 24px; transition: transform 0.12s linear; }
+    .cartao-palco { perspective: 1000px; padding: 24px 12px 12px; }
+    .cartao-rodape { font-size: 12px; letter-spacing: 0.12em; gap: 14px; }
+    .clube-grade { gap: 44px; } .clube h2 { font-size: clamp(34px, 9.6vw, 42px); } .clube-sub { font-size: 17px; margin-bottom: 28px; }
+    .pessoa { padding: 22px 20px; gap: 16px; }
+    .voz-molde { padding: 36px 24px; }
+    .oferta { grid-template-columns: 1fr; gap: 24px; padding: 28px 22px; border-radius: 24px; }
+    .oferta-canhoto { padding-left: 0; padding-top: 24px; border-left: 0; border-top: 1px dashed rgba(25,103,178,0.6); }
+    .oferta-canhoto::before, .oferta-canhoto::after { top: -11px; bottom: auto; }
+    .oferta-canhoto::before { left: -33px; } .oferta-canhoto::after { left: auto; right: -33px; }
+    .mapa { height: auto; margin-bottom: 14px; display: flex; flex-direction: column; }
+    .mapa iframe { height: 250px; flex: none; }
+    .mapa-chip { position: static; border-radius: 0; border: 0; border-top: 1px solid rgba(156,203,255,0.24); -webkit-backdrop-filter: none; backdrop-filter: none; background: var(--navy-2); flex-direction: row; align-items: center; justify-content: space-between; gap: 14px; padding: 14px 16px; }
+    .mapa-chip strong { font-size: 15px; } .mapa-chip span { font-size: 13px; } .mapa-chip .pilula { padding: 11px 16px; font-size: 12px; flex-shrink: 0; }
+    .concierge-grade { grid-template-columns: 1fr; gap: 14px; }
+    .painel { padding: 28px 24px; }
+    .rodape { padding: 30px 0; } .rodape .env { flex-direction: column; align-items: flex-start; gap: 8px; } .rodape-fone { margin-left: 0; }
+    /* chat: tela cheia, dock e botão somem */
+    .chat { right: 12px; bottom: 82px; }
+    .chat-botao span.rotulo { display: none; } .chat-botao { padding: 6px; }
+    .chat-painel { position: fixed; inset: 0; width: auto; height: 100dvh; max-width: none; max-height: none; border-radius: 0; border: 0; transform-origin: center bottom; background: rgba(11,30,51,0.97); }
+    .chat-topo { padding: 12px 14px 12px 8px; padding-top: max(12px, env(safe-area-inset-top)); }
+    .chat-voltar { display: inline-flex; background: transparent; border: 0; margin-left: -6px; } .chat-voltar svg { width: 22px; height: 22px; }
+    .chat-fechar { display: none; }
+    .chat-fio { padding: 16px 16px 8px; gap: 10px; } .bolha { max-width: 82%; font-size: 16px; }
+    .chat-composer { padding: 10px 12px; padding-bottom: max(12px, env(safe-area-inset-bottom)); } .chat-composer input { font-size: 16px; padding: 13px 16px; }
+    .chat-rodape { display: none; }
+    body.chat-aberto { overflow: hidden; }
+    body.chat-aberto .dock, body.chat-aberto .chat-botao { display: none; }
+  }
+</style>
+</head>
+<body>
+
+<div class="rv-faixa">
+  <span class="rv-faixa-texto"><strong>This is a concept</strong>, not your live site.</span>
+  <span class="rv-acoes">
+    <button type="button" class="rv-convite rv-convite-fone" data-rv-abrir="rv-modal-tela">See it on your phone</button>
+    <button type="button" class="rv-convite rv-convite-pc" data-rv-abrir="rv-modal-tela">
+      <span class="rv-longo">See it on a big screen</span><span class="rv-curto">On desktop</span>
+    </button>
+    <button type="button" class="rv-preco" data-rv-abrir="rv-modal-preco">
+      <span class="rv-longo">What does this cost? &rarr;</span><span class="rv-curto">What&rsquo;s the cost? &rarr;</span>
+    </button>
+  </span>
+  <span class="rv-faixa-por">by RVLand Devs</span>
+</div>
+
+<div class="rv-modal" id="rv-modal-tela" hidden>
+  <div class="rv-modal-fundo" data-rv-fechar></div>
+  <div class="rv-modal-caixa" role="dialog" aria-modal="true" aria-labelledby="rv-tela-titulo">
+    <button type="button" class="rv-modal-x" data-rv-fechar aria-label="Close">&times;</button>
+
+    <div class="rv-so-desktop">
+      <h2 id="rv-tela-titulo">Open it on your phone</h2>
+      <p>Point your camera at the code. It is the same page. It rebuilds itself for the smaller screen.</p>
+      <img class="rv-qr" src="data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAAWgAAAFoCAYAAAB65WHVAAAAAklEQVR4AewaftIAAAneSURBVO3BwY0ot7IlwKNEAzSIBtB2GkCDuNJo+6FNFYQa5H0dEX/9/Y8A0E4FgJYqALRUAaClCgAtVQBoqQJASxUAWqoA0FIFgJYqALRUAaCln7w05gr/zT07XYy58pV7dt4Yc+WNe3a+MubKG/fsfGXMla/cs/PGmCv8N/fsPFUBoKUKAC1VAGipAkBLFQBaqgDQUgWAlioAtFQBoKUKAC1VAGjpJx+7Z+c3GHOlizFXnrpn540xV54ac+WNe3beGHOlizFXvnLPzlNjrnRxz85vMObKVyoAtFQBoKUKAC1VAGipAkBLFQBaqgDQUgWAlioAtFQBoKWfNDLmShf37HQx5sob9+w8NebKG/fsdHHPzlNjrnzpnp2nxlzh38Zc6eKenQ4qALRUAaClCgAtVQBoqQJASxUAWqoA0FIFgJYqALRUAaClCgAt/YT/OWOuPHXPzlfGXPktxlx56p6dr9yzw/+OCgAtVQBoqQJASxUAWqoA0FIFgJYqALRUAaClCgAtVQBoqQJASz/hVxtz5Y17dp66Z+dLY648dc/OG2OuvHHPzlNjrnRxzw59VQBoqQJASxUAWqoA0FIFgJYqALRUAaClCgAtVQBoqQJASz9p5J4d/rt7dn6De3aeGnPlS2OufOWend/gnh3+rwoALVUAaKkCQEsVAFqqANBSBYCWKgC0VAGgpQoALVUAaKkCQEs/+diYK/Q15sob9+w8NebKG/fsvDHmylP37Lwx5sob9+w8NebKV8ZceeOena+MucJ/UwGgpQoALVUAaKkCQEsVAFqqANBSBYCWKgC0VAGgpQoALf319z9Ca2OufOWena+MufLGPTv825grX7lnh74qALRUAaClCgAtVQBoqQJASxUAWqoA0FIFgJYqALRUAaClCgAt/fX3P/LCmCtv3LPz1Jgrv8E9O18ac+Ur9+x8ZcyVLu7ZeWPMlafu2fnKmCtv3LPzxpgrv8E9Ox1UAGipAkBLFQBaqgDQUgWAlioAtFQBoKUKAC1VAGipAkBLFQBa+skf7J6d32DMlTfu2elgzJU37tl5Y8yVp+7ZeWPMlTfu2XlqzJUuxlz5E92z08WYK2/cs/NUBYCWKgC0VAGgpQoALVUAaKkCQEsVAFqqANBSBYCWKgC09JOX7tl5Y8yVr4y58sY9O18Zc+Wpe3beuGfnjTFXnrpn5zcYc6WLe3b+VGOu8H/ds/OVCgAtVQBoqQJASxUAWqoA0FIFgJYqALRUAaClCgAtVQBoqQJAS3/9/Y+8MObKV+7Z+dKYK1+5Z+dPNOZKF/fs8G9jrvyJ7tl5Y8yVr9yz88aYK0/ds/OVCgAtVQBoqQJASxUAWqoA0FIFgJYqALRUAaClCgAtVQBo6a+//xH+ZcyVr9yz86UxV75yz85TY67wb/fsvDHmylP37PwGY6586Z6dDioAtFQBoKUKAC1VAGipAkBLFQBaqgDQUgWAlioAtFQBoKUKAC395GNjrvyJ7tnpYsyV3+CenS7GXPnKmCtdjLnyJ7pnp4sxV964Z+epCgAtVQBoqQJASxUAWqoA0FIFgJYqALRUAaClCgAtVQBoqQJASz/52D07T4258sY9O2+MufKVMVf4/2vMlS7u2elgzJU37tnpYsyVp8Zc+dI9O0/ds/OVCgAtVQBoqQJASxUAWqoA0FIFgJYqALRUAaClCgAtVQBo6Scvjbnyxj07Xxlz5Y17dr5yz85TY6586Z6dp8ZceWPMlafu2eninp03xlz5ypgrb9yz85UxV964Z+epMVfeuGenizFXnrpn5ysVAFqqANBSBYCWKgC0VAGgpQoALVUAaKkCQEsVAFqqANBSBYCWfvKxMVe+cs/OG2OuPHXPzhtjrnzlnp2v3LPzlTFX/lT37Lwx5koH9+y8MebKV+7Z+cqYK1+6Z6eDCgAtVQBoqQJASxUAWqoA0FIFgJYqALRUAaClCgAtVQBoqQJASz/52D07T4258saYK13cs/MnGnPlK/fs8N+NudLFmCsd3LPzxpgrXxlz5Y17dp6qANBSBYCWKgC0VAGgpQoALVUAaKkCQEsVAFqqANBSBYCWftLIPTtfGnPlqTFXvnLPzhtjrnzlnp03xlzpYsyVP9E9O18Zc+WNe3beGHPlqXt2foN7dr5SAaClCgAtVQBoqQJASxUAWqoA0FIFgJYqALRUAaClCgAtVQBo6Sd/sDFXvnLPzlfGXPnSPTtPjbnylTFX3rhn5417dv5EY678qe7ZeWrMla/cs/PGPTtvjLny1D07X6kA0FIFgJYqALRUAaClCgAtVQBoqQJASxUAWqoA0FIFgJZ+8ovcs/PUmCtd3LPzlXt23hhz5U805sob9+y8MebKU/fsfGXMlTfGXPkNxlz5ypgrb9yz81QFgJYqALRUAaClCgAtVQBoqQJASxUAWqoA0FIFgJYqALRUAaClv/7+R2htzBX+7Z6dr4y58sY9O0+NufLGPTtPjbnyxj07XYy58hvcs/NUBYCWKgC0VAGgpQoALVUAaKkCQEsVAFqqANBSBYCWKgC0VAGgpZ+8NOYK/809O2/cs/PGmCsd3LPzxpgrb4y58huMudLFmCtP3bPzp7pnp4MKAC1VAGipAkBLFQBaqgDQUgWAlioAtFQBoKUKAC1VAGjpJx+7Z+c3GHPlK2OuvHHPzlNjrrxxz85TY6586Z6dr4y58pV7dt4Yc6WLe3Y6uGfnN6gA0FIFgJYqALRUAaClCgAtVQBoqQJASxUAWqoA0FIFgJYqALT0k0bGXOninp3f4J6dN8ZceeqenS+NufLUPTtv3LPzxpgrT92z88Y9O0+NufLGmCu/wZgrXdyz81QFgJYqALRUAaClCgAtVQBoqQJASxUAWqoA0FIFgJYqALT0E/7njLny1D07f6p7drq4Z+crY648dc9OF2OuvHHPzlNjrvwGFQBaqgDQUgWAlioAtFQBoKUKAC1VAGipAkBLFQBaqgDQUgWAln7Crzbmyhv37HxlzJU37tl5asyVN+7Z+cqYK2/cs9PFmCtfGXPlT3TPzlcqALRUAaClCgAtVQBoqQJASxUAWqoA0FIFgJYqALRUAaClCgAt/aSRe3b4t3t23hhz5al7dt4Yc+Ur9+y8MeYK/9eYK1+6Z6eDMVfeuGfnjTFXOqgA0FIFgJYqALRUAaClCgAtVQBoqQJASxUAWqoA0FIFgJZ+8rExV/hvxlzp4p6dp8Zc+dI9O0+NufLGmCtfuWfnjTFXnrpn540xV7oYc+UrY668cc9OBxUAWqoA0FIFgJYqALRUAaClCgAtVQBoqQJASxUAWqoA0FIFgJb++vsfAaCdCgAtVQBoqQJASxUAWqoA0FIFgJYqALRUAaClCgAtVQBo6f8BpV8hPS/QXaQAAAAASUVORK5CYII=" alt="QR code" width="180" height="180">
+    </div>
+
+    <div class="rv-so-fone">
+      <h2>Open it on a computer</h2>
+      <p>Same link on a laptop. The layout expands to use the wider screen, with no pinching and no side-scrolling.</p>
+    </div>
+
+    <div class="rv-modal-url">
+      <code id="rv-url">https://rvland-page.vercel.app/c/sculpted</code>
+      <button type="button" class="rv-copiar" data-rv-copiar>Copy</button>
+    </div>
+  </div>
+</div>
+
+<div class="rv-modal" id="rv-modal-preco" hidden>
+  <div class="rv-modal-fundo" data-rv-fechar></div>
+  <div class="rv-modal-caixa rv-caixa-preco" role="dialog" aria-modal="true" aria-labelledby="rv-preco-titulo">
+    <button type="button" class="rv-modal-x" data-rv-fechar aria-label="Close">&times;</button>
+
+    <span class="rv-selo">Free</span>
+    <h2 id="rv-preco-titulo">This part costs you nothing</h2>
+    <p>
+      I built this concept on my own time. No invoice is coming for it, and it
+      stays yours either way, even if you close this tab and never reply.
+    </p>
+
+    <hr class="rv-divisor">
+
+    <p class="rv-pergunta">Want it to be your actual website?</p>
+    <p>
+      That is the part with a price: the live site, the client area, the forms,
+      hosting and support. It is all on one page, in plain numbers, with no
+      meeting, no quote to request.
+    </p>
+
+    <a class="rv-botao-preco" href="https://rvland-page.vercel.app/en?section=pricing&ref=sculpted" target="_blank" rel="noreferrer">See what it costs &rarr;</a>
+    <button type="button" class="rv-depois" data-rv-fechar>Not now, I'll keep looking</button>
+  </div>
+</div>
+
+<style>
+  .rv-faixa {
+    position: relative; z-index: 50;
+    background: #0B1E33; color: rgba(255,255,255,0.85);
+    font-family: "IBM Plex Mono", ui-monospace, SFMono-Regular, monospace;
+    font-size: 12px; letter-spacing: 0.04em;
+    padding: 9px 24px;
+    display: flex; align-items: center; gap: 14px; flex-wrap: wrap;
+  }
+  .rv-faixa strong { color: #9CCBFF; font-weight: 600; }
+  .rv-faixa-por { margin-left: auto; opacity: 0.5; }
+  .rv-convite {
+    font: inherit; cursor: pointer;
+    background: color-mix(in srgb, #9CCBFF 14%, transparent);
+    color: #9CCBFF;
+    border: 1px solid color-mix(in srgb, #9CCBFF 40%, transparent);
+    border-radius: 999px;
+    padding: 4px 13px;
+    transition: background .15s, border-color .15s;
+  }
+  .rv-convite:hover {
+    background: color-mix(in srgb, #9CCBFF 24%, transparent);
+    border-color: color-mix(in srgb, #9CCBFF 65%, transparent);
+  }
+  .rv-convite:focus-visible { outline: 2px solid #9CCBFF; outline-offset: 2px; }
+
+  .rv-preco {
+    font: inherit; cursor: pointer;
+    background: #9CCBFF; color: #0B1E33;
+    font-weight: 600; border: 0;
+    border-radius: 999px;
+    padding: 5px 15px;
+    white-space: nowrap;
+    transition: filter .15s;
+  }
+  .rv-preco:hover { filter: brightness(1.1); }
+  .rv-preco:focus-visible { outline: 2px solid #fff; outline-offset: 2px; }
+
+  .rv-acoes { display: contents; }
+  .rv-curto { display: none; }
+
+  /* cada tela convida para a outra */
+  .rv-convite-pc, .rv-so-fone { display: none; }
+  @media (max-width: 819px) {
+    .rv-convite-fone, .rv-so-desktop { display: none; }
+    .rv-convite-pc, .rv-so-fone { display: block; }
+    .rv-faixa { padding: 10px 16px; gap: 9px; }
+    .rv-faixa-por { display: none; }
+    .rv-faixa-texto { width: 100%; }
+
+    /* os dois botões dividem uma linha só: empilhados viravam três linhas de
+       barra, e barra alta com pílulas soltas não passa credibilidade */
+    .rv-acoes { display: flex; width: 100%; gap: 8px; }
+    .rv-acoes > * { flex: 1; text-align: center; }
+    .rv-longo { display: none; }
+    .rv-curto { display: inline; }
+    .rv-convite, .rv-preco {
+      font-size: 11.5px;
+      padding: 7px 10px;
+      white-space: nowrap;
+    }
+  }
+
+  .rv-modal[hidden] { display: none; }
+  .rv-modal {
+    position: fixed; inset: 0; z-index: 200;
+    /* flex, nao grid: com justify-items:center a coluna assume a largura do
+       conteudo e o width:100% da caixa passa a resolver contra ela mesma */
+    display: flex; align-items: center; justify-content: center;
+    padding: 24px;
+  }
+  .rv-modal-fundo { position: absolute; inset: 0; background: rgba(4,14,20,0.78); backdrop-filter: blur(3px); }
+  .rv-modal-caixa {
+    position: relative;
+    width: 100%; max-width: 400px;
+    background: #12293F;
+    border: 1px solid rgba(255,255,255,0.12);
+    border-radius: 14px;
+    padding: 30px 28px 24px;
+    text-align: center; color: #fff;
+    box-shadow: 0 30px 80px rgba(0,0,0,0.5);
+    font-family: "IBM Plex Sans", system-ui, -apple-system, sans-serif;
+    max-height: calc(100vh - 48px);
+    overflow-y: auto;
+  }
+  .rv-caixa-preco { max-width: 440px; text-align: left; }
+  .rv-modal-caixa h2 {
+    font-family: "Archivo", system-ui, -apple-system, sans-serif;
+    font-weight: 700; font-size: 21px; letter-spacing: -0.02em;
+    margin: 0 0 8px;
+  }
+  .rv-modal-caixa p { margin: 0 0 18px; font-size: 14.5px; line-height: 1.55; color: rgba(255,255,255,0.68); }
+  .rv-qr { border-radius: 10px; background: #fff; padding: 10px; display: block; margin: 0 auto 18px; }
+
+  .rv-selo {
+    display: inline-block;
+    background: rgba(0,255,138,0.14); color: #6BF0B4;
+    border: 1px solid rgba(0,255,138,0.3);
+    border-radius: 999px;
+    font-family: "IBM Plex Mono", ui-monospace, SFMono-Regular, monospace;
+    font-size: 10.5px; letter-spacing: 0.12em; text-transform: uppercase;
+    padding: 3px 10px; margin-bottom: 12px;
+  }
+  .rv-divisor { border: 0; border-top: 1px solid rgba(255,255,255,0.1); margin: 4px 0 18px; }
+  .rv-pergunta {
+    font-family: "Archivo", system-ui, -apple-system, sans-serif;
+    font-weight: 700; font-size: 17px; letter-spacing: -0.015em;
+    color: #fff; margin-bottom: 8px;
+  }
+  .rv-botao-preco {
+    display: block; text-align: center; text-decoration: none;
+    background: #9CCBFF; color: #0B1E33;
+    font-weight: 600; font-size: 15px;
+    border-radius: 8px; padding: 13px 18px;
+    transition: filter .15s;
+  }
+  .rv-botao-preco:hover { filter: brightness(1.1); }
+  .rv-depois {
+    display: block; width: 100%;
+    margin-top: 10px; padding: 9px;
+    background: none; border: 0; cursor: pointer;
+    font-family: "IBM Plex Sans", system-ui, -apple-system, sans-serif;
+    font-size: 13px; color: rgba(255,255,255,0.42);
+  }
+  .rv-depois:hover { color: rgba(255,255,255,0.7); }
+
+  .rv-modal-url {
+    display: flex; align-items: center; gap: 8px;
+    background: rgba(0,0,0,0.28);
+    border: 1px solid rgba(255,255,255,0.1);
+    border-radius: 8px;
+    padding: 8px 8px 8px 12px;
+  }
+  .rv-modal-url code {
+    font-family: "IBM Plex Mono", ui-monospace, SFMono-Regular, monospace;
+    font-size: 12px; color: rgba(255,255,255,0.75);
+    overflow: hidden; text-overflow: ellipsis; white-space: nowrap;
+    flex: 1; text-align: left;
+  }
+  .rv-copiar {
+    font-family: "IBM Plex Sans", system-ui, -apple-system, sans-serif;
+    font-size: 12.5px; font-weight: 600; cursor: pointer;
+    background: #9CCBFF; color: #0B1E33;
+    border: 0; border-radius: 6px; padding: 7px 13px;
+    flex-shrink: 0;
+  }
+  .rv-modal-x {
+    position: absolute; top: 10px; right: 12px;
+    background: none; border: 0; cursor: pointer;
+    color: rgba(255,255,255,0.4); font-size: 24px; line-height: 1;
+    padding: 4px 8px;
+  }
+  .rv-modal-x:hover { color: #fff; }
+
+  .rv-rodape {
+    background: #0B1E33; color: rgba(255,255,255,0.85);
+    font-family: "IBM Plex Mono", ui-monospace, SFMono-Regular, monospace;
+    font-size: 12px; letter-spacing: 0.04em;
+    padding: 18px 24px;
+    display: flex; align-items: center; justify-content: center;
+    gap: 8px 18px; flex-wrap: wrap;
+    opacity: 0.85;
+  }
+  .rv-rodape a { color: #9CCBFF; text-decoration: none; }
+  .rv-rodape a:hover { text-decoration: underline; }
+  .rv-rodape b { color: #9CCBFF; font-weight: 600; }
+  .rv-rodape-links { display: inline-flex; align-items: center; gap: 10px; }
+  .rv-rodape-sep { opacity: 0.3; }
+
+  @media (max-width: 480px) {
+    .rv-modal { padding: 16px; }
+    .rv-modal-caixa { padding: 26px 20px 20px; }
+    .rv-modal-caixa h2 { font-size: 19px; }
+    .rv-pergunta { font-size: 16px; }
+    .rv-modal-url code { font-size: 11px; }
+    /* no celular o flex-wrap quebrava em pontos aleatórios e a assinatura
+       colava na URL; em coluna cada informação ganha a própria linha */
+    .rv-rodape {
+      flex-direction: column;
+      gap: 7px;
+      padding: 20px 20px 22px;
+      text-align: center;
+      line-height: 1.5;
+      font-size: 11.5px;
+    }
+    .rv-rodape-links { gap: 8px; }
+  }
+</style>
+
+<script>
+  (function () {
+    function fechar() {
+      document.querySelectorAll(".rv-modal").forEach(function (m) { m.hidden = true; });
+    }
+    document.querySelectorAll("[data-rv-abrir]").forEach(function (b) {
+      b.addEventListener("click", function () {
+        fechar();
+        var alvo = document.getElementById(b.getAttribute("data-rv-abrir"));
+        if (alvo) alvo.hidden = false;
+      });
+    });
+    document.querySelectorAll("[data-rv-fechar]").forEach(function (b) {
+      b.addEventListener("click", fechar);
+    });
+    // o preço abre em outra aba; ao voltar, ninguém quer achar o modal aberto
+    var irPreco = document.querySelector(".rv-botao-preco");
+    if (irPreco) irPreco.addEventListener("click", fechar);
+    document.addEventListener("keydown", function (e) {
+      if (e.key === "Escape") fechar();
+    });
+    var copiar = document.querySelector("[data-rv-copiar]");
+    if (copiar) {
+      copiar.addEventListener("click", function () {
+        navigator.clipboard.writeText(document.getElementById("rv-url").textContent).then(function () {
+          copiar.textContent = "Copied";
+          setTimeout(function () { copiar.textContent = "Copy"; }, 1800);
+        });
+      });
+    }
+  })();
+</script>
+
+
+<header class="nav">
+  <div class="env">
+    <a class="marca" href="#"><img src="/c/sculpted/fotos/logo-branco.png" alt="Sculpted Contours, Luxury Medical Aesthetics"></a>
+    <nav>
+      <a href="#tratamentos">Body</a>
+      <a href="#tratamentos">Face</a>
+      <a href="#tratamentos">Skin</a>
+      <a href="#tratamentos">Injectables</a>
+      <a href="#resultados">Results</a>
+      <a href="#clube">Contour Club</a>
+    </nav>
+    <a class="nav-fone" href="tel:+14048728578">404.872.8578</a>
+    <a class="pilula pilula-safira" href="https://sculptedcontours.com/contact/schedule-consultation/"><span class="l">Schedule a consultation</span><span class="c">Book</span></a>
+  </div>
+</header>
+
+<nav class="dock" aria-label="Shortcuts">
+  <a href="#tratamentos" data-sec="tratamentos">Treatments</a>
+  <a href="#resultados" data-sec="resultados">Results</a>
+  <a href="#clube" data-sec="clube">Club</a>
+  <a href="#equipe" data-sec="equipe">Team</a>
+  <a href="#contato" data-sec="contato">Visit</a>
+</nav>
+
+<!-- hero: a suíte privativa -->
+<section class="hero escuro">
+  <div class="hero-fundo"><div class="orbe orbe-safira"></div></div>
+  <div class="env">
+    <div class="hero-vidro vidro-escuro" data-rv>
+      <div>
+        <div class="etiqueta hero-kicker">Alpharetta · Luxury Medical Aesthetics</div>
+        <h1>Luxury you deserve. Results you can <em>see</em>.</h1>
+        <p class="hero-sub">Private treatment suites, clinicians who train other clinicians, and more than 18,000 custom treatments since 2014.</p>
+        <div class="hero-ctas">
+          <a class="pilula pilula-safira" href="https://sculptedcontours.com/contact/schedule-consultation/">Schedule a consultation</a>
+          <a class="pilula pilula-vidro" href="#resultados">See real results</a>
+        </div>
+      </div>
+      <div class="hero-fatos">
+        <div class="fato"><div class="fato-num">18k+</div><div class="fato-rotulo">Custom treatments</div></div>
+        <div class="fato"><div class="fato-num">10</div><div class="fato-rotulo">Years Best of the City</div></div>
+        <div class="fato"><div class="fato-num">4</div><div class="fato-rotulo">CoolSculpting systems</div></div>
+        <div class="fato"><div class="fato-num">4.7</div><div class="fato-rotulo">Google rating, 75 reviews</div></div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- prêmios -->
+<section class="premios">
+  <div class="orbe orbe-gelo"></div>
+  <div class="env">
+    <div class="premios-grade">
+      <div class="premio vidro" data-rv>
+        <img src="/c/sculpted/fotos/premios.png" alt="">
+        <div><strong>Best of the City</strong><span>The Atlantan, every year 2015 to 2024</span></div>
+      </div>
+      <div class="premio vidro" data-rv>
+        <img src="/c/sculpted/fotos/diamond.png" alt="">
+        <div><strong>Diamond practice</strong><span>CoolSculpting's highest designation</span></div>
+      </div>
+      <div class="premio vidro" data-rv>
+        <div class="exp-ico" aria-hidden="true"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M12 2l2.9 6 6.6.9-4.8 4.6 1.2 6.5L12 16.9 6.1 20l1.2-6.5L2.5 8.9 9.1 8z"/></svg></div>
+        <div><strong>Top 40 in the U.S.</strong><span>Among the nation's leading CoolSculpting centers</span></div>
+      </div>
+      <div class="premio vidro" data-rv>
+        <div class="exp-ico" aria-hidden="true"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M4 12h16M12 4v16"/><circle cx="12" cy="12" r="9"/></svg></div>
+        <div><strong>Only one in Georgia</strong><span>Four CoolSculpting systems under one roof</span></div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- tratamentos -->
+<section class="menu" id="tratamentos">
+  <div class="orbe orbe-safira"></div>
+  <div class="orbe orbe-gelo"></div>
+  <div class="env">
+    <div class="cabeca" data-rv>
+      <span class="etiqueta">Treatments</span>
+      <h2>Five disciplines. One <em>standard</em>.</h2>
+      <p>FDA-cleared technologies only, performed by clinicians with advanced training, under a board-certified medical director. Every plan is built around you, never a template.</p>
+    </div>
+    <div class="bento">
+      <div class="tile tile-7 vidro duas" data-rv>
+        <span class="ato-num">01</span>
+        <h3>Advanced Body Contouring</h3>
+        <p class="tile-sub">Fat reduction, muscle definition and skin tightening, combined into one protocol.</p>
+        <ul>
+          <li><a href="https://sculptedcontours.com/body/coolsculpting/"><span class="prato">CoolSculpting Elite</span><span class="prato-nota">fat freezing</span></a></li>
+          <li><a href="https://sculptedcontours.com/body/trusculpt-id/"><span class="prato">truSculpt iD</span><span class="prato-nota">RF fat reduction</span></a></li>
+          <li><a href="https://sculptedcontours.com/body/trusculpt-flex/"><span class="prato">truSculpt flex</span><span class="prato-nota">muscle</span></a></li>
+          <li><a href="https://sculptedcontours.com/body/fire-ice-fat-reduction/"><span class="prato">Fire &amp; Ice</span><span class="prato-nota">combination</span></a></li>
+          <li><a href="https://sculptedcontours.com/body/morpheus-rf-microneedling-body-skin-tightening/"><span class="prato">Morpheus8 Body</span><span class="prato-nota">tighten</span></a></li>
+          <li><a href="https://sculptedcontours.com/body/forma-plus/"><span class="prato">Forma Plus</span><span class="prato-nota">RF tightening</span></a></li>
+        </ul>
+      </div>
+      <div class="tile tile-5 vidro" data-rv>
+        <span class="ato-num">02</span>
+        <h3>Advanced Face Tightening</h3>
+        <p class="tile-sub">Lift and tighten without surgery.</p>
+        <ul>
+          <li><a href="https://sculptedcontours.com/face/ultherapy/"><span class="prato">Ultherapy</span><span class="prato-nota">lift</span></a></li>
+          <li><a href="https://sculptedcontours.com/face/morpheus-rf-microneedling/"><span class="prato">Morpheus8</span><span class="prato-nota">RF microneedling</span></a></li>
+          <li><a href="https://sculptedcontours.com/face/forma/"><span class="prato">Forma</span><span class="prato-nota">tighten</span></a></li>
+          <li><a href="https://sculptedcontours.com/face/pelleve/"><span class="prato">Pellevé</span><span class="prato-nota">smooth</span></a></li>
+        </ul>
+      </div>
+      <div class="tile tile-4 vidro" data-rv>
+        <span class="ato-num">03</span>
+        <h3>Skin Rejuvenation</h3>
+        <p class="tile-sub">Tone, texture and glow.</p>
+        <ul>
+          <li><a href="https://sculptedcontours.com/skin/lumecca/"><span class="prato">Lumecca IPL</span><span class="prato-nota">even tone</span></a></li>
+          <li><a href="https://sculptedcontours.com/face/microneedling/"><span class="prato">Microneedling</span><span class="prato-nota">renew</span></a></li>
+          <li><a href="https://sculptedcontours.com/skin/microdermabrasion/"><span class="prato">Microdermabrasion</span><span class="prato-nota">polish</span></a></li>
+          <li><a href="https://sculptedcontours.com/skin/chemical-peels-alpharetta/"><span class="prato">Chemical peels</span><span class="prato-nota">refresh</span></a></li>
+        </ul>
+      </div>
+      <div class="tile tile-4 vidro" data-rv>
+        <span class="ato-num">04</span>
+        <h3>Cosmetic Injectables</h3>
+        <p class="tile-sub">Natural results, by a nurse practitioner trained by a facial plastic surgeon.</p>
+        <ul>
+          <li><a href="https://sculptedcontours.com/cosmetic-injectables/neurotoxin-wrinkle-relaxers/"><span class="prato">Botox &amp; Dysport</span><span class="prato-nota">smooth</span></a></li>
+          <li><a href="https://sculptedcontours.com/cosmetic-injectables/dermal-fillers/"><span class="prato">Juvederm &amp; Restylane</span><span class="prato-nota">volume</span></a></li>
+          <li><a href="https://sculptedcontours.com/cosmetic-injectables/dermal-fillers/sculptra/"><span class="prato">Sculptra</span><span class="prato-nota">biostimulator</span></a></li>
+          <li><a href="https://sculptedcontours.com/cosmetic-injectables/dermal-fillers/skinvive/"><span class="prato">SkinVive</span><span class="prato-nota">hydration</span></a></li>
+        </ul>
+      </div>
+      <div class="tile tile-4 vidro" data-rv>
+        <span class="ato-num">05</span>
+        <h3>Protocols for Men</h3>
+        <p class="tile-sub">Built for a man's body and face. Private, discreet, no downtime.</p>
+        <ul>
+          <li><a href="https://sculptedcontours.com/men/body/coolsculpting-for-men/"><span class="prato">CoolSculpting for men</span><span class="prato-nota">abs, flanks</span></a></li>
+          <li><a href="https://sculptedcontours.com/treatments/male-breast-reduction/"><span class="prato">Male chest reduction</span><span class="prato-nota">non-surgical</span></a></li>
+          <li><a href="https://sculptedcontours.com/men/face/"><span class="prato">Face for men</span><span class="prato-nota">subtle</span></a></li>
+        </ul>
+      </div>
+      <div class="tile tile-12 tile-programa escuro" id="programa" data-rv>
+        <div class="orbe orbe-safira"></div>
+        <div>
+          <span class="etiqueta">This season</span>
+          <h3>CoolSculpting <em>Confidence</em></h3>
+          <div class="marcos">
+            <span class="marco">150-day program</span><span class="marco">Buy 4, get 1 free</span>
+          </div>
+        </div>
+        <div>
+          <p>Choose your areas, treat them again within the program, and be sculpted in time for the season.</p>
+          <div class="ctas" style="margin-top:16px">
+            <a class="pilula pilula-safira" href="https://sculptedcontours.com/about-us/specials-promotions/">See the program</a>
+          </div>
+        </div>
+      </div>
+    </div>
+    <div class="areas vidro" data-rv>
+      <span class="rot">By area</span>
+      <a class="area" href="https://sculptedcontours.com/treatments/abdomen/">Abdomen</a>
+      <a class="area" href="https://sculptedcontours.com/treatments/flanks/">Flanks</a>
+      <a class="area" href="https://sculptedcontours.com/treatments/arms/">Arms</a>
+      <a class="area" href="https://sculptedcontours.com/treatments/legs/">Thighs &amp; legs</a>
+      <a class="area" href="https://sculptedcontours.com/treatments/double-chin/">Double chin</a>
+      <a class="area" href="https://sculptedcontours.com/treatments/back/">Back</a>
+      <a class="area" href="https://sculptedcontours.com/treatments/derriere/">Derrière</a>
+      <a class="area" href="https://sculptedcontours.com/treatments/neck-decollete/">Neck &amp; décolleté</a>
+    </div>
+    <div class="secao-cta" data-rv>
+      <a class="pilula pilula-tinta" href="https://sculptedcontours.com/menu/">Full treatment menu</a>
+      <span class="nota-suave">Financing available. Every treatment starts with a consultation.</span>
+    </div>
+  </div>
+</section>
+
+<!-- resultados -->
+<section class="resultados escuro" id="resultados">
+  <div class="orbe orbe-safira"></div>
+  <div class="orbe orbe-gelo"></div>
+  <div class="env">
+    <div class="cabeca" data-rv>
+      <span class="etiqueta">Results</span>
+      <h2>It's not about the procedure. It's about the <em>results</em>.</h2>
+      <p>Real clients, photographed in our Alpharetta suites. One session of CoolSculpting Elite, six to eight weeks later.</p>
+    </div>
+    <div class="res-grade">
+      <figure class="res vidro-escuro" data-rv>
+        <img src="/c/sculpted/fotos/antes-depois-abs.jpg" alt="Lower abdomen, before and six weeks after one CoolSculpting session">
+        <figcaption class="res-legenda"><strong>Lower abdomen</strong><span>Before · 6 weeks after one session</span></figcaption>
+      </figure>
+      <figure class="res vidro-escuro" data-rv>
+        <img src="/c/sculpted/fotos/antes-depois-flancos.jpg" alt="Flanks, before and six weeks after one CoolSculpting session">
+        <figcaption class="res-legenda"><strong>Flanks</strong><span>Before · 8 weeks after one session</span></figcaption>
+      </figure>
+    </div>
+    <p class="res-nota" data-rv>Individual results vary. Photos courtesy of Sculpted Contours clients, unretouched.</p>
+    <div class="secao-cta" data-rv>
+      <a class="pilula pilula-vidro" href="https://sculptedcontours.com/results/">See the full gallery</a>
+    </div>
+  </div>
+</section>
+
+<!-- a experiência -->
+<section class="experiencia" id="experiencia">
+  <div class="orbe orbe-gelo"></div>
+  <div class="env">
+    <div class="cabeca" data-rv>
+      <span class="etiqueta">The experience</span>
+      <h2>A private suite, not a <em>treatment room</em>.</h2>
+    </div>
+    <div class="exp-grade">
+      <div class="exp-foto" data-rv>
+        <img src="/c/sculpted/fotos/clinica.jpg" alt="Private treatment suite at Sculpted Contours">
+        <div class="chip-foto">Your private suite</div>
+      </div>
+      <div class="exp-lista">
+        <div class="exp vidro" data-rv>
+          <div class="exp-ico"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M3 11h18M5 11V7a2 2 0 012-2h10a2 2 0 012 2v4M4 11v8M20 11v8"/></svg></div>
+          <div><strong>Five-star comfort</strong><span>Plush bedding, crystal lighting and a room that is yours for the whole visit.</span></div>
+        </div>
+        <div class="exp vidro" data-rv>
+          <div class="exp-ico"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M4 8h13a4 4 0 010 8H4zM17 10h2a2 2 0 010 4h-2M6 2v3M10 2v3"/></svg></div>
+          <div><strong>Spa snacks and refreshments</strong><span>Longer treatments come with the little things that make the difference.</span></div>
+        </div>
+        <div class="exp vidro" data-rv>
+          <div class="exp-ico"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><rect x="5" y="2" width="14" height="20" rx="2"/><path d="M11 18h2"/></svg></div>
+          <div><strong>Phone, iPad and Wi-Fi</strong><span>Catch up on email or a show while the technology does the work.</span></div>
+        </div>
+        <div class="exp vidro" data-rv>
+          <div class="exp-ico"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M12 3v18M3 12h18M6 6l12 12M18 6L6 18"/></svg></div>
+          <div><strong>Four areas at once</strong><span>The only practice in Georgia with four CoolSculpting systems, two of them dual Elite. Less time, more done.</span></div>
+        </div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- the contour club -->
+<section class="clube escuro" id="clube">
+  <div class="orbe orbe-safira"></div>
+  <div class="orbe orbe-gelo"></div>
+  <div class="env">
+    <div class="clube-grade">
+      <div data-rv>
+        <span class="etiqueta">The Contour Club</span>
+        <h2>Membership that feels like a <em>black card</em>.</h2>
+        <p class="clube-sub">One complimentary service every month, member-only upgrades, 10% off skincare, and a client area where your whole plan lives. Introductory offer: $199 a month.</p>
+        <div class="area-cliente vidro-escuro">
+          <div class="area-topo"><span>Your plan</span><b>Member since 2024</b></div>
+          <div class="area-corpo">
+            <div class="passo"><span class="passo-ponto"></span><div><b>CoolSculpting Elite, lower abdomen</b> <span>· session 2 of 4, done Aug 20</span></div></div>
+            <div class="passo"><span class="passo-ponto"></span><div><b>Morpheus8 Body</b> <span>· booked Sep 18 at 2:00</span></div></div>
+            <div class="passo"><span class="passo-ponto vazio"></span><div><b>This month's complimentary service</b> <span>· choose by Sep 30</span></div></div>
+          </div>
+          <div class="area-nota">Member pricing unlocked on all add-ons.</div>
+        </div>
+      </div>
+      <div class="cartao-palco" data-rv>
+        <div class="cartao">
+          <div class="cartao-topo">
+            <img src="/c/sculpted/fotos/logo-branco.png" alt="Sculpted Contours">
+            <div class="chip-cartao"></div>
+          </div>
+          <div class="cartao-nome">Caroline F. · Member</div>
+          <div class="cartao-rodape"><span>Contour Club</span><span>Alpharetta, GA</span></div>
+        </div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- equipe -->
+<section class="equipe" id="equipe">
+  <div class="orbe orbe-safira"></div>
+  <div class="env">
+    <div class="cabeca" data-rv>
+      <span class="etiqueta">The experts</span>
+      <h2>Clinicians who <em>train</em> clinicians.</h2>
+    </div>
+    <div class="equipe-grade">
+      <div class="pessoa vidro" data-rv>
+        <img src="/c/sculpted/fotos/kathy.png" alt="Kathy King">
+        <div>
+          <div class="pessoa-nome">Kathy King</div>
+          <div class="pessoa-cargo">Owner · Managing Director</div>
+          <p>Former CoolSculpting practice development manager for Georgia, with 25 years of clinical experience. She meets every client personally.</p>
+        </div>
+      </div>
+      <div class="pessoa vidro" data-rv>
+        <img src="/c/sculpted/fotos/sinha.jpg" alt="Dr. Pradeep Sinha">
+        <div>
+          <div class="pessoa-nome">Pradeep Sinha, MD, PhD, FACS</div>
+          <div class="pessoa-cargo">Medical Director</div>
+          <p>Double board-certified facial plastic surgeon. Oversees every protocol in the practice.</p>
+        </div>
+      </div>
+      <div class="pessoa vidro" data-rv>
+        <div class="mono" aria-hidden="true">M</div>
+        <div>
+          <div class="pessoa-nome">Monica Bugg, FNP-BC</div>
+          <div class="pessoa-cargo">Aesthetic injector</div>
+          <p>Board-certified nurse practitioner, trained by Dr. Sinha. Facial balancing with a natural hand.</p>
+        </div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- citação -->
+<section class="voz">
+  <div class="orbe orbe-gelo"></div>
+  <div class="env">
+    <figure class="voz-molde vidro" data-rv>
+      <div class="estrelas" aria-hidden="true">★★★★★</div>
+      <blockquote>“The spa is very posh but also cozy. Just what you need when getting CoolSculpting. I was impressed with the knowledge of the staff as well as the pricing. Great team of experts.”</blockquote>
+      <figcaption>Caroline F. · Google review</figcaption>
+      <div><span class="voz-selo"><b>4.7 on Google</b> · 75 reviews</span></div>
+    </figure>
+  </div>
+</section>
+
+<!-- o presente de $50 -->
+<section class="oferta-secao">
+  <div class="env">
+    <div class="oferta vidro" id="oferta" data-rv>
+      <div class="orbe orbe-gelo"></div>
+      <div>
+        <span class="etiqueta">New clients</span>
+        <div class="oferta-valor">$50 <small>gift</small></div>
+        <p>Toward your first service when you join the Insider list. Applies to services of $500 or more. Mention it at your consultation.</p>
+      </div>
+      <div class="oferta-canhoto">
+        <a class="pilula pilula-safira" href="https://sculptedcontours.com/contact/schedule-consultation/">Book with the gift</a>
+        <a class="pilula pilula-vidro claro" href="https://sculptedcontours.com/contact/information/">Join the list</a>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- concierge -->
+<section class="concierge escuro" id="contato">
+  <div class="orbe orbe-safira"></div>
+  <div class="orbe orbe-gelo"></div>
+  <div class="env">
+    <div class="cabeca" data-rv>
+      <span class="etiqueta">Visit</span>
+      <h2>Royal Boulevard, <em>Alpharetta</em>.</h2>
+    </div>
+    <div class="mapa" data-rv>
+      <iframe src="https://www.google.com/maps?q=Sculpted+Contours+Luxury+Medical+Aesthetics,+3005+Royal+Blvd+S,+Alpharetta,+GA+30022&z=15&output=embed" title="Map: 3005 Royal Blvd S, Suite 150, Alpharetta, GA" loading="eager" referrerpolicy="no-referrer-when-downgrade"></iframe>
+      <div class="mapa-chip">
+        <div><strong>3005 Royal Blvd S, Suite 150</strong><span>Alpharetta, GA 30022</span></div>
+        <a class="pilula pilula-safira" href="https://maps.google.com/?q=3005+Royal+Blvd+S+Suite+150,+Alpharetta,+GA+30022" target="_blank" rel="noreferrer">Directions</a>
+      </div>
+    </div>
+    <div class="concierge-grade">
+      <div class="painel vidro-escuro" data-rv>
+        <h4>Consultation</h4>
+        <address>Every treatment begins with a personal assessment and a custom plan.<br><br>
+          <a class="pilula pilula-safira" href="https://sculptedcontours.com/contact/schedule-consultation/">Schedule online</a></address>
+        <div class="balao"><b>Concierge:</b> Questions about a treatment or the program? Text us. A real person answers.</div>
+      </div>
+      <div class="painel vidro-escuro" data-rv>
+        <h4>Hours</h4>
+        <table class="horas">
+          <tr><td>Monday</td><td>9 – 6</td></tr>
+          <tr><td>Tuesday</td><td>9 – 6</td></tr>
+          <tr><td>Wednesday</td><td>9 – 6</td></tr>
+          <tr><td>Thursday</td><td>9 – 6</td></tr>
+          <tr><td>Friday</td><td>9 – 6</td></tr>
+          <tr><td>Weekend</td><td>Closed</td></tr>
+        </table>
+      </div>
+      <div class="painel vidro-escuro" data-rv>
+        <h4>Talk to us</h4>
+        <p class="fala">
+          <a class="link-fino" href="tel:+14048728578">404.872.8578</a><br><br>
+          <a class="link-fino" href="mailto:sculpted@sculptedcontours.com">sculpted@sculptedcontours.com</a><br><br>
+          <a class="link-fino" href="https://www.instagram.com/sculptedcontours/">@sculptedcontours</a>
+        </p>
+        <div class="cidades">
+          <span class="cidade">Alpharetta</span><span class="cidade">Johns Creek</span><span class="cidade">Milton</span><span class="cidade">Roswell</span><span class="cidade">Sandy Springs</span><span class="cidade">Dunwoody</span><span class="cidade">Cumming</span><span class="cidade">Atlanta</span>
+        </div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<div class="rodape">
+  <div class="env">
+    <img src="/c/sculpted/fotos/logo-branco.png" alt="Sculpted Contours">
+    <span>Luxury Medical Aesthetics · Alpharetta, GA · Since 2014</span>
+    <span class="rodape-fone">404.872.8578</span>
+  </div>
+</div>
+
+<!-- chat de concierge, fictício -->
+<div class="chat" id="chat">
+  <div class="chat-painel" id="chat-painel" role="dialog" aria-label="Text the concierge" hidden>
+    <header class="chat-topo">
+      <button class="chat-voltar" type="button" aria-label="Close" data-chat-fechar><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M15 6l-6 6 6 6"/></svg></button>
+      <img src="/c/sculpted/fotos/kathy.png" alt="">
+      <div>
+        <strong>Sculpted Contours<span class="chat-selo">Preview</span></strong>
+        <small>Concierge · replies within the hour</small>
+      </div>
+      <button class="chat-fechar" type="button" aria-label="Close" data-chat-fechar><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" aria-hidden="true"><path d="M6 6l12 12M18 6L6 18"/></svg></button>
+    </header>
+    <div class="chat-fio" id="chat-fio" aria-live="polite"></div>
+    <div class="chat-chips" id="chat-chips"></div>
+    <form class="chat-composer" id="chat-composer" novalidate>
+      <input id="chat-input" placeholder="Message…" autocomplete="off">
+      <button class="chat-enviar" type="submit" aria-label="Send">➤</button>
+    </form>
+    <div class="chat-rodape">Concept by RVLand Devs · connects to your front desk on the live site</div>
+  </div>
+  <button class="chat-botao" type="button" aria-expanded="false" aria-controls="chat-painel" data-chat-abre>
+    <img src="/c/sculpted/fotos/kathy.png" alt="">
+    <span class="ponto" aria-hidden="true"></span>
+    <span class="rotulo">Text us</span>
+  </button>
+</div>
+
+<script>
+  // Chat de concierge em conversa guiada. Nada é enviado; a última mensagem diz isso.
+  (function () {
+    var painel = document.getElementById("chat-painel");
+    var botao = document.querySelector("[data-chat-abre]");
+    var fio = document.getElementById("chat-fio");
+    var chips = document.getElementById("chat-chips");
+    var form = document.getElementById("chat-composer");
+    var input = document.getElementById("chat-input");
+    var enviar = form.querySelector(".chat-enviar");
+    var passo = 0, dados = {}, iniciado = false;
+
+    function rolar() { requestAnimationFrame(function () { fio.scrollTop = fio.scrollHeight; }); }
+    if ("ResizeObserver" in window) { var ro = new ResizeObserver(rolar); ro.observe(chips); ro.observe(fio); }
+    function bolha(html, eu) { var b = document.createElement("div"); b.className = "bolha" + (eu ? " eu" : ""); b.innerHTML = html; fio.appendChild(b); rolar(); return b; }
+    function limpo(t) { return String(t).replace(/[<>&]/g, ""); }
+    function concierge(html, depois) {
+      var d = document.createElement("div"); d.className = "bolha digitando"; d.innerHTML = "<i></i><i></i><i></i>"; fio.appendChild(d); rolar();
+      setTimeout(function () { d.remove(); bolha(html, false); if (depois) depois(); }, 650);
+    }
+    function opcoes(lista, cb) {
+      chips.innerHTML = ""; input.value = ""; input.placeholder = "Choose an option above";
+      lista.forEach(function (t) { var c = document.createElement("button"); c.type = "button"; c.className = "chip-resp"; c.textContent = t; c.addEventListener("click", function () { chips.innerHTML = ""; cb(t); }); chips.appendChild(c); });
+    }
+    function barra(placeholder, tipo) {
+      input.disabled = false; enviar.disabled = false; input.placeholder = placeholder; input.value = "";
+      input.setAttribute("inputmode", tipo === "tel" ? "tel" : "text");
+      setTimeout(function () { input.focus({ preventScroll: true }); rolar(); }, 80);
+    }
+    function travar() { input.disabled = true; enviar.disabled = true; input.placeholder = "Preview ended"; }
+    function comecar() {
+      iniciado = true; passo = 0; dados = {}; fio.innerHTML = ""; chips.innerHTML = "";
+      var aviso = bolha("<b>Preview.</b> Nothing is sent from this concept. On your live site this chat connects to your front desk (any provider).", false);
+      aviso.classList.add("sistema");
+      concierge("Hi! This is the Sculpted Contours concierge. What's your name?", function () { barra("Your name", "text"); });
+    }
+    function responder(texto) {
+      texto = texto.trim(); if (!texto) return;
+      bolha(limpo(texto), true); input.value = ""; input.disabled = true; enviar.disabled = true;
+      if (passo === 0) {
+        dados.nome = texto; passo = 1;
+        concierge("Nice to meet you, <b>" + limpo(texto) + "</b>. Best number to text you back?", function () { barra("(404) 000-0000", "tel"); });
+      } else if (passo === 1) {
+        if (texto.replace(/\D/g, "").length < 10) { concierge("That looks short. Could you send the full number with area code?", function () { barra("(404) 000-0000", "tel"); }); return; }
+        dados.fone = texto; passo = 2;
+        concierge("Got it. What are you looking into?", function () {
+          opcoes(["Body contouring", "Face tightening", "Skin rejuvenation", "Injectables", "Men's protocols", "Not sure yet"], function (t) {
+            bolha(t, true); dados.interesse = t; passo = 3;
+            concierge("Perfect. Anything else? A preferred day, a question… or skip.", function () { barra("Optional", "text"); opcoes(["Skip"], function () { bolha("Skip", true); consentir(); }); });
+          });
+        });
+      } else if (passo === 3) { dados.msg = texto; chips.innerHTML = ""; consentir(); }
+    }
+    function consentir() {
+      passo = 4; input.disabled = true; enviar.disabled = true;
+      concierge("One last thing: OK to text you at <b>" + limpo(dados.fone) + "</b>? Message rates may apply.", function () {
+        opcoes(["Yes, text me", "No thanks"], function (t) {
+          bolha(t, true);
+          if (t === "Yes, text me") {
+            concierge("Thanks, <b>" + limpo(dados.nome) + "</b>! On the live site the concierge would text you shortly about " + limpo(dados.interesse).toLowerCase() + ". <b>In this preview, nothing was sent.</b>", function () {
+              concierge("New here? Ask about the <b>$50 gift</b> toward your first service.", function () { travar(); opcoes(["Start over"], comecar); });
+            });
+          } else {
+            concierge("No problem. You can always call <b>404.872.8578</b>. In this preview, nothing was sent.", function () { travar(); opcoes(["Start over"], comecar); });
+          }
+        });
+      });
+    }
+    var vv = window.visualViewport; var estreito = matchMedia("(max-width: 640px)");
+    function ajustar() { if (painel.hidden || !estreito.matches || !vv) { painel.style.height = ""; painel.style.top = ""; return; } painel.style.height = Math.round(vv.height) + "px"; painel.style.top = Math.round(vv.offsetTop) + "px"; rolar(); }
+    if (vv) { vv.addEventListener("resize", ajustar); vv.addEventListener("scroll", ajustar); }
+    input.addEventListener("focus", function () { setTimeout(ajustar, 320); setTimeout(ajustar, 700); });
+    input.addEventListener("blur", function () { setTimeout(ajustar, 200); });
+    function abrir(aberto) {
+      painel.hidden = !aberto; document.body.classList.toggle("chat-aberto", aberto);
+      botao.setAttribute("aria-expanded", String(aberto)); botao.querySelector(".rotulo").textContent = aberto ? "Close" : "Text us";
+      ajustar(); if (aberto && !iniciado) comecar(); else if (aberto) rolar();
+    }
+    botao.addEventListener("click", function () { abrir(painel.hidden); });
+    painel.querySelectorAll("[data-chat-fechar]").forEach(function (b) { b.addEventListener("click", function () { abrir(false); }); });
+    document.addEventListener("keydown", function (e) { if (e.key === "Escape" && !painel.hidden) abrir(false); });
+    form.addEventListener("submit", function (e) { e.preventDefault(); if (!input.disabled) responder(input.value); });
+  })();
+  // Cartão vira com o scroll em telas de toque.
+  (function () {
+    var palco = document.querySelector(".cartao-palco"), cartao = document.querySelector(".cartao");
+    if (!palco || !cartao || matchMedia("(prefers-reduced-motion: reduce)").matches) return;
+    var mq = matchMedia("(max-width: 1100px), (hover: none)"), pendente = false;
+    function virar() { pendente = false; if (!mq.matches) { cartao.style.transform = ""; return; } var r = palco.getBoundingClientRect(); var t = Math.max(-0.6, Math.min(0.6, (r.top + r.height / 2 - innerHeight / 2) / innerHeight)); cartao.style.transform = "rotateY(" + (-6 + t * 34).toFixed(1) + "deg) rotateX(" + (4 + t * 12).toFixed(1) + "deg) rotateZ(" + (-2 + t * -4).toFixed(1) + "deg)"; }
+    function pedir() { if (!pendente) { pendente = true; requestAnimationFrame(virar); } }
+    window.addEventListener("scroll", pedir, { passive: true }); window.addEventListener("resize", pedir); virar();
+  })();
+  // Dock: o atalho da seção visível acende.
+  (function () {
+    var links = document.querySelectorAll(".dock a[data-sec]"); if (!links.length || !("IntersectionObserver" in window)) return;
+    var obs = new IntersectionObserver(function (es) { es.forEach(function (e) { if (!e.isIntersecting) return; links.forEach(function (l) { l.classList.toggle("ativo", l.dataset.sec === e.target.id); }); }); }, { rootMargin: "-40% 0px -50% 0px", threshold: 0 });
+    ["tratamentos", "resultados", "clube", "equipe", "contato"].forEach(function (id) { var el = document.getElementById(id); if (el) obs.observe(el); });
+  })();
+  // Nav quase transparente no topo.
+  (function () { var nav = document.querySelector(".nav"); function topo() { nav.classList.toggle("no-topo", window.scrollY < 40); } topo(); window.addEventListener("scroll", topo, { passive: true }); })();
+  // Reveal: começa visível, só ganha o movimento ao entrar.
+  (function () {
+    if (!("IntersectionObserver" in window)) return;
+    var obs = new IntersectionObserver(function (es) { es.forEach(function (e) { if (e.isIntersecting) { e.target.classList.add("rv-in"); obs.unobserve(e.target); } }); }, { rootMargin: "0px 0px -8% 0px", threshold: 0.12 });
+    document.querySelectorAll("[data-rv]").forEach(function (el) { obs.observe(el); });
+  })();
+</script>
+
+
+<div class="rv-rodape">
+  <span>Website concept prepared for Sculpted Contours</span>
+  <span>by <b>RVLand Devs</b></span>
+  <span class="rv-rodape-links">
+    <a href="https://rvland-page.vercel.app/en" target="_blank" rel="noreferrer">rvland-page.vercel.app/en</a>
+    <span class="rv-rodape-sep">&middot;</span>
+    <a href="https://instagram.com/rvlanddevs" target="_blank" rel="noreferrer">@rvlanddevs</a>
+  </span>
+</div>
+
+<script>
+(function () {
+  try {
+    var CHAVE = "rv-visitante";
+    var DESLIGA = "rv-sem-medida";
+
+    // ?rvland=1 desliga a medição neste navegador para sempre: as visitas do
+    // próprio João não podem virar alerta nem entrar na conta
+    try {
+      if (new URLSearchParams(location.search).get("rvland") === "1") {
+        localStorage.setItem(DESLIGA, "1");
+      }
+      if (localStorage.getItem(DESLIGA)) return;
+    } catch (e) {}
+
+    function id() {
+      var s = "";
+      while (s.length < 24) s += Math.random().toString(36).slice(2);
+      return s.slice(0, 24);
+    }
+
+    var visitante;
+    try {
+      visitante = localStorage.getItem(CHAVE);
+      if (!visitante) { visitante = id(); localStorage.setItem(CHAVE, visitante); }
+    } catch (e) { visitante = id(); }
+
+    var sessao = id();
+    var visiveis = 0;
+    var marcou = false;
+    var ultimo = Date.now();
+
+    function enviar(saindo) {
+      var corpo = JSON.stringify({
+        slug: "sculpted",
+        visitante: visitante,
+        sessao: sessao,
+        segundos: Math.round(visiveis),
+        referencia: document.referrer || null
+      });
+      try {
+        // sendBeacon sobrevive ao fechamento da aba; fetch normal não
+        if (saindo && navigator.sendBeacon) {
+          navigator.sendBeacon("/api/c/visita", new Blob([corpo], { type: "application/json" }));
+        } else {
+          fetch("/api/c/visita", {
+            method: "POST",
+            headers: { "content-type": "application/json" },
+            body: corpo,
+            keepalive: true
+          });
+        }
+      } catch (e) {}
+    }
+
+    function contar() {
+      if (document.visibilityState === "visible") visiveis += (Date.now() - ultimo) / 1000;
+      ultimo = Date.now();
+      if (!marcou && visiveis >= 5) { marcou = true; enviar(false); }
+    }
+
+    setInterval(contar, 1000);
+
+    document.addEventListener("visibilitychange", function () {
+      contar();
+      if (document.visibilityState === "hidden" && marcou) enviar(true);
+    });
+    window.addEventListener("pagehide", function () {
+      contar();
+      if (marcou) enviar(true);
+    });
+  } catch (e) {}
+})();
+</script>
+
+</body>
+</html>
