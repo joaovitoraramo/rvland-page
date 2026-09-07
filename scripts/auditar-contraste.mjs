@@ -14,6 +14,7 @@ await p.goto(url, { waitUntil: "networkidle" });
 await p.waitForTimeout(2000);
 // rola um pouco: nav fixa e afins são auditadas no estado em que passam a
 // maior parte da página (sobre as seções), não no estado só-do-topo
+await p.addStyleTag({ content: "[data-revela] { opacity: 1 !important; transform: none !important; transition: none !important; }" }); // animações de entrada não contam
 await p.evaluate(() => window.scrollTo(0, 120));
 await p.waitForTimeout(600);
 

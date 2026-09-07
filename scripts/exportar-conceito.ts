@@ -7,7 +7,9 @@
    Uso: npx tsx scripts/exportar-conceito.ts poolguys conceitos/poolguys */
 import { chromium, devices } from "playwright";
 
-const SEM_FAIXA = ".rv-faixa { display: none !important; }";
+// Some a faixa do topo e assenta qualquer animação de entrada: a captura de
+// página inteira não rola, então o que só aparece com o scroll sairia em branco.
+const SEM_FAIXA = ".rv-faixa { display: none !important; } [data-revela] { opacity: 1 !important; transform: none !important; transition: none !important; }";
 
 async function main() {
   const [slug, destino] = process.argv.slice(2);

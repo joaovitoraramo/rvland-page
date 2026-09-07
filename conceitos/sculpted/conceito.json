@@ -4,7 +4,7 @@
   "dominio": "sculptedcontours.com",
   "url": "https://rvland-page.vercel.app/c/sculpted",
   "fonteHtml": "conceitos/sculpted/index.html",
-  "direcao": "Ice & Sapphire, versão 2. Página clara de gelo (#EEF3F8) com painéis de vidro brancos; navy (#12304F / #0C1F35) só onde é palco: Results, Contour Club, Contact. Uma família só, Manrope 400-800: sans geométrica, legível de longe, nada de serifa nem de itálico de uma palavra. As cores são as deles (navy #1D4062, safira #046BD2, gelo). O elemento que importa é a organização: o site deles tem 85 páginas em 10 grupos e o visitante não acha nada; aqui o mega-menu (5 colunas de tratamentos + chips por área; About em 4 colunas), o diretório em abas e o rodapé-índice colocam tudo a um clique. Piso de 13px, corpo 17px, contraste AA em tudo (0 reprovados na auditoria).",
+  "direcao": "Ice & Sapphire, versão 3. Página clara de gelo (#EEF3F8) com painéis de vidro brancos; navy (#12304F / #0C1F35) só onde é palco: Results, Contour Club, Contact. Uma família só, Manrope 400-800: sans geométrica, legível de longe, nada de serifa nem de itálico de uma palavra. As cores são as deles (navy #1D4062, safira #046BD2, gelo). O elemento que importa é a organização: o site deles tem 85 páginas em 10 grupos e o visitante não acha nada; aqui o mega-menu (5 colunas de tratamentos + chips por área; About em 4 colunas), o diretório em abas e o rodapé-índice colocam tudo a um clique. Piso de 13px, corpo 17px, contraste AA em tudo (0 reprovados na auditoria). V3: nav vira pílula de vidro flutuante (sticky a 12px, blur 24px, mais opaca ao rolar) com mega-menu que abre no hover com intenção e fecha ao sair, ao clicar fora, no Esc e ao rolar. Tudo entra em cena com o scroll (IntersectionObserver, [data-revela] e [data-grupo] escalonado), o hero carrega em sequência com Ken Burns lento na foto e os quatro números contam. Luz radial que segue o cursor sobre todo vidro. Resultados em carrossel com snap (680px por foto). Colagem da recepção, do lounge e da Kathy na suíte em vez de repetir a foto do hero. Retratos grandes na equipe (Kathy e Dr. Sinha com upscale 2x Real-ESRGAN, Monica da página de equipe). Mapa claro em monocromia (grayscale, ll= sem pino do Google) com pino próprio pulsando, cartão de endereço e chip aberto/fechado no fuso de Alpharetta. Tudo respeita prefers-reduced-motion.",
   "assinatura": "Tudo do site antigo, organizado: cada menu e submenu (Body, Face, Skin, Injectables, Men, áreas, Results, Promotions & events, About, Contact) aparece no mega-menu, no menu do celular em acordeão, no diretório em abas e no rodapé-índice, sempre linkado à página real. O Contour Club continua como cartão 3D + área da cliente.",
   "faixaCores": {
     "fundo": "#0B1E33",
@@ -87,19 +87,19 @@
     "subtitulo": "Non-surgical body contouring, face tightening, skin rejuvenation and injectables in private treatment suites, by clinicians who train other clinicians. Alpharetta, since 2014."
   },
   "secoes": [
-    "Nav de vidro sticky com o logo deles (invertido para navy sobre claro): Treatments (mega-menu 5 colunas: Body/ABC, Face/AFT, Skin/ASR, Cosmetic injectables, Men + chips By area com as 11 áreas) · Areas · Results · Specials · About (mega-menu 4 colunas: The practice, Membership & financing, Learn, Contact) · Contact + telefone + Book a free consultation",
+    "Nav em pílula de vidro flutuante com o logo deles (invertido para navy sobre claro): Treatments (mega-menu 5 colunas: Body/ABC, Face/AFT, Skin/ASR, Cosmetic injectables, Men + chips By area com as 11 áreas) · Areas · Results · Specials · About (mega-menu 4 colunas: The practice, Membership & financing, Learn, Contact) · Contact + telefone + Book a free consultation",
     "Menu do celular em tela cheia: acordeão com os 10 grupos do site (Body, Face, Skin, Cosmetic injectables, Men, Treatment areas, Results, Promotions & events, About us, Contact), cada submenu com link real",
-    "Hero dividido: título + sub + 2 botões + nota 'consultations are complimentary' à esquerda; à direita a foto da suíte em quadro 4:4.6 com selo 'Your private suite' e painel escuro de 4 stats (18k+, 10 anos Best of the City, 4 sistemas, 4.7/75). No celular a foto vem primeiro e os stats ficam abaixo dela, sem cobrir",
+    "Hero dividido: título + sub + 2 botões + nota 'consultations are complimentary' à esquerda; à direita a foto da suíte em quadro 4:4.6 (Ken Burns de 26s) com selo 'Your private suite' e painel escuro de 4 stats que contam ao carregar (18k+, 10 anos Best of the City, 4 sistemas, 4.7/75). No celular a foto vem primeiro e os stats ficam abaixo dela, sem cobrir",
     "Faixa de prêmios: selos Best of the City 2024 e Diamond + 3 provas (2015-2024, Diamond/top 40/#1 na Geórgia, diretor médico board-certified)",
     "Diretório 'Everything we do, in one place' em abas Body / Face / Skin / Injectables / Men: painel de intro com o protocolo (ABC, AFT, ASR) + lista de tratamentos com uma linha cada, todos linkados; abaixo, chips das 11 áreas",
-    "Results (navy): 4 antes/depois reais (abdômen 6 semanas, flancos 8 semanas, braços, coxas) + chips para as 9 galerias do site",
+    "Results (navy): carrossel com snap, setas e pontos, 4 antes/depois reais em 680px (abdômen 6 semanas, flancos 8, braços 16, coxas 8) + chips para as 9 galerias do site",
     "Specials, events and the Insider gift: CoolSculpting Confidence ($1,760 duas áreas, compre 4 leve 1, +áreas desde $560, repetições desde $35, 150 dias) em tile escuro; Brand events (Sculptra/Allergan/Galderma, até 30%); $50 Insider gift (mínimo $500)",
-    "A private suite, not a treatment room: foto + 4 tiles (conforto, snacks, iPad/Wi-Fi, quatro áreas de uma vez) + linha do tempo 2014 / 2015 / 2022 / Today",
-    "Clinicians who train clinicians: Kathy King, Dr. Pradeep Sinha, Monica Bugg (monograma) + citação da Kathy",
-    "The Contour Club (navy): lista do que inclui ($199/mês introdutório, serviço mensal cortesia, add-ons, 10% skincare), área da cliente em vidro (sessão 2 de 4, próxima marcada, cortesia do mês) e cartão 3D que vira com o mouse no desktop e com o scroll no celular",
+    "A private suite, not a treatment room: colagem (recepção com o logo iluminado, lounge, Kathy na suíte) + 5 tiles (conforto, snacks, iPad/Wi-Fi, quatro áreas de uma vez, Royal Boulevard) + linha do tempo 2014 / 2015 / 2022 / Today com a linha que se desenha ao entrar",
+    "Clinicians who train clinicians: retratos grandes (4:3.4) de Kathy King, Dr. Pradeep Sinha e Monica Bugg + citação da Kathy",
+    "The Contour Club (navy): lista do que inclui ($199/mês introdutório, serviço mensal cortesia, add-ons, 10% skincare), área da cliente em vidro (sessão 2 de 4, próxima marcada, cortesia do mês) e cartão 3D que segue o mouse (com brilho) no desktop e vira com o scroll no celular",
     "Avaliações (4.7, 75, Caroline F. e Arlene H.) + Financing with Cherry",
     "Transformation Talk: 4 posts do blog, vídeos, News & media / Featured on / FAQs, tudo linkado",
-    "Visit us on Royal Boulevard (navy): mapa do Google pela busca do nome da clínica (pino com nota), chip de endereço + Directions, painéis Book a consultation (form + consult form + balão do concierge), Hours (seg-sex 9-6) e Talk to us, Follow (Instagram, Facebook) + 10 cidades atendidas",
+    "Visit us on Royal Boulevard (claro): mapa do Google em monocromia clara centrado por coordenada (34.0545587,-84.2729506), pino próprio navy com pulso, cartão de vidro com endereço + Directions + Open in Google Maps, chip aberto/fechado agora; painéis claros Book a consultation (form + consult form + balão do concierge), Hours (seg-sex 9-6) e Talk to us, Follow (Instagram, Facebook) + 10 cidades atendidas",
     "Rodapé-índice em 6 colunas com todos os links do site (Body, Face & skin, Injectables & men, Areas & results, About & contact) + privacy/terms",
     "Dock fixo no celular (Treatments, Results, Specials, Club, Visit) e chat de concierge fictício em modelo Instagram, tela cheia no celular, teclado tratado com VisualViewport"
   ],
@@ -108,18 +108,22 @@
     "Todos os links de tratamento, área, galeria, blog, vídeo, FAQ e contato apontam para as páginas atuais do site (85 páginas mapeadas)",
     "Programa CoolSculpting Confidence, eventos de marca, Contour Club, Cherry e o presente de $50 são ofertas reais do site"
   ],
-  "fotosOrigem": "Tudo da API de mídia do WordPress deles: clinica.jpg (HD-4-of-40, 2560x1713, a suíte), antes-depois abs/flancos/braços/coxas (galeria CoolSculpting), kathy.png e sinha.jpg (retratos do site), logo-branco.png (recortado ao wordmark), premios.png (Best of the City 2024), diamond.png.",
+  "fotosOrigem": "Tudo da API de mídia do WordPress deles: clinica.jpg (HD-4-of-40, 2560x1713, a suíte), antes-depois abs/flancos/braços/coxas (galeria CoolSculpting), kathy.png e sinha.jpg (retratos do site), logo-branco.png (recortado ao wordmark), premios.png (Best of the City 2024), diamond.png. V3 acrescenta da mesma API: recepcao.jpg (Office-Photos-1, logo iluminado), lounge.jpg (Alpharetta-Ga), kathy-suite.jpg (Cs-1, Kathy com cliente, upscale), monica.jpg (IMG_2725, retrato da página de equipe), kathy-2x.png e sinha-2x.jpg (upscale). consultorio.jpg e suite-2.jpg ficaram na pasta sem uso.",
   "regras": [
     "Uma família só (Manrope). Nada de caixa alta com tracking em rótulos, nada de itálico de uma palavra, nada de marcador numerado, nada de orbe.",
     "Azul-gelo #A9D1FF só vira texto sobre escuro; sobre gelo o link é safira escura #0A58AA. Links dentro do rodapé (fundo meia-noite) usam gelo-luz.",
     "Secundário sobre claro é #44566B; sobre escuro marfim a 80% no mínimo. Piso de 13px, corpo em 400.",
-    "Mega-menu com fundo branco sólido (#FFF): a 0.97 o título do hero ainda vaza por trás.",
     "Painel de stats sobre a foto do hero em rgba(12,31,53,0.84) e texto marfim cheio: o auditor mede o fundo composto com a foto.",
     "Painel do chat é <div role=dialog>, nunca <section>. Chat z 55 acima da faixa (50); no celular, body.chat-aberto esconde dock e botão.",
     "No celular a foto do hero vem primeiro (order:-1) e os stats ficam estáticos abaixo: a foto é o sinal de luxo e não pode ser coberta.",
     "Auditar com scripts/auditar-contraste.mjs em 1440 e iphone antes de publicar; meta 0 reprovados (V2: 0 e 0).",
     "Nenhum número que não se prove: 18.000+, Best of the City 2015-2024, 4 sistemas, Diamond, top 40, preços do programa, $199, $50/$500 vêm do site deles; 4.7 com 75 avaliações vem do pino do Google Maps.",
-    "Logo: o PNG deles é branco; na nav e no menu do celular vai com filter invert(1) brightness(0.15) para virar navy sobre claro; no cartão, no rodapé fica branco."
+    "Logo: o PNG deles é branco; na nav e no menu do celular vai com filter invert(1) brightness(0.15) para virar navy sobre claro; no cartão, no rodapé fica branco.",
+    "Mega-menu em vidro: rgba(255,255,255,0.9) + blur 30px pendurado 10px abaixo da pílula; abre no hover com 110ms de intenção, fecha 260ms depois de sair, no clique fora, no Esc e ao rolar.",
+    "Animações de entrada só com .js [data-revela]; scripts/auditar-contraste.mjs e scripts/exportar-conceito.ts injetam opacity:1 para medir e capturar tudo (elementos com opacity 0 eram pulados na auditoria e sairiam em branco no PNG).",
+    "Nada absoluto pode vazar para fora da largura no celular: o brilho do hero virou background da seção porque um ::before com right:-10% esticava o viewport do iPhone para 429px e empurrava o chat para fora.",
+    "Mapa: ll= (sem pino do Google) + filter grayscale(1) contrast(.9) brightness(1.05); o cartão de endereço a 10px cobre a caixa 'View larger map' do Google; no celular o chip de horário vai para o canto superior esquerdo pelo mesmo motivo.",
+    "Retratos pequenos do site (Kathy 621px, Sinha 427px) passam por Real-ESRGAN x4 e voltam a 2x para não ficarem moles em cards grandes."
   ],
   "arquivos": [
     {
@@ -155,5 +159,5 @@
     "entrega": "link para o conceito hospedado, sem anexo",
     "arquivo": "conceitos/sculpted/email.md"
   },
-  "versao": 2
+  "versao": 3
 }
