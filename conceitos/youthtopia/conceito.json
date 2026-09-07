@@ -212,7 +212,8 @@
     "Chat no celular: tela cheia (inset 0, 100dvh), body travado, dock e botão somem; input a 16px para o iOS não dar zoom.",
     "Foto do hero: sempre buscar a original na API de mídia do WordPress (wp-json/wp/v2/media) antes de pensar em upscale; comparar por hash perceptual.",
     "Teclado no celular: o painel do chat segue window.visualViewport (altura e offsetTop) em resize/scroll e no focus do input; meta viewport com interactive-widget=resizes-content para o Android. Sem isso, no iOS a barra de digitar fica atrás do teclado.",
-    "Nenhum número que não se prove: o '13 anos' vinha de uma avaliação de ~2023 e o '2011' ninguém confirma (o site publica desde set/2014). Conceito e e-mail dizem '10+' / 'over a decade'."
+    "Nenhum número que não se prove: o '13 anos' vinha de uma avaliação de ~2023 e o '2011' ninguém confirma (o site publica desde set/2014). Conceito e e-mail dizem '10+' / 'over a decade'.",
+    "Animações (set. 2026): entradas com .js [data-revela] e [data-grupo] escalonado (bento, equipe, vitrine, concierge, fatos do hero), hero em sequência, contadores 10+/5.0/11, luz que segue o cursor no vidro, orbes derivando no desktop, Ken Burns na foto do hero, brilho no ticket e no tile de setembro, anel no botão do chat, estrelas que pulam, cartão VIP segue o mouse com reflexo. prefers-reduced-motion desliga tudo. O exportador e o auditor assentam [data-revela] por CSS."
   ],
   "notaMobile": "Foto em bloco de 62vh no topo com o card começando 90px antes do fim; dock de atalhos fixo; cartão VIP inclinado e virando com o scroll; seções a 96px; tiles a 30/24px; setembro em 2x2; rodapé em coluna. Vazamento 0px, 0 reprovados de contraste. Mapa com chip em barra embaixo; chat fechado acima do dock e, aberto, em tela cheia; ticket em coluna com canhoto pontilhado horizontal.",
   "abordagem": {

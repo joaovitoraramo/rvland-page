@@ -7,6 +7,7 @@
 <title>Youthtopia Med Spa website concept</title>
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<script>document.documentElement.classList.add("js");</script>
 <link href="https://fonts.googleapis.com/css2?family=Fraunces:ital,opsz,wght@0,9..144,400;0,9..144,500;0,9..144,600;1,9..144,400;1,9..144,500&family=Jost:wght@400;500;600&display=swap" rel="stylesheet">
 <style>
   /* Terceira versão: mesma paleta aprovada (a da foto da hora dourada), mas a
@@ -679,11 +680,40 @@
   .chat-rodape { flex: none; padding: 0 14px 10px; font-size: 11.5px; color: var(--marfim-2); text-align: center; }
 
   /* ── reveal no scroll: começa visível, só ganha o movimento ao entrar ── */
-  @keyframes sobe { from { opacity: 0; transform: translateY(18px); } to { opacity: 1; transform: none; } }
-  [data-rv].rv-in { animation: sobe 0.8s cubic-bezier(.2,.8,.2,1) both; }
+  /* entrada com o scroll: escondido só com JS; [data-grupo] escalona os filhos */
+  .js [data-revela] { opacity: 0; transform: translateY(22px); transition: opacity 0.85s cubic-bezier(.2,.7,.2,1), transform 0.85s cubic-bezier(.2,.7,.2,1); transition-delay: var(--atraso, 0ms); }
+  .js [data-revela].visivel { opacity: 1; transform: none; }
+  /* luz que segue o cursor sobre o vidro */
+  .vidro, .vidro-escuro { position: relative; }
+  .vidro::before, .vidro-escuro::before { content: ""; position: absolute; inset: 0; border-radius: inherit; pointer-events: none; opacity: 0; transition: opacity 0.45s ease; background: radial-gradient(340px circle at var(--mx, 50%) var(--my, 50%), rgba(255,255,255,0.5), transparent 58%); }
+  .vidro-escuro::before { background: radial-gradient(340px circle at var(--mx, 50%) var(--my, 50%), rgba(230,207,152,0.16), transparent 58%); }
+  @media (hover: hover) { .vidro:hover::before, .vidro-escuro:hover::before { opacity: 1; } }
+  /* as orbes derivam devagar; a foto do hero respira */
+  @keyframes deriva { from { transform: translate(0, 0); } to { transform: translate(40px, -28px); } }
+  @media (hover: hover) and (min-width: 1101px) { .orbe { animation: deriva 16s ease-in-out infinite alternate; } }
+  @keyframes ken { from { transform: scale(1); } to { transform: scale(1.07); } }
+  .hero-fundo { animation: ken 30s ease-in-out infinite alternate; transform-origin: 50% 30%; }
+  /* brilho que passa pelo ticket e pelo tile de setembro */
+  .oferta::after, .tile-setembro::after { content: ""; position: absolute; top: -60%; bottom: -60%; width: 34%; left: -70%; z-index: 1; background: linear-gradient(100deg, transparent, rgba(203,164,92,0.14), transparent); transform: skewX(-18deg); animation: brilho 9s ease-in-out infinite; pointer-events: none; }
+  .tile-setembro::after { animation-delay: 4s; }
+  @keyframes brilho { 0%, 70% { left: -70%; } 100% { left: 150%; } }
+  /* anel no botão do chat */
+  .chat-botao { position: relative; }
+  .chat-botao::after { content: ""; position: absolute; inset: -3px; border-radius: 999px; border: 1.5px solid rgba(230,207,152,0.7); animation: anel 3.2s ease-out infinite; pointer-events: none; }
+  @keyframes anel { 0% { transform: scale(1); opacity: 0.8; } 60%, 100% { transform: scale(1.22); opacity: 0; } }
+  /* estrelas pulam ao entrar */
+  .estrelas { display: inline-flex; gap: 0.08em; }
+  .estrelas i { font-style: normal; display: inline-block; transform: scale(0.5); opacity: 0; transition: transform 0.5s cubic-bezier(.2,.7,.2,1), opacity 0.4s ease; transition-delay: calc(var(--i, 0) * 90ms + 250ms); }
+  .visivel .estrelas i { transform: none; opacity: 1; }
+  .fato-num { font-variant-numeric: tabular-nums; }
+  .cartao { position: relative; overflow: hidden; }
+  .cartao::after { content: ""; position: absolute; inset: 0; pointer-events: none; background: radial-gradient(260px circle at var(--sx, 30%) var(--sy, 20%), rgba(255,255,255,0.16), transparent 60%); opacity: 0; transition: opacity 0.4s ease; }
+  .cartao-palco:hover .cartao::after { opacity: 1; }
   @media (prefers-reduced-motion: reduce) {
-    [data-rv].rv-in { animation: none; }
+    .js [data-revela] { opacity: 1; transform: none; transition: none; }
     .cartao, .cartao-palco:hover .cartao { transform: none; }
+    .orbe, .hero-fundo, .oferta::after, .tile-setembro::after, .chat-botao::after { animation: none; }
+    .estrelas i { transform: none; opacity: 1; }
   }
 
   /* ── responsivo ─────────────────────────────────────────────────────── */
@@ -1135,21 +1165,21 @@
 <section class="hero escuro">
   <div class="hero-fundo"><div class="orbe orbe-ouro"></div></div>
   <div class="env">
-    <div class="hero-vidro vidro-escuro" data-rv>
+    <div class="hero-vidro vidro-escuro" data-revela>
       <div>
-        <div class="etiqueta hero-kicker">Alpharetta · Physician-led aesthetics</div>
-        <h1>Where Alpharetta comes to <em>glow</em>.</h1>
-        <p class="hero-sub">Physician-led aesthetics in Alpharetta for over a decade.
+        <div class="etiqueta hero-kicker" data-revela style="--atraso:200ms">Alpharetta · Physician-led aesthetics</div>
+        <h1 data-revela style="--atraso:300ms">Where Alpharetta comes to <em>glow</em>.</h1>
+        <p class="hero-sub" data-revela style="--atraso:420ms">Physician-led aesthetics in Alpharetta for over a decade.
           Medical-grade results, delivered with personal care.</p>
-        <div class="hero-ctas">
+        <div class="hero-ctas" data-revela style="--atraso:520ms">
           <a class="pilula pilula-ouro" href="https://phorest.com/book/salons/youthtopiamedspa">Book your visit</a>
           <a class="pilula pilula-vidro" href="#setembro">September specials</a>
         </div>
       </div>
-      <div class="hero-fatos">
-        <div class="fato"><div class="fato-num">10+</div><div class="fato-rotulo">Years in Alpharetta</div></div>
-        <div class="fato"><div class="fato-num">5.0</div><div class="fato-rotulo">Google rating</div></div>
-        <div class="fato"><div class="fato-num">11</div><div class="fato-rotulo">Specialists in house</div></div>
+      <div class="hero-fatos" data-grupo data-base="600">
+        <div class="fato"><div class="fato-num" data-conta="10" data-suf="+">10+</div><div class="fato-rotulo">Years in Alpharetta</div></div>
+        <div class="fato"><div class="fato-num" data-conta="5" data-dec="1">5.0</div><div class="fato-rotulo">Google rating</div></div>
+        <div class="fato"><div class="fato-num" data-conta="11">11</div><div class="fato-rotulo">Specialists in house</div></div>
         <div class="fato"><div class="fato-num">DO</div><div class="fato-rotulo">Physician-led, always</div></div>
       </div>
     </div>
@@ -1161,14 +1191,14 @@
   <div class="orbe orbe-rosa"></div>
   <div class="orbe orbe-ouro"></div>
   <div class="env">
-    <div class="cabeca" data-rv>
+    <div class="cabeca" data-revela>
       <span class="etiqueta">The menu</span>
       <h2>Treatments, curated like a tasting menu.</h2>
       <p>Every protocol below is performed in-house by our injectors, nurses
         and aestheticians. Never franchised, never rushed.</p>
     </div>
-    <div class="bento">
-      <div class="tile tile-4 vidro" data-rv>
+    <div class="bento" data-grupo>
+      <div class="tile tile-4 vidro" data-revela>
         <span class="ato-num">Act I</span>
         <h3>Injectables</h3>
         <ul>
@@ -1178,7 +1208,7 @@
           <li><a href="https://youthtopiamedspa.com/kybella/"><span class="prato">Kybella</span><span class="prato-nota">define</span></a></li>
         </ul>
       </div>
-      <div class="tile tile-8 vidro duas" data-rv>
+      <div class="tile tile-8 vidro duas" data-revela>
         <span class="ato-num">Act II</span>
         <h3>Face</h3>
         <ul>
@@ -1189,7 +1219,7 @@
           <li><a href="https://youthtopiamedspa.com/facials/"><span class="prato">HydraFacial &amp; Peels</span><span class="prato-nota">glow</span></a></li>
         </ul>
       </div>
-      <div class="tile tile-5 vidro" data-rv>
+      <div class="tile tile-5 vidro" data-revela>
         <span class="ato-num">Act III</span>
         <h3>Body &amp; Wellness</h3>
         <ul>
@@ -1199,7 +1229,7 @@
           <li><a href="https://youthtopiamedspa.com/tirzepatide/"><span class="prato">Tirzepatide Program</span><span class="prato-nota">wellness</span></a></li>
         </ul>
       </div>
-      <div class="tile tile-7 tile-setembro escuro" id="setembro" data-rv>
+      <div class="tile tile-7 tile-setembro escuro" id="setembro" data-revela>
         <div class="orbe orbe-ouro"></div>
         <div>
           <span class="etiqueta">This month at the house</span>
@@ -1217,7 +1247,7 @@
         </div>
       </div>
     </div>
-    <div class="oferta vidro" id="oferta" data-rv>
+    <div class="oferta vidro" id="oferta" data-revela>
       <div class="orbe orbe-ouro"></div>
       <div>
         <span class="etiqueta">New clients only</span>
@@ -1239,7 +1269,7 @@
   <div class="orbe orbe-ouro"></div>
   <div class="env">
     <div class="clube-grade">
-      <div data-rv>
+      <div data-revela>
         <span class="etiqueta">Membership</span>
         <h2>A membership that feels like a black card.</h2>
         <p class="clube-sub">VIP members carry their whole story with the
@@ -1258,7 +1288,7 @@
           <div class="area-nota">✨ September specials are unlocked for you.</div>
         </div>
       </div>
-      <div class="cartao-palco" data-rv>
+      <div class="cartao-palco" data-revela>
         <div class="cartao">
           <div class="cartao-topo">
             <div class="cartao-marca">Youthtopia<small>Med Spa</small></div>
@@ -1279,19 +1309,19 @@
 <section class="casa" id="casa">
   <div class="orbe orbe-ouro"></div>
   <div class="env">
-    <div class="cabeca" data-rv>
+    <div class="cabeca" data-revela>
       <span class="etiqueta">The house</span>
       <h2>Injectors, nurses and aestheticians, under a medical director.</h2>
     </div>
-    <div class="casa-grade">
-      <div class="pessoa vidro" data-rv><img src="/c/youthtopia/fotos/tracy-round.png" alt="Tracy Olson"><div class="pessoa-nome">Tracy Olson</div><div class="pessoa-cargo">Founder</div></div>
-      <div class="pessoa vidro" data-rv><img src="/c/youthtopia/fotos/mccabe.png" alt="Dr. Jessica McCabe"><div class="pessoa-nome">Jessica McCabe</div><div class="pessoa-cargo">DO · Medical Director</div></div>
-      <div class="pessoa vidro" data-rv><img src="/c/youthtopia/fotos/kim.png" alt="Kim Murphy"><div class="pessoa-nome">Kim Murphy</div><div class="pessoa-cargo">PA · Injector</div></div>
-      <div class="pessoa vidro" data-rv><img src="/c/youthtopia/fotos/kendra.png" alt="Kendra Dixon"><div class="pessoa-nome">Kendra Dixon</div><div class="pessoa-cargo">RN · Injector</div></div>
-      <div class="pessoa vidro" data-rv><img src="/c/youthtopia/fotos/jen.png" alt="Jen Bogan"><div class="pessoa-nome">Jen Bogan</div><div class="pessoa-cargo">RN · Injector</div></div>
-      <div class="pessoa vidro" data-rv><img src="/c/youthtopia/fotos/julia.png" alt="Julia Weirbach"><div class="pessoa-nome">Julia Weirbach</div><div class="pessoa-cargo">NP · Wellness</div></div>
+    <div class="casa-grade" data-grupo>
+      <div class="pessoa vidro" data-revela><img src="/c/youthtopia/fotos/tracy-round.png" alt="Tracy Olson"><div class="pessoa-nome">Tracy Olson</div><div class="pessoa-cargo">Founder</div></div>
+      <div class="pessoa vidro" data-revela><img src="/c/youthtopia/fotos/mccabe.png" alt="Dr. Jessica McCabe"><div class="pessoa-nome">Jessica McCabe</div><div class="pessoa-cargo">DO · Medical Director</div></div>
+      <div class="pessoa vidro" data-revela><img src="/c/youthtopia/fotos/kim.png" alt="Kim Murphy"><div class="pessoa-nome">Kim Murphy</div><div class="pessoa-cargo">PA · Injector</div></div>
+      <div class="pessoa vidro" data-revela><img src="/c/youthtopia/fotos/kendra.png" alt="Kendra Dixon"><div class="pessoa-nome">Kendra Dixon</div><div class="pessoa-cargo">RN · Injector</div></div>
+      <div class="pessoa vidro" data-revela><img src="/c/youthtopia/fotos/jen.png" alt="Jen Bogan"><div class="pessoa-nome">Jen Bogan</div><div class="pessoa-cargo">RN · Injector</div></div>
+      <div class="pessoa vidro" data-revela><img src="/c/youthtopia/fotos/julia.png" alt="Julia Weirbach"><div class="pessoa-nome">Julia Weirbach</div><div class="pessoa-cargo">NP · Wellness</div></div>
     </div>
-    <div class="secao-cta" data-rv>
+    <div class="secao-cta" data-revela>
       <a class="pilula pilula-tinta" href="https://youthtopiamedspa.com/meet-the-team/">Meet the whole team</a>
       <span class="nota-suave">Eleven specialists. One standard.</span>
     </div>
@@ -1302,8 +1332,8 @@
 <section class="voz">
   <div class="orbe orbe-rosa"></div>
   <div class="env">
-    <figure class="voz-molde vidro" data-rv>
-      <div class="estrelas" aria-hidden="true">★★★★★</div>
+    <figure class="voz-molde vidro" data-revela>
+      <div class="estrelas" aria-hidden="true"><i style="--i:0">★</i><i style="--i:1">★</i><i style="--i:2">★</i><i style="--i:3">★</i><i style="--i:4">★</i></div>
       <blockquote>“Hands down one of the best experiences I've had. You can
         truly tell why this business has been around for 13 years.”</blockquote>
       <figcaption>Emily B. · Google review</figcaption>
@@ -1315,35 +1345,35 @@
 <section class="vitrine" id="vitrine">
   <div class="orbe orbe-ouro"></div>
   <div class="env">
-    <div class="cabeca" data-rv>
+    <div class="cabeca" data-revela>
       <span class="etiqueta">The shop</span>
       <h2>The ritual continues at home.</h2>
       <p>Medical-grade skincare, curated by our providers and delivered by
         the brands themselves.</p>
     </div>
-    <div class="vitrine-grade">
-      <a class="marca-tile vidro" href="https://alastin.com" data-rv>
+    <div class="vitrine-grade" data-grupo>
+      <a class="marca-tile vidro" href="https://alastin.com" data-revela>
         <div class="marca-tile-nome">Alastin<br>Skincare</div>
         <div class="marca-tile-nota">Pre &amp; post-procedure</div>
         <div class="marca-tile-seta">↗</div>
       </a>
-      <a class="marca-tile vidro" href="https://zoskinhealth.com" data-rv>
+      <a class="marca-tile vidro" href="https://zoskinhealth.com" data-revela>
         <div class="marca-tile-nome">ZO Skin<br>Health</div>
         <div class="marca-tile-nota">Daily protocols</div>
         <div class="marca-tile-seta">↗</div>
       </a>
-      <a class="marca-tile vidro" href="https://www.brilliantconnections.com" data-rv>
+      <a class="marca-tile vidro" href="https://www.brilliantconnections.com" data-revela>
         <div class="marca-tile-nome">SkinMedica</div>
         <div class="marca-tile-nota">Growth-factor science</div>
         <div class="marca-tile-seta">↗</div>
       </a>
-      <a class="marca-tile vidro" href="https://www.revisionskincare.com" data-rv>
+      <a class="marca-tile vidro" href="https://www.revisionskincare.com" data-revela>
         <div class="marca-tile-nome">Revision<br>Skincare</div>
         <div class="marca-tile-nota">Clinically proven</div>
         <div class="marca-tile-seta">↗</div>
       </a>
     </div>
-    <div class="secao-cta" data-rv>
+    <div class="secao-cta" data-revela>
       <a class="pilula pilula-tinta" href="https://youthtopiamedspa.com/giftcard">Gift cards</a>
       <span class="nota-suave">The easiest yes you'll ever give someone.</span>
     </div>
@@ -1355,11 +1385,11 @@
   <div class="orbe orbe-ouro"></div>
   <div class="orbe orbe-rosa"></div>
   <div class="env">
-    <div class="cabeca" data-rv>
+    <div class="cabeca" data-revela>
       <span class="etiqueta">Concierge</span>
       <h2>Come glow with us.</h2>
     </div>
-    <div class="mapa" data-rv>
+    <div class="mapa" data-revela>
       <iframe src="https://www.google.com/maps?q=33+Teasley+St+Suite+115,+Alpharetta,+GA+30009&z=16&output=embed"
         title="Map: 33 Teasley St, Suite 115, Alpharetta, GA" loading="eager"
         referrerpolicy="no-referrer-when-downgrade"></iframe>
@@ -1371,8 +1401,8 @@
         <a class="pilula pilula-ouro" href="https://maps.google.com/?q=33+Teasley+St+Ste+115,+Alpharetta,+GA+30009" target="_blank" rel="noreferrer">Directions</a>
       </div>
     </div>
-    <div class="concierge-grade">
-      <div class="painel vidro-escuro" data-rv>
+    <div class="concierge-grade" data-grupo>
+      <div class="painel vidro-escuro" data-revela>
         <h4>Visit</h4>
         <address>
           33 Teasley St, Suite 115<br>
@@ -1381,7 +1411,7 @@
         <div class="balao"><b>Front desk:</b> Questions about a treatment?
           Text us. A real person answers.</div>
       </div>
-      <div class="painel vidro-escuro" data-rv>
+      <div class="painel vidro-escuro" data-revela>
         <h4>Hours</h4>
         <table class="horas">
           <tr><td>Monday</td><td>10 – 5</td></tr>
@@ -1391,7 +1421,7 @@
           <tr><td>Sunday</td><td>Closed</td></tr>
         </table>
       </div>
-      <div class="painel vidro-escuro" data-rv>
+      <div class="painel vidro-escuro" data-revela>
         <h4>Talk to us</h4>
         <p class="fala">
           <a class="link-fino" href="tel:+17706370428">(770) 637-0428</a><br><br>
@@ -1616,17 +1646,42 @@
       var el = document.getElementById(id); if (el) obs.observe(el);
     });
   })();
-  // Reveal ao entrar na tela. Tudo começa visível: quem tira print da página
-  // inteira (o exportador) ou navega sem JS vê o layout completo do mesmo jeito.
+  // Entrada com o scroll: cada [data-revela] aparece uma vez; [data-grupo]
+  // escalona os filhos. O exportador e o auditor assentam tudo por CSS.
+  var reduzido = matchMedia("(prefers-reduced-motion: reduce)").matches;
   (function () {
-    if (!("IntersectionObserver" in window)) return;
-    var alvos = document.querySelectorAll("[data-rv]");
-    var obs = new IntersectionObserver(function (entradas) {
-      entradas.forEach(function (e) {
-        if (e.isIntersecting) { e.target.classList.add("rv-in"); obs.unobserve(e.target); }
-      });
-    }, { rootMargin: "0px 0px -8% 0px", threshold: 0.12 });
+    document.querySelectorAll("[data-grupo]").forEach(function (g) {
+      var base = +(g.dataset.base || 0);
+      Array.prototype.forEach.call(g.children, function (el, i) { el.setAttribute("data-revela", ""); el.style.setProperty("--atraso", (base + i * 80) + "ms"); });
+    });
+    var alvos = document.querySelectorAll("[data-revela]");
+    if (reduzido || !("IntersectionObserver" in window)) { alvos.forEach(function (el) { el.classList.add("visivel"); }); return; }
+    var obs = new IntersectionObserver(function (es) { es.forEach(function (e) { if (e.isIntersecting) { e.target.classList.add("visivel"); obs.unobserve(e.target); } }); }, { threshold: 0.12, rootMargin: "0px 0px -6% 0px" });
     alvos.forEach(function (el) { obs.observe(el); });
+  })();
+  // Os números do hero contam até o valor.
+  (function () {
+    var els = document.querySelectorAll("[data-conta]"); if (!els.length || reduzido) return;
+    els.forEach(function (el) {
+      var alvo = parseFloat(el.dataset.conta), dec = +(el.dataset.dec || 0), suf = el.dataset.suf || "", t0 = null, dur = 1400;
+      function passo(t) { if (!t0) t0 = t; var p = Math.min(1, (t - t0) / dur); p = 1 - Math.pow(1 - p, 3); el.textContent = (alvo * p).toFixed(dec) + suf; if (p < 1) requestAnimationFrame(passo); }
+      setTimeout(function () { requestAnimationFrame(passo); }, 700);
+    });
+  })();
+  // Luz que segue o cursor no vidro e no cartão.
+  (function () {
+    if (!matchMedia("(hover: hover) and (pointer: fine)").matches) return;
+    document.addEventListener("mousemove", function (e) {
+      var v = e.target.closest(".vidro, .vidro-escuro"); if (v) { var r = v.getBoundingClientRect(); v.style.setProperty("--mx", (e.clientX - r.left) + "px"); v.style.setProperty("--my", (e.clientY - r.top) + "px"); }
+    }, { passive: true });
+    var palco = document.querySelector(".cartao-palco"), cartao = document.querySelector(".cartao");
+    if (!palco || !cartao || reduzido || matchMedia("(max-width: 1100px)").matches) return;
+    palco.addEventListener("mousemove", function (e) {
+      var r = cartao.getBoundingClientRect(), x = (e.clientX - r.left) / r.width - 0.5, y = (e.clientY - r.top) / r.height - 0.5;
+      cartao.style.transition = "transform 0.15s ease"; cartao.style.transform = "rotateY(" + (x * 22).toFixed(1) + "deg) rotateX(" + (-y * 16).toFixed(1) + "deg)";
+      cartao.style.setProperty("--sx", ((x + 0.5) * 100).toFixed(1) + "%"); cartao.style.setProperty("--sy", ((y + 0.5) * 100).toFixed(1) + "%");
+    });
+    palco.addEventListener("mouseleave", function () { cartao.style.transition = ""; cartao.style.transform = ""; });
   })();
 </script>
 

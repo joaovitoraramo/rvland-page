@@ -6,712 +6,612 @@
 <title>Poolguys website concept</title>
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-<link href="https://fonts.googleapis.com/css2?family=Archivo:wght@500;600;700;800&family=IBM+Plex+Mono:wght@400;500;600&family=IBM+Plex+Sans:wght@400;500;600&display=swap" rel="stylesheet">
+<link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;500;600;700;800&family=IBM+Plex+Mono:wght@500;600&display=swap" rel="stylesheet">
+<script>document.documentElement.classList.add("js");</script>
 <style>
-  /* Paleta tirada do lugar, não de um moodboard: o céu lavado das 14h no
-     deserto, o azul da água na sombra da pedra, o azulejo turquesa da linha
-     d'água, o granito decomposto do paisagismo e a pedra dos matacões. */
+  /* Água do deserto, versão 2: vidro arredondado. A paleta continua a do
+     lugar (céu lavado das 14h, água na sombra do matacão, azulejo turquesa da
+     linha d'água, granito decomposto, sol). O que muda é a matéria: painéis
+     de vidro com cantos de 28 a 36px, pílulas, luz que segue o cursor, tudo
+     entrando em cena com o scroll, números que contam. Uma família só (Plus
+     Jakarta Sans); a mono fica onde há medição de verdade: ppm, pH, psi.
+     A assinatura segue a mesma: a área do cliente com as leituras de cada
+     visita, que nenhum concorrente da região oferece. */
   :root {
-    --agua-funda: #0A4A5C;
     --agua-noite: #06323E;
+    --agua-funda: #0A4A5C;
+    --agua-media: #0F6478;
     --turquesa: #2BB6C4;
-    --ceu: #EDF3F4;
-    --ceu-fundo: #F7FAFA;
+    --turquesa-texto: #0E6D78;   /* sobre claro: 5.5:1 no céu */
+    --ceu: #F1F7F8;
+    --ceu-2: #E4EFF1;
     --areia: #D9C3A5;
-    --pedra: #6B5B4E;
     --sol: #E8913A;
+    --sol-texto: #24160A;
     --tinta: #12262C;
-    --tinta-fraca: #5A7078;
-    --linha: #DCE6E7;
-
-    --display: "Archivo", system-ui, sans-serif;
-    --corpo: "IBM Plex Sans", system-ui, sans-serif;
-    --dados: "IBM Plex Mono", ui-monospace, monospace;
+    --tinta-2: #4B6067;          /* 6.4:1 no céu */
+    --marfim: #F3F9FA;
+    --marfim-2: rgba(243,249,250,0.80);
+    --linha: rgba(18,38,44,0.10);
+    --vidro: rgba(255,255,255,0.70);
+    --vidro-borda: rgba(18,38,44,0.08);
+    --vidro-escuro: rgba(6,50,62,0.62);
+    --vidro-escuro-borda: rgba(243,249,250,0.16);
+    --r: 24px;
+    --r-g: 32px;
+    --fonte: "Plus Jakarta Sans", "Helvetica Neue", Arial, sans-serif;
+    --mono: "IBM Plex Mono", ui-monospace, monospace;
+    --suave: cubic-bezier(.2,.7,.2,1);
   }
 
-  * { box-sizing: border-box; margin: 0; padding: 0; }
+  * { box-sizing: border-box; margin: 0; padding: 0; -webkit-tap-highlight-color: transparent; }
+  html { scroll-behavior: smooth; }
+  body { background: var(--ceu); color: var(--tinta); font-family: var(--fonte); font-size: 17px; line-height: 1.65; -webkit-font-smoothing: antialiased; overflow-x: hidden; }
+  a { color: inherit; text-decoration: none; }
+  img { display: block; max-width: 100%; }
+  button, input, select, textarea { font: inherit; color: inherit; }
+  .env { max-width: 1200px; margin: 0 auto; padding: 0 40px; }
+  :focus-visible { outline: 2px solid var(--turquesa); outline-offset: 3px; }
+  section[id] { scroll-margin-top: 96px; }
 
-  body {
-    background: var(--ceu-fundo);
-    color: var(--tinta);
-    font-family: var(--corpo);
-    font-size: 17px;
-    line-height: 1.6;
-    -webkit-font-smoothing: antialiased;
-  }
+  /* ── vidro e luz ─────────────────────────────────────────────────────── */
+  .vidro { position: relative; -webkit-backdrop-filter: blur(20px) saturate(140%); backdrop-filter: blur(20px) saturate(140%); background: var(--vidro); border: 1px solid var(--vidro-borda); box-shadow: 0 24px 50px -36px rgba(6,50,62,0.4), inset 0 1px 0 rgba(255,255,255,0.85); }
+  .vidro-escuro { position: relative; -webkit-backdrop-filter: blur(22px) saturate(140%); backdrop-filter: blur(22px) saturate(140%); background: var(--vidro-escuro); border: 1px solid var(--vidro-escuro-borda); box-shadow: 0 30px 60px -36px rgba(0,0,0,0.55), inset 0 1px 0 rgba(255,255,255,0.08); }
+  .vidro::before, .vidro-escuro::before { content: ""; position: absolute; inset: 0; border-radius: inherit; pointer-events: none; opacity: 0; transition: opacity 0.45s ease; background: radial-gradient(340px circle at var(--mx, 50%) var(--my, 50%), rgba(255,255,255,0.55), transparent 58%); }
+  .vidro-escuro::before { background: radial-gradient(340px circle at var(--mx, 50%) var(--my, 50%), rgba(43,182,196,0.18), transparent 58%); }
+  @media (hover: hover) { .vidro:hover::before, .vidro-escuro:hover::before { opacity: 1; } }
+  .escuro { background: var(--agua-noite); color: var(--marfim); }
+  /* luz de água: a caústica que a piscina joga no muro às 14h */
+  .caustica { position: absolute; inset: 0; z-index: 0; pointer-events: none; background: radial-gradient(700px 420px at 12% 0%, rgba(43,182,196,0.28), transparent 62%), radial-gradient(600px 380px at 92% 100%, rgba(43,182,196,0.16), transparent 60%); }
+  .caustica::after { content: ""; position: absolute; inset: -20%; background: radial-gradient(closest-side, rgba(43,182,196,0.18), transparent 70%); width: 60%; height: 60%; left: 50%; top: 10%; animation: onda 18s ease-in-out infinite alternate; }
+  @keyframes onda { from { transform: translate(-30%, 0) scale(1); } to { transform: translate(10%, 12%) scale(1.15); } }
+  section { position: relative; isolation: isolate; padding: 96px 0; overflow: hidden; }
+  section > .env { position: relative; z-index: 1; }
 
-  .env { max-width: 1180px; margin: 0 auto; padding: 0 40px; }
+  /* ── entrada com o scroll ───────────────────────────────────────────── */
+  .js [data-revela] { opacity: 0; transform: translateY(22px); transition: opacity 0.85s var(--suave), transform 0.85s var(--suave); transition-delay: var(--atraso, 0ms); }
+  .js [data-revela].visivel { opacity: 1; transform: none; }
 
-  /* ── barra ───────────────────────────────────────────────────────────── */
-  .barra {
-    background: var(--agua-noite);
-    color: #fff;
-    padding: 14px 0;
-  }
-  .barra .env { display: flex; align-items: center; gap: 28px; }
-  .marca {
-    font-family: var(--display);
-    font-weight: 800;
-    font-size: 22px;
-    letter-spacing: -0.02em;
-  }
-  .marca span { color: var(--turquesa); }
-  .barra-nota {
-    font-family: var(--dados);
-    font-size: 12px;
-    letter-spacing: 0.08em;
-    text-transform: uppercase;
-    color: rgba(255,255,255,0.55);
-  }
-  .barra-fone {
-    margin-left: auto;
-    font-family: var(--dados);
-    font-size: 15px;
-    font-weight: 500;
-    color: #fff;
-  }
-  .barra-cta {
-    background: var(--turquesa);
-    color: var(--agua-noite);
-    font-weight: 600;
-    font-size: 14px;
-    padding: 9px 18px;
-    border-radius: 3px;
-  }
+  /* ── tipografia ─────────────────────────────────────────────────────── */
+  h1, h2, h3 { font-weight: 700; letter-spacing: -0.02em; line-height: 1.08; color: var(--tinta); }
+  .escuro h2, .escuro h3 { color: var(--marfim); }
+  h2 { font-size: clamp(32px, 3.6vw, 46px); max-width: 20ch; text-wrap: balance; }
+  h3 { font-size: 22px; letter-spacing: -0.015em; }
+  .cabeca { margin-bottom: 40px; display: flex; align-items: flex-end; justify-content: space-between; gap: 32px; flex-wrap: wrap; }
+  .cabeca p { color: var(--tinta-2); font-size: 18px; max-width: 54ch; line-height: 1.6; }
+  .escuro .cabeca p { color: var(--marfim-2); }
+  .mono { font-family: var(--mono); font-variant-numeric: tabular-nums; }
 
-  /* ── hero ────────────────────────────────────────────────────────────── */
-  .hero {
-    background:
-      radial-gradient(1100px 500px at 15% -10%, rgba(43,182,196,0.16), transparent 60%),
-      linear-gradient(168deg, var(--agua-funda) 0%, var(--agua-noite) 100%);
-    color: #fff;
-    padding: 92px 0 100px;
-    position: relative;
-    overflow: hidden;
-  }
-  /* linha d'água: a faixa de azulejo turquesa que toda piscina daqui tem */
-  .hero::after {
-    content: "";
-    position: absolute;
-    left: 0; right: 0; bottom: 0;
-    height: 10px;
-    background: repeating-linear-gradient(90deg,
-      var(--turquesa) 0 26px, rgba(43,182,196,0.55) 26px 28px);
-  }
-  .hero .env {
-    display: grid;
-    grid-template-columns: 1.05fr 0.95fr;
-    gap: 72px;
-    align-items: center;
-  }
+  /* ── botões ──────────────────────────────────────────────────────────── */
+  .btn { display: inline-flex; align-items: center; justify-content: center; gap: 10px; border-radius: 999px; font-weight: 700; font-size: 15px; padding: 15px 26px; white-space: nowrap; border: 0; cursor: pointer; transition: transform 0.25s var(--suave), box-shadow 0.25s ease, background 0.2s ease; }
+  .btn:hover { transform: translateY(-2px); }
+  .btn-turquesa { background: var(--turquesa); color: var(--agua-noite); box-shadow: 0 14px 28px -14px rgba(43,182,196,0.8); }
+  .btn-turquesa:hover { background: #3AC4D2; }
+  .btn-noite { background: var(--agua-noite); color: var(--marfim); }
+  .btn-noite:hover { background: var(--agua-funda); }
+  .btn-claro { background: rgba(18,38,44,0.06); color: var(--tinta); border: 1px solid rgba(18,38,44,0.14); }
+  .btn-claro:hover { background: rgba(18,38,44,0.10); }
+  .btn-vidro { color: var(--marfim); background: rgba(243,249,250,0.10); border: 1px solid rgba(243,249,250,0.32); }
+  .btn-vidro:hover { background: rgba(243,249,250,0.18); }
+  .btn-sol { background: var(--sol); color: var(--sol-texto); box-shadow: 0 14px 28px -14px rgba(232,145,58,0.8); }
+  .btn-sol:hover { background: #F09C48; }
 
-  .sobrancelha {
-    font-family: var(--dados);
-    font-size: 12px;
-    letter-spacing: 0.16em;
-    text-transform: uppercase;
-    color: var(--turquesa);
-    margin-bottom: 22px;
-  }
-  .titulo {
-    font-family: var(--display);
-    font-weight: 800;
-    font-size: 58px;
-    line-height: 1.04;
-    letter-spacing: -0.032em;
-    margin-bottom: 22px;
-  }
-  .titulo em { font-style: normal; color: var(--turquesa); }
-  .subtitulo {
-    font-size: 19px;
-    line-height: 1.55;
-    color: rgba(255,255,255,0.76);
-    max-width: 30em;
-    margin-bottom: 34px;
-  }
-  .acoes { display: flex; align-items: center; gap: 18px; flex-wrap: wrap; }
-  .botao {
-    background: var(--turquesa);
-    color: var(--agua-noite);
-    font-family: var(--corpo);
-    font-weight: 600;
-    font-size: 16px;
-    padding: 15px 28px;
-    border-radius: 3px;
-    display: inline-block;
-  }
-  .botao-fone {
-    font-family: var(--dados);
-    font-size: 16px;
-    color: #fff;
-    border-bottom: 1px solid rgba(255,255,255,0.35);
-    padding-bottom: 2px;
-  }
-  .hero-cidades {
-    margin-top: 30px;
-    font-family: var(--dados);
-    font-size: 12.5px;
-    letter-spacing: 0.06em;
-    color: rgba(255,255,255,0.5);
-  }
+  /* ── nav: pílula de vidro flutuante ─────────────────────────────────── */
+  .nav-wrap { position: sticky; top: 12px; z-index: 40; padding: 0 20px; }
+  .nav-barra { max-width: 1200px; margin: 0 auto; height: 70px; border-radius: 999px; display: flex; align-items: center; gap: 4px; padding: 0 10px 0 24px; background: rgba(255,255,255,0.58); -webkit-backdrop-filter: blur(24px) saturate(160%); backdrop-filter: blur(24px) saturate(160%); border: 1px solid rgba(255,255,255,0.85); box-shadow: 0 14px 40px -18px rgba(6,50,62,0.35), inset 0 1px 0 rgba(255,255,255,0.95); transition: background 0.35s ease, box-shadow 0.35s ease; }
+  body.rolou .nav-barra { background: rgba(255,255,255,0.84); box-shadow: 0 18px 50px -18px rgba(6,50,62,0.45), inset 0 1px 0 #fff; }
+  .marca { font-weight: 800; font-size: 21px; letter-spacing: -0.03em; color: var(--tinta); margin-right: 14px; white-space: nowrap; }
+  .marca span { color: var(--turquesa-texto); }
+  .marca small { display: block; font-weight: 600; font-size: 12.5px; letter-spacing: 0; color: var(--tinta-2); margin-top: -3px; }
+  .nav-links { display: flex; gap: 2px; }
+  .nav-links a { font-weight: 600; font-size: 15px; color: var(--tinta); padding: 10px 14px; border-radius: 999px; transition: background 0.2s ease; }
+  .nav-links a:hover { background: rgba(18,38,44,0.07); }
+  .nav-fone { margin-left: auto; font-weight: 700; font-size: 15px; color: var(--tinta); white-space: nowrap; padding: 0 10px; }
+  .nav-barra .btn { padding: 12px 20px; font-size: 14px; margin-left: 6px; }
+  .nav-burger { display: none; }
+  .menu-cel { display: none; }
 
-  /* ── assinatura: a área do cliente ───────────────────────────────────── */
-  /* Não é mais o comprovante de papel: é o produto. O dono do imóvel entra e
-     vê o histórico inteiro, e nenhum concorrente da região oferece isso. */
-  .portal {
-    background: #fff;
-    border-radius: 12px;
-    box-shadow: 0 30px 70px rgba(3,26,33,0.42);
-    overflow: hidden;
-    border: 1px solid rgba(255,255,255,0.14);
-  }
-  .portal-barra {
-    background: #F1F5F6;
-    border-bottom: 1px solid var(--linha);
-    padding: 12px 18px;
-    display: flex; align-items: center; gap: 10px;
-  }
-  .portal-marca {
-    font-family: var(--display);
-    font-weight: 700; font-size: 13px;
-    letter-spacing: -0.01em; color: var(--tinta);
-  }
-  .portal-marca span { color: var(--tinta-fraca); font-weight: 500; }
-  .portal-user {
-    margin-left: auto;
-    display: flex; align-items: center; gap: 7px;
-    font-size: 12.5px; color: var(--tinta-fraca);
-  }
-  .portal-avatar {
-    width: 24px; height: 24px; border-radius: 50%;
-    background: var(--agua-funda); color: #fff;
-    display: grid; place-items: center;
-    font-family: var(--display); font-size: 11px; font-weight: 700;
-  }
+  /* ── hero: o inimigo contra a área do cliente ───────────────────────── */
+  .hero { padding: 72px 0 96px; color: var(--marfim); background: linear-gradient(170deg, var(--agua-funda) 0%, var(--agua-noite) 70%); }
+  .hero::after { content: ""; position: absolute; left: 0; right: 0; bottom: 0; height: 8px; z-index: 1; background: repeating-linear-gradient(90deg, var(--turquesa) 0 26px, rgba(43,182,196,0.45) 26px 28px); opacity: 0.9; }
+  .hero .env { display: grid; grid-template-columns: minmax(0, 1.05fr) minmax(0, 0.95fr); gap: 64px; align-items: center; }
+  .hero h1 { font-size: clamp(38px, 4.4vw, 58px); font-weight: 800; letter-spacing: -0.03em; line-height: 1.04; color: var(--marfim); max-width: 16ch; text-wrap: balance; }
+  .hero h1 b { color: var(--turquesa); font-weight: 800; }
+  .hero-sub { margin-top: 22px; font-size: 18.5px; line-height: 1.6; color: var(--marfim-2); max-width: 48ch; }
+  .hero-ctas { margin-top: 30px; display: flex; gap: 12px; flex-wrap: wrap; align-items: center; }
+  .hero-nota { margin-top: 22px; display: flex; flex-wrap: wrap; gap: 8px; }
+  .hero-nota span { border-radius: 999px; padding: 7px 13px; font-size: 13px; font-weight: 600; color: var(--marfim); background: rgba(243,249,250,0.08); border: 1px solid rgba(243,249,250,0.18); }
+
+  /* a área do cliente: vidro escuro, leituras que contam, histórico que entra */
+  .portal-palco { perspective: 1400px; }
+  .portal { border-radius: var(--r-g); overflow: hidden; transform-style: preserve-3d; transition: transform 0.6s var(--suave); animation: flutua 7s ease-in-out infinite alternate; }
+  @keyframes flutua { from { transform: translateY(0); } to { transform: translateY(-8px); } }
+  .portal-topo { display: flex; align-items: center; gap: 10px; padding: 14px 20px; border-bottom: 1px solid rgba(243,249,250,0.12); font-size: 13.5px; font-weight: 700; color: var(--marfim-2); }
+  .portal-topo b { color: var(--marfim); font-weight: 800; }
+  .portal-topo b span { color: var(--turquesa); }
+  .portal-user { margin-left: auto; display: inline-flex; align-items: center; gap: 8px; font-weight: 600; }
+  .portal-avatar { width: 26px; height: 26px; border-radius: 50%; background: var(--turquesa); color: var(--agua-noite); display: inline-grid; place-items: center; font-size: 12.5px; font-weight: 800; }
   .portal-corpo { padding: 20px 22px 22px; }
-  .portal-imovel {
-    font-family: var(--display);
-    font-weight: 700; font-size: 17px;
-    letter-spacing: -0.02em; color: var(--tinta);
-    margin-bottom: 2px;
-  }
-  .portal-visita {
-    font-family: var(--dados);
-    font-size: 11.5px; letter-spacing: 0.06em;
-    text-transform: uppercase; color: var(--tinta-fraca);
-    margin-bottom: 16px;
-  }
-  .portal-numeros {
-    display: grid; grid-template-columns: repeat(3, 1fr);
-    gap: 8px; margin-bottom: 14px;
-  }
-  .metrica {
-    background: #F7FAFA;
-    border: 1px solid var(--linha);
-    border-radius: 8px;
-    padding: 10px 12px;
-  }
-  .metrica-rot {
-    font-family: var(--dados); font-size: 10px;
-    letter-spacing: 0.08em; text-transform: uppercase;
-    color: var(--tinta-fraca);
-  }
-  .metrica-val {
-    font-family: var(--dados); font-weight: 600;
-    font-size: 16px; color: var(--tinta); margin-top: 3px;
-  }
-  .portal-feito {
-    font-size: 13.5px; line-height: 1.5;
-    color: var(--tinta-fraca);
-    padding-bottom: 16px;
-    border-bottom: 1px solid var(--linha);
-  }
-  .portal-hist-rot {
-    font-family: var(--dados); font-size: 10.5px;
-    letter-spacing: 0.1em; text-transform: uppercase;
-    color: var(--tinta-fraca); margin: 14px 0 6px;
-  }
-  .hist {
-    display: flex; align-items: center; gap: 10px;
-    padding: 8px 0; border-bottom: 1px solid #EEF3F4;
-    font-size: 13.5px;
-  }
+  .portal-imovel { font-weight: 800; font-size: 18px; letter-spacing: -0.01em; color: var(--marfim); }
+  .portal-visita { font-size: 13.5px; color: var(--marfim-2); margin: 2px 0 16px; }
+  .portal-numeros { display: grid; grid-template-columns: repeat(3, 1fr); gap: 8px; margin-bottom: 14px; }
+  .metrica { border-radius: 16px; padding: 12px 14px; background: rgba(243,249,250,0.07); border: 1px solid rgba(243,249,250,0.12); }
+  .metrica-rot { font-size: 12.5px; font-weight: 600; color: var(--marfim-2); }
+  .metrica-val { font-family: var(--mono); font-weight: 600; font-size: 17px; color: var(--marfim); margin-top: 3px; font-variant-numeric: tabular-nums; }
+  .metrica-val small { font-size: 12.5px; color: var(--marfim-2); margin-left: 3px; }
+  .portal-feito { font-size: 14px; line-height: 1.5; color: var(--marfim-2); padding-bottom: 14px; border-bottom: 1px solid rgba(243,249,250,0.12); }
+  .portal-hist-rot { font-size: 12.5px; font-weight: 700; color: var(--marfim-2); margin: 14px 0 6px; }
+  .hist { display: flex; align-items: center; gap: 10px; padding: 8px 0; border-bottom: 1px solid rgba(243,249,250,0.08); font-size: 14px; }
   .hist:last-of-type { border-bottom: 0; }
-  .hist-data {
-    font-family: var(--dados); font-size: 12px;
-    color: var(--tinta-fraca); width: 52px; flex-shrink: 0;
-  }
-  .hist-txt { color: var(--tinta); flex: 1; }
-  .ponto {
-    width: 7px; height: 7px; border-radius: 50%;
-    flex-shrink: 0; background: var(--turquesa);
-  }
-  .ponto-aviso { background: var(--sol); }
-  .portal-prox {
-    margin-top: 14px; padding-top: 13px;
-    border-top: 1px solid var(--linha);
-    display: flex; align-items: center; justify-content: space-between;
-    font-family: var(--dados); font-size: 11.5px;
-    letter-spacing: 0.04em; text-transform: uppercase;
-    color: var(--tinta-fraca);
-  }
-  .portal-prox strong { color: var(--agua-funda); font-weight: 600; }
+  .hist-data { font-family: var(--mono); font-size: 12.5px; color: var(--marfim-2); width: 56px; flex: none; }
+  .hist-txt { color: var(--marfim); flex: 1; }
+  .ponto { width: 8px; height: 8px; border-radius: 50%; flex: none; background: var(--turquesa); box-shadow: 0 0 0 3px rgba(43,182,196,0.18); }
+  .ponto-aviso { background: var(--sol); box-shadow: 0 0 0 3px rgba(232,145,58,0.2); }
+  .portal-prox { margin-top: 14px; padding: 12px 16px; border-radius: 16px; background: rgba(43,182,196,0.12); border: 1px solid rgba(43,182,196,0.3); display: flex; align-items: center; justify-content: space-between; font-size: 14px; color: var(--marfim); }
+  .portal-prox b { font-weight: 800; color: #6ADBE6; display: inline-flex; align-items: center; gap: 8px; }
+  .portal-prox b i { width: 8px; height: 8px; border-radius: 50%; background: var(--turquesa); animation: pulsa 2s ease-out infinite; }
+  @keyframes pulsa { 0% { box-shadow: 0 0 0 0 rgba(43,182,196,0.6); } 100% { box-shadow: 0 0 0 10px rgba(43,182,196,0); } }
 
-  /* ── faixa de fatos ──────────────────────────────────────────────────── */
-  .fatos { background: var(--agua-noite); padding: 26px 0; }
-  .fatos .env {
-    display: grid;
-    grid-template-columns: repeat(4, 1fr);
-    gap: 28px;
-  }
-  .fato-num {
-    font-family: var(--display);
-    font-weight: 700;
-    font-size: 28px;
-    color: var(--turquesa);
-    letter-spacing: -0.02em;
-  }
-  .fato-rot {
-    font-family: var(--dados);
-    font-size: 11.5px;
-    letter-spacing: 0.1em;
-    text-transform: uppercase;
-    color: rgba(255,255,255,0.5);
-    margin-top: 4px;
-  }
+  /* ── fatos: vidro claro, números que contam ─────────────────────────── */
+  .fatos { padding: 24px 0 72px; }
+  .fatos-linha { border-radius: var(--r-g); padding: 26px 32px; display: grid; grid-template-columns: repeat(4, 1fr); gap: 24px; }
+  .fato b { display: block; font-size: 32px; font-weight: 800; letter-spacing: -0.03em; line-height: 1; color: var(--tinta); font-variant-numeric: tabular-nums; }
+  .fato span { display: block; font-size: 14px; color: var(--tinta-2); margin-top: 6px; line-height: 1.4; }
 
-  /* ── seções ──────────────────────────────────────────────────────────── */
-  .secao { padding: 86px 0; }
-  .secao-clara { background: #fff; }
-  .cabeca { max-width: 46em; margin-bottom: 44px; }
-  .cabeca h2 {
-    font-family: var(--display);
-    font-weight: 700;
-    font-size: 36px;
-    line-height: 1.15;
-    letter-spacing: -0.028em;
-    margin-bottom: 12px;
-  }
-  .cabeca p { color: var(--tinta-fraca); font-size: 18px; }
+  /* ── serviços ────────────────────────────────────────────────────────── */
+  .servicos { display: grid; grid-template-columns: repeat(3, 1fr); gap: 16px; }
+  .servico { border-radius: var(--r-g); padding: 30px 28px 30px; display: flex; flex-direction: column; transition: transform 0.35s var(--suave); }
+  .servico:hover { transform: translateY(-4px); }
+  .servico-ico { width: 46px; height: 46px; border-radius: 14px; display: inline-flex; align-items: center; justify-content: center; background: var(--agua-noite); color: var(--turquesa); margin-bottom: 18px; }
+  .servico-ico svg { width: 22px; height: 22px; }
+  .servico h3 { margin-bottom: 8px; }
+  .servico p { color: var(--tinta-2); font-size: 15.5px; margin-bottom: 16px; }
+  .servico ul { list-style: none; display: grid; gap: 8px; margin-top: auto; }
+  .servico li { display: flex; gap: 10px; align-items: flex-start; font-size: 15px; }
+  .servico li::before { content: ""; width: 8px; height: 8px; border-radius: 50%; background: var(--turquesa); flex: none; margin-top: 9px; }
 
-  .servicos { display: grid; grid-template-columns: repeat(3, 1fr); gap: 24px; }
-  .servico {
-    border: 1px solid var(--linha);
-    border-top: 3px solid var(--agua-funda);
-    border-radius: 3px;
-    padding: 30px 28px 32px;
-    background: #fff;
-  }
-  .servico h3 {
-    font-family: var(--display);
-    font-weight: 700;
-    font-size: 21px;
-    letter-spacing: -0.02em;
-    margin-bottom: 10px;
-  }
-  .servico p { color: var(--tinta-fraca); font-size: 16px; margin-bottom: 18px; }
-  .servico ul { list-style: none; }
-  .servico li {
-    font-size: 15px;
-    color: var(--tinta);
-    padding: 7px 0 7px 20px;
-    position: relative;
-    border-top: 1px solid var(--linha);
-  }
-  .servico li::before {
-    content: "";
-    position: absolute;
-    left: 0; top: 15px;
-    width: 8px; height: 8px;
-    background: var(--turquesa);
-    border-radius: 1px;
-  }
+  /* ── piscinas ────────────────────────────────────────────────────────── */
+  .galeria { display: grid; grid-template-columns: 1.4fr 1fr 1fr; grid-template-rows: 250px 250px; gap: 14px; }
+  .galeria figure { position: relative; border-radius: var(--r); overflow: hidden; background: var(--agua-funda); }
+  .galeria .g-a { grid-row: 1 / 3; border-radius: var(--r-g); }
+  .galeria img { width: 100%; height: 100%; object-fit: cover; transition: transform 1.4s var(--suave); }
+  .galeria figure:hover img { transform: scale(1.05); }
+  .galeria figcaption { position: absolute; left: 14px; bottom: 14px; border-radius: 999px; padding: 8px 14px; font-size: 13px; font-weight: 700; color: var(--tinta); }
+  .galeria-nota { margin-top: 16px; font-size: 14px; color: var(--tinta-2); }
 
-  /* ── trabalhos ───────────────────────────────────────────────────────── */
-  .galeria { display: grid; grid-template-columns: repeat(3, 1fr); gap: 16px; }
-  /* as fotos do site atual trazem o slogan antigo queimado no canto direito;
-     a moldura mostra só o trecho limpo, e a imagem entra maior para nao borrar */
-  .foto {
-    position: relative;
-    height: 168px;
-    overflow: hidden;
-    border-radius: 3px;
-    background: var(--agua-funda);
-  }
-  .foto img {
-    position: absolute;
-    /* -52px pula a moldura arredondada que veio queimada no banner original */
-    left: -52px;
-    top: 50%;
-    height: 155%;
-    width: auto;
-    max-width: none;
-    transform: translateY(-50%);
-    display: block;
-  }
-  .galeria-nota {
-    margin-top: 16px;
-    font-family: var(--dados);
-    font-size: 12px;
-    color: var(--tinta-fraca);
-  }
+  /* ── rotas sobre o mapa ──────────────────────────────────────────────── */
+  .rotas { position: relative; border-radius: var(--r-g); overflow: hidden; min-height: 520px; display: grid; grid-template-columns: minmax(0, 0.95fr) minmax(0, 1.05fr); border: 1px solid var(--linha); background: var(--ceu-2); box-shadow: 0 30px 60px -40px rgba(6,50,62,0.45); }
+  .rotas iframe { position: absolute; inset: 0; width: 100%; height: 100%; border: 0; filter: grayscale(1) contrast(0.9) brightness(1.05); }
+  .rotas::after { content: ""; position: absolute; inset: 0; pointer-events: none; background: linear-gradient(90deg, rgba(241,247,248,0.92) 0%, rgba(241,247,248,0.7) 42%, rgba(241,247,248,0) 70%); }
+  .rotas-painel { position: relative; z-index: 2; padding: 40px 36px; display: flex; flex-direction: column; justify-content: center; background: linear-gradient(90deg, rgba(241,247,248,0.98) 70%, rgba(241,247,248,0.6)); }
+  .rotas-painel h2 { margin-bottom: 10px; }
+  .rotas-painel > p { color: var(--tinta-2); font-size: 16.5px; max-width: 40ch; }
+  .cidades { margin-top: 24px; display: grid; gap: 8px; }
+  .cidade { border-radius: 18px; padding: 14px 18px; display: flex; align-items: center; gap: 14px; transition: transform 0.3s var(--suave); }
+  .cidade:hover { transform: translateX(4px); }
+  .cidade b { font-size: 18px; font-weight: 800; letter-spacing: -0.01em; }
+  .cidade .dias { margin-left: auto; display: flex; gap: 5px; }
+  .dia { border-radius: 999px; padding: 5px 10px; font-size: 12.5px; font-weight: 700; color: var(--turquesa-texto); background: rgba(43,182,196,0.14); }
+  .rotas-nota { margin-top: 16px; font-size: 14px; color: var(--tinta-2); }
+  .rotas-mapa-tag { position: absolute; z-index: 2; right: 18px; bottom: 18px; border-radius: 999px; padding: 9px 14px; font-size: 13px; font-weight: 700; color: var(--tinta); }
 
-  /* ── áreas ───────────────────────────────────────────────────────────── */
-  .areas { display: grid; grid-template-columns: 1fr 1fr; gap: 60px; align-items: center; }
-  .cidades { display: grid; gap: 2px; }
-  .cidade {
-    display: flex;
-    align-items: baseline;
-    gap: 16px;
-    padding: 15px 0;
-    border-bottom: 1px solid var(--linha);
-  }
-  .cidade-nome {
-    font-family: var(--display);
-    font-weight: 600;
-    font-size: 22px;
-    letter-spacing: -0.02em;
-  }
-  .cidade-nota {
-    margin-left: auto;
-    font-family: var(--dados);
-    font-size: 12.5px;
-    color: var(--tinta-fraca);
-  }
+  /* ── a área do cliente explicada (escuro) ───────────────────────────── */
+  .passos { display: grid; grid-template-columns: repeat(3, 1fr); gap: 16px; }
+  .passo { border-radius: var(--r-g); padding: 28px 26px; }
+  .passo-ico { width: 44px; height: 44px; border-radius: 14px; display: inline-flex; align-items: center; justify-content: center; background: rgba(43,182,196,0.16); color: var(--turquesa); margin-bottom: 16px; }
+  .passo-ico svg { width: 22px; height: 22px; }
+  .passo h3 { font-size: 20px; margin-bottom: 8px; }
+  .passo p { color: var(--marfim-2); font-size: 15.5px; }
+  .passo .mono { color: var(--turquesa); font-size: 14px; display: inline-block; margin-top: 12px; }
+  .passos-cta { margin-top: 30px; display: flex; align-items: center; gap: 18px; flex-wrap: wrap; }
+  .passos-cta span { font-size: 15px; color: var(--marfim-2); }
 
-  /* ── pedido ──────────────────────────────────────────────────────────── */
-  .pedido {
-    background: var(--agua-funda);
-    color: #fff;
-    padding: 78px 0;
-  }
-  .pedido .env { display: grid; grid-template-columns: 1fr 1fr; gap: 64px; align-items: start; }
-  .pedido h2 {
-    font-family: var(--display);
-    font-weight: 700;
-    font-size: 36px;
-    line-height: 1.15;
-    letter-spacing: -0.028em;
-    margin-bottom: 14px;
-  }
-  .pedido p { color: rgba(255,255,255,0.75); font-size: 17px; margin-bottom: 22px; }
-  .pedido ul { list-style: none; }
-  .pedido li {
-    font-size: 15.5px;
-    color: rgba(255,255,255,0.82);
-    padding: 9px 0 9px 26px;
-    position: relative;
-  }
-  .pedido li::before {
-    content: "→";
-    position: absolute;
-    left: 0;
-    color: var(--turquesa);
-  }
-  .form { background: #fff; border-radius: 4px; padding: 30px; }
-  .campo { margin-bottom: 16px; }
-  .campo label {
-    display: block;
-    font-family: var(--dados);
-    font-size: 11.5px;
-    letter-spacing: 0.1em;
-    text-transform: uppercase;
-    color: var(--tinta-fraca);
-    margin-bottom: 7px;
-  }
-  .campo .caixa {
-    border: 1px solid var(--linha);
-    border-radius: 3px;
-    padding: 13px 14px;
-    font-size: 16px;
-    color: #9CAFB4;
-    background: #FCFDFD;
-  }
-  .form-linha { display: grid; grid-template-columns: 1fr 1fr; gap: 14px; }
-  .form-botao {
-    background: var(--sol);
-    color: #24160A;
-    font-weight: 600;
-    font-size: 16px;
-    text-align: center;
-    padding: 15px;
-    border-radius: 3px;
-    margin-top: 6px;
-  }
-  .form-nota {
-    margin-top: 14px;
-    font-size: 13.5px;
-    color: var(--tinta-fraca);
-    text-align: center;
-  }
+  /* ── pedido de orçamento ────────────────────────────────────────────── */
+  .pedido-grade { display: grid; grid-template-columns: minmax(0, 1fr) minmax(0, 1fr); gap: 40px; align-items: start; }
+  .motivos { list-style: none; margin-top: 22px; display: grid; gap: 10px; }
+  .motivos li { display: flex; gap: 12px; align-items: flex-start; font-size: 16px; }
+  .motivos li::before { content: ""; width: 22px; height: 22px; border-radius: 50%; flex: none; margin-top: 1px; background: rgba(43,182,196,0.16) url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24' fill='none' stroke='%230E6D78' stroke-width='3' stroke-linecap='round' stroke-linejoin='round'%3E%3Cpath d='M5 12l5 5L20 7'/%3E%3C/svg%3E") center / 12px no-repeat; }
+  .form { border-radius: var(--r-g); padding: 30px; }
+  .campo { margin-bottom: 14px; }
+  .campo label { display: block; font-size: 13.5px; font-weight: 700; color: var(--tinta); margin-bottom: 6px; }
+  .campo input, .campo select { width: 100%; border-radius: 14px; border: 1px solid rgba(18,38,44,0.14); background: rgba(255,255,255,0.75); padding: 13px 14px; font-size: 16px; color: var(--tinta); outline: none; transition: border-color 0.2s ease, box-shadow 0.2s ease; }
+  .campo input::placeholder { color: #7F959B; }
+  .campo input:focus, .campo select:focus { border-color: var(--turquesa); box-shadow: 0 0 0 4px rgba(43,182,196,0.18); }
+  .form-linha { display: grid; grid-template-columns: 1fr 1fr; gap: 12px; }
+  .form .btn { width: 100%; margin-top: 6px; }
+  .form-nota { margin-top: 12px; font-size: 13.5px; color: var(--tinta-2); text-align: center; }
+  .form-ok { display: none; text-align: center; padding: 30px 10px; }
+  .form-ok b { display: block; font-size: 22px; font-weight: 800; margin: 12px 0 6px; }
+  .form-ok p { color: var(--tinta-2); font-size: 15.5px; }
+  .form-ok svg { width: 56px; height: 56px; color: var(--turquesa-texto); margin: 0 auto; }
+  .form.enviado .form-campos { display: none; } .form.enviado .form-ok { display: block; }
 
   /* ── rodapé ──────────────────────────────────────────────────────────── */
-  .rodape { background: var(--agua-noite); color: rgba(255,255,255,0.6); padding: 40px 0; }
-  .rodape .env { display: flex; align-items: center; gap: 24px; flex-wrap: wrap; }
-  .rodape-fone {
-    margin-left: auto;
-    font-family: var(--dados);
-    font-size: 15px;
-    color: #fff;
+  .rodape { background: var(--agua-noite); color: var(--marfim-2); padding: 48px 0 28px; }
+  .rodape-grade { display: grid; grid-template-columns: 1.4fr 1fr 1fr; gap: 28px; padding-bottom: 28px; border-bottom: 1px solid rgba(243,249,250,0.12); }
+  .rodape .marca { color: var(--marfim); }
+  .rodape .marca span { color: var(--turquesa); }
+  .rodape .marca small { color: var(--marfim-2); }
+  .rodape p { font-size: 14.5px; max-width: 34ch; line-height: 1.55; margin-top: 10px; }
+  .rodape h5 { font-size: 13.5px; font-weight: 800; color: var(--marfim); margin-bottom: 10px; }
+  .rodape ul { list-style: none; display: grid; gap: 6px; }
+  .rodape li a, .rodape li { font-size: 14.5px; color: var(--marfim-2); }
+  .rodape li a:hover { color: var(--marfim); }
+  .marcas { display: flex; flex-wrap: wrap; gap: 6px; margin-top: 4px; }
+  .marcas span { border-radius: 999px; padding: 6px 12px; font-size: 13px; font-weight: 600; color: var(--marfim); border: 1px solid rgba(243,249,250,0.18); }
+  .rodape-fim { display: flex; justify-content: space-between; gap: 20px; flex-wrap: wrap; padding-top: 20px; font-size: 13.5px; }
+
+  /* ── dock (celular) ─────────────────────────────────────────────────── */
+  .dock { display: none; }
+  @media (max-width: 1100px) {
+    .dock { display: flex; position: fixed; left: 14px; right: 14px; bottom: 14px; z-index: 35; padding: 6px; border-radius: 999px; -webkit-backdrop-filter: blur(22px) saturate(140%); backdrop-filter: blur(22px) saturate(140%); background: rgba(6,50,62,0.9); border: 1px solid rgba(43,182,196,0.24); box-shadow: 0 24px 50px -20px rgba(0,0,0,0.6); }
+    .dock a { flex: 1; text-align: center; white-space: nowrap; font-size: 12.5px; font-weight: 700; color: var(--marfim-2); padding: 12px 4px; border-radius: 999px; transition: background 0.25s ease, color 0.25s ease; }
+    .dock a.ativo { background: rgba(43,182,196,0.18); color: var(--turquesa); }
+    body { padding-bottom: 88px; }
   }
 
-  @media (max-width: 900px) {
-    .hero .env, .areas, .pedido .env { grid-template-columns: 1fr; gap: 44px; }
-    .servicos, .galeria { grid-template-columns: 1fr; }
-    .fatos .env { grid-template-columns: 1fr 1fr; gap: 20px; }
-    .titulo { font-size: 40px; }
-    .env { padding: 0 24px; }
+  @media (prefers-reduced-motion: reduce) {
+    .js [data-revela] { opacity: 1; transform: none; transition: none; }
+    .portal, .caustica::after, .portal-prox b i { animation: none; }
+    .btn:hover, .servico:hover, .cidade:hover { transform: none; }
   }
 
-  @media (max-width: 620px) {
-    /* a barra vira marca + telefone: o texto de apoio e o botão viravam
-       quatro linhas empilhadas e o CTA vazava da tela. O hero logo abaixo
-       já carrega a chamada. */
-    .barra-nota, .barra-cta { display: none; }
-    .barra .env { gap: 16px; }
-    .barra-fone { font-size: 14px; white-space: nowrap; }
+  /* ── responsivo ─────────────────────────────────────────────────────── */
+  @media (max-width: 1100px) {
+    .nav-links, .nav-fone { display: none; }
+    .nav-burger { display: inline-flex; align-items: center; gap: 8px; margin-left: auto; background: none; border: 1px solid rgba(18,38,44,0.14); border-radius: 999px; padding: 10px 16px; font-weight: 700; font-size: 14px; cursor: pointer; }
+    .nav-burger svg { width: 18px; height: 18px; }
+    .menu-cel[data-aberto="true"] { display: block; position: fixed; inset: 0; z-index: 60; overflow-y: auto; background: rgba(241,247,248,0.97); -webkit-backdrop-filter: blur(20px); backdrop-filter: blur(20px); padding: 0 20px 40px; animation: entra 0.3s var(--suave) both; }
+    @keyframes entra { from { opacity: 0; transform: translateY(12px); } to { opacity: 1; transform: none; } }
+    .menu-cel-topo { position: sticky; top: 0; z-index: 2; display: flex; align-items: center; justify-content: space-between; padding: 16px 0; background: rgba(241,247,248,0.97); border-bottom: 1px solid var(--linha); margin-bottom: 8px; }
+    .menu-cel-topo .btn { padding: 10px 18px; font-size: 14px; }
+    .menu-cel ul { list-style: none; }
+    .menu-cel li a { display: flex; justify-content: space-between; align-items: center; padding: 18px 12px; margin: 0 -8px; border-radius: 16px; font-size: 20px; font-weight: 800; color: var(--tinta); border-bottom: 1px solid var(--linha); }
+    .menu-cel li a small { font-size: 13px; font-weight: 600; color: var(--tinta-2); }
+    .menu-cel li a:active { background: rgba(18,38,44,0.06); }
+    .menu-cel[data-aberto="true"] li, .menu-cel[data-aberto="true"] > .btn { opacity: 0; transform: translateY(14px); animation: menu-entra 0.55s var(--suave) forwards; animation-delay: calc(var(--i, 0) * 60ms + 80ms); }
+    @keyframes menu-entra { to { opacity: 1; transform: none; } }
+    .menu-cel > .btn { width: 100%; margin-top: 22px; }
+    .menu-cel > .fone { display: block; text-align: center; margin-top: 14px; font-weight: 700; color: var(--tinta); }
+    .hero .env { grid-template-columns: 1fr; gap: 40px; }
+    .fatos-linha { grid-template-columns: 1fr 1fr; }
+    .servicos { grid-template-columns: 1fr; }
+    .galeria { grid-template-columns: 1fr 1fr; grid-template-rows: 260px 200px; }
+    .galeria .g-a { grid-column: 1 / 3; grid-row: 1; }
+    .rotas { grid-template-columns: 1fr; min-height: 0; }
+    .rotas iframe { position: relative; height: 320px; order: -1; }
+    .rotas::after { display: none; }
+    .rotas-painel { background: var(--ceu-2); }
+    .rotas-mapa-tag { right: auto; left: 12px; bottom: auto; top: 12px; }
+    .passos { grid-template-columns: 1fr; }
+    .pedido-grade { grid-template-columns: 1fr; }
+    .rodape-grade { grid-template-columns: 1fr 1fr; }
+  }
+  @media (max-width: 640px) {
+    :root { --r: 20px; --r-g: 26px; }
+    .env { padding: 0 20px; }
+    body { font-size: 16px; }
+    section { padding: 64px 0; }
+    .nav-wrap { top: 10px; padding: 0 12px; }
+    .nav-barra { height: 62px; padding: 0 8px 0 18px; }
+    .nav-barra .btn { display: none; }
     .marca { font-size: 19px; }
-
-    .hero { padding: 56px 0 64px; }
-    .titulo { font-size: 34px; line-height: 1.08; }
-    .subtitulo { font-size: 17px; }
-    .sobrancelha { font-size: 11px; letter-spacing: 0.12em; }
-    .acoes { gap: 14px; }
-    .botao { width: 100%; text-align: center; }
-
-    .portal-corpo { padding: 18px 16px 18px; }
-    .portal-numeros { gap: 6px; }
-    .metrica { padding: 9px 9px; }
-    .metrica-val { font-size: 15px; }
-
-    .secao { padding: 56px 0; }
-    .cabeca { margin-bottom: 28px; }
-    .cabeca h2 { font-size: 27px; }
-    .cabeca p { font-size: 16px; }
-
-    .fatos .env { gap: 22px 18px; }
-    .fato-num { font-size: 23px; }
-
-    .foto { height: 150px; }
-
-    .cidade { padding: 13px 0; }
-    .cidade-nome { font-size: 19px; }
-    .cidade-nota { font-size: 11px; }
-
-    .pedido { padding: 56px 0; }
-    .pedido h2 { font-size: 27px; }
+    .hero { padding: 40px 0 64px; }
+    .hero h1 { font-size: clamp(32px, 9vw, 40px); }
+    .hero-sub { font-size: 16.5px; }
+    .hero-ctas .btn { flex: 1 1 100%; }
+    .portal { animation: none; }
+    .portal-corpo { padding: 18px 16px; }
+    .portal-numeros { gap: 6px; } .metrica { padding: 10px; } .metrica-val { font-size: 15px; }
+    .fatos { padding: 14px 0 40px; }
+    .fatos-linha { padding: 22px 22px; gap: 18px 14px; }
+    .fato b { font-size: 26px; }
+    .cabeca { margin-bottom: 28px; } .cabeca p { font-size: 16px; }
+    .servico { padding: 24px 22px; }
+    .galeria { grid-template-rows: 220px 160px; gap: 10px; }
+    .rotas-painel { padding: 26px 20px; }
+    .cidade { padding: 12px 14px; flex-wrap: wrap; } .cidade .dias { margin-left: 0; width: 100%; }
+    .passo { padding: 24px 20px; }
     .form { padding: 22px; }
     .form-linha { grid-template-columns: 1fr; gap: 0; }
-
-    .rodape .env { gap: 12px; }
-    .rodape-fone { margin-left: 0; }
+    .rodape-grade { grid-template-columns: 1fr; gap: 22px; }
+    body.menu-aberto { overflow: hidden; }
+    body.menu-aberto .dock { display: none; }
   }
 </style>
 </head>
 <body>
 
-<div class="barra">
-  <div class="env">
-    <div class="marca">POOL<span>GUYS</span></div>
-    <div class="barra-nota">Serving the Valley since 1997</div>
-    <a class="barra-fone">480-575-1722</a>
-    <span class="barra-cta">Get a free quote</span>
+<header class="nav-wrap" id="nav">
+  <div class="nav-barra">
+    <a class="marca" href="#">POOL<span>GUYS</span><small>Serving the Valley since 1997</small></a>
+    <nav class="nav-links">
+      <a href="#servicos">Services</a>
+      <a href="#piscinas">Pools</a>
+      <a href="#rotas">Routes</a>
+      <a href="#area">Client area</a>
+    </nav>
+    <a class="nav-fone" href="tel:+14805751722">480-575-1722</a>
+    <a class="btn btn-turquesa" href="#orcamento">Get a free quote</a>
+    <button class="nav-burger" type="button" aria-expanded="false" data-menu-abre><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round"><path d="M4 7h16M4 12h16M4 17h16"/></svg> Menu</button>
   </div>
+</header>
+
+<div class="menu-cel" id="menu-cel" data-aberto="false" role="dialog" aria-label="Menu">
+  <div class="menu-cel-topo"><span class="marca">POOL<span>GUYS</span></span><button class="btn btn-claro" type="button" data-menu-fecha>Close</button></div>
+  <ul>
+    <li style="--i:0"><a href="#servicos">Services<small>Maintenance, repairs, remodels</small></a></li>
+    <li style="--i:1"><a href="#piscinas">Pools we take care of</a></li>
+    <li style="--i:2"><a href="#rotas">Routes<small>Scottsdale to Cave Creek</small></a></li>
+    <li style="--i:3"><a href="#area">Client area<small>Every visit, logged</small></a></li>
+    <li style="--i:4"><a href="#orcamento">Free quote</a></li>
+  </ul>
+  <a class="btn btn-turquesa" href="#orcamento" style="--i:5">Get a free quote</a>
+  <a class="fone" href="tel:+14805751722">or call 480-575-1722</a>
 </div>
 
+<nav class="dock" aria-label="Shortcuts">
+  <a href="#servicos" data-sec="servicos">Services</a>
+  <a href="#piscinas" data-sec="piscinas">Pools</a>
+  <a href="#rotas" data-sec="rotas">Routes</a>
+  <a href="#area" data-sec="area">Client area</a>
+  <a href="#orcamento" data-sec="orcamento">Quote</a>
+</nav>
+
+<!-- hero -->
 <section class="hero">
+  <div class="caustica"></div>
   <div class="env">
     <div>
-      <div class="sobrancelha">Scottsdale · Paradise Valley · Cave Creek · Phoenix</div>
-      <h1 class="titulo">Your pool is fighting 115&deg; heat, monsoon dust and hard water. <em>We fight back every week.</em></h1>
-      <p class="subtitulo">Family owned since 1997. We service, repair and remodel residential pools across the Valley of the Sun, and every visit shows up in your client area, with the readings and what we did.</p>
-      <div class="acoes">
-        <span class="botao">Get a free quote</span>
-        <span class="botao-fone">or call 480-575-1722</span>
+      <h1 data-revela>Your pool is fighting 115° heat, monsoon dust and hard water. <b>We fight back every week.</b></h1>
+      <p class="hero-sub" data-revela style="--atraso:120ms">Family owned since 1997. We service, repair and remodel residential pools across the Valley of the Sun, and every visit shows up in your client area, with the readings and what we did.</p>
+      <div class="hero-ctas" data-revela style="--atraso:240ms">
+        <a class="btn btn-turquesa" href="#orcamento">Get a free quote</a>
+        <a class="btn btn-vidro" href="tel:+14805751722">Call 480-575-1722</a>
       </div>
-      <div class="hero-cidades">Weekly routes · Licensed &amp; insured · 29 years in the Valley</div>
+      <div class="hero-nota" data-grupo data-base="340">
+        <span>Weekly routes</span><span>Licensed and insured</span><span>Same tech, same day</span><span>29 years in the Valley</span>
+      </div>
     </div>
-
-    <div class="portal">
-      <div class="portal-barra">
-        <span class="portal-marca">Poolguys <span>&middot; Client area</span></span>
-        <span class="portal-user"><span class="portal-avatar">N</span> Norm N.</span>
-      </div>
-      <div class="portal-corpo">
-        <div class="portal-imovel">1247 E Desert Willow Dr</div>
-        <div class="portal-visita">Last visit &middot; Tue, Sep 2 &middot; 8:42 AM</div>
-
-        <div class="portal-numeros">
-          <div class="metrica">
-            <div class="metrica-rot">Chlorine</div>
-            <div class="metrica-val">3.0 ppm</div>
+    <div class="portal-palco" data-revela style="--atraso:200ms">
+      <div class="portal vidro-escuro" id="portal">
+        <div class="portal-topo"><b>POOL<span>GUYS</span></b> · Client area <span class="portal-user"><span class="portal-avatar">N</span> Norm N.</span></div>
+        <div class="portal-corpo">
+          <div class="portal-imovel">1247 E Desert Willow Dr</div>
+          <div class="portal-visita">Last visit · Tue, Sep 2 · 8:42 AM</div>
+          <div class="portal-numeros">
+            <div class="metrica"><div class="metrica-rot">Chlorine</div><div class="metrica-val"><span data-conta="3" data-dec="1">3.0</span><small>ppm</small></div></div>
+            <div class="metrica"><div class="metrica-rot">pH</div><div class="metrica-val"><span data-conta="7.4" data-dec="1">7.4</span></div></div>
+            <div class="metrica"><div class="metrica-rot">Filter</div><div class="metrica-val"><span data-conta="12">12</span><small>psi</small></div></div>
           </div>
-          <div class="metrica">
-            <div class="metrica-rot">pH</div>
-            <div class="metrica-val">7.4</div>
+          <p class="portal-feito">Brushed walls and steps, skimmed monsoon debris, emptied both baskets, backwashed the filter.</p>
+          <div class="portal-hist-rot">Visit history</div>
+          <div data-grupo data-base="700">
+            <div class="hist"><span class="ponto"></span><span class="hist-data">Aug 26</span><span class="hist-txt">Everything in range</span></div>
+            <div class="hist"><span class="ponto"></span><span class="hist-data">Aug 19</span><span class="hist-txt">Everything in range</span></div>
+            <div class="hist"><span class="ponto ponto-aviso"></span><span class="hist-data">Aug 12</span><span class="hist-txt">pH ran high, added acid</span></div>
           </div>
-          <div class="metrica">
-            <div class="metrica-rot">Filter</div>
-            <div class="metrica-val">12 psi</div>
-          </div>
-        </div>
-
-        <p class="portal-feito">Brushed walls and steps, skimmed monsoon debris, emptied both baskets, backwashed the filter.</p>
-
-        <div class="portal-hist-rot">Visit history</div>
-        <div class="hist"><span class="ponto"></span><span class="hist-data">Aug 26</span><span class="hist-txt">Everything in range</span></div>
-        <div class="hist"><span class="ponto"></span><span class="hist-data">Aug 19</span><span class="hist-txt">Everything in range</span></div>
-        <div class="hist"><span class="ponto ponto-aviso"></span><span class="hist-data">Aug 12</span><span class="hist-txt">pH ran high, added acid</span></div>
-
-        <div class="portal-prox">
-          <span>Next visit</span>
-          <strong>Tue, Sep 9</strong>
+          <div class="portal-prox"><span>Next visit</span><b><i aria-hidden="true"></i>Tue, Sep 9</b></div>
         </div>
       </div>
     </div>
   </div>
 </section>
 
-<div class="fatos">
+<!-- fatos -->
+<section class="fatos">
   <div class="env">
-    <div>
-      <div class="fato-num">1997</div>
-      <div class="fato-rot">Serving the Valley since</div>
-    </div>
-    <div>
-      <div class="fato-num">Family</div>
-      <div class="fato-rot">Owned and operated</div>
-    </div>
-    <div>
-      <div class="fato-num">4 cities</div>
-      <div class="fato-rot">Scottsdale to Cave Creek</div>
-    </div>
-    <div>
-      <div class="fato-num">Weekly</div>
-      <div class="fato-rot">Service, logged in your client area</div>
+    <div class="fatos-linha vidro" data-grupo>
+      <div class="fato"><b data-conta="29">29</b><span>years serving the Valley, since 1997</span></div>
+      <div class="fato"><b>Family</b><span>owned and operated, still</span></div>
+      <div class="fato"><b data-conta="4">4</b><span>cities, Scottsdale to Cave Creek</span></div>
+      <div class="fato"><b data-conta="52">52</b><span>visits a year, every one logged</span></div>
     </div>
   </div>
-</div>
+</section>
 
-<section class="secao secao-clara">
+<!-- serviços -->
+<section id="servicos">
   <div class="env">
-    <div class="cabeca">
+    <div class="cabeca" data-revela>
       <h2>Three things we do, and we do them all year</h2>
       <p>Pools in the desert do not get an off season. Neither do we.</p>
     </div>
-    <div class="servicos">
-      <div class="servico">
+    <div class="servicos" data-grupo>
+      <div class="servico vidro">
+        <div class="servico-ico"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M3 15c2-2 4-2 6 0s4 2 6 0 4-2 6 0M3 19c2-2 4-2 6 0s4 2 6 0 4-2 6 0M12 3v8M8 7l4-4 4 4"/></svg></div>
         <h3>Pool maintenance</h3>
         <p>The weekly visit that keeps water clear and equipment alive.</p>
-        <ul>
-          <li>Chemistry balanced and logged</li>
-          <li>Brush, skim, vacuum, baskets</li>
-          <li>Filter cleaned and backwashed</li>
-          <li>Every visit logged in your client area</li>
-        </ul>
+        <ul><li>Chemistry balanced and logged</li><li>Brush, skim, vacuum, baskets</li><li>Filter cleaned and backwashed</li><li>Every visit in your client area</li></ul>
       </div>
-      <div class="servico">
+      <div class="servico vidro">
+        <div class="servico-ico"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M14.7 6.3a4 4 0 00-5.4 5.4L3 18l3 3 6.3-6.3a4 4 0 005.4-5.4l-2.4 2.4-2.1-.6-.6-2.1z"/></svg></div>
         <h3>Pool repairs</h3>
         <p>Pumps, heaters, filters and automation, diagnosed and fixed.</p>
-        <ul>
-          <li>Pump and motor replacement</li>
-          <li>Heater and salt cell service</li>
-          <li>Leak detection</li>
-          <li>Upfront pricing before we start</li>
-        </ul>
+        <ul><li>Pump and motor replacement</li><li>Heater and salt cell service</li><li>Leak detection</li><li>Upfront pricing before we start</li></ul>
       </div>
-      <div class="servico">
+      <div class="servico vidro">
+        <div class="servico-ico"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="3" y="3" width="8" height="8" rx="2"/><rect x="13" y="3" width="8" height="8" rx="2"/><rect x="3" y="13" width="8" height="8" rx="2"/><path d="M17 14v6M14 17h6"/></svg></div>
         <h3>Pool remodels</h3>
         <p>Resurfacing and tile work that makes a tired pool look new.</p>
-        <ul>
-          <li>Pebble and plaster resurfacing</li>
-          <li>Waterline tile and coping</li>
-          <li>Equipment upgrades</li>
-          <li>Photos at every stage</li>
+        <ul><li>Pebble and plaster resurfacing</li><li>Waterline tile and coping</li><li>Equipment upgrades</li><li>Photos at every stage</li></ul>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- piscinas -->
+<section id="piscinas">
+  <div class="caustica"></div>
+  <div class="env">
+    <div class="cabeca" data-revela>
+      <h2>Pools we take care of</h2>
+      <p>Real backyards across Scottsdale and Paradise Valley. Boulders, waterfalls, pebble finishes, the works.</p>
+    </div>
+    <div class="galeria" data-grupo>
+      <figure class="g-a"><img src="fotos/piscina-1.jpg" alt="Pool with boulder water feature and spa"><figcaption class="vidro">Boulder water feature</figcaption></figure>
+      <figure><img src="fotos/piscina-2.jpg" alt="Pool with rock waterfall"><figcaption class="vidro">Rock waterfall</figcaption></figure>
+      <figure><img src="fotos/piscina-3.jpg" alt="Desert landscaped pool with baja shelf"><figcaption class="vidro">Baja shelf</figcaption></figure>
+      <figure style="grid-column: 2 / 4"><img src="fotos/piscina-4.jpg" alt="Pool with natural rock edge"><figcaption class="vidro">Natural rock edge</figcaption></figure>
+    </div>
+    <p class="galeria-nota" data-revela>Photos from your current site, upscaled for this concept. The final build uses fresh, full-resolution shots of the pools you service today.</p>
+  </div>
+</section>
+
+<!-- rotas -->
+<section id="rotas">
+  <div class="env">
+    <div class="rotas" data-revela>
+      <iframe src="https://www.google.com/maps?ll=33.66,-111.96&z=10&t=m&output=embed" title="Map of the Poolguys service area, north Phoenix Valley" loading="lazy" referrerpolicy="no-referrer-when-downgrade"></iframe>
+      <div class="rotas-painel">
+        <h2>Where our trucks go</h2>
+        <p>Routes are grouped by neighborhood, so your pool gets the same tech on the same day each week.</p>
+        <div class="cidades" data-grupo>
+          <div class="cidade vidro"><b>Scottsdale</b><span class="dias"><span class="dia">Mon</span><span class="dia">Tue</span></span></div>
+          <div class="cidade vidro"><b>Paradise Valley</b><span class="dias"><span class="dia">Tue</span><span class="dia">Wed</span></span></div>
+          <div class="cidade vidro"><b>Cave Creek</b><span class="dias"><span class="dia">Thu</span></span></div>
+          <div class="cidade vidro"><b>Phoenix</b><span class="dias"><span class="dia">Wed</span><span class="dia">Fri</span></span></div>
+        </div>
+        <p class="rotas-nota">Not on the list? Ask. We add neighborhoods as routes fill.</p>
+      </div>
+      <div class="rotas-mapa-tag vidro">North Phoenix Valley</div>
+    </div>
+  </div>
+</section>
+
+<!-- área do cliente -->
+<section class="escuro" id="area">
+  <div class="caustica"></div>
+  <div class="env">
+    <div class="cabeca" data-revela>
+      <h2>Every visit, logged. You see it before you get home.</h2>
+      <p>The client area is what no other pool company in the Valley gives you: proof, in your phone, that the work was done and the water is right.</p>
+    </div>
+    <div class="passos" data-grupo>
+      <div class="passo vidro-escuro">
+        <div class="passo-ico"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M4 19h16M6 15l4-5 3 3 5-7"/></svg></div>
+        <h3>Readings, every visit</h3>
+        <p>Chlorine, pH, alkalinity and filter pressure, the moment the tech tests them. You know what the water is doing, week after week.</p>
+        <span class="mono">Cl 3.0 ppm · pH 7.4 · 12 psi</span>
+      </div>
+      <div class="passo vidro-escuro">
+        <div class="passo-ico"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M4 8h3l2-3h6l2 3h3v11H4z"/><circle cx="12" cy="13" r="3.5"/></svg></div>
+        <h3>Photos when something is off</h3>
+        <p>A cracked skimmer lid, a pump making noise, algae after a storm. You get the picture and the fix, with a price, before we touch it.</p>
+        <span class="mono">Aug 12 · pH ran high, added acid</span>
+      </div>
+      <div class="passo vidro-escuro">
+        <div class="passo-ico"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="3" y="5" width="18" height="16" rx="3"/><path d="M3 10h18M8 3v4M16 3v4"/></svg></div>
+        <h3>Next visit, always known</h3>
+        <p>Same tech, same day. If a monsoon moves the route, you see the new time in the app, not in a voicemail.</p>
+        <span class="mono">Next visit · Tue, Sep 9</span>
+      </div>
+    </div>
+    <div class="passos-cta" data-revela>
+      <a class="btn btn-turquesa" href="#orcamento">Start weekly service</a>
+      <span>No contract to start. The client area comes with every weekly plan.</span>
+    </div>
+  </div>
+</section>
+
+<!-- orçamento -->
+<section id="orcamento">
+  <div class="caustica"></div>
+  <div class="env">
+    <div class="pedido-grade">
+      <div data-revela>
+        <h2>Tell us about your pool</h2>
+        <p class="cabeca-p" style="margin-top:12px; color: var(--tinta-2); font-size: 17px; max-width: 46ch;">Send it over and we will come out, look at the water and the equipment, and give you a price. No charge for the visit.</p>
+        <ul class="motivos" data-grupo>
+          <li>We answer the same day</li>
+          <li>Free on-site quote</li>
+          <li>No contract to start weekly service</li>
+          <li>Same tech, same day, every week</li>
         </ul>
       </div>
+      <form class="form vidro" id="form" data-revela style="--atraso:120ms" novalidate>
+        <div class="form-campos">
+          <div class="campo"><label for="f-nome">Name</label><input id="f-nome" placeholder="Your name" autocomplete="name"></div>
+          <div class="form-linha">
+            <div class="campo"><label for="f-fone">Phone</label><input id="f-fone" placeholder="(480) 000-0000" inputmode="tel" autocomplete="tel"></div>
+            <div class="campo"><label for="f-cidade">City</label><select id="f-cidade"><option>Scottsdale</option><option>Paradise Valley</option><option>Cave Creek</option><option>Phoenix</option><option>Somewhere else</option></select></div>
+          </div>
+          <div class="campo"><label for="f-tipo">What do you need</label><select id="f-tipo"><option>Weekly service</option><option>A repair</option><option>A remodel</option><option>Not sure yet</option></select></div>
+          <button class="btn btn-sol" type="submit">Request my free quote</button>
+          <p class="form-nota">Or call 480-575-1722. We pick up. This is a concept: nothing is sent yet.</p>
+        </div>
+        <div class="form-ok">
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="10"/><path d="M8 12l3 3 5-6"/></svg>
+          <b>Got it. We'll call you today.</b>
+          <p>In this preview nothing was sent. On your live site this lands in your inbox and your phone.</p>
+        </div>
+      </form>
     </div>
   </div>
 </section>
 
-<section class="secao">
+<footer class="rodape">
   <div class="env">
-    <div class="cabeca">
-      <h2>Pools we take care of</h2>
-      <p>Real backyards across Scottsdale and Paradise Valley.</p>
-    </div>
-    <div class="galeria">
-      <div class="foto"><img src="fotos/g03.jpg" alt="Pool with boulder water feature"></div>
-      <div class="foto"><img src="fotos/g05.jpg" alt="Pool with rock waterfall and spa"></div>
-      <div class="foto"><img src="fotos/g04.jpg" alt="Desert landscaped pool"></div>
-    </div>
-    <p class="galeria-nota">Photos from your current site. The final build uses fresh, full-resolution shots.</p>
-  </div>
-</section>
-
-<section class="secao secao-clara">
-  <div class="env">
-    <div class="areas">
+    <div class="rodape-grade" data-revela>
       <div>
-        <div class="cabeca" style="margin-bottom: 20px;">
-          <h2>Where our trucks go</h2>
-          <p>Routes are grouped by neighborhood, so your pool gets the same tech on the same day each week.</p>
-        </div>
+        <div class="marca">POOL<span>GUYS</span><small>Poolguys Swimming Pool Service, Inc.</small></div>
+        <p>Family owned since 1997. Residential pool service, repairs and remodels across the north Valley.</p>
+        <div class="marcas"><span>Pentair</span><span>Jandy</span><span>Hayward</span></div>
       </div>
-      <div class="cidades">
-        <div class="cidade"><span class="cidade-nome">Scottsdale</span><span class="cidade-nota">MON &amp; TUE ROUTES</span></div>
-        <div class="cidade"><span class="cidade-nome">Paradise Valley</span><span class="cidade-nota">TUE &amp; WED ROUTES</span></div>
-        <div class="cidade"><span class="cidade-nome">Cave Creek</span><span class="cidade-nota">THU ROUTES</span></div>
-        <div class="cidade"><span class="cidade-nome">Phoenix</span><span class="cidade-nota">WED &amp; FRI ROUTES</span></div>
-      </div>
+      <div><h5>Service</h5><ul><li><a href="#servicos">Weekly maintenance</a></li><li><a href="#servicos">Repairs</a></li><li><a href="#servicos">Remodels</a></li><li><a href="#area">Client area</a></li></ul></div>
+      <div><h5>Talk to us</h5><ul><li><a href="tel:+14805751722">480-575-1722</a></li><li><a href="#orcamento">Free quote</a></li><li>Scottsdale · Paradise Valley · Cave Creek · Phoenix</li></ul></div>
     </div>
+    <div class="rodape-fim"><span>Licensed and insured. Serving the Valley of the Sun since 1997.</span><span>Same tech, same day, every week.</span></div>
   </div>
-</section>
+</footer>
 
-<section class="pedido">
-  <div class="env">
-    <div>
-      <h2>Tell us about your pool</h2>
-      <p>Send it over and we will come out, look at the water and the equipment, and give you a price. No charge for the visit.</p>
-      <ul>
-        <li>We answer the same day</li>
-        <li>Free on-site quote</li>
-        <li>No contract to start weekly service</li>
-        <li>Same tech, same day, every week</li>
-      </ul>
-    </div>
-    <div class="form">
-      <div class="campo">
-        <label>Name</label>
-        <div class="caixa">Your name</div>
-      </div>
-      <div class="form-linha">
-        <div class="campo">
-          <label>Phone</label>
-          <div class="caixa">(480) 000-0000</div>
-        </div>
-        <div class="campo">
-          <label>City</label>
-          <div class="caixa">Scottsdale</div>
-        </div>
-      </div>
-      <div class="campo">
-        <label>What do you need</label>
-        <div class="caixa">Weekly service, a repair, or a remodel</div>
-      </div>
-      <div class="form-botao">Request my free quote</div>
-      <div class="form-nota">Or call 480-575-1722. We pick up.</div>
-    </div>
-  </div>
-</section>
-
-<div class="rodape">
-  <div class="env">
-    <div class="marca">POOL<span>GUYS</span></div>
-    <span>Poolguys Swimming Pool Service, Inc. &middot; Family owned since 1997</span>
-    <span class="rodape-fone">480-575-1722</span>
-  </div>
-</div>
+<script>
+  var reduzido = matchMedia("(prefers-reduced-motion: reduce)").matches;
+  (function () {
+    document.querySelectorAll("[data-grupo]").forEach(function (g) { var base = +(g.dataset.base || 0); Array.prototype.forEach.call(g.children, function (el, i) { el.setAttribute("data-revela", ""); el.style.setProperty("--atraso", (base + i * 80) + "ms"); }); });
+    var alvos = document.querySelectorAll("[data-revela]");
+    if (reduzido || !("IntersectionObserver" in window)) { alvos.forEach(function (el) { el.classList.add("visivel"); }); return; }
+    var obs = new IntersectionObserver(function (es) { es.forEach(function (e) { if (e.isIntersecting) { e.target.classList.add("visivel"); obs.unobserve(e.target); } }); }, { threshold: 0.12, rootMargin: "0px 0px -6% 0px" });
+    alvos.forEach(function (el) { obs.observe(el); });
+  })();
+  // números contam quando aparecem
+  (function () {
+    var els = document.querySelectorAll("[data-conta]"); if (!els.length || reduzido) return;
+    function contar(el) { var alvo = parseFloat(el.dataset.conta), dec = +(el.dataset.dec || 0), suf = el.dataset.suf || "", t0 = null, dur = 1300; function passo(t) { if (!t0) t0 = t; var p = Math.min(1, (t - t0) / dur); p = 1 - Math.pow(1 - p, 3); el.textContent = (alvo * p).toFixed(dec) + suf; if (p < 1) requestAnimationFrame(passo); } requestAnimationFrame(passo); }
+    if (!("IntersectionObserver" in window)) return;
+    var obs = new IntersectionObserver(function (es) { es.forEach(function (e) { if (e.isIntersecting) { obs.unobserve(e.target); setTimeout(function () { contar(e.target); }, 400); } }); }, { threshold: 0.5 });
+    els.forEach(function (el) { obs.observe(el); });
+  })();
+  (function () { var f = function () { document.body.classList.toggle("rolou", scrollY > 24); }; addEventListener("scroll", f, { passive: true }); f(); })();
+  // luz que segue o cursor; a área do cliente inclina com o mouse
+  (function () {
+    if (!matchMedia("(hover: hover) and (pointer: fine)").matches) return;
+    document.addEventListener("mousemove", function (e) { var v = e.target.closest(".vidro, .vidro-escuro"); if (v) { var r = v.getBoundingClientRect(); v.style.setProperty("--mx", (e.clientX - r.left) + "px"); v.style.setProperty("--my", (e.clientY - r.top) + "px"); } }, { passive: true });
+    var palco = document.querySelector(".portal-palco"), portal = document.getElementById("portal"); if (!palco || !portal || reduzido) return;
+    palco.addEventListener("mousemove", function (e) { var r = portal.getBoundingClientRect(), x = (e.clientX - r.left) / r.width - 0.5, y = (e.clientY - r.top) / r.height - 0.5; portal.style.animation = "none"; portal.style.transition = "transform 0.15s ease"; portal.style.transform = "rotateY(" + (x * 8).toFixed(1) + "deg) rotateX(" + (-y * 6).toFixed(1) + "deg)"; });
+    palco.addEventListener("mouseleave", function () { portal.style.transition = ""; portal.style.transform = ""; portal.style.animation = ""; });
+  })();
+  // menu do celular
+  (function () {
+    var menu = document.getElementById("menu-cel"), abre = document.querySelector("[data-menu-abre]");
+    function set(v) { menu.dataset.aberto = String(v); abre.setAttribute("aria-expanded", String(v)); document.body.classList.toggle("menu-aberto", v); }
+    abre.addEventListener("click", function () { set(menu.dataset.aberto !== "true"); });
+    menu.querySelector("[data-menu-fecha]").addEventListener("click", function () { set(false); });
+    menu.querySelectorAll("a").forEach(function (a) { a.addEventListener("click", function () { set(false); }); });
+    document.addEventListener("keydown", function (e) { if (e.key === "Escape") set(false); });
+  })();
+  // formulário: nada é enviado; mostra o estado de sucesso
+  (function () {
+    var form = document.getElementById("form"); if (!form) return;
+    form.addEventListener("submit", function (e) { e.preventDefault(); form.classList.add("enviado"); });
+  })();
+  // dock
+  (function () {
+    var links = document.querySelectorAll(".dock a[data-sec]"); if (!links.length || !("IntersectionObserver" in window)) return;
+    var obs = new IntersectionObserver(function (es) { es.forEach(function (e) { if (!e.isIntersecting) return; links.forEach(function (l) { l.classList.toggle("ativo", l.dataset.sec === e.target.id); }); }); }, { rootMargin: "-40% 0px -50% 0px", threshold: 0 });
+    ["servicos", "piscinas", "rotas", "area", "orcamento"].forEach(function (id) { var el = document.getElementById(id); if (el) obs.observe(el); });
+  })();
+</script>
 
 </body>
 </html>

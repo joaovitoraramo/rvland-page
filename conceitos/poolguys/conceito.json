@@ -1,85 +1,91 @@
 {
   "criadoEm": "2026-09-02",
-  "direcao": "Água do deserto. A paleta não veio de moodboard: veio do lugar. O céu lavado das 14h em Scottsdale, o azul da água na sombra do matacão, o azulejo turquesa da linha d'água que toda piscina daqui tem, o granito decomposto do paisagismo e a pedra dos boulders das fotos deles. O risco assumido: o hero NÃO abre com foto de oásis, como todo concorrente. Abre com o inimigo (115°F, poeira de monção, água dura), porque é o inimigo que justifica pagar manutenção semanal.",
+  "direcao": "Água do deserto, versão 2: vidro arredondado. A paleta continua a do lugar (céu lavado das 14h, água na sombra do matacão, azulejo turquesa da linha d'água, granito decomposto, sol). O que muda é a matéria: painéis de vidro com cantos de 24 a 32px, pílulas, luz que segue o cursor, nav em pílula flutuante, tudo entrando em cena com o scroll, números que contam. Uma família só (Plus Jakarta Sans); a mono fica onde há medição de verdade (ppm, pH, psi). O hero continua abrindo com o inimigo (115°F, poeira de monção, água dura), e a área do cliente segue como assinatura, agora em vidro escuro que flutua e inclina com o mouse.",
   "assinatura": "A área do cliente. O dono do imóvel entra com login e vê o histórico inteiro de manutenção: as leituras de cada visita (cloro, pH, pressão do filtro), o que foi feito, quando algo saiu da faixa e qual é a próxima visita. Nenhum concorrente da região oferece isso. Deixa de ser site e vira software, o que sustenta preço maior e prende o cliente na renovação.",
   "paleta": [
     {
-      "nome": "agua-funda",
-      "hex": "#0A4A5C",
-      "uso": "fundo do hero e da seção de pedido; azul da água na sombra da pedra"
-    },
-    {
       "nome": "agua-noite",
       "hex": "#06323E",
-      "uso": "barra do topo, faixa de fatos e rodapé"
+      "uso": "fundo do hero (gradiente com agua-funda), da seção da área do cliente e do rodapé"
+    },
+    {
+      "nome": "agua-funda",
+      "hex": "#0A4A5C",
+      "uso": "topo do gradiente do hero; ícones dos serviços"
     },
     {
       "nome": "turquesa",
       "hex": "#2BB6C4",
-      "uso": "acento único: CTA, destaque do título, faixa de azulejo, marcadores"
+      "uso": "acento: botão primário (texto agua-noite), destaque do título, linha d'água, bullets, pontos do histórico"
     },
     {
-      "nome": "ceu-fundo",
-      "hex": "#F7FAFA",
-      "uso": "fundo das seções claras; céu lavado das 14h, frio, nunca creme"
+      "nome": "turquesa-texto",
+      "hex": "#0E6D78",
+      "uso": "turquesa como texto sobre claro (5.5:1): GUYS na marca, dias das rotas"
     },
     {
-      "nome": "areia",
-      "hex": "#D9C3A5",
-      "uso": "cabeçalho do relatório; granito decomposto do paisagismo"
+      "nome": "turquesa-clara",
+      "hex": "#6ADBE6",
+      "uso": "texto turquesa sobre o vidro escuro do portal (a #2BB6C4 dava 4.0:1)"
     },
     {
-      "nome": "pedra",
-      "hex": "#6B5B4E",
-      "uso": "detalhes do relatório; marrom dos matacões"
+      "nome": "ceu",
+      "hex": "#F1F7F8",
+      "uso": "fundo da página; caústica turquesa radial por cima"
     },
     {
       "nome": "sol",
       "hex": "#E8913A",
-      "uso": "botão do formulário, usado UMA vez na página inteira"
+      "uso": "botão do formulário, uma vez na página, texto #24160A"
     },
     {
       "nome": "tinta",
       "hex": "#12262C",
-      "uso": "texto principal sobre fundo claro"
+      "uso": "texto principal sobre claro"
     },
     {
-      "nome": "tinta-fraca",
-      "hex": "#5A7078",
-      "uso": "texto de apoio"
+      "nome": "tinta-2",
+      "hex": "#4B6067",
+      "uso": "secundário sobre claro (6.4:1)"
     },
     {
-      "nome": "linha",
-      "hex": "#DCE6E7",
-      "uso": "divisórias e bordas"
+      "nome": "marfim",
+      "hex": "#F3F9FA",
+      "uso": "texto sobre escuro; secundário a 80%"
+    },
+    {
+      "nome": "vidro",
+      "hex": "rgba(255,255,255,0.70)",
+      "uso": "painéis sobre céu, blur 20px"
+    },
+    {
+      "nome": "vidro-escuro",
+      "hex": "rgba(6,50,62,0.62)",
+      "uso": "portal e tiles sobre escuro, blur 22px"
     }
   ],
   "tipografia": [
     {
-      "papel": "display",
-      "fonte": "Archivo 700/800",
-      "nota": "tracking -0.03em; sinalização americana industrial, confiança de serviço, sem cara de moda"
-    },
-    {
-      "papel": "corpo",
-      "fonte": "IBM Plex Sans 400/600",
-      "nota": "caráter técnico sem perder legibilidade; combina com o Archivo sem competir"
+      "papel": "tudo",
+      "fonte": "Plus Jakarta Sans 400/500/600/700/800",
+      "nota": "uma família só; títulos 700-800 com tracking -0.02/-0.03em; rótulos em sentence case, nunca caixa alta"
     },
     {
       "papel": "dados",
-      "fonte": "IBM Plex Mono 400/600",
-      "nota": "só onde há medição de verdade: pH, ppm, psi, telefone, rotas e datas. A mono é ganha, não decorativa"
+      "fonte": "IBM Plex Mono 500/600",
+      "nota": "só onde há medição de verdade: leituras do portal (ppm, pH, psi), datas do histórico, linhas de exemplo dos tiles da área do cliente"
     }
   ],
   "secoes": [
-    "Barra: marca + 'Serving the Valley since 1997' + telefone + CTA",
-    "Hero: o inimigo (calor/poeira/água dura) contra a área do cliente",
-    "Faixa de fatos: 1997 · Family · 4 cities · Weekly",
-    "Três serviços: manutenção, reparos, reformas (com o que entra em cada)",
-    "Pools we take care of: fotos reais do cliente, recortadas do banner antigo",
-    "Where our trucks go: rotas por cidade com o dia da semana",
-    "Pedido de orçamento: formulário curto + telefone",
-    "Rodape + faixa e credito da RVLand (componente do publicador)"
+    "Nav em pílula de vidro flutuante: marca POOLGUYS + 'Serving the Valley since 1997', Services · Pools · Routes · Client area, telefone, Get a free quote; no celular, menu em tela cheia com itens escalonados + dock",
+    "Hero (gradiente agua-funda → agua-noite com caústica animada e linha d'água turquesa): o inimigo (115° heat, monsoon dust, hard water) vs. a área do cliente em vidro escuro (leituras que contam, histórico escalonado, próxima visita pulsando, flutua e inclina com o mouse); chips Weekly routes · Licensed and insured · Same tech, same day · 29 years",
+    "Faixa de fatos em vidro: 29 anos (conta), Family, 4 cidades (conta), 52 visitas por ano (conta)",
+    "Três serviços em vidro com ícone: manutenção, reparos, reformas, com o que entra em cada",
+    "Pools we take care of: 4 fotos deles (recortadas antes do slogan queimado e com upscale 4x) em colagem arredondada, zoom lento no hover",
+    "Where our trucks go: painel de vidro sobre mapa do Google em monocromia clara do norte do Valley; 4 cidades com pílulas de dia da semana",
+    "Every visit, logged (escuro): 3 tiles em vidro escuro explicando a área do cliente (leituras, fotos quando algo sai da faixa, próxima visita sempre conhecida) + CTA",
+    "Tell us about your pool: motivos + formulário de vidro com campos reais (nome, telefone, cidade, o que precisa) e botão sol; ao enviar mostra estado de sucesso avisando que nada foi enviado",
+    "Rodapé escuro: marca, razão social, Pentair · Jandy · Hayward, links, contato + faixa e crédito da RVLand"
   ],
   "copy": {
     "titulo": "Your pool is fighting 115° heat, monsoon dust and hard water. We fight back every week.",
@@ -116,7 +122,6 @@
       "caminho": "poolguys/site-atual-mobile.png"
     }
   ],
-  "notaMobile": "Barra do topo reduzida a marca + telefone abaixo de 620px (o texto de apoio e o CTA quebravam em quatro linhas e vazavam da tela); cartão de relatório sem rotação no celular.",
   "abordagem": {
     "canal": "e-mail poolguys@att.net",
     "contato": "Norm Nelson, President / Owner",
@@ -134,5 +139,15 @@
     "acento": "#2BB6C4",
     "acentoTexto": "#04212A",
     "modalFundo": "#0E2831"
-  }
+  },
+  "versao": 2,
+  "regras": [
+    "Uma família só (Plus Jakarta Sans). Mono só em medição. Nada de caixa alta com tracking, nada de marcador numerado.",
+    "Turquesa #2BB6C4 é acento e botão; como texto sobre claro vira #0E6D78, sobre o vidro escuro do portal vira #6ADBE6.",
+    "Animações de entrada com .js [data-revela] e [data-grupo]; contadores disparam quando o número entra na tela (IntersectionObserver), não no load.",
+    "Nada absoluto pode vazar da largura no celular (a caústica fica dentro da seção com overflow hidden).",
+    "Painel das rotas com fundo quase opaco para cobrir a caixa 'Open in Maps' do Google; no celular a etiqueta do mapa vai para o canto superior esquerdo pelo mesmo motivo.",
+    "Auditar com scripts/auditar-contraste.mjs em 1440 e iphone antes de publicar; meta 0 reprovados e nada abaixo de 12px.",
+    "Fotos: as do site atual têm o slogan queimado à direita; recortar os 52% da esquerda e passar por Real-ESRGAN x4 (1912x868)."
+  ]
 }
