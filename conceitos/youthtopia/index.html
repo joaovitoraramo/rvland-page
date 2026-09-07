@@ -618,12 +618,17 @@
   .chat-fechar { margin-left: auto; }
   .chat-fechar svg, .chat-voltar svg { width: 18px; height: 18px; display: block; }
   .chat-voltar { display: none; } /* só no celular; a regra conjunta acima não pode religar */
-  .chat-preview {
-    flex: none; margin: 10px 14px 0; padding: 8px 12px; border-radius: 12px;
-    background: rgba(230,207,152,0.12); border: 1px solid rgba(230,207,152,0.28);
-    font-size: 12.5px; line-height: 1.45; color: var(--marfim);
+  /* o aviso de preview é a primeira bolha: rola com a conversa em vez de
+     ocupar espaço fixo, que no celular com teclado aberto sufocava o fio */
+  .bolha.sistema {
+    max-width: 100%; border-radius: 14px; font-size: 13px; line-height: 1.5;
+    background: rgba(230,207,152,0.12); border-color: rgba(230,207,152,0.3);
   }
-  .chat-preview b { color: var(--ouro-luz); font-weight: 600; }
+  .chat-selo {
+    display: inline-block; margin-left: 8px; padding: 2px 8px; border-radius: 999px;
+    font-family: var(--corpo); font-size: 10.5px; font-weight: 600; letter-spacing: 0.12em; text-transform: uppercase;
+    color: var(--ouro-luz); border: 1px solid rgba(230,207,152,0.4); vertical-align: middle;
+  }
   .chat-fio { flex: 1; overflow-y: auto; padding: 14px 14px 6px; display: flex; flex-direction: column; gap: 8px; scroll-behavior: smooth; }
   .bolha {
     max-width: 84%; padding: 11px 14px; border-radius: 18px 18px 18px 4px;
@@ -803,7 +808,7 @@
     .bolha { max-width: 82%; font-size: 16px; }
     .chat-composer { padding: 10px 12px; padding-bottom: max(12px, env(safe-area-inset-bottom)); }
     .chat-composer input { font-size: 16px; padding: 13px 16px; } /* 16px evita o zoom do iOS */
-    .chat-rodape { padding-bottom: max(8px, env(safe-area-inset-bottom)); }
+    .chat-rodape { display: none; } /* o aviso já está na primeira bolha */
     body.chat-aberto { overflow: hidden; }
     body.chat-aberto .dock, body.chat-aberto .chat-botao { display: none; }
   }
@@ -1128,12 +1133,11 @@
       <button class="chat-voltar" type="button" aria-label="Close" data-chat-fechar><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M15 6l-6 6 6 6"/></svg></button>
       <img src="fotos/kim.png" alt="">
       <div>
-        <strong>Youthtopia</strong>
+        <strong>Youthtopia<span class="chat-selo">Preview</span></strong>
         <small>Front desk · replies within the hour</small>
       </div>
       <button class="chat-fechar" type="button" aria-label="Close" data-chat-fechar><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" aria-hidden="true"><path d="M6 6l12 12M18 6L6 18"/></svg></button>
     </header>
-    <div class="chat-preview"><b>Preview.</b> Nothing is sent from this concept. On your live site this connects to your front desk (Aesthetix CRM or any provider).</div>
     <div class="chat-fio" id="chat-fio" aria-live="polite"></div>
     <div class="chat-chips" id="chat-chips"></div>
     <form class="chat-composer" id="chat-composer" novalidate>
@@ -1200,6 +1204,8 @@
 
     function comecar() {
       iniciado = true; passo = 0; dados = {}; fio.innerHTML = ""; chips.innerHTML = "";
+      var aviso = bolha("<b>Preview.</b> Nothing is sent from this concept. On your live site this chat connects to your front desk (Aesthetix CRM or any provider).", false);
+      aviso.classList.add("sistema");
       kim("Hi! I'm Kim at the front desk. What's your name?", function () { barra("Your name", "text"); });
     }
     function responder(texto) {
