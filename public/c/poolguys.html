@@ -472,11 +472,14 @@
     overflow-y: auto;
   }
   .rv-caixa-preco { max-width: 440px; text-align: left; }
+  /* cor, largura e entrelinha explícitas: o conceito define h2 por elemento
+     (cor tinta, max-width em ch, text-wrap) e isso vazava para dentro do modal */
   .rv-modal-caixa h2 {
     font-family: "Archivo", system-ui, -apple-system, sans-serif;
-    font-weight: 700; font-size: 21px; letter-spacing: -0.02em;
-    margin: 0 0 8px;
+    font-weight: 700; font-size: 21px; letter-spacing: -0.02em; line-height: 1.2;
+    margin: 0 0 8px; color: #fff; max-width: none; text-wrap: initial;
   }
+  .rv-modal-caixa h3 { color: #fff; max-width: none; }
   .rv-modal-caixa p { margin: 0 0 18px; font-size: 14.5px; line-height: 1.55; color: rgba(255,255,255,0.68); }
   .rv-qr { border-radius: 10px; background: #fff; padding: 10px; display: block; margin: 0 auto 18px; }
 
