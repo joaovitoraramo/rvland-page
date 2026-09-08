@@ -146,6 +146,14 @@ export function mensagemVisita({
   return linhas.join("\n");
 }
 
+/**
+ * Marca uma mensagem como teste. O João abre o conceito com ?rvland=teste para
+ * ver o alerta chegar; nada é gravado, e a mensagem diz isso na primeira linha.
+ */
+export function marcarComoTeste(mensagem: string): string {
+  return `🧪 TESTE, nada gravado\n${mensagem}`;
+}
+
 /** Números do painel: pessoas e aberturas contam coisas diferentes. */
 export function resumirVisitas(visitas: VisitaConceito[]): {
   aberturas: number;

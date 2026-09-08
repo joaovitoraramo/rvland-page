@@ -19,6 +19,7 @@ const esquema = z.object({
     )
     .min(1)
     .max(40),
+  teste: z.boolean().optional(),
 });
 
 /**
@@ -41,6 +42,7 @@ export async function POST(req: Request) {
         secao: i.secao ?? null,
         destino: i.destino ?? null,
       })),
+      teste: dados.data.teste === true,
       userAgent: req.headers.get("user-agent"),
     });
   } catch (err) {

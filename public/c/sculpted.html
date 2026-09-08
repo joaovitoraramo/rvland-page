@@ -1751,12 +1751,16 @@
     var DESLIGA = "rv-sem-medida";
 
     // ?rvland=1 desliga a medição neste navegador para sempre: as visitas do
-    // próprio João não podem virar alerta nem entrar na conta
+    // próprio João não podem virar alerta nem entrar na conta. ?rvland=0
+    // religa. ?rvland=teste manda tudo com a marca de teste: o Telegram
+    // recebe com prefixo TESTE e nada é gravado.
+    var teste = false;
     try {
-      if (new URLSearchParams(location.search).get("rvland") === "1") {
-        localStorage.setItem(DESLIGA, "1");
-      }
-      if (localStorage.getItem(DESLIGA)) return;
+      var modo = new URLSearchParams(location.search).get("rvland");
+      if (modo === "1") localStorage.setItem(DESLIGA, "1");
+      if (modo === "0") localStorage.removeItem(DESLIGA);
+      teste = modo === "teste";
+      if (!teste && localStorage.getItem(DESLIGA)) return;
     } catch (e) {}
 
     function id() {
@@ -1793,7 +1797,8 @@
         visitante: visitante,
         sessao: sessao,
         segundos: Math.round(visiveis),
-        referencia: document.referrer || null
+        referencia: document.referrer || null,
+        teste: teste
       }), saindo);
     }
 
@@ -1854,7 +1859,8 @@
         slug: "sculpted",
         visitante: visitante,
         sessao: sessao,
-        itens: fila.splice(0, 30)
+        itens: fila.splice(0, 30),
+        teste: teste
       }), saindo);
     }
 
@@ -1884,11 +1890,12 @@
 
     document.addEventListener("visibilitychange", function () {
       contar();
-      if (document.visibilityState === "hidden") { if (marcou) enviar(true); enviarCliques(true); }
+      // em modo teste a abertura vai uma vez só: a atualização de tempo viraria segundo aviso
+      if (document.visibilityState === "hidden") { if (marcou && !teste) enviar(true); enviarCliques(true); }
     });
     window.addEventListener("pagehide", function () {
       contar();
-      if (marcou) enviar(true);
+      if (marcou && !teste) enviar(true);
       enviarCliques(true);
     });
   } catch (e) {}

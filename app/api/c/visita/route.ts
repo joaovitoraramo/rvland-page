@@ -11,6 +11,7 @@ const esquema = z.object({
   sessao: z.string().trim().regex(/^[a-z0-9]{8,40}$/),
   segundos: z.number().int().min(0).max(3600),
   referencia: z.string().trim().max(300).nullable().optional(),
+  teste: z.boolean().optional(),
 });
 
 /**
@@ -28,6 +29,7 @@ export async function POST(req: Request) {
     await registrarVisita({
       ...dados.data,
       referencia: dados.data.referencia ?? null,
+      teste: dados.data.teste === true,
       userAgent: req.headers.get("user-agent"),
       // a Vercel resolve a geografia na borda, sem serviço externo nem custo
       cidade: decodeURIComponent(req.headers.get("x-vercel-ip-city") ?? "") || null,

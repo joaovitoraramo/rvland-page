@@ -176,3 +176,12 @@ describe("resumirVisitas", () => {
     expect(r.emCelular).toBe(2);
   });
 });
+
+describe("marcarComoTeste", () => {
+  it("põe o aviso de teste na primeira linha e preserva a mensagem", async () => {
+    const { marcarComoTeste } = await import("./visitas-conceito");
+    const m = marcarComoTeste("👀 Abriram o conceito — X\n/c/x");
+    expect(m.split("\n")[0]).toBe("🧪 TESTE, nada gravado");
+    expect(m.endsWith("/c/x")).toBe(true);
+  });
+});

@@ -9,13 +9,16 @@ import {
   type CliqueConceito,
   type ItemClique,
 } from "@/lib/dominio/cliques-conceito";
-import { ehRobo } from "@/lib/dominio/visitas-conceito";
+import { ehRobo, marcarComoTeste } from "@/lib/dominio/visitas-conceito";
+import { negocioDoSlug } from "@/lib/servicos/visitas-conceito";
 
 export type EntradaCliques = {
   slug: string;
   visitante: string;
   sessao: string;
   itens: ItemClique[];
+  /** ?rvland=teste: avisa no Telegram com prefixo e não grava */
+  teste?: boolean;
   userAgent: string | null;
 };
 
@@ -28,12 +31,25 @@ export type EntradaCliques = {
  */
 export async function registrarCliques(entrada: EntradaCliques): Promise<{
   gravados: number;
-  motivo?: "robo" | "vazio";
+  motivo?: "robo" | "vazio" | "teste";
 }> {
   if (ehRobo(entrada.userAgent)) return { gravados: 0, motivo: "robo" };
 
   const itens = limparItens(entrada.itens);
   if (itens.length === 0) return { gravados: 0, motivo: "vazio" };
+
+  if (entrada.teste) {
+    try {
+      await enviarTelegram(
+        marcarComoTeste(
+          mensagemCliques({ negocio: await negocioDoSlug(entrada.slug), slug: entrada.slug, itens, visita: null, totalNaSessao: itens.length, conceitoHost: process.env.NEXT_PUBLIC_SITE_HOST ?? "rvland-page.vercel.app" })
+        )
+      );
+    } catch (err) {
+      console.error("[cliques-conceito] falha ao avisar teste:", err);
+    }
+    return { gravados: 0, motivo: "teste" };
+  }
 
   await db.insert(cliquesConceito).values(
     itens.map((i) => ({
