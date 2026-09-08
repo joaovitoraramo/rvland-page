@@ -519,3 +519,29 @@ export const visitasConceito = pgTable(
     uniqueIndex("visitas_conceito_sessao_idx").on(t.sessao),
   ]
 );
+
+/**
+ * Onde o prospect clicou dentro do conceito. Complementa visitas_conceito:
+ * a abertura diz que entrou, isto diz o que foi ver. Uma linha por clique;
+ * o lote que chega junto vira uma mensagem só no Telegram.
+ */
+export const cliquesConceito = pgTable(
+  "cliques_conceito",
+  {
+    id: uuid("id").primaryKey().defaultRandom(),
+    slug: text("slug").notNull(),
+    visitante: text("visitante").notNull(),
+    sessao: text("sessao").notNull(),
+    quando: timestamp("quando", { withTimezone: true }).notNull().defaultNow(),
+    // o que estava escrito no que foi clicado
+    rotulo: text("rotulo").notNull(),
+    // onde na página: id da seção, nav, chat, faixa RVLand
+    secao: text("secao"),
+    // para onde levava, quando era um link
+    destino: text("destino"),
+  },
+  (t) => [
+    index("cliques_conceito_slug_idx").on(t.slug),
+    index("cliques_conceito_sessao_idx").on(t.sessao),
+  ]
+);

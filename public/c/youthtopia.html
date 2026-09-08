@@ -1144,11 +1144,11 @@
       <div class="marca-sub">Med Spa · Alpharetta</div>
     </div>
     <nav>
-      <a href="#menu">Treatments</a>
-      <a href="#setembro">Specials</a>
-      <a href="#clube">Membership</a>
-      <a href="#casa">The house</a>
-      <a href="#vitrine">Shop</a>
+      <a href="#treatments">Treatments</a>
+      <a href="#specials">Specials</a>
+      <a href="#membership">Membership</a>
+      <a href="#team">The house</a>
+      <a href="#shop">Shop</a>
     </nav>
     <a class="nav-fone" href="tel:+17706370428">(770) 637-0428</a>
     <a class="pilula pilula-ouro" href="https://phorest.com/book/salons/youthtopiamedspa">Book now</a>
@@ -1157,11 +1157,11 @@
 
 <!-- atalhos no celular -->
 <nav class="dock" aria-label="Shortcuts">
-  <a href="#menu" data-sec="menu">Menu</a>
-  <a href="#setembro" data-sec="setembro">Specials</a>
-  <a href="#clube" data-sec="clube">VIP</a>
-  <a href="#casa" data-sec="casa">Team</a>
-  <a href="#vitrine" data-sec="vitrine">Shop</a>
+  <a href="#treatments" data-sec="treatments">Menu</a>
+  <a href="#specials" data-sec="specials">Specials</a>
+  <a href="#membership" data-sec="membership">VIP</a>
+  <a href="#team" data-sec="team">Team</a>
+  <a href="#shop" data-sec="shop">Shop</a>
 </nav>
 
 <!-- hero -->
@@ -1176,7 +1176,7 @@
           Medical-grade results, delivered with personal care.</p>
         <div class="hero-ctas" data-revela style="--atraso:520ms">
           <a class="pilula pilula-ouro" href="https://phorest.com/book/salons/youthtopiamedspa">Book your visit</a>
-          <a class="pilula pilula-vidro" href="#setembro">September specials</a>
+          <a class="pilula pilula-vidro" href="#specials">September specials</a>
         </div>
       </div>
       <div class="hero-fatos" data-grupo data-base="600">
@@ -1190,7 +1190,7 @@
 </section>
 
 <!-- o menu, como bento -->
-<section class="menu" id="menu">
+<section class="menu" id="treatments">
   <div class="orbe orbe-rosa"></div>
   <div class="orbe orbe-ouro"></div>
   <div class="env">
@@ -1232,7 +1232,7 @@
           <li><a href="https://youthtopiamedspa.com/tirzepatide/"><span class="prato">Tirzepatide Program</span><span class="prato-nota">wellness</span></a></li>
         </ul>
       </div>
-      <div class="tile tile-7 tile-setembro escuro" id="setembro" data-revela>
+      <div class="tile tile-7 tile-setembro escuro" id="specials" data-revela>
         <div class="orbe orbe-ouro"></div>
         <div>
           <span class="etiqueta">This month at the house</span>
@@ -1250,7 +1250,7 @@
         </div>
       </div>
     </div>
-    <div class="oferta vidro" id="oferta" data-revela>
+    <div class="oferta vidro" id="offer" data-revela>
       <div class="orbe orbe-ouro"></div>
       <div>
         <span class="etiqueta">New clients only</span>
@@ -1267,7 +1267,7 @@
 </section>
 
 <!-- the youthtopia card -->
-<section class="clube escuro" id="clube">
+<section class="clube escuro" id="membership">
   <div class="orbe orbe-rosa"></div>
   <div class="orbe orbe-ouro"></div>
   <div class="env">
@@ -1309,7 +1309,7 @@
 </section>
 
 <!-- the house -->
-<section class="casa" id="casa">
+<section class="casa" id="team">
   <div class="orbe orbe-ouro"></div>
   <div class="env">
     <div class="cabeca" data-revela>
@@ -1345,7 +1345,7 @@
 </section>
 
 <!-- shop -->
-<section class="vitrine" id="vitrine">
+<section class="vitrine" id="shop">
   <div class="orbe orbe-ouro"></div>
   <div class="env">
     <div class="cabeca" data-revela>
@@ -1645,7 +1645,7 @@
         links.forEach(function (l) { l.classList.toggle("ativo", l.dataset.sec === e.target.id); });
       });
     }, { rootMargin: "-40% 0px -50% 0px", threshold: 0 });
-    ["menu", "setembro", "clube", "casa", "vitrine"].forEach(function (id) {
+    ["treatments", "specials", "membership", "team", "shop"].forEach(function (id) {
       var el = document.getElementById(id); if (el) obs.observe(el);
     });
   })();
@@ -1731,27 +1731,25 @@
     var marcou = false;
     var ultimo = Date.now();
 
+    function postar(url, corpo, saindo) {
+      try {
+        // sendBeacon sobrevive ao fechamento da aba; fetch normal não
+        if (saindo && navigator.sendBeacon) {
+          navigator.sendBeacon(url, new Blob([corpo], { type: "application/json" }));
+        } else {
+          fetch(url, { method: "POST", headers: { "content-type": "application/json" }, body: corpo, keepalive: true });
+        }
+      } catch (e) {}
+    }
+
     function enviar(saindo) {
-      var corpo = JSON.stringify({
+      postar("/api/c/visita", JSON.stringify({
         slug: "youthtopia",
         visitante: visitante,
         sessao: sessao,
         segundos: Math.round(visiveis),
         referencia: document.referrer || null
-      });
-      try {
-        // sendBeacon sobrevive ao fechamento da aba; fetch normal não
-        if (saindo && navigator.sendBeacon) {
-          navigator.sendBeacon("/api/c/visita", new Blob([corpo], { type: "application/json" }));
-        } else {
-          fetch("/api/c/visita", {
-            method: "POST",
-            headers: { "content-type": "application/json" },
-            body: corpo,
-            keepalive: true
-          });
-        }
-      } catch (e) {}
+      }), saindo);
     }
 
     function contar() {
@@ -1762,13 +1760,91 @@
 
     setInterval(contar, 1000);
 
+    // ── cliques: o que a pessoa foi ver ──────────────────────────────────
+    var fila = [];
+    var temporizador = null;
+    var ultimoRotulo = "";
+    var ultimoEm = 0;
+
+    var LUGARES = [
+      [".rv-faixa, .rv-modal", "faixa RVLand"],
+      [".chat", "chat"],
+      [".dock", "dock"],
+      [".menu-cel", "menu"],
+      [".mega", "mega-menu"],
+      [".aviso", "aviso de escopo"],
+      ["header", "nav"],
+      ["footer", "rodapé"]
+    ];
+
+    // junta os nós de texto com espaço: "Botox & Dysport" + "smooth" em spans
+    // vizinhos viraria "Botox & Dysportsmooth" com textContent
+    function texto(el) {
+      var t = el.getAttribute("aria-label") || "";
+      if (!t) {
+        var partes = [];
+        var w = document.createTreeWalker(el, NodeFilter.SHOW_TEXT);
+        var n; while ((n = w.nextNode())) { var v = n.textContent.replace(/\s+/g, " ").trim(); if (v) partes.push(v); }
+        t = partes.join(" ");
+      }
+      if (!t) { var img = el.querySelector("img"); if (img && img.alt) t = img.alt; }
+      return t.slice(0, 80);
+    }
+
+    function lugar(el) {
+      for (var i = 0; i < LUGARES.length; i++) {
+        if (el.closest(LUGARES[i][0])) return LUGARES[i][1];
+      }
+      var sec = el.closest("section");
+      if (sec) return sec.id || (sec.className || "").split(" ")[0] || "section";
+      var dlg = el.closest("[role=dialog][aria-label]");
+      if (dlg) return dlg.getAttribute("aria-label");
+      return null;
+    }
+
+    function enviarCliques(saindo) {
+      clearTimeout(temporizador); temporizador = null;
+      if (!fila.length) return;
+      postar("/api/c/clique", JSON.stringify({
+        slug: "youthtopia",
+        visitante: visitante,
+        sessao: sessao,
+        itens: fila.splice(0, 30)
+      }), saindo);
+    }
+
+    document.addEventListener("click", function (ev) {
+      try {
+        var alvo = ev.target && ev.target.closest && ev.target.closest("a, button, summary, [role=tab], [role=button], label");
+        if (!alvo) return;
+        var rotulo = texto(alvo);
+        if (!rotulo) return;
+        // clique duplo no mesmo lugar não vira dois registros
+        var agora = Date.now();
+        if (rotulo === ultimoRotulo && agora - ultimoEm < 1000) return;
+        ultimoRotulo = rotulo; ultimoEm = agora;
+
+        var destino = alvo.tagName === "A" ? (alvo.getAttribute("href") || null) : null;
+        if (destino && destino.charAt(0) !== "#" && destino.indexOf(":") === -1) {
+          try { destino = new URL(destino, location.href).href; } catch (e) {}
+        }
+        fila.push({ rotulo: rotulo, secao: lugar(alvo), destino: destino });
+
+        // link que sai da página: o lote vai agora, antes de a aba mudar
+        var sai = alvo.tagName === "A" && destino && destino.charAt(0) !== "#" && alvo.getAttribute("target") !== "_blank";
+        if (sai) { enviarCliques(true); return; }
+        if (!temporizador) temporizador = setTimeout(function () { enviarCliques(false); }, 6000);
+      } catch (e) {}
+    }, true);
+
     document.addEventListener("visibilitychange", function () {
       contar();
-      if (document.visibilityState === "hidden" && marcou) enviar(true);
+      if (document.visibilityState === "hidden") { if (marcou) enviar(true); enviarCliques(true); }
     });
     window.addEventListener("pagehide", function () {
       contar();
       if (marcou) enviar(true);
+      enviarCliques(true);
     });
   } catch (e) {}
 })();

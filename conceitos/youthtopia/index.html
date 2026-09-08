@@ -854,11 +854,11 @@
       <div class="marca-sub">Med Spa · Alpharetta</div>
     </div>
     <nav>
-      <a href="#menu">Treatments</a>
-      <a href="#setembro">Specials</a>
-      <a href="#clube">Membership</a>
-      <a href="#casa">The house</a>
-      <a href="#vitrine">Shop</a>
+      <a href="#treatments">Treatments</a>
+      <a href="#specials">Specials</a>
+      <a href="#membership">Membership</a>
+      <a href="#team">The house</a>
+      <a href="#shop">Shop</a>
     </nav>
     <a class="nav-fone" href="tel:+17706370428">(770) 637-0428</a>
     <a class="pilula pilula-ouro" href="https://phorest.com/book/salons/youthtopiamedspa">Book now</a>
@@ -867,11 +867,11 @@
 
 <!-- atalhos no celular -->
 <nav class="dock" aria-label="Shortcuts">
-  <a href="#menu" data-sec="menu">Menu</a>
-  <a href="#setembro" data-sec="setembro">Specials</a>
-  <a href="#clube" data-sec="clube">VIP</a>
-  <a href="#casa" data-sec="casa">Team</a>
-  <a href="#vitrine" data-sec="vitrine">Shop</a>
+  <a href="#treatments" data-sec="treatments">Menu</a>
+  <a href="#specials" data-sec="specials">Specials</a>
+  <a href="#membership" data-sec="membership">VIP</a>
+  <a href="#team" data-sec="team">Team</a>
+  <a href="#shop" data-sec="shop">Shop</a>
 </nav>
 
 <!-- hero -->
@@ -886,7 +886,7 @@
           Medical-grade results, delivered with personal care.</p>
         <div class="hero-ctas" data-revela style="--atraso:520ms">
           <a class="pilula pilula-ouro" href="https://phorest.com/book/salons/youthtopiamedspa">Book your visit</a>
-          <a class="pilula pilula-vidro" href="#setembro">September specials</a>
+          <a class="pilula pilula-vidro" href="#specials">September specials</a>
         </div>
       </div>
       <div class="hero-fatos" data-grupo data-base="600">
@@ -900,7 +900,7 @@
 </section>
 
 <!-- o menu, como bento -->
-<section class="menu" id="menu">
+<section class="menu" id="treatments">
   <div class="orbe orbe-rosa"></div>
   <div class="orbe orbe-ouro"></div>
   <div class="env">
@@ -942,7 +942,7 @@
           <li><a href="https://youthtopiamedspa.com/tirzepatide/"><span class="prato">Tirzepatide Program</span><span class="prato-nota">wellness</span></a></li>
         </ul>
       </div>
-      <div class="tile tile-7 tile-setembro escuro" id="setembro" data-revela>
+      <div class="tile tile-7 tile-setembro escuro" id="specials" data-revela>
         <div class="orbe orbe-ouro"></div>
         <div>
           <span class="etiqueta">This month at the house</span>
@@ -960,7 +960,7 @@
         </div>
       </div>
     </div>
-    <div class="oferta vidro" id="oferta" data-revela>
+    <div class="oferta vidro" id="offer" data-revela>
       <div class="orbe orbe-ouro"></div>
       <div>
         <span class="etiqueta">New clients only</span>
@@ -977,7 +977,7 @@
 </section>
 
 <!-- the youthtopia card -->
-<section class="clube escuro" id="clube">
+<section class="clube escuro" id="membership">
   <div class="orbe orbe-rosa"></div>
   <div class="orbe orbe-ouro"></div>
   <div class="env">
@@ -1019,7 +1019,7 @@
 </section>
 
 <!-- the house -->
-<section class="casa" id="casa">
+<section class="casa" id="team">
   <div class="orbe orbe-ouro"></div>
   <div class="env">
     <div class="cabeca" data-revela>
@@ -1055,7 +1055,7 @@
 </section>
 
 <!-- shop -->
-<section class="vitrine" id="vitrine">
+<section class="vitrine" id="shop">
   <div class="orbe orbe-ouro"></div>
   <div class="env">
     <div class="cabeca" data-revela>
@@ -1355,7 +1355,7 @@
         links.forEach(function (l) { l.classList.toggle("ativo", l.dataset.sec === e.target.id); });
       });
     }, { rootMargin: "-40% 0px -50% 0px", threshold: 0 });
-    ["menu", "setembro", "clube", "casa", "vitrine"].forEach(function (id) {
+    ["treatments", "specials", "membership", "team", "shop"].forEach(function (id) {
       var el = document.getElementById(id); if (el) obs.observe(el);
     });
   })();

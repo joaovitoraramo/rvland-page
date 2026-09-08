@@ -552,10 +552,10 @@
     <a class="marca" href="#"><img src="fotos/logo-branco.png" alt="Sculpted Contours, Luxury Medical Aesthetics" style="filter: invert(1) brightness(0.15)"></a>
     <div class="nav-item" data-item="mega-trat"><button class="nav-botao" type="button" aria-expanded="false" data-mega="mega-trat">Treatments <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><path d="M6 9l6 6 6-6"/></svg></button></div>
     <div class="nav-item"><a class="nav-botao" href="#areas">Areas</a></div>
-    <div class="nav-item"><a class="nav-botao" href="#resultados">Results</a></div>
-    <div class="nav-item"><a class="nav-botao" href="#promocoes">Specials</a></div>
+    <div class="nav-item"><a class="nav-botao" href="#results">Results</a></div>
+    <div class="nav-item"><a class="nav-botao" href="#specials">Specials</a></div>
     <div class="nav-item" data-item="mega-sobre"><button class="nav-botao" type="button" aria-expanded="false" data-mega="mega-sobre">About <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><path d="M6 9l6 6 6-6"/></svg></button></div>
-    <div class="nav-item"><a class="nav-botao" href="#contato">Contact</a></div>
+    <div class="nav-item"><a class="nav-botao" href="#contact">Contact</a></div>
     <a class="nav-fone" href="tel:+14048728578">404.872.8578</a>
     <a class="btn btn-safira" href="https://sculptedcontours.com/contact/schedule-consultation/">Book a free consultation</a>
     <button class="nav-burger" type="button" aria-expanded="false" data-menu-abre><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round"><path d="M4 7h16M4 12h16M4 17h16"/></svg> Menu</button>
@@ -782,11 +782,11 @@
 
 
 <nav class="dock" aria-label="Shortcuts">
-  <a href="#tratamentos" data-sec="tratamentos">Treatments</a>
-  <a href="#resultados" data-sec="resultados">Results</a>
-  <a href="#promocoes" data-sec="promocoes">Specials</a>
-  <a href="#clube" data-sec="clube">Club</a>
-  <a href="#contato" data-sec="contato">Visit</a>
+  <a href="#treatments" data-sec="treatments">Treatments</a>
+  <a href="#results" data-sec="results">Results</a>
+  <a href="#specials" data-sec="specials">Specials</a>
+  <a href="#contour-club" data-sec="contour-club">Club</a>
+  <a href="#contact" data-sec="contact">Visit</a>
 </nav>
 
 <!-- hero dividido; entra em sequência no carregamento -->
@@ -797,7 +797,7 @@
       <p class="hero-sub" data-revela style="--atraso:120ms">Non-surgical body contouring, face tightening, skin rejuvenation and injectables in private treatment suites, by clinicians who train other clinicians. Alpharetta, since 2014.</p>
       <div class="hero-ctas" data-revela style="--atraso:240ms">
         <a class="btn btn-safira" href="https://sculptedcontours.com/contact/schedule-consultation/">Book a free consultation</a>
-        <a class="btn btn-claro" href="#tratamentos">Explore treatments</a>
+        <a class="btn btn-claro" href="#treatments">Explore treatments</a>
       </div>
       <p class="hero-nota" data-revela style="--atraso:340ms">Consultations are complimentary. Every plan is built for you, never from a template.</p>
     </div>
@@ -831,7 +831,7 @@
   </div>
 </section>
 
-<section id="tratamentos">
+<section id="treatments">
   <div class="env">
     <div class="cabeca" data-revela>
       <h2>Everything we do, in one place</h2>
@@ -948,7 +948,7 @@
 
 
 <!-- resultados em carrossel -->
-<section class="escuro" id="resultados">
+<section class="escuro" id="results">
   <div class="escuro-wash"></div>
   <div class="env">
     <div class="cabeca" data-revela>
@@ -986,7 +986,7 @@
 </section>
 
 <!-- promoções e eventos -->
-<section id="promocoes">
+<section id="specials">
   <div class="env">
     <div class="cabeca" data-revela>
       <h2>Specials, events and the Insider gift</h2>
@@ -1028,7 +1028,7 @@
 </section>
 
 <!-- a experiência e a história -->
-<section id="sobre">
+<section id="experience">
   <div class="env">
     <div class="cabeca" data-revela>
       <h2>A private suite, not a treatment room</h2>
@@ -1058,7 +1058,7 @@
 </section>
 
 <!-- experts -->
-<section id="equipe">
+<section id="team">
   <div class="env">
     <div class="cabeca" data-revela>
       <h2>Clinicians who train clinicians</h2>
@@ -1074,7 +1074,7 @@
 </section>
 
 <!-- contour club -->
-<section class="escuro" id="clube">
+<section class="escuro" id="contour-club">
   <div class="escuro-wash"></div>
   <div class="env">
     <div class="clube-grade">
@@ -1108,7 +1108,7 @@
 </section>
 
 <!-- avaliações e financiamento -->
-<section id="avaliacoes">
+<section id="reviews">
   <div class="env">
     <div class="voz-grade">
       <div>
@@ -1133,7 +1133,7 @@
 </section>
 
 <!-- aprender -->
-<section id="aprender">
+<section id="learn">
   <div class="env">
     <div class="cabeca" data-revela>
       <h2>Transformation Talk</h2>
@@ -1174,7 +1174,7 @@
 </section>
 
 <!-- contato: mapa claro em monocromia, pino próprio -->
-<section id="contato">
+<section id="contact">
   <div class="env">
     <div class="cabeca" data-revela>
       <h2>Visit us on Royal Boulevard</h2>
@@ -1408,7 +1408,7 @@
   (function () {
     var links = document.querySelectorAll(".dock a[data-sec]"); if (!links.length || !("IntersectionObserver" in window)) return;
     var obs = new IntersectionObserver(function (es) { es.forEach(function (e) { if (!e.isIntersecting) return; links.forEach(function (l) { l.classList.toggle("ativo", l.dataset.sec === e.target.id); }); }); }, { rootMargin: "-40% 0px -50% 0px", threshold: 0 });
-    ["tratamentos", "resultados", "promocoes", "clube", "contato"].forEach(function (id) { var el = document.getElementById(id); if (el) obs.observe(el); });
+    ["treatments", "results", "specials", "contour-club", "contact"].forEach(function (id) { var el = document.getElementById(id); if (el) obs.observe(el); });
   })();
   // Chat de concierge em conversa guiada. Nada é enviado.
   (function () {

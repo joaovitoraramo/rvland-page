@@ -30,6 +30,8 @@ import { urlAssinadaPrint, urlsDoConceito } from "@/lib/servicos/prints-prospecc
 import { CardConceito } from "@/components/painel/card-conceito";
 import { CardVisitasConceito } from "@/components/painel/visitas-conceito";
 import { visitasDoConceito } from "@/lib/servicos/visitas-conceito";
+import { CardCliquesConceito } from "@/components/painel/cliques-conceito";
+import { cliquesDoConceito } from "@/lib/servicos/cliques-conceito";
 
 export const metadata = { title: "Prospect" };
 
@@ -55,6 +57,7 @@ export default async function PaginaProspect({
   // o slug vive no fim da URL do conceito: /c/<slug>
   const slugConceito = p.conceito?.url?.split("/c/")[1]?.replace(/\/$/, "") ?? null;
   const visitas = slugConceito ? await visitasDoConceito(slugConceito) : [];
+  const cliques = slugConceito ? await cliquesDoConceito(slugConceito) : [];
 
   const info = (rotulo: string, valor: React.ReactNode) => (
     <div>
@@ -197,6 +200,7 @@ export default async function PaginaProspect({
           ) : null}
 
           {slugConceito ? <CardVisitasConceito visitas={visitas} /> : null}
+          {slugConceito ? <CardCliquesConceito cliques={cliques} /> : null}
 
           {/* print da varredura: a prova visual do diagnóstico */}
           <Card>
