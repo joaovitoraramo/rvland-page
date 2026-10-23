@@ -8,7 +8,7 @@
  */
 import { buscarFonte, FonteIndisponivel } from "./fonte";
 import { geocodificar } from "./geocode";
-import { parseLojas, rankingDaLoja, type RankingLoja, type RespostaFonte } from "./ranking";
+import { parseLojas, rankingDaLoja, soIsca, type RankingLoja, type RespostaFonte } from "./ranking";
 
 export type ValidacaoToken =
   | { ok: true; clienteId: string; tokenId: string }
@@ -125,9 +125,16 @@ export async function tratarRanking(authorization: string | null, params: URLSea
     const chave = "picprice:" + url;
     const guardado = await deps.cacheGet(chave).catch(() => null);
     if (guardado) return guardado as RespostaFonte;
-    const dados = (await buscarReal(url)) as RespostaFonte;
-    await deps.cacheSet(chave, dados, CACHE_MINUTOS).catch(() => undefined);
-    return dados;
+    // a fonte às vezes devolve só itens falsos (isca anti-robô): tenta de novo e nunca guarda isso
+    for (let tentativa = 0; tentativa < 3; tentativa++) {
+      const dados = (await buscarReal(url)) as RespostaFonte;
+      if (!soIsca(dados)) {
+        await deps.cacheSet(chave, dados, CACHE_MINUTOS).catch(() => undefined);
+        return dados;
+      }
+      await new Promise((ok) => setTimeout(ok, 800 * (tentativa + 1)));
+    }
+    throw new FonteIndisponivel("a fonte devolveu só resultados falsos");
   };
 
   const resultados = await Promise.allSettled(

@@ -43,6 +43,12 @@ export function ehIsca(p: ProdutoFonte): boolean {
   return /^[a-z0-9.]+$/.test(p.id) && (!p.estabelecimento || (p.estabelecimento.codigo ?? "").length !== 43);
 }
 
+/** Resposta-isca inteira (anti-robô): veio produto, mas todos são falsos. Não serve nem para o total. */
+export function soIsca(res: RespostaFonte): boolean {
+  const ps = res.produtos ?? [];
+  return ps.length > 0 && ps.every(ehIsca);
+}
+
 /** Tira isca, junta repetidos (mesma loja + descrição + preço) e ordena por preço/distância. */
 export function montarTop(res: RespostaFonte, tamanho = TAMANHO_RANKING): PrecoRanking[] {
   const vistos = new Set<string>();

@@ -104,6 +104,21 @@ describe("porteiro e estados", () => {
     expect((r.corpo.lojas as unknown[]).length).toBe(1);
   });
 
+  it("resposta só de isca não vira ranking nem cache", async () => {
+    let n = 0;
+    const guardados: unknown[] = [];
+    const isca = { total: 150, produtos: [item("abc.1", 1, { cod: "z".repeat(88) }), item("def.2", 2, { cod: "z".repeat(88) })] };
+    const r = await tratarRanking("Bearer x", q, base({
+      buscar: async () => (++n <= 2 ? isca : { total: 9, produtos: [item("A_1", 4.5)] }),
+      cacheSet: async (_k, dados) => void guardados.push(dados),
+    }));
+    expect(r.corpo.estado).toBe("OK");
+    const loja = (r.corpo.lojas as { totalNaArea: number }[])[0];
+    expect(loja.totalNaArea).toBe(9);
+    expect(guardados.length).toBeGreaterThan(0);
+    expect(guardados.every((g) => (g as { total: number }).total === 9)).toBe(true);
+  });
+
   it("rate limit por token", () => {
     const t = "limite-" + Math.random();
     let ok = 0;
