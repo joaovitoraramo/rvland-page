@@ -69,6 +69,7 @@ export const auditoria = pgTable(
         | "servidor"
         | "lead"
         | "prospeccao"
+        | "picprice"
       >(),
     entidadeId: text("entidade_id"),
     detalhes: jsonb("detalhes").$type<Record<string, unknown>>(),
@@ -545,3 +546,35 @@ export const cliquesConceito = pgTable(
     index("cliques_conceito_sessao_idx").on(t.sessao),
   ]
 );
+
+// ─── RV Pic Price: tokens por cliente (CNPJ da matriz) e cache de consultas ──
+
+export const picpriceTokens = pgTable(
+  "picprice_tokens",
+  {
+    id: uuid("id").primaryKey().defaultRandom(),
+    clienteId: uuid("cliente_id")
+      .notNull()
+      .references(() => clientes.id),
+    // CNPJ completo da matriz, só dígitos
+    cnpj: text("cnpj").notNull(),
+    // o token cru é mostrado UMA vez; guardamos só o hash sha256
+    tokenHash: text("token_hash").notNull(),
+    // começo do token, para reconhecer na lista sem expor o segredo
+    prefixo: text("prefixo").notNull(),
+    status: text("status").notNull().default("ativo").$type<"ativo" | "revogado">(),
+    criadoEm: timestamp("criado_em", { withTimezone: true }).notNull().defaultNow(),
+    revogadoEm: timestamp("revogado_em", { withTimezone: true }),
+    ultimoUsoEm: timestamp("ultimo_uso_em", { withTimezone: true }),
+  },
+  (t) => [
+    uniqueIndex("picprice_tokens_cliente_uidx").on(t.clienteId),
+    uniqueIndex("picprice_tokens_hash_uidx").on(t.tokenHash),
+  ]
+);
+
+export const picpriceCache = pgTable("picprice_cache", {
+  chave: text("chave").primaryKey(),
+  dados: jsonb("dados").notNull().$type<unknown>(),
+  expiraEm: timestamp("expira_em", { withTimezone: true }).notNull(),
+});

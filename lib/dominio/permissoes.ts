@@ -46,6 +46,9 @@ export const PERMISSOES = [
   { chave: "prospeccao.editar", rotulo: "Mover status e escrever notas", area: "Prospecção" },
   { chave: "prospeccao.importar", rotulo: "Importar planilha de prospecção", area: "Prospecção" },
 
+  { chave: "picprice.ver", rotulo: "Ver tokens e status do RV Pic Price", area: "RV Pic Price" },
+  { chave: "picprice.gerenciar", rotulo: "Gerar/revogar tokens e mudar status do RV Pic Price", area: "RV Pic Price" },
+
   { chave: "plataforma.panico", rotulo: "Botão de pânico (suspender bloqueios)", area: "Plataforma" },
   { chave: "plataforma.simulacao", rotulo: "Modo simulação", area: "Plataforma" },
   { chave: "plataforma.usuarios", rotulo: "Gerenciar usuários", area: "Plataforma" },

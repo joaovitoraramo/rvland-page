@@ -14,8 +14,7 @@ import {
   ScrollText,
   LogOut,
   Menu,
-  X,
-} from "lucide-react";
+  X, Tag } from "lucide-react";
 
 import { cn } from "@/lib/utils";
 import { Avatar } from "@/components/painel/ui";
@@ -30,6 +29,7 @@ const ICONES = {
   servidores: Server,
   config: Settings2,
   auditoria: ScrollText,
+  picprice: Tag,
 } as const;
 
 /**
