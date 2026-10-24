@@ -255,6 +255,9 @@ export const servidores = pgTable(
       }[];
     }>(),
     manutencaoAte: timestamp("manutencao_ate", { withTimezone: true }),
+    // módulos do agente neste servidor (vão no lease assinado). Servidores antigos: só licença.
+    moduloLicenca: boolean("modulo_licenca").notNull().default(true),
+    moduloPicprice: boolean("modulo_picprice").notNull().default(false),
     ultimoContatoEm: timestamp("ultimo_contato_em", { withTimezone: true }),
     criadoEm: timestamp("criado_em", { withTimezone: true }).notNull().defaultNow(),
   },

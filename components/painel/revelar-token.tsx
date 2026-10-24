@@ -7,23 +7,31 @@ import { KeyRound, RefreshCw } from "lucide-react";
 import { Btn } from "@/components/painel/ui";
 import { Copiavel } from "@/components/painel/copiavel";
 import type { EstadoToken } from "@/app/(app)/painel/servidores/actions";
+import { comandoInstalacao, descreverModulos, type ModulosServidor } from "@/lib/dominio/agente-modulos";
 
 export function RevelarToken({
   acao,
   siteUrl,
   jaPendente,
+  modulos,
 }: {
   acao: (estado: EstadoToken, formData: FormData) => Promise<EstadoToken>;
   siteUrl: string;
   /** true quando o servidor ainda não fez enroll (mostra ação primária). */
   jaPendente: boolean;
+  /** módulos do cadastro (o comando mostra o que vai ser ligado) */
+  modulos: ModulosServidor;
 }) {
   const [estado, dispatch, pendente] = useActionState<EstadoToken, FormData>(acao, {});
 
   if (estado.token) {
-    const comando = `curl -fsSL ${siteUrl}/api/agente/instalar | sudo bash -s -- --token=${estado.token} --servidor=${siteUrl}`;
+    const mods = estado.modulos ?? modulos;
+    const comando = comandoInstalacao({ siteUrl, token: estado.token, modulos: mods });
     return (
       <div className="space-y-4">
+        <p className="text-sm text-white/70">
+          Módulos que serão ligados: <strong className="text-white">{descreverModulos(mods)}</strong>
+        </p>
         <Copiavel rotulo="token de enrollment" valor={estado.token} />
         <Copiavel rotulo="comando de instalação" valor={comando} />
         <p className="text-xs text-white/35">
