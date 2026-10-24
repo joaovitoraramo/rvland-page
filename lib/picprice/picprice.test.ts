@@ -1,8 +1,8 @@
-import { describe, expect, it } from "vitest";
+import { describe, expect, it, vi } from "vitest";
 
 import { geohashDecode, geohashEncode } from "./geohash";
 import { ehIsca, montarTop, parseLojas, rankingDaLoja, type RespostaFonte } from "./ranking";
-import { dentroDoLimite, extrairToken, tratarRanking, type DepsPicPrice } from "./api";
+import { dentroDoLimite, extrairToken, PRAZO_RANKING_MS, tratarRanking, type DepsPicPrice } from "./api";
 
 const REAL_COD = "x".repeat(43);
 const item = (id: string, valor: number, extra: Partial<{ cod: string; desc: string; dist: number }> = {}) => ({
@@ -109,7 +109,7 @@ describe("porteiro e estados", () => {
     const guardados: unknown[] = [];
     const isca = { total: 150, produtos: [item("abc.1", 1, { cod: "z".repeat(88) }), item("def.2", 2, { cod: "z".repeat(88) })] };
     const r = await tratarRanking("Bearer x", q, base({
-      buscar: async () => (++n <= 2 ? isca : { total: 9, produtos: [item("A_1", 4.5)] }),
+      buscar: async () => (++n <= 1 ? isca : { total: 9, produtos: [item("A_1", 4.5)] }),
       cacheSet: async (_k, dados) => void guardados.push(dados),
     }));
     expect(r.corpo.estado).toBe("OK");
@@ -117,6 +117,19 @@ describe("porteiro e estados", () => {
     expect(loja.totalNaArea).toBe(9);
     expect(guardados.length).toBeGreaterThan(0);
     expect(guardados.every((g) => (g as { total: number }).total === 9)).toBe(true);
+  });
+
+  it("fonte travada: responde FONTE_INDISPONIVEL dentro do prazo, sem estourar a função", async () => {
+    vi.useFakeTimers();
+    try {
+      const pendente = tratarRanking("Bearer x", q, base({ buscar: () => new Promise(() => undefined) }));
+      await vi.advanceTimersByTimeAsync(PRAZO_RANKING_MS + 10);
+      const r = await pendente;
+      expect(r.status).toBe(503);
+      expect(r.corpo.estado).toBe("FONTE_INDISPONIVEL");
+    } finally {
+      vi.useRealTimers();
+    }
   });
 
   it("rate limit por token", () => {

@@ -147,6 +147,9 @@ export async function tratarGeohash(authorization: string | null, corpo: unknown
   }
 }
 
+/** Tempo máximo do ranking inteiro (todas as lojas), abaixo do maxDuration de 60 s da rota. */
+export const PRAZO_RANKING_MS = 40_000;
+
 /** GET /api/picprice/ranking?gtin=&lojas=001:geohash,...&raio=3&data=-1 */
 export async function tratarRanking(authorization: string | null, params: URLSearchParams, deps: DepsPicPrice): Promise<Resposta> {
   const p = await porteiro(authorization, deps);
@@ -169,7 +172,8 @@ export async function tratarRanking(authorization: string | null, params: URLSea
     const guardado = await deps.cacheGet(chave).catch(() => null);
     if (guardado) return guardado as RespostaFonte;
     // a fonte às vezes devolve só itens falsos (isca anti-robô): tenta de novo e nunca guarda isso
-    for (let tentativa = 0; tentativa < 3; tentativa++) {
+    // a isca depende do IP de saída: repetir muito não adianta e estoura o tempo da função
+    for (let tentativa = 0; tentativa < 2; tentativa++) {
       const dados = (await buscarReal(url)) as RespostaFonte;
       if (!soIsca(dados)) {
         await deps.cacheSet(chave, dados, CACHE_MINUTOS).catch(() => undefined);
@@ -180,8 +184,12 @@ export async function tratarRanking(authorization: string | null, params: URLSea
     throw new FonteIndisponivel("a fonte devolveu só resultados falsos");
   };
 
+  // Prazo total: responde antes do limite da função (maxDuration 60 s), senão a Vercel corta com 504 sem JSON.
+  const prazo = new Promise<never>((_, falhar) =>
+    setTimeout(() => falhar(new FonteIndisponivel("tempo esgotado consultando a fonte")), PRAZO_RANKING_MS)
+  );
   const resultados = await Promise.allSettled(
-    lojas.map((l) => rankingDaLoja(buscarComCache, { ...l, gtin, raio, data }))
+    lojas.map((l) => Promise.race([rankingDaLoja(buscarComCache, { ...l, gtin, raio, data }), prazo]))
   );
   const ok = resultados.filter((r): r is PromiseFulfilledResult<RankingLoja> => r.status === "fulfilled").map((r) => r.value);
   if (!ok.length) {
