@@ -566,6 +566,10 @@ export const picpriceTokens = pgTable(
     criadoEm: timestamp("criado_em", { withTimezone: true }).notNull().defaultNow(),
     revogadoEm: timestamp("revogado_em", { withTimezone: true }),
     ultimoUsoEm: timestamp("ultimo_uso_em", { withTimezone: true }),
+    // cota diária de requisições (dia de São Paulo); o contador zera quando muda o dia
+    limiteDiario: integer("limite_diario").notNull().default(200),
+    usoDia: date("uso_dia", { mode: "string" }),
+    usoQtde: integer("uso_qtde").notNull().default(0),
   },
   (t) => [
     uniqueIndex("picprice_tokens_cliente_uidx").on(t.clienteId),

@@ -1,6 +1,6 @@
 import "server-only";
 import { createHash, randomBytes } from "node:crypto";
-import { and, desc, eq, gt, lt } from "drizzle-orm";
+import { and, desc, eq, gt, lt, sql } from "drizzle-orm";
 
 import { db, clientes, picpriceCache, picpriceTokens, configuracoes } from "@/lib/db";
 import { setConfig } from "@/lib/config";
@@ -71,6 +71,51 @@ export async function gerarTokenDoCliente(clienteId: string): Promise<{ token: s
   return { token, cnpj };
 }
 
+/** Limite diário de requisições do token do cliente (inteiro ≥ 1). Devolve o anterior. */
+export async function definirLimiteDiario(clienteId: string, limite: number): Promise<{ anterior: number | null }> {
+  const [atual] = await db
+    .select({ limite: picpriceTokens.limiteDiario })
+    .from(picpriceTokens)
+    .where(eq(picpriceTokens.clienteId, clienteId))
+    .limit(1);
+  if (!atual) throw new Error("O cliente ainda não tem token.");
+  await db.update(picpriceTokens).set({ limiteDiario: limite }).where(eq(picpriceTokens.clienteId, clienteId));
+  return { anterior: atual.limite };
+}
+
+/**
+ * Conta 1 requisição no dia, num único UPDATE (atômico com chamadas simultâneas):
+ * dia novo recomeça em 1; mesmo dia soma só se ainda couber. Sem linha = estourou.
+ */
+export async function consumirCotaPicPrice(tokenId: string, dia: string) {
+  const [l] = await db
+    .update(picpriceTokens)
+    .set({
+      usoQtde: sql`CASE WHEN ${picpriceTokens.usoDia} = ${dia}::date THEN ${picpriceTokens.usoQtde} + 1 ELSE 1 END`,
+      usoDia: dia,
+      ultimoUsoEm: new Date(),
+    })
+    .where(
+      and(
+        eq(picpriceTokens.id, tokenId),
+        sql`(${picpriceTokens.usoDia} IS DISTINCT FROM ${dia}::date OR ${picpriceTokens.usoQtde} < ${picpriceTokens.limiteDiario})`
+      )
+    )
+    .returning({ usado: picpriceTokens.usoQtde, limite: picpriceTokens.limiteDiario });
+  if (l) return { ok: true, usado: l.usado, limite: l.limite };
+  const lido = await lerCotaPicPrice(tokenId, dia);
+  return { ok: false, ...lido };
+}
+
+export async function lerCotaPicPrice(tokenId: string, dia: string) {
+  const [t] = await db
+    .select({ dia: picpriceTokens.usoDia, qtde: picpriceTokens.usoQtde, limite: picpriceTokens.limiteDiario })
+    .from(picpriceTokens)
+    .where(eq(picpriceTokens.id, tokenId))
+    .limit(1);
+  return { usado: t && t.dia === dia ? t.qtde : 0, limite: t?.limite ?? 200 };
+}
+
 export async function mudarStatusToken(clienteId: string, status: "ativo" | "revogado"): Promise<void> {
   await db
     .update(picpriceTokens)
@@ -91,6 +136,9 @@ export async function listarTokensPicPrice() {
       criadoEm: picpriceTokens.criadoEm,
       revogadoEm: picpriceTokens.revogadoEm,
       ultimoUsoEm: picpriceTokens.ultimoUsoEm,
+      limiteDiario: picpriceTokens.limiteDiario,
+      usoDia: picpriceTokens.usoDia,
+      usoQtde: picpriceTokens.usoQtde,
     })
     .from(clientes)
     .leftJoin(picpriceTokens, eq(picpriceTokens.clienteId, clientes.id))
@@ -120,7 +168,6 @@ export const depsBanco: DepsPicPrice = {
     // faxina barata: de vez em quando apaga o que venceu
     if (Math.random() < 0.05) await db.delete(picpriceCache).where(lt(picpriceCache.expiraEm, new Date()));
   },
-  async registrarUso(tokenId) {
-    await db.update(picpriceTokens).set({ ultimoUsoEm: new Date() }).where(eq(picpriceTokens.id, tokenId));
-  },
+  consumirCota: consumirCotaPicPrice,
+  lerCota: lerCotaPicPrice,
 };

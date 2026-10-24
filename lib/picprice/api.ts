@@ -4,11 +4,16 @@
  *
  * Toda resposta traz `estado`, que o servidor do cliente repassa ao Hermes:
  *   OK | TOKEN_INVALIDO | MANUTENCAO | FONTE_INDISPONIVEL | LIMITE_EXCEDIDO
- *   | REQUISICAO_INVALIDA | ENDERECO_NAO_ENCONTRADO
+ *   | LIMITE_DIARIO | REQUISICAO_INVALIDA | ENDERECO_NAO_ENCONTRADO
+ *
+ * Cota diária por token (padrão 200): toda requisição aceita em ranking e
+ * geohash conta, inclusive as respondidas pelo cache. Token inválido não conta.
+ * As respostas OK trazem `uso: {usado, limite, zeraEm}`.
  */
 import { buscarFonte, FonteIndisponivel } from "./fonte";
 import { geocodificar } from "./geocode";
 import { parseLojas, rankingDaLoja, soIsca, type RankingLoja, type RespostaFonte } from "./ranking";
+import { diaSaoPaulo, proximaMeiaNoiteSaoPaulo, type UsoDiario } from "./cota";
 
 export type ValidacaoToken =
   | { ok: true; clienteId: string; tokenId: string }
@@ -21,7 +26,13 @@ export type DepsPicPrice = {
   statusServico: () => Promise<StatusServico>;
   cacheGet: (chave: string) => Promise<unknown | null>;
   cacheSet: (chave: string, dados: unknown, minutos: number) => Promise<void>;
-  registrarUso?: (tokenId: string) => Promise<void>;
+  /**
+   * Conta 1 requisição do token no dia (atômico). ok=false quando o limite do
+   * dia já foi atingido (aí não soma). Também atualiza o último uso.
+   */
+  consumirCota?: (tokenId: string, dia: string) => Promise<{ ok: boolean; usado: number; limite: number }>;
+  /** Lê o uso do dia sem contar (usado pelo /status). */
+  lerCota?: (tokenId: string, dia: string) => Promise<{ usado: number; limite: number }>;
   /** troca da fonte em teste; padrão = fonte real blindada */
   buscar?: (url: string) => Promise<unknown>;
 };
@@ -48,25 +59,26 @@ export function extrairToken(header: string | null): string | null {
   return m ? m[1] : null;
 }
 
-/** Token -> manutenção -> limite. Devolve a resposta de erro ou o tokenId. */
+function respostaTokenInvalido(motivo: "inexistente" | "revogado"): Resposta {
+  return {
+    status: 401,
+    corpo: {
+      estado: "TOKEN_INVALIDO",
+      motivo,
+      mensagem: motivo === "revogado" ? "Serviço inválido - token revogado" : "Serviço inválido - token inválido",
+    },
+  };
+}
+
+/** Token -> manutenção -> rajada por minuto -> cota diária. Devolve a resposta de erro ou o tokenId + uso. */
 async function porteiro(
   authorization: string | null,
-  deps: DepsPicPrice
-): Promise<{ erro: Resposta } | { tokenId: string }> {
+  deps: DepsPicPrice,
+  agora: Date = new Date()
+): Promise<{ erro: Resposta } | { tokenId: string; uso: UsoDiario | null }> {
   const token = extrairToken(authorization);
   const v = token ? await deps.validarToken(token) : ({ ok: false, motivo: "inexistente" } as const);
-  if (!v.ok) {
-    return {
-      erro: {
-        status: 401,
-        corpo: {
-          estado: "TOKEN_INVALIDO",
-          motivo: v.motivo,
-          mensagem: v.motivo === "revogado" ? "Serviço inválido - token revogado" : "Serviço inválido - token inválido",
-        },
-      },
-    };
-  }
+  if (!v.ok) return { erro: respostaTokenInvalido(v.motivo) };
   const st = await deps.statusServico();
   if (st.estado === "manutencao") {
     return {
@@ -83,8 +95,39 @@ async function porteiro(
   if (!dentroDoLimite(v.tokenId)) {
     return { erro: { status: 429, corpo: { estado: "LIMITE_EXCEDIDO", mensagem: "Muitas consultas em pouco tempo. Tente de novo em instantes." } } };
   }
-  await deps.registrarUso?.(v.tokenId).catch(() => undefined);
-  return { tokenId: v.tokenId };
+  const zeraEm = proximaMeiaNoiteSaoPaulo(agora);
+  if (!deps.consumirCota) return { tokenId: v.tokenId, uso: null };
+  const c = await deps.consumirCota(v.tokenId, diaSaoPaulo(agora));
+  const uso: UsoDiario = { usado: c.usado, limite: c.limite, zeraEm };
+  if (!c.ok) {
+    return {
+      erro: {
+        status: 429,
+        corpo: { estado: "LIMITE_DIARIO", mensagem: "Limite diário de consultas atingido", ...uso, uso },
+      },
+    };
+  }
+  return { tokenId: v.tokenId, uso };
+}
+
+/**
+ * GET /api/picprice/status — confere token e status do serviço e devolve o uso
+ * do dia. NÃO conta na cota (serve para "Testar conexão").
+ */
+export async function tratarStatus(authorization: string | null, deps: DepsPicPrice, agora: Date = new Date()): Promise<Resposta> {
+  const token = extrairToken(authorization);
+  const v = token ? await deps.validarToken(token) : ({ ok: false, motivo: "inexistente" } as const);
+  if (!v.ok) return respostaTokenInvalido(v.motivo);
+  const lido = deps.lerCota ? await deps.lerCota(v.tokenId, diaSaoPaulo(agora)) : null;
+  const uso: UsoDiario | null = lido ? { ...lido, zeraEm: proximaMeiaNoiteSaoPaulo(agora) } : null;
+  const st = await deps.statusServico();
+  if (st.estado === "manutencao") {
+    return { status: 503, corpo: { estado: "MANUTENCAO", mensagem: st.mensagem || "Manutenção programada", previsao: st.previsao ?? null, uso } };
+  }
+  if (uso && uso.usado >= uso.limite) {
+    return { status: 200, corpo: { estado: "LIMITE_DIARIO", mensagem: "Limite diário de consultas atingido", ...uso, uso } };
+  }
+  return { status: 200, corpo: { estado: "OK", uso } };
 }
 
 /** POST /api/picprice/geohash {endereco} */
@@ -97,10 +140,10 @@ export async function tratarGeohash(authorization: string | null, corpo: unknown
   }
   try {
     const r = await geocodificar(endereco);
-    if (!r) return { status: 404, corpo: { estado: "ENDERECO_NAO_ENCONTRADO", mensagem: "Endereço não encontrado no Paraná." } };
-    return { status: 200, corpo: { estado: "OK", ...r } };
+    if (!r) return { status: 404, corpo: { estado: "ENDERECO_NAO_ENCONTRADO", mensagem: "Endereço não encontrado no Paraná.", uso: p.uso } };
+    return { status: 200, corpo: { estado: "OK", ...r, uso: p.uso } };
   } catch (e) {
-    return { status: 503, corpo: { estado: "FONTE_INDISPONIVEL", mensagem: "Geocodificador indisponível: " + (e as Error).message } };
+    return { status: 503, corpo: { estado: "FONTE_INDISPONIVEL", mensagem: "Geocodificador indisponível: " + (e as Error).message, uso: p.uso } };
   }
 }
 
@@ -149,12 +192,13 @@ export async function tratarRanking(authorization: string | null, params: URLSea
         estado: "FONTE_INDISPONIVEL",
         mensagem: "A fonte de preços não respondeu. Tente de novo em instantes.",
         detalhe: motivo?.reason instanceof FonteIndisponivel ? motivo.reason.message : String(motivo?.reason ?? ""),
+        uso: p.uso,
       },
     };
   }
   const falharam = lojas.filter((l) => !ok.some((r) => r.loja === l.loja)).map((l) => l.loja);
   return {
     status: 200,
-    corpo: { estado: "OK", gtin, raio, data, consultadoEm: new Date().toISOString(), lojas: ok, lojasSemResposta: falharam },
+    corpo: { estado: "OK", gtin, raio, data, consultadoEm: new Date().toISOString(), lojas: ok, lojasSemResposta: falharam, uso: p.uso },
   };
 }

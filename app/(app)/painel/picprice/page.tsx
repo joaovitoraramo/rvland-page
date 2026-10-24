@@ -3,6 +3,7 @@ import { Ban, RotateCcw, Tag } from "lucide-react";
 import { exigirPermissao, pode } from "@/lib/auth";
 import { formatarDataHoraBR } from "@/lib/formato";
 import { getStatusServico, listarTokensPicPrice, soDigitos } from "@/lib/picprice/servidor";
+import { diaSaoPaulo, LIMITE_DIARIO_PADRAO, usadoHoje } from "@/lib/picprice/cota";
 import { PageHeader } from "@/components/painel/page-header";
 import { Btn, EmptyState } from "@/components/painel/ui";
 import { GerarTokenPicPrice } from "@/components/painel/gerar-token-picprice";
@@ -11,6 +12,7 @@ import {
   gerarTokenPicPrice,
   reativarTokenPicPrice,
   revogarTokenPicPrice,
+  salvarLimitePicPrice,
   salvarStatusPicPrice,
 } from "./actions";
 
@@ -24,6 +26,7 @@ export default async function PaginaPicPrice() {
   const gerencia = pode(perfil, "picprice.gerenciar");
   const [lista, status] = await Promise.all([listarTokensPicPrice(), getStatusServico()]);
   const ativos = lista.filter((l) => l.status === "ativo").length;
+  const hoje = diaSaoPaulo();
 
   return (
     <>
@@ -78,6 +81,7 @@ export default async function PaginaPicPrice() {
                 <TableHead>CNPJ da matriz</TableHead>
                 <TableHead>Token</TableHead>
                 <TableHead>Status</TableHead>
+                <TableHead>Uso hoje / limite diário</TableHead>
                 <TableHead>Último uso</TableHead>
                 <TableHead className="text-right">Ações</TableHead>
               </TableRow>
@@ -97,6 +101,18 @@ export default async function PaginaPicPrice() {
                       <span className="rounded-full bg-red-400/10 px-2 py-0.5 text-xs text-red-300">
                         revogado{l.revogadoEm ? ` em ${formatarDataHoraBR(l.revogadoEm)}` : ""}
                       </span>
+                    )}
+                  </TableCell>
+                  <TableCell className="min-w-[210px]">
+                    {l.tokenId ? (
+                      <UsoDiario
+                        usado={usadoHoje(l.usoDia, l.usoQtde, hoje)}
+                        limite={l.limiteDiario ?? LIMITE_DIARIO_PADRAO}
+                        clienteId={l.clienteId}
+                        editar={gerencia}
+                      />
+                    ) : (
+                      <span className="text-xs text-white/40">—</span>
                     )}
                   </TableCell>
                   <TableCell className="text-xs text-white/55">{l.ultimoUsoEm ? formatarDataHoraBR(l.ultimoUsoEm) : "nunca"}</TableCell>
@@ -126,5 +142,40 @@ export default async function PaginaPicPrice() {
         )}
       </div>
     </>
+  );
+}
+
+/** "usadas hoje / limite" com barra; quem gerencia edita o limite ali mesmo. Zera à meia-noite (São Paulo). */
+function UsoDiario({ usado, limite, clienteId, editar }: { usado: number; limite: number; clienteId: string; editar: boolean }) {
+  const pct = Math.min(100, Math.round((usado / Math.max(1, limite)) * 100));
+  const cor = pct >= 100 ? "bg-red-400" : pct >= 80 ? "bg-amber-400" : "bg-emerald-400";
+  return (
+    <div className="grid gap-1.5">
+      <div className="flex items-baseline justify-between gap-2 text-xs">
+        <span className="font-mono text-white/80">
+          {usado} / {limite}
+        </span>
+        <span className={pct >= 100 ? "text-red-300" : "text-white/40"}>{pct >= 100 ? "limite atingido" : `${pct}%`}</span>
+      </div>
+      <div className="h-1.5 overflow-hidden rounded-full bg-white/10">
+        <div className={`h-full rounded-full ${cor}`} style={{ width: `${pct}%` }} />
+      </div>
+      {editar ? (
+        <form action={salvarLimitePicPrice} className="flex items-center gap-1.5">
+          <input type="hidden" name="clienteId" value={clienteId} />
+          <input
+            name="limite"
+            type="number"
+            min={1}
+            step={1}
+            required
+            defaultValue={limite}
+            aria-label="Limite diário de requisições"
+            className="h-8 w-24 rounded-md border border-white/10 bg-black/40 px-2 text-xs text-white"
+          />
+          <Btn type="submit" tamanho="sm">Salvar</Btn>
+        </form>
+      ) : null}
+    </div>
   );
 }

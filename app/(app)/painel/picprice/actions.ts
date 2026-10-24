@@ -5,7 +5,7 @@ import { z } from "zod";
 
 import { exigirPermissao } from "@/lib/auth";
 import { registrarAuditoria } from "@/lib/audit";
-import { gerarTokenDoCliente, mudarStatusToken, setStatusServico } from "@/lib/picprice/servidor";
+import { definirLimiteDiario, gerarTokenDoCliente, mudarStatusToken, setStatusServico } from "@/lib/picprice/servidor";
 
 export type EstadoTokenPicPrice = { token?: string; erro?: string };
 
@@ -63,5 +63,25 @@ export async function salvarStatusPicPrice(formData: FormData): Promise<void> {
   });
   await setStatusServico({ estado: s.estado, mensagem: s.mensagem ?? null, previsao: s.previsao ?? null });
   await registrarAuditoria({ ator: perfil, acao: "picprice.status_alterado", entidade: "picprice", detalhes: s });
+  revalidatePath("/painel/picprice");
+}
+
+const esquemaLimite = z.object({
+  clienteId: z.string().uuid(),
+  limite: z.coerce.number().int("Use um número inteiro.").min(1, "O limite mínimo é 1.").max(1_000_000),
+});
+
+/** Limite diário de requisições do token (padrão 200). */
+export async function salvarLimitePicPrice(formData: FormData): Promise<void> {
+  const perfil = await exigirPermissao("picprice.gerenciar");
+  const d = esquemaLimite.parse({ clienteId: formData.get("clienteId"), limite: formData.get("limite") });
+  const { anterior } = await definirLimiteDiario(d.clienteId, d.limite);
+  await registrarAuditoria({
+    ator: perfil,
+    acao: "picprice.limite_alterado",
+    entidade: "picprice",
+    entidadeId: d.clienteId,
+    detalhes: { limiteDiario: d.limite, anterior },
+  });
   revalidatePath("/painel/picprice");
 }
