@@ -6,6 +6,7 @@ import { listarServidores } from "@/lib/consultas/servidores";
 import { formatarDataHoraBR } from "@/lib/formato";
 import { PageHeader } from "@/components/painel/page-header";
 import { BadgeServidor } from "@/components/painel/badge-servidor";
+import { ROTULO_SO } from "@/lib/dominio/servidor-so";
 import { MonitorVivo } from "@/components/painel/monitor-vivo";
 import { Btn, EmptyState } from "@/components/painel/ui";
 import {
@@ -85,7 +86,11 @@ export default async function PaginaServidores() {
                     >
                       {s.nome}
                     </Link>
-                    {s.host ? <div className="rv-num mt-0.5 text-xs text-white/40">{s.host}</div> : null}
+                    {s.host || s.so ? (
+                      <div className="rv-num mt-0.5 text-xs text-white/40">
+                        {[s.host, s.so ? ROTULO_SO[s.so] : null].filter(Boolean).join(" · ")}
+                      </div>
+                    ) : null}
                   </TableCell>
                   <TableCell rotulo="cliente" className="text-white/70">{s.clienteNome}</TableCell>
                   <TableCell rotulo="status">

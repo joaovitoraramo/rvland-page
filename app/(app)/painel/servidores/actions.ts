@@ -9,6 +9,7 @@ import { exigirPermissao } from "@/lib/auth";
 import { registrarAuditoria } from "@/lib/audit";
 import { gerarTokenParaServidor } from "@/lib/servicos/enrollment";
 import { descreverModulos, modulosDoForm, type ModulosServidor } from "@/lib/dominio/agente-modulos";
+import { normalizaSO, validarNomeServico } from "@/lib/dominio/servidor-so";
 
 // ── Servidor ─────────────────────────────────────────────────────────────────
 
@@ -185,10 +186,8 @@ export async function definirManutencao(
 
 const esquemaServico = z.object({
   nome: z.string().trim().min(1, "Informe um rótulo."),
-  unidade: z
-    .string()
-    .trim()
-    .regex(/^[\w.@-]+\.(service|target|socket|timer)$/, "Unidade systemd inválida (ex: app.service)."),
+  // a regra do nome depende do SO do servidor (validarNomeServico)
+  unidade: z.string().trim().min(1, "Informe o serviço."),
   licenciado: z.enum(["sim", "nao"]),
 });
 
@@ -208,10 +207,15 @@ export async function adicionarServico(
   });
   if (!dados.success) return { erro: dados.error.issues[0]?.message ?? "Dados inválidos." };
 
+  // Linux: unidade systemd (app.service). Windows: Service Name do Gerenciador de Serviços (wildfly).
+  const [srv] = await db.select({ so: servidores.so }).from(servidores).where(eq(servidores.id, servidorId)).limit(1);
+  const nome = validarNomeServico(dados.data.unidade, normalizaSO(srv?.so));
+  if (!nome.ok) return { erro: nome.erro };
+
   await db.insert(servicoGerenciados).values({
     servidorId,
     nome: dados.data.nome,
-    unidadeSystemd: dados.data.unidade,
+    unidadeSystemd: nome.valor,
     licenciado: dados.data.licenciado === "sim",
   });
 
@@ -220,7 +224,7 @@ export async function adicionarServico(
     acao: "servidor.servico_adicionado",
     entidade: "servidor",
     entidadeId: servidorId,
-    detalhes: { unidade: dados.data.unidade, licenciado: dados.data.licenciado === "sim" },
+    detalhes: { unidade: nome.valor, licenciado: dados.data.licenciado === "sim" },
   });
   revalidatePath(`/painel/servidores/${servidorId}`);
   return { ok: "Serviço adicionado." };

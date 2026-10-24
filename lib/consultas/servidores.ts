@@ -3,6 +3,7 @@ import { desc, eq } from "drizzle-orm";
 
 import { db, servidores, clientes, telemetriaAtual } from "@/lib/db";
 import { statusServidor, type StatusServidor } from "@/lib/dominio/servidor";
+import { normalizaSO, type SistemaServidor } from "@/lib/dominio/servidor-so";
 
 /**
  * Status "agora" — lê o relógio aqui (módulo server-only) e não no render,
@@ -26,6 +27,8 @@ export type LinhaServidor = {
   nome: string;
   clienteNome: string;
   host: string | null;
+  /** null enquanto o agente não fez enroll */
+  so: SistemaServidor | null;
   agenteVersao: string | null;
   ultimoContatoEm: Date | null;
   status: StatusServidor;
@@ -40,6 +43,7 @@ export async function listarServidores(): Promise<LinhaServidor[]> {
       nome: servidores.nome,
       clienteNome: clientes.nome,
       host: servidores.host,
+      soBruto: servidores.so,
       statusBruto: servidores.status,
       agenteVersao: servidores.agenteVersao,
       ultimoContatoEm: servidores.ultimoContatoEm,
@@ -65,6 +69,7 @@ export async function listarServidores(): Promise<LinhaServidor[]> {
       nome: l.nome,
       clienteNome: l.clienteNome,
       host: l.host,
+      so: l.soBruto ? normalizaSO(l.soBruto) : null,
       agenteVersao: l.agenteVersao,
       ultimoContatoEm: l.ultimoContatoEm,
       status: statusServidor({ status: l.statusBruto, ultimoContatoEm: l.ultimoContatoEm }, agora),

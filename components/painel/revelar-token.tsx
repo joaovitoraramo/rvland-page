@@ -7,14 +7,19 @@ import { KeyRound, RefreshCw } from "lucide-react";
 import { Btn } from "@/components/painel/ui";
 import { Copiavel } from "@/components/painel/copiavel";
 import type { EstadoToken } from "@/app/(app)/painel/servidores/actions";
-import { comandoInstalacao, descreverModulos, type ModulosServidor } from "@/lib/dominio/agente-modulos";
+import { descreverModulos, type ModulosServidor } from "@/lib/dominio/agente-modulos";
+import { InstalacaoAgente } from "@/components/painel/instalacao-agente";
+import type { SistemaServidor } from "@/lib/dominio/servidor-so";
 
 export function RevelarToken({
   acao,
   siteUrl,
   jaPendente,
   modulos,
+  so = "linux",
 }: {
+  /** SO já conhecido do servidor (abre na aba certa) */
+  so?: SistemaServidor;
   acao: (estado: EstadoToken, formData: FormData) => Promise<EstadoToken>;
   siteUrl: string;
   /** true quando o servidor ainda não fez enroll (mostra ação primária). */
@@ -26,14 +31,13 @@ export function RevelarToken({
 
   if (estado.token) {
     const mods = estado.modulos ?? modulos;
-    const comando = comandoInstalacao({ siteUrl, token: estado.token, modulos: mods });
     return (
       <div className="space-y-4">
         <p className="text-sm text-white/70">
           Módulos que serão ligados: <strong className="text-white">{descreverModulos(mods)}</strong>
         </p>
         <Copiavel rotulo="token de enrollment" valor={estado.token} />
-        <Copiavel rotulo="comando de instalação" valor={comando} />
+        <InstalacaoAgente siteUrl={siteUrl} token={estado.token} modulos={mods} soInicial={so} />
         <p className="text-xs text-white/35">
           Vale 24h e é de uso único. Não será mostrado de novo — copie agora.
         </p>

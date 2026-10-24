@@ -227,7 +227,7 @@ export const servidores = pgTable(
     nome: text("nome").notNull(),
     descricao: text("descricao"),
     host: text("host"), // informativo (IP/hostname); acesso é pelo agente
-    so: text("so"), // informativo
+    so: text("so"), // "linux" | "windows" (vem do enroll e do heartbeat)
     status: text("status")
       .notNull()
       .default("pendente")
@@ -240,6 +240,9 @@ export const servidores = pgTable(
     agenteVersao: text("agente_versao"),
     versaoAlvo: text("versao_alvo"), // fixa canary; null = último estável
     hardware: jsonb("hardware").$type<{
+      so?: "linux" | "windows";
+      /** Windows: serviços do Gerenciador de Serviços, para escolher o licenciado */
+      servicos_disponiveis?: { nome: string; exibicao: string }[];
       distro?: string;
       kernel?: string;
       cpu_modelo?: string;
@@ -278,7 +281,7 @@ export const servicoGerenciados = pgTable(
     statusReportado: text("status_reportado")
       .notNull()
       .default("desconhecido")
-      .$type<"ativo" | "inativo" | "desconhecido">(),
+      .$type<"ativo" | "inativo" | "desconhecido" | "nao_encontrado">(),
     atualizadoEm: timestamp("atualizado_em", { withTimezone: true }).notNull().defaultNow(),
   },
   (t) => [index("servico_servidor_idx").on(t.servidorId)]
@@ -372,6 +375,8 @@ export const agenteReleases = pgTable(
     id: uuid("id").primaryKey().defaultRandom(),
     versao: text("versao").notNull(), // semver
     arch: text("arch").notNull().default("amd64").$type<"amd64" | "arm64">(),
+    // sistema operacional do binário: linux (agenterv) ou windows (agenterv.exe)
+    so: text("so").notNull().default("linux").$type<"linux" | "windows">(),
     canal: text("canal").notNull().default("estavel").$type<"estavel" | "canary">(),
     caminhoStorage: text("caminho_storage").notNull(),
     sha256: text("sha256").notNull(),
@@ -380,7 +385,7 @@ export const agenteReleases = pgTable(
     ativo: boolean("ativo").notNull().default(true),
     criadoEm: timestamp("criado_em", { withTimezone: true }).notNull().defaultNow(),
   },
-  (t) => [uniqueIndex("agente_releases_versao_arch_unq").on(t.versao, t.arch)]
+  (t) => [uniqueIndex("agente_releases_versao_arch_so_unq").on(t.versao, t.arch, t.so)]
 );
 
 // ─── Site público: leads dos formulários (BR e EN) ──────────────────────────

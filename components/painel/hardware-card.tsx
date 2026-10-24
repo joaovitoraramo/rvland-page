@@ -11,6 +11,7 @@ import {
 } from "@/components/ui/table";
 
 type Hardware = {
+  so?: "linux" | "windows";
   distro?: string;
   kernel?: string;
   cpu_modelo?: string;
@@ -111,8 +112,14 @@ export function HardwareCard({ hardware }: { hardware: Hardware | null }) {
           <Item
             icone={<Server />}
             rotulo="sistema"
-            valor={hardware.distro || "Linux"}
-            sub={hardware.kernel ? `kernel ${hardware.kernel}` : undefined}
+            valor={hardware.distro || (hardware.so === "windows" ? "Windows" : "Linux")}
+            sub={
+              hardware.kernel
+                ? hardware.so === "windows"
+                  ? `build ${hardware.kernel}`
+                  : `kernel ${hardware.kernel}`
+                : undefined
+            }
           />
           <Item
             icone={<Cpu />}

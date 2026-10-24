@@ -14,6 +14,7 @@ import {
 import { verificarHeartbeat } from "@/lib/crypto/heartbeat-auth";
 import { emitirLease } from "@/lib/servicos/emitir-lease";
 import { ultimaVersaoEstavel } from "@/lib/servicos/releases";
+import { normalizaSO } from "@/lib/dominio/servidor-so";
 
 export const dynamic = "force-dynamic";
 
@@ -33,6 +34,11 @@ const esquema = z.object({
     .nullish(),
   hardware: z
     .object({
+      so: z.string().nullish(),
+      servicos_disponiveis: z
+        .array(z.object({ nome: z.string(), exibicao: z.string().nullish() }))
+        .max(2000)
+        .nullish(),
       distro: z.string().nullish(),
       kernel: z.string().nullish(),
       cpu_modelo: z.string().nullish(),
@@ -52,7 +58,8 @@ const esquema = z.object({
         .nullish(),
     })
     .nullish(),
-  servicos: z.array(z.object({ unidade: z.string(), ativo: z.boolean() })).nullish(),
+  // erro: ex. "serviço não encontrado: wildfly" (o nome cadastrado não existe no servidor)
+  servicos: z.array(z.object({ unidade: z.string(), ativo: z.boolean(), erro: z.string().nullish() })).nullish(),
   eventos: z
     .array(
       z.object({
@@ -162,7 +169,14 @@ export async function POST(req: Request) {
   for (const s of b.servicos ?? []) {
     await db
       .update(servicoGerenciados)
-      .set({ statusReportado: s.ativo ? "ativo" : "inativo", atualizadoEm: agora })
+      .set({
+        statusReportado: s.erro?.startsWith("serviço não encontrado")
+          ? "nao_encontrado"
+          : s.ativo
+            ? "ativo"
+            : "inativo",
+        atualizadoEm: agora,
+      })
       .where(
         and(
           eq(servicoGerenciados.servidorId, servidor.id),
@@ -196,9 +210,15 @@ export async function POST(req: Request) {
     .set({
       ultimoContatoEm: agora,
       agenteVersao: b.agente_versao ?? servidor.agenteVersao,
+      ...(b.hardware?.so ? { so: normalizaSO(b.hardware.so) } : {}),
       ...(b.hardware
         ? {
             hardware: {
+              so: b.hardware.so ? normalizaSO(b.hardware.so) : undefined,
+              servicos_disponiveis:
+                b.hardware.servicos_disponiveis?.map((x) => ({ nome: x.nome, exibicao: x.exibicao ?? "" })) ??
+                servidor.hardware?.servicos_disponiveis ??
+                undefined,
               distro: b.hardware.distro ?? undefined,
               kernel: b.hardware.kernel ?? undefined,
               cpu_modelo: b.hardware.cpu_modelo ?? undefined,
@@ -252,7 +272,10 @@ export async function POST(req: Request) {
   const [licenca, versaoAlvo] = await Promise.all([
     emitirLease({ id: servidor.id, clienteId: servidor.clienteId }),
     // pin do servidor tem prioridade; senão, a última estável (auto-update)
-    servidor.versaoAlvo ? Promise.resolve(servidor.versaoAlvo) : ultimaVersaoEstavel(),
+    // a estável é por SO: um agente Windows só recebe versão que tenha .exe publicado
+    servidor.versaoAlvo
+      ? Promise.resolve(servidor.versaoAlvo)
+      : ultimaVersaoEstavel(normalizaSO(b.hardware?.so ?? servidor.so)),
   ]);
 
   return NextResponse.json({

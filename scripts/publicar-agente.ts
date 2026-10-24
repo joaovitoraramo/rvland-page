@@ -12,12 +12,15 @@ import { SITE_URL } from "../lib/site";
 
 /**
  * Compila, assina (chave de release OFFLINE) e publica o agente. Uso:
- *   npx tsx scripts/publicar-agente.ts <versao> [canal]
- * Cada arquitetura vira um binário assinado no bucket 'agentes' + linha em
- * agente_releases. A assinatura garante que só binário assinado por VOCÊ é
+ *   npx tsx scripts/publicar-agente.ts <versao> [canal] [--so=linux,windows]
+ * Cada SO × arquitetura vira um binário assinado no bucket 'agentes' + linha em
+ * agente_releases (Linux: agenterv; Windows: agenterv.exe). --so limita os SOs
+ * (padrão: os dois). A assinatura garante que só binário assinado por VOCÊ é
  * aceito por um agente rodando lá fora.
  */
 const ARCHS = ["amd64", "arm64"] as const;
+const SOS = ["linux", "windows"] as const;
+type SO = (typeof SOS)[number];
 const GO = process.env.GO_BIN || "go";
 /**
  * Ofuscação: com o garble instalado (v0.16.0 é a última que aceita o Go 1.26 —
@@ -40,6 +43,12 @@ function garbleBin(): string | null {
 async function main() {
   const versao = process.argv[2];
   const canal = (process.argv[3] as "estavel" | "canary") || "estavel";
+  const argSo = process.argv.find((a) => a.startsWith("--so="));
+  const sos: SO[] = argSo
+    ? (argSo.slice(5).split(",").filter((x): x is SO => (SOS as readonly string[]).includes(x)) as SO[])
+    : [...SOS];
+  if (!sos.length) throw new Error("--so inválido (use linux, windows ou linux,windows)");
+  if (canal !== "estavel" && canal !== "canary") throw new Error("canal inválido (estavel|canary)");
   if (!versao || !/^\d+\.\d+\.\d+$/.test(versao)) {
     throw new Error("uso: publicar-agente.ts <versao semver> [estavel|canary]");
   }
@@ -62,44 +71,48 @@ async function main() {
 
   const storage = supabaseAdmin().storage.from("agentes");
 
-  for (const arch of ARCHS) {
-    const saida = `/tmp/agenterv-${versao}-${arch}`;
-    console.log(`compilando ${arch}...`);
-    const garble = garbleBin();
-    const [bin0, args0] = garble
-      ? [garble, ["-literals", "-tiny", "build", "-ldflags", ld, "-o", saida, "."]]
-      : [GO, ["build", "-ldflags", ld, "-o", saida, "."]];
-    console.log(garble ? "  (ofuscado com garble)" : "  (sem garble: só strip)");
-    execFileSync(bin0, args0, {
-      cwd: "agent",
-      env: { ...process.env, GOOS: "linux", GOARCH: arch, CGO_ENABLED: "0" },
-      stdio: "inherit",
-    });
-
-    const bin = readFileSync(saida);
-    const sha256 = createHash("sha256").update(bin).digest("hex");
-    const assinatura = assinar(bin, releaseSk);
-    const caminho = `${versao}/${arch}/agenterv`;
-
-    const up = await storage.upload(caminho, bin, {
-      contentType: "application/octet-stream",
-      upsert: true,
-    });
-    if (up.error) throw new Error(`upload ${arch}: ${up.error.message}`);
-
-    await db
-      .insert(agenteReleases)
-      .values({ versao, arch, canal, caminhoStorage: caminho, sha256, assinatura })
-      .onConflictDoUpdate({
-        target: [agenteReleases.versao, agenteReleases.arch],
-        set: { canal, caminhoStorage: caminho, sha256, assinatura, ativo: true },
+  for (const so of sos) {
+    for (const arch of ARCHS) {
+      const nomeBin = so === "windows" ? "agenterv.exe" : "agenterv";
+      const saida = `/tmp/agenterv-${versao}-${so}-${arch}${so === "windows" ? ".exe" : ""}`;
+      console.log(`compilando ${so}/${arch}...`);
+      const garble = garbleBin();
+      const [bin0, args0] = garble
+        ? [garble, ["-literals", "-tiny", "build", "-ldflags", ld, "-o", saida, "."]]
+        : [GO, ["build", "-ldflags", ld, "-o", saida, "."]];
+      console.log(garble ? "  (ofuscado com garble)" : "  (sem garble: só strip)");
+      execFileSync(bin0, args0, {
+        cwd: "agent",
+        env: { ...process.env, GOOS: so, GOARCH: arch, CGO_ENABLED: "0" },
+        stdio: "inherit",
       });
 
-    console.log(`  ${arch}: ${(bin.length / 1e6).toFixed(1)}MB sha256=${sha256.slice(0, 12)}… publicado`);
+      const bin = readFileSync(saida);
+      const sha256 = createHash("sha256").update(bin).digest("hex");
+      const assinatura = assinar(bin, releaseSk);
+      // Linux mantém o caminho de sempre; Windows ganha pasta própria
+      const caminho = so === "windows" ? `${versao}/windows/${arch}/${nomeBin}` : `${versao}/${arch}/${nomeBin}`;
+
+      const up = await storage.upload(caminho, bin, {
+        contentType: "application/octet-stream",
+        upsert: true,
+      });
+      if (up.error) throw new Error(`upload ${so}/${arch}: ${up.error.message}`);
+
+      await db
+        .insert(agenteReleases)
+        .values({ versao, arch, so, canal, caminhoStorage: caminho, sha256, assinatura })
+        .onConflictDoUpdate({
+          target: [agenteReleases.versao, agenteReleases.arch, agenteReleases.so],
+          set: { canal, caminhoStorage: caminho, sha256, assinatura, ativo: true },
+        });
+
+      console.log(`  ${so}/${arch}: ${(bin.length / 1e6).toFixed(1)}MB sha256=${sha256.slice(0, 12)}… publicado`);
+    }
   }
 
   // histórico é mantido; 'latest' resolve para a versão mais recente do canal
-  console.log(`\nAgente ${versao} (${canal}) publicado nas ${ARCHS.length} arquiteturas.`);
+  console.log(`\nAgente ${versao} (${canal}) publicado: ${sos.join(" e ")} × ${ARCHS.length} arquiteturas.`);
   process.exit(0);
 }
 

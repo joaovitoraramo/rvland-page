@@ -28,6 +28,7 @@ import { RevelarToken } from "@/components/painel/revelar-token";
 import { CardModulos } from "@/components/painel/card-modulos";
 import { HardwareCard } from "@/components/painel/hardware-card";
 import { CardServicos } from "@/components/painel/card-servicos";
+import { normalizaSO, ROTULO_SO } from "@/lib/dominio/servidor-so";
 import { Btn } from "@/components/painel/ui";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { formatarDataHoraBR } from "@/lib/formato";
@@ -120,7 +121,11 @@ export default async function PaginaServidor({ params }: { params: Promise<{ id:
       <PageHeader
         trilha="servidores"
         titulo={servidor.nome}
-        descricao={[servidor.host, servidor.hardware?.distro ?? servidor.so].filter(Boolean).join(" · ") || undefined}
+        descricao={
+          [servidor.host, ROTULO_SO[normalizaSO(servidor.hardware?.so ?? servidor.so)], servidor.hardware?.distro]
+            .filter(Boolean)
+            .join(" · ") || undefined
+        }
         acoes={
           <>
             {ativo ? <MonitorVivo segundosIniciais={segundosDesde(servidor.ultimoContatoEm)} /> : null}
@@ -164,6 +169,7 @@ export default async function PaginaServidor({ params }: { params: Promise<{ id:
                 siteUrl={SITE_URL}
                 jaPendente={servidor.status === "pendente"}
                 modulos={{ licenca: servidor.moduloLicenca, picprice: servidor.moduloPicprice }}
+                so={normalizaSO(servidor.hardware?.so ?? servidor.so)}
               />
             </CardContent>
           </Card>
@@ -214,6 +220,8 @@ export default async function PaginaServidor({ params }: { params: Promise<{ id:
             podeExecutar={podeExecutar}
             podeEditar={podeEditar}
             acaoServico={adicionarServico.bind(null, id)}
+            so={normalizaSO(servidor.hardware?.so ?? servidor.so)}
+            servicosDisponiveis={servidor.hardware?.servicos_disponiveis ?? []}
           />
         </div>
 

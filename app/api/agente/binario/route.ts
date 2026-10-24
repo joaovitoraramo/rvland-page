@@ -1,6 +1,7 @@
 import { NextResponse } from "next/server";
 import { resolverRelease } from "@/lib/servicos/releases";
 import { supabaseAdmin } from "@/lib/supabase/admin";
+import { normalizaSO } from "@/lib/dominio/servidor-so";
 
 export const dynamic = "force-dynamic";
 
@@ -16,8 +17,10 @@ export async function GET(req: Request) {
   const versao = url.searchParams.get("versao") ?? "latest";
   const arch = url.searchParams.get("arch") ?? "amd64";
   if (!ARCHS.has(arch)) return NextResponse.json({ erro: "arch inválida" }, { status: 400 });
+  // so: linux (padrão, agentes antigos não mandam) ou windows (agenterv.exe)
+  const so = normalizaSO(url.searchParams.get("so"));
 
-  const r = await resolverRelease(versao, arch);
+  const r = await resolverRelease(versao, arch, so);
   if (!r) return NextResponse.json({ erro: "release não encontrada" }, { status: 404 });
 
   const { data, error } = await supabaseAdmin().storage.from("agentes").download(r.caminhoStorage);
@@ -27,7 +30,7 @@ export async function GET(req: Request) {
   return new NextResponse(buf, {
     headers: {
       "content-type": "application/octet-stream",
-      "content-disposition": `attachment; filename="agenterv"`,
+      "content-disposition": `attachment; filename="${so === "windows" ? "agenterv.exe" : "agenterv"}"`,
       "x-rvland-versao": r.versao,
       "x-rvland-sha256": r.sha256,
     },

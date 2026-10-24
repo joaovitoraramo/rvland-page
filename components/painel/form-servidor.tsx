@@ -11,7 +11,8 @@ import { SelectRico } from "@/components/painel/select-rico";
 import { Copiavel } from "@/components/painel/copiavel";
 import { criarServidor, type EstadoServidor } from "@/app/(app)/painel/servidores/actions";
 import { CamposModulos } from "@/components/painel/campos-modulos";
-import { comandoInstalacao, descreverModulos } from "@/lib/dominio/agente-modulos";
+import { descreverModulos } from "@/lib/dominio/agente-modulos";
+import { InstalacaoAgente } from "@/components/painel/instalacao-agente";
 
 export function FormServidor({
   clientes,
@@ -28,14 +29,14 @@ export function FormServidor({
   // Sucesso: o token só existe agora — mostra o comando de instalação
   if (estado.servidorId && estado.token) {
     const modulos = estado.modulos ?? { licenca: true, picprice: false };
-    const comando = comandoInstalacao({ siteUrl, token: estado.token, modulos });
     return (
       <div className="max-w-2xl space-y-5">
         <div className="rounded-2xl border border-[rgba(0,255,138,0.2)] bg-[rgba(0,255,138,0.05)] p-6">
           <div className="text-sm font-medium text-[#7DFFC4]">Servidor cadastrado</div>
           <p className="mt-1 text-sm text-white/60">
-            Cole o comando abaixo no SSH do servidor para instalar o agente. O token vale 24h e é
-            de uso único — guarde agora, não será mostrado de novo.
+            Instale o agente com o comando abaixo: SSH no Linux, ou Prompt de Comando como
+            administrador no Windows. O token vale 24h e é de uso único — guarde agora, não será
+            mostrado de novo.
           </p>
           <p className="mt-2 text-sm text-white/75">
             Módulos que serão ligados: <strong className="text-white">{descreverModulos(modulos)}</strong>
@@ -43,12 +44,8 @@ export function FormServidor({
           </p>
           <div className="mt-4 space-y-4">
             <Copiavel rotulo="token de enrollment" valor={estado.token} />
-            <Copiavel rotulo="comando de instalação" valor={comando} />
+            <InstalacaoAgente siteUrl={siteUrl} token={estado.token} modulos={modulos} />
           </div>
-          <p className="mt-3 text-xs text-white/35">
-            O instalador (/api/agente/instalar) é publicado na fase de release do agente. Até lá,
-            o token já é válido para o enroll manual.
-          </p>
         </div>
         <Btn asChild variante="primario">
           <Link href={`/painel/servidores/${estado.servidorId}`}>

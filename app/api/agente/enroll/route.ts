@@ -1,4 +1,5 @@
 import { NextResponse } from "next/server";
+import { normalizaSO } from "@/lib/dominio/servidor-so";
 import { and, eq, gt } from "drizzle-orm";
 import { z } from "zod";
 
@@ -54,7 +55,8 @@ export async function POST(req: Request) {
       agentePubkey: dados.data.agente_pubkey,
       agenteVersao: dados.data.agente_versao ?? null,
       host: dados.data.host ?? servidor.host,
-      so: dados.data.so ?? servidor.so,
+      // o agente manda runtime.GOOS: "linux" | "windows"
+      so: dados.data.so ? normalizaSO(dados.data.so) : servidor.so,
       enrollmentTokenHash: null,
       enrollmentExpiraEm: null,
       ultimoContatoEm: agora,

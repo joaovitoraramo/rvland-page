@@ -4,6 +4,7 @@ import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Btn } from "@/components/painel/ui";
 import { SnapshotStatus } from "@/components/painel/snapshot-status";
 import { FormServico } from "@/components/painel/form-servico";
+import type { SistemaServidor } from "@/lib/dominio/servidor-so";
 import {
   alternarLicencaServico,
   enfileirarComando,
@@ -16,7 +17,7 @@ type Servico = {
   nome: string;
   unidadeSystemd: string;
   licenciado: boolean;
-  statusReportado: "ativo" | "inativo" | "desconhecido";
+  statusReportado: "ativo" | "inativo" | "desconhecido" | "nao_encontrado";
 };
 
 type Snapshot = { texto: string; quando: Date } | undefined;
@@ -25,6 +26,15 @@ const PILL: Record<string, { classe: string; dot: string }> = {
   ativo: { classe: "bg-[rgba(0,255,138,0.1)] text-[#7DFFC4]", dot: "bg-[#00FF8A]" },
   inativo: { classe: "bg-[rgba(255,93,93,0.1)] text-[#FF9D9D]", dot: "bg-[#FF5D5D]" },
   desconhecido: { classe: "bg-white/5 text-white/40", dot: "bg-white/30" },
+  // o nome cadastrado não existe no servidor: o agente avisa e não mexe em nada
+  nao_encontrado: { classe: "bg-[rgba(255,196,0,0.1)] text-[#FFD66B]", dot: "bg-[#FFC400]" },
+};
+
+const ROTULO_STATUS: Record<string, string> = {
+  ativo: "ativo",
+  inativo: "inativo",
+  desconhecido: "desconhecido",
+  nao_encontrado: "não encontrado",
 };
 
 export function CardServicos({
@@ -35,7 +45,13 @@ export function CardServicos({
   podeExecutar,
   podeEditar,
   acaoServico,
+  so = "linux",
+  servicosDisponiveis = [],
 }: {
+  /** SO do servidor: muda a ajuda e a validação do nome do serviço */
+  so?: SistemaServidor;
+  /** Windows: serviços que o agente encontrou, para escolher */
+  servicosDisponiveis?: { nome: string; exibicao: string }[];
   servidorId: string;
   servicos: Servico[];
   snapshots: Map<string, Snapshot>;
@@ -57,7 +73,7 @@ export function CardServicos({
           <p className="py-2 text-sm text-white/40">Nenhum serviço cadastrado ainda.</p>
         ) : (
           servicos.map((s) => {
-            const pill = PILL[s.statusReportado];
+            const pill = PILL[s.statusReportado] ?? PILL.desconhecido;
             const snap = snapshots.get(s.id);
             return (
               <div key={s.id} className="rounded-xl border border-white/8 bg-black/25 p-4">
@@ -71,7 +87,7 @@ export function CardServicos({
                     className={`inline-flex shrink-0 items-center gap-1.5 rounded-full px-2.5 py-1 font-mono text-[11px] ${pill.classe}`}
                   >
                     <span className={`size-1.5 rounded-full ${pill.dot}`} />
-                    {s.statusReportado}
+                    {ROTULO_STATUS[s.statusReportado] ?? s.statusReportado}
                   </span>
                 </div>
 
@@ -177,7 +193,7 @@ export function CardServicos({
               Adicionar serviço
             </summary>
             <div className="px-4 pb-4">
-              <FormServico acao={acaoServico} />
+              <FormServico acao={acaoServico} so={so} sugestoes={servicosDisponiveis} />
             </div>
           </details>
         ) : null}
