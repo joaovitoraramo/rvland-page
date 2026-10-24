@@ -117,7 +117,7 @@ func doHeartbeat(base, servidorID, seedB64 string, corpo []byte) (*RespHeartbeat
 }
 
 func baixaBinario(base, versao, arch string) ([]byte, error) {
-	url := fmt.Sprintf("%s/api/agente/binario?versao=%s&arch=%s", base, versao, arch)
+	url := fmt.Sprintf("%s/api/agente/binario?versao=%s&arch=%s%s", base, versao, arch, parametroSO())
 	resp, err := httpCli.Get(url)
 	if err != nil {
 		return nil, err

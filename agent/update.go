@@ -3,8 +3,6 @@ package main
 import (
 	"encoding/json"
 	"fmt"
-	"os"
-	"path/filepath"
 	"runtime"
 )
 
@@ -15,16 +13,21 @@ type metaRelease struct {
 }
 
 // autoAtualiza baixa, verifica (sha256 + assinatura de release) e troca o
-// binário de forma atômica. O systemd reinicia o serviço quando o processo sai.
+// binário (trocaBinario é por SO: update_unix.go / update_windows.go). O
+// systemd ou o Gerenciador de Serviços reinicia o processo quando ele sai.
 func autoAtualiza(base, versaoAlvo, versaoAtual string) error {
 	if versaoAlvo == "" || versaoAlvo == versaoAtual {
+		return nil
+	}
+	// versão que já falhou neste servidor (só o Windows registra): nem baixa
+	if contem(versoesRecusadas(), versaoAlvo) {
 		return nil
 	}
 	arch := runtime.GOARCH
 	logf("atualização %s → %s (%s)...", versaoAtual, versaoAlvo, arch)
 
 	// metadados (sha256 + assinatura)
-	b, status, err := postJSONGet(base + "/api/agente/release?versao=" + versaoAlvo + "&arch=" + arch)
+	b, status, err := postJSONGet(base + "/api/agente/release?versao=" + versaoAlvo + "&arch=" + arch + parametroSO())
 	if err != nil {
 		return err
 	}
@@ -48,24 +51,7 @@ func autoAtualiza(base, versaoAlvo, versaoAtual string) error {
 		return fmt.Errorf("assinatura de release não confere")
 	}
 
-	// troca atômica: grava temp no mesmo diretório, rename por cima, guarda .bak
-	exe, err := os.Executable()
-	if err != nil {
-		return err
-	}
-	exe, _ = filepath.EvalSymlinks(exe)
-	tmp := exe + ".novo"
-	if err := os.WriteFile(tmp, bin, 0o755); err != nil {
-		return err
-	}
-	_ = os.Rename(exe, exe+".bak")
-	if err := os.Rename(tmp, exe); err != nil {
-		_ = os.Rename(exe+".bak", exe) // rollback
-		return err
-	}
-	logf("atualizado para %s — reiniciando", versaoAlvo)
-	os.Exit(0) // systemd reinicia com o binário novo
-	return nil
+	return trocaBinario(bin, versaoAlvo)
 }
 
 func postJSONGet(url string) ([]byte, int, error) {

@@ -4,15 +4,17 @@ import (
 	"encoding/json"
 	"os"
 	"path/filepath"
+	"runtime"
 	"strconv"
 )
 
-// Config persistida em /etc/rvland/agent.conf. `Enderecos` é uma lista tentada
+// Config persistida em /etc/rvland/agent.conf (Linux) ou
+// %ProgramData%\rvland\agent.conf (Windows). `Enderecos` é uma lista tentada
 // em ordem — permite migrar de domínio no futuro sem recompilar o agente.
 type Config struct {
 	Enderecos  []string `json:"enderecos"`
 	ServidorID string   `json:"servidor_id"`
-	Driver     string   `json:"driver"` // "systemd" | "dry"
+	Driver     string   `json:"driver"` // "systemd" | "scm" (Windows) | "dry"
 	// Porta da API local do módulo picprice (escuta só em 127.0.0.1). 0 = padrão.
 	PicpricePorta int    `json:"picprice_porta,omitempty"`
 	SeedB64       string `json:"-"` // vive em arquivo separado, não no conf
@@ -33,9 +35,30 @@ func (c *Config) portaPicprice() int {
 	return portaPicpricePadrao
 }
 
+// driverPadrao: systemd no Linux, gerenciador de serviços (SCM) no Windows.
+func driverPadrao() string {
+	if runtime.GOOS == "windows" {
+		return "scm"
+	}
+	return "systemd"
+}
+
+// dirBaseWindows: %ProgramData%\rvland (C:\ProgramData\rvland). A ACL (só SYSTEM
+// e Administradores) é aplicada pelo instalador.
+func dirBaseWindows() string {
+	pd := os.Getenv("ProgramData")
+	if pd == "" {
+		pd = `C:\ProgramData`
+	}
+	return filepath.Join(pd, "rvland")
+}
+
 func dirConf() string {
 	if d := os.Getenv("RVLAND_CONF_DIR"); d != "" {
 		return d
+	}
+	if runtime.GOOS == "windows" {
+		return dirBaseWindows()
 	}
 	return "/etc/rvland"
 }
@@ -44,7 +67,18 @@ func dirState() string {
 	if d := os.Getenv("RVLAND_STATE_DIR"); d != "" {
 		return d
 	}
+	if runtime.GOOS == "windows" {
+		return filepath.Join(dirBaseWindows(), "estado")
+	}
 	return "/var/lib/rvland"
+}
+
+// dirLogs: só o Windows grava log em arquivo (no Linux é o journald).
+func dirLogs() string {
+	if d := os.Getenv("RVLAND_LOG_DIR"); d != "" {
+		return d
+	}
+	return filepath.Join(dirBaseWindows(), "logs")
 }
 
 func caminhoConf() string  { return filepath.Join(dirConf(), "agent.conf") }
@@ -61,7 +95,7 @@ func carregaConfig() (*Config, error) {
 		return nil, err
 	}
 	if c.Driver == "" {
-		c.Driver = "systemd"
+		c.Driver = driverPadrao()
 	}
 	if seed, err := os.ReadFile(caminhoChave()); err == nil {
 		c.SeedB64 = string(trimEspaco(seed))

@@ -35,6 +35,8 @@ func main() {
 		fmt.Println("rvland-agent", versao)
 	case "logs":
 		cmdLogs()
+	case "servico":
+		cmdServico(os.Args[2:])
 	default:
 		uso()
 		os.Exit(1)
@@ -44,12 +46,13 @@ func main() {
 func uso() {
 	fmt.Println(`rvland-agent — agente da plataforma RVLand
 uso:
-  agenterv enroll --token=TOKEN --servidor=URL [--driver=systemd|dry] [--porta=7710]
-  agenterv run          inicia o loop de heartbeat (rodar via systemd)
+  agenterv enroll --token=TOKEN --servidor=URL [--driver=systemd|scm|dry] [--porta=7710]
+  agenterv run          inicia o loop de heartbeat (systemd no Linux, serviço no Windows)
   agenterv status       mostra licença, serviços e último contato
   agenterv reconnect    força um heartbeat imediato
   agenterv version
-  agenterv logs`)
+  agenterv logs
+  agenterv servico instalar|remover   (Windows) registra/remove o serviço rvland-agent`)
 }
 
 func flagArg(args []string, nome string) string {
@@ -80,7 +83,7 @@ func cmdEnroll(args []string) {
 	servidor := flagArg(args, "servidor")
 	driver := flagArg(args, "driver")
 	if driver == "" {
-		driver = "systemd"
+		driver = driverPadrao()
 	}
 	if token == "" {
 		fatal("--token é obrigatório")
@@ -139,8 +142,13 @@ func montaCorpoHeartbeat(cfg *Config, lease *Lease, resultados []map[string]any)
 	servicos := []map[string]any{}
 	if lease != nil && modulosDoLease(lease).Licenca {
 		for _, u := range lease.ServicosLicenciados {
-			ativo, _ := gs.Ativo(u)
-			servicos = append(servicos, map[string]any{"unidade": u, "ativo": ativo})
+			ativo, err := gs.Ativo(u)
+			item := map[string]any{"unidade": u, "ativo": ativo}
+			if err != nil {
+				// ex.: "serviço não encontrado: wildfly" — reporta, sem quebrar nem parar nada
+				item["erro"] = err.Error()
+			}
+			servicos = append(servicos, item)
 		}
 	}
 
@@ -219,6 +227,7 @@ func umHeartbeat(cfg *Config, pendentes []map[string]any) ([]map[string]any, int
 		return nil, 60
 	}
 	rt.registrarContato()
+	confirmaAtualizacao() // Windows: a versão nova falou com a RV, então fica
 
 	if l, e := verificaLease(resp.Licenca); e == nil {
 		aplicaSeLicenca(l, novoGerenciador(cfg.Driver), est)
@@ -240,12 +249,17 @@ func umHeartbeat(cfg *Config, pendentes []map[string]any) ([]map[string]any, int
 	return novos, iv
 }
 
-func cmdRun() {
+func cmdRun() { executarRun() }
+
+// rodaAgente é o loop do agente. `parar` (pode ser nil) encerra o loop — usado
+// pelo serviço do Windows ao receber Stop/Shutdown.
+func rodaAgente(parar <-chan struct{}) {
 	cfg, err := carregaConfig()
 	if err != nil {
 		fatal("config: " + err.Error() + " (rode `agenterv enroll` primeiro)")
 	}
 	logf("iniciando (servidor %s, driver %s, v%s)", cfg.ServidorID, cfg.Driver, versao)
+	verificaAtualizacaoPendente() // Windows: volta à versão anterior se a nova não firmar
 
 	// Reforço imediato na subida: aplica o lease em cache antes do 1º heartbeat.
 	// Se o último lease era bloqueado, garante o serviço parado/desabilitado já
@@ -267,7 +281,12 @@ func cmdRun() {
 				iv = n // override para testes
 			}
 		}
-		time.Sleep(time.Duration(iv) * time.Second)
+		select {
+		case <-parar:
+			logf("parando a pedido do sistema")
+			return
+		case <-time.After(time.Duration(iv) * time.Second):
+		}
 	}
 }
 
@@ -336,6 +355,10 @@ func juntar(s []string) string {
 }
 
 func cmdLogs() {
+	if runtime.GOOS == "windows" {
+		mostraUltimasLinhasLog(50)
+		return
+	}
 	if runtime.GOOS != "linux" {
 		fmt.Println("logs disponíveis via journald no servidor Linux: journalctl -u rvland-agent -n 50")
 		return
@@ -346,5 +369,8 @@ func cmdLogs() {
 
 func fatal(msg string) {
 	fmt.Fprintln(os.Stderr, "rvland-agent: "+msg)
+	if saidaLog != os.Stdout {
+		fmt.Fprintln(saidaLog, "rvland-agent: "+msg)
+	}
 	os.Exit(1)
 }

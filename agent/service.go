@@ -2,12 +2,17 @@ package main
 
 import (
 	"fmt"
+	"io"
+	"os"
 	"os/exec"
+	"runtime"
 	"strings"
 	"sync"
+	"time"
 )
 
-// GerenciadorServico abstrai o systemd para o agente ser testável fora de Linux.
+// GerenciadorServico abstrai o systemd (Linux) e o SCM (Windows); o driver dry
+// simula, para testar fora do servidor.
 type GerenciadorServico interface {
 	Ativo(unidade string) (bool, error)
 	Start(unidade string) error // comando manual do operador
@@ -20,10 +25,15 @@ type GerenciadorServico interface {
 }
 
 func novoGerenciador(driver string) GerenciadorServico {
-	if driver == "dry" {
+	switch {
+	case driver == "dry":
 		return &gerenciadorDry{estado: map[string]bool{}}
+	case driver == "scm" || runtime.GOOS == "windows":
+		// Windows: Gerenciador de Serviços (o nome cadastrado é o Service Name)
+		return novoGerenciadorSCMCom(novoSCMReal())
+	default:
+		return &gerenciadorSystemd{}
 	}
-	return &gerenciadorSystemd{}
 }
 
 // ── systemd real ──
@@ -104,6 +114,15 @@ func (g *gerenciadorDry) Liberar(unidade string) error {
 	return nil
 }
 
+// saidaLog: stdout (journald no Linux, console no Windows). Como serviço do
+// Windows vira o arquivo em %ProgramData%\rvland\logs (log_windows.go).
+var saidaLog io.Writer = os.Stdout
+
 func logf(f string, a ...any) {
-	fmt.Printf("rvland-agent: "+f+"\n", a...)
+	prefixo := "rvland-agent: "
+	if saidaLog != os.Stdout {
+		// arquivo de log (Windows): sem journald, a data vai na linha
+		prefixo = time.Now().Format("2006-01-02 15:04:05") + " " + prefixo
+	}
+	fmt.Fprintf(saidaLog, prefixo+f+"\n", a...)
 }
