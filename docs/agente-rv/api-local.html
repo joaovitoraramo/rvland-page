@@ -1,0 +1,321 @@
+<!doctype html>
+<html lang="pt-BR">
+<head>
+<meta charset="utf-8">
+<title>Agente RV — API local</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=Outfit:wght@300;400;500;600;700;800&family=IBM+Plex+Mono:wght@400;500;600&display=swap" rel="stylesheet">
+<style>
+:root{
+  --azul:#0069AF; --azul-esc:#00487A; --azul-claro:#E8F2FA; --azul-meio:#BFDDF2;
+  --ambar:#F59E0B; --ambar-claro:#FEF3C7;
+  --tinta:#13314B; --texto:#34495E; --suave:#6A7D90; --linha:#DCE5EE;
+  --ok:#047857; --okF:#ECFDF5; --erro:#B91C1C; --erroF:#FEF2F2; --av:#B45309; --avF:#FFFBEB;
+  --rosa:#A21CAF; --rosaF:#FDF4FF;
+}
+@page{size:A4;margin:0}
+*{box-sizing:border-box;margin:0;padding:0}
+html,body{background:#fff}
+body{font-family:'Outfit',sans-serif;color:var(--texto);font-size:10pt;line-height:1.48;-webkit-print-color-adjust:exact;print-color-adjust:exact;font-variant-numeric:tabular-nums}
+.page{width:210mm;height:297mm;position:relative;overflow:hidden;page-break-after:always;padding:22mm 18mm 18mm}
+.page:last-child{page-break-after:auto}
+.run{position:absolute;top:9mm;left:18mm;right:18mm;display:flex;align-items:center;gap:7px;font-size:8.4pt;color:var(--suave);border-bottom:1px solid var(--linha);padding-bottom:3mm}
+.run .tag{width:15px;height:15px;color:var(--rosa)}
+.run b{color:var(--azul);font-weight:700}
+.run .sec{margin-left:auto}
+.pe{position:absolute;bottom:8mm;left:18mm;right:18mm;display:flex;align-items:center;font-size:8pt;color:var(--suave)}
+.pe img{height:13px;margin-right:6px;background:var(--azul);border-radius:3px;padding:2px}
+.pe .ver{margin:0 auto;font-size:6.6pt;color:#9AA8B6}
+.pe .n{font-weight:600;color:var(--azul)}
+h1{font-size:22pt;line-height:1.1;color:var(--tinta);font-weight:700;letter-spacing:-.01em;margin-bottom:2.5mm}
+h2{font-size:12.4pt;color:var(--tinta);font-weight:700;margin:4.5mm 0 1.5mm}
+h3{font-size:10.2pt;color:var(--tinta);font-weight:600;margin:2.5mm 0 1mm}
+.lead{font-size:11.6pt;line-height:1.45;color:var(--texto);margin-bottom:4mm;font-weight:300}
+.lead b{font-weight:600;color:var(--tinta)}
+p+p{margin-top:1.8mm}
+b{color:var(--tinta);font-weight:600}
+.peq{font-size:8.6pt;color:var(--suave)}
+code,.mono{font-family:'IBM Plex Mono',monospace;font-size:.86em}
+p code,li code,td code{background:#F1F5F9;border:1px solid #E2E8F0;border-radius:4px;padding:0 1.2mm;color:#0F2B44;white-space:nowrap}
+pre{font-family:'IBM Plex Mono',monospace;font-size:7.3pt;line-height:1.45;background:#0F1E2E;color:#E2E8F0;border-radius:9px;padding:3.2mm 4mm;white-space:pre;overflow:hidden;margin:1.5mm 0 2.5mm}
+pre .c{color:#7DD3FC}.pre .k{color:#FCD34D}
+pre .s{color:#86EFAC}
+pre .k{color:#FCD34D}
+pre .g{color:#94A3B8}
+.rot{font-size:7.8pt;font-weight:600;color:var(--suave);text-transform:none;margin-top:2mm}
+.nota{background:var(--azul-claro);border-radius:10px;padding:3mm 4.2mm;margin:3mm 0}
+.nota h3{color:var(--azul-esc);margin-top:0}
+.pratica{background:var(--ambar-claro);border-left:4px solid var(--ambar);border-radius:0 10px 10px 0;padding:3mm 4.2mm;margin:3mm 0}
+.pratica h3{color:#7C4A03;margin-top:0}
+.pratica p{color:#5B4210}
+.alerta{background:var(--erroF);border-left:4px solid var(--erro);border-radius:0 10px 10px 0;padding:3mm 4.2mm;margin:3mm 0;color:#5c130c}
+.alerta h3{color:var(--erro);margin-top:0}
+.cols{display:grid;gap:5mm}
+.c2{grid-template-columns:1fr 1fr}
+.c3{grid-template-columns:1fr 1fr 1fr}
+.metodo{display:flex;align-items:center;gap:3mm;margin:1mm 0 3mm;font-family:'IBM Plex Mono',monospace;font-size:11pt;font-weight:600;color:var(--tinta)}
+.verbo{font-family:'Outfit',sans-serif;font-size:8.4pt;font-weight:700;border-radius:6px;padding:1mm 2.6mm;color:#fff}
+.verbo.post{background:#7C3AED}.verbo.get{background:#059669}
+.tab{width:100%;border-collapse:collapse;font-size:7.9pt;line-height:1.38;margin:1.2mm 0 1.6mm}
+.tab th{font-weight:600;color:#4b5b6b;text-align:left;padding:1.2mm 1.6mm;border-bottom:1.5px solid var(--linha);background:#F6F8FA;white-space:nowrap}
+.tab td{padding:1.15mm 1.6mm;border-bottom:1px solid #edf1f5;vertical-align:top;color:#1f2d3a}
+.tab td:first-child{white-space:nowrap}
+.tab td.c{text-align:center}
+.st{display:inline-block;border-radius:999px;padding:.2mm 2mm;font-size:7.4pt;font-weight:700;white-space:nowrap;font-family:'IBM Plex Mono',monospace}
+.st.ok{background:var(--okF);color:var(--ok)}
+.st.er{background:var(--erroF);color:var(--erro)}
+.st.av{background:var(--avF);color:var(--av)}
+.st.cz{background:#F1F5F9;color:#475569}
+.passos{list-style:none;counter-reset:p;display:grid;gap:2.2mm}
+.passos li{counter-increment:p;display:grid;grid-template-columns:9mm 1fr;gap:3mm;align-items:start}
+.passos li::before{content:counter(p);width:7.5mm;height:7.5mm;border-radius:50%;background:var(--azul);color:#fff;font-weight:700;display:flex;align-items:center;justify-content:center;font-size:9.4pt}
+.passos li p{font-size:9.4pt}
+ul.lista{padding-left:4.5mm;display:grid;gap:1.2mm}
+ul.lista li{font-size:9pt}
+/* diagrama */
+.fluxo{display:grid;grid-template-columns:1fr 13mm 1.25fr 13mm 1fr;align-items:stretch;margin:3mm 0 2mm}
+.caixa{border:1.5px solid var(--linha);border-radius:12px;padding:3mm 3.4mm;background:#fff}
+.caixa .t{font-weight:700;color:var(--tinta);font-size:10pt;display:flex;align-items:center;gap:2mm}
+.caixa .s{font-size:7.8pt;color:var(--suave);margin-top:.6mm}
+.caixa ul{list-style:none;margin-top:1.6mm;display:grid;gap:.6mm}
+.caixa li{font-size:7.9pt;color:#1f2d3a}
+.caixa li::before{content:"•";color:var(--azul);margin-right:1.4mm}
+.caixa.rv{border-color:#E9A8F2;background:var(--rosaF)}
+.caixa.rv .t{color:#86198F}
+.caixa.fonte{background:#F8FAFC}
+.seta{display:flex;flex-direction:column;align-items:center;justify-content:center;color:var(--azul);font-size:6.6pt;line-height:1.15;text-align:center;gap:1mm;padding:0 .5mm}
+.seta svg{width:9mm;height:6mm}
+.nao{display:block;border:1.5px dashed #F2A7A7;background:var(--erroF);border-radius:10px;padding:2.2mm 3.4mm;font-size:8.6pt;color:#5c130c;margin-top:2mm}
+.nao b{color:var(--erro)}
+/* capa */
+.capa{background:var(--azul);color:#fff;padding:18mm 20mm}
+.capa .brilho{position:absolute;width:190mm;height:190mm;left:-40mm;top:40mm;background:radial-gradient(circle,rgba(217,70,239,.22) 0%,transparent 62%)}
+.capa .brilho2{position:absolute;width:160mm;height:160mm;right:-70mm;bottom:-50mm;background:radial-gradient(circle,rgba(255,255,255,.10) 0%,transparent 65%)}
+.capa .aramo{display:flex;align-items:center;gap:10px;position:relative}
+.capa .aramo img{height:34px}
+.capa .aramo span{font-size:9.5pt;font-weight:600;letter-spacing:.16em;text-transform:uppercase;color:rgba(255,255,255,.78)}
+.capa .marca{display:flex;align-items:center;gap:16px;margin-top:40mm;position:relative}
+.capa .marca svg{width:60px;height:60px;color:#F5D0FE}
+.capa .marca .n{font-size:30pt;font-weight:700;line-height:1;letter-spacing:-.01em}
+.capa .marca .s{font-size:8.6pt;letter-spacing:.18em;text-transform:uppercase;color:rgba(255,255,255,.8);margin-top:5px;font-weight:600}
+.capa .titulo{position:relative;margin-top:20mm;font-size:44pt;font-weight:800;line-height:.98;letter-spacing:-.025em}
+.capa .pergunta{position:relative;margin-top:7mm;font-size:15pt;font-weight:300;line-height:1.32;max-width:150mm;color:rgba(255,255,255,.92)}
+.capa .demo{position:absolute;left:20mm;right:20mm;bottom:40mm;font-family:'IBM Plex Mono',monospace;font-size:8.6pt;line-height:1.6;background:rgba(0,0,0,.22);border:1px solid rgba(255,255,255,.18);border-radius:12px;padding:5mm 6mm;color:#E0F2FE}
+.capa .demo .g{color:rgba(255,255,255,.55)}
+.capa .demo .s{color:#BBF7D0}
+.capa .demo .k{color:#FDE68A}
+.capa .rodape{position:absolute;left:20mm;right:20mm;bottom:16mm;display:flex;justify-content:space-between;font-size:9pt;color:rgba(255,255,255,.75);border-top:1px solid rgba(255,255,255,.22);padding-top:4mm}
+.indice p{font-size:9.6pt}
+</style>
+</head>
+<body>
+<svg width="0" height="0" style="position:absolute">
+  <symbol id="tag" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round">
+    <path d="M12.6 2.6 21.4 11.4a2 2 0 0 1 0 2.8l-7.2 7.2a2 2 0 0 1-2.8 0L2.6 12.6A2 2 0 0 1 2 11.2V4a2 2 0 0 1 2-2h7.2a2 2 0 0 1 1.4.6Z"/>
+    <circle cx="7.5" cy="7.5" r="1.4"/>
+  </symbol>
+  <symbol id="seta" viewBox="0 0 36 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+    <path d="M2 12h30M24 4l8 8-8 8"/>
+  </symbol>
+  <symbol id="chip" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round">
+    <rect x="5" y="5" width="14" height="14" rx="2"/><path d="M9 1v4M15 1v4M9 19v4M15 19v4M1 9h4M1 15h4M19 9h4M19 15h4"/>
+  </symbol>
+</svg>
+<section class="page capa">
+  <div class="brilho"></div><div class="brilho2"></div>
+  <div class="aramo"><img src="logo-A.png" alt="Aramo"><span>Aramo Tecnologia</span></div>
+  <div class="marca"><svg><use href="#chip"/></svg><div><div class="n">Agente RV</div><div class="s">rvland-agent · módulo picprice</div></div></div>
+  <div class="titulo">API local<br>do agente RV</div>
+  <div class="pergunta">Como um sistema no servidor do cliente chama o RV Pic Price pelo agente: o que enviar, o que recebe e as regras de uso.</div>
+  <div class="demo">
+<span class="g">$</span> curl -s http://127.0.0.1:7710/v1/saude<br>
+<span class="g">{</span> <span class="k">"agente"</span>: <span class="s">"rvland-agent"</span>, <span class="k">"versao"</span>: <span class="s">"0.5.0"</span>,<br>
+&nbsp;&nbsp;<span class="k">"modulos"</span>: { <span class="k">"licenca"</span>: false, <span class="k">"picprice"</span>: true } <span class="g">}</span>
+  </div>
+  <div class="rodape"><span>Para desenvolvedores de sistemas que rodam no servidor do cliente</span><span>Agente 0.5.0 · 24/10/2026</span></div>
+</section><section class="page">
+  <div class="run"><svg class="tag"><use href="#chip"/></svg><b>Agente RV</b> API local<span class="sec">Visão geral</span></div>
+  <h1>O que é a API local</h1>
+  <p class="lead">O <b>rvland-agent</b> roda no servidor do cliente e sobe uma API HTTP que escuta <b>só em 127.0.0.1</b>. Com o módulo <b>picprice</b> ligado, ela entrega os 10 menores preços de venda de um produto perto de cada loja, consultando a fonte de preços <b>a partir do próprio servidor do cliente</b>. Hoje quem chama é o SyncCompras; qualquer sistema no mesmo servidor pode chamar seguindo este guia.</p>
+  <div class="fluxo">
+    <div class="caixa"><div class="t">Sistema do cliente</div><div class="s">Ex.: SyncCompras, no mesmo servidor</div>
+      <ul><li>guarda o token RV Pic Price</li><li>guarda o geohash das lojas</li><li>calcula margem e simulações</li></ul></div>
+    <div class="seta"><svg><use href="#seta"/></svg>local<br>porta 7710</div>
+    <div class="caixa rv"><div class="t"><svg style="width:14px;height:14px"><use href="#chip"/></svg>Agente RV</div><div class="s">rvland-agent · módulo picprice</div>
+      <ul><li>pede autorização assinada à RV</li><li>uma consulta por vez, intervalo de 2 s</li><li>cache local de 10 minutos</li><li>tira itens falsos, repetidos e a própria loja</li></ul></div>
+    <div class="seta"><svg><use href="#seta"/></svg>HTTPS<br>daqui</div>
+    <div class="caixa fonte"><div class="t">Plataforma RV e fonte</div><div class="s">Autorização: painel da RV</div>
+      <ul><li>RV: token, status, cota diária</li><li>fonte pública de preços de notas fiscais do Paraná</li></ul></div>
+  </div>
+  <div class="nao"><b>Só do próprio servidor.</b> Chamadas de outra máquina recebem <code>403 PROIBIDO</code>. O token RV Pic Price fica no backend: nunca no navegador, no app ou no HTML.</div>
+  <h2>Módulos do agente</h2>
+  <p>Os módulos de cada servidor são definidos no <b>cadastro do servidor no painel da RV</b> e chegam ao agente dentro do <b>lease assinado</b>. Mudou no painel, vale em até 1 minuto.</p>
+  <table class="tab"><tr><th>Módulo</th><th>O que faz</th><th>Padrão</th></tr>
+    <tr><td><code>licenca</code></td><td>Aplica a licença do cliente: para e religa os serviços licenciados. Desligado, o agente nunca para nem religa serviço por causa de licença.</td><td>ligado em servidores antigos</td></tr>
+    <tr><td><code>picprice</code></td><td>Sobe as rotas <code>/v1/picprice/*</code>. Desligado, elas respondem <code>MODULO_DESATIVADO</code>.</td><td>desligado</td></tr></table>
+  <p class="peq">A API sobe sempre, mesmo com o picprice desligado, para que <code>GET /v1/saude</code> permita descobrir o agente.</p>
+  <h2>Rotas</h2>
+  <table class="tab"><tr><th>Rota</th><th>Para quê</th><th>Token</th><th>Cota</th></tr>
+    <tr><td><code>GET /v1/saude</code></td><td>Agente presente, versão, módulos, último contato com a RV</td><td>não</td><td>não conta</td></tr>
+    <tr><td><code>GET /v1/picprice/status</code></td><td>Token e serviço na RV, com o uso do dia</td><td>sim</td><td>não conta</td></tr>
+    <tr><td><code>POST /v1/picprice/geohash</code></td><td>Endereço da loja para geohash</td><td>sim</td><td>conta 1</td></tr>
+    <tr><td><code>POST /v1/picprice/ranking</code></td><td>10 menores preços do EAN por loja</td><td>sim</td><td>conta 1 por chamada</td></tr></table>
+  <div class="pe"><img src="logo-A.png" alt="">Aramo Tecnologia<span class="ver">agente 0.5.0 · API local v1 · emitido em 24/10/2026</span><span class="n">2</span></div>
+</section><section class="page">
+  <div class="run"><svg class="tag"><use href="#chip"/></svg><b>Agente RV</b> API local<span class="sec">Descobrir o agente e autenticar</span></div>
+  <h1>Descobrir o agente</h1>
+  <p class="lead">Antes de mostrar qualquer coisa do RV Pic Price, confira se o agente está no servidor e se o módulo está ligado.</p>
+  <div class="metodo"><span class="verbo get">GET</span>/v1/saude</div>
+<pre><span class="g">$</span> curl -s http://127.0.0.1:7710/v1/saude
+{
+  <span class="k">"agente"</span>: <span class="s">"rvland-agent"</span>,
+  <span class="k">"versao"</span>: <span class="s">"0.5.0"</span>,
+  <span class="k">"servidorId"</span>: <span class="s">"17e5348d-e7cf-42b7-ae05-8c8139fe2af9"</span>,
+  <span class="k">"modulos"</span>: { <span class="k">"licenca"</span>: false, <span class="k">"picprice"</span>: true },
+  <span class="k">"ultimoContatoRV"</span>: <span class="s">"2026-10-24T18:21:52Z"</span>,
+  <span class="k">"apiLocal"</span>: { <span class="k">"porta"</span>: 7710, <span class="k">"versao"</span>: <span class="s">"v1"</span> }
+}</pre>
+  <div class="cols c2">
+    <div class="nota" style="margin:0"><h3>Conexão recusada ou sem resposta</h3><p>Agente não instalado ou parado. O SyncCompras mostra <code>AGENTE_INDISPONIVEL</code>, "Agente RV não encontrado neste servidor". Não insista: avise o suporte.</p></div>
+    <div class="pratica" style="margin:0"><h3>Porta</h3><p>Padrão <b>7710</b>. Muda no enroll (<code>--porta=N</code>), no instalador ou em <code>RVLAND_PICPRICE_PORTA</code>. Guarde a porta na configuração do seu sistema.</p></div>
+  </div>
+  <h2>Autenticação</h2>
+  <p>As rotas <code>/v1/picprice/*</code> recebem o <b>token RV Pic Price do cliente</b> no header <code>Authorization: Bearer rvpp_…</code>. O token é gerado no painel da RV, um por CNPJ completo da matriz. O agente repassa o token à plataforma da RV, que valida a cada chamada: revogado no painel, a próxima chamada já volta <code>TOKEN_INVALIDO</code>.</p>
+  <div class="metodo"><span class="verbo get">GET</span>/v1/picprice/status</div>
+  <p>Confere token, manutenção e uso do dia. <b>Não conta na cota</b>: é o "testar conexão".</p>
+<pre><span class="g">$</span> curl -s -H <span class="s">"Authorization: Bearer rvpp_…"</span> http://127.0.0.1:7710/v1/picprice/status
+{ <span class="k">"estado"</span>: <span class="s">"OK"</span>, <span class="k">"uso"</span>: { <span class="k">"usado"</span>: 5, <span class="k">"limite"</span>: 200, <span class="k">"zeraEm"</span>: <span class="s">"2026-10-25T00:00:00-03:00"</span> } }</pre>
+  <p class="peq">O limite diário é configurado por token no painel da RV (padrão 200) e zera à meia-noite de São Paulo.</p>
+  <div class="pe"><img src="logo-A.png" alt="">Aramo Tecnologia<span class="ver">agente 0.5.0 · API local v1 · emitido em 24/10/2026</span><span class="n">3</span></div>
+</section><section class="page">
+  <div class="run"><svg class="tag"><use href="#chip"/></svg><b>Agente RV</b> API local<span class="sec">Geohash e ranking</span></div>
+  <h1>Localizar a loja</h1>
+  <div class="metodo"><span class="verbo post">POST</span>/v1/picprice/geohash</div>
+  <p>Transforma o endereço de uma loja do Paraná em geohash. <b>Conta 1 na cota.</b> Faça uma vez por loja e guarde o geohash no seu banco: o agente não acessa o banco do cliente, então o geohash vai em todo ranking.</p>
+<pre><span class="g">$</span> curl -s -H <span class="s">"Authorization: Bearer rvpp_…"</span> -H <span class="s">"Content-Type: application/json"</span> \
+  -d <span class="s">'{"endereco":"Rua Exemplo, 123, Centro, Curitiba, PR"}'</span> http://127.0.0.1:7710/v1/picprice/geohash
+{ <span class="k">"estado"</span>: <span class="s">"OK"</span>, <span class="k">"geohash"</span>: <span class="s">"6gmp0v90nd4t"</span>, <span class="k">"lat"</span>: -25.43, <span class="k">"lon"</span>: -49.27,
+  <span class="k">"endereco_encontrado"</span>: <span class="s">"Rua Exemplo, 123, Centro, Curitiba"</span>, <span class="k">"uso"</span>: { … } }</pre>
+  <h1 style="margin-top:6mm">Ranking de preços</h1>
+  <div class="metodo"><span class="verbo post">POST</span>/v1/picprice/ranking</div>
+  <p>Os 10 menores preços de venda do EAN em volta de cada loja. <b>Conta 1 na cota por chamada</b>, não por loja.</p>
+  <table class="tab"><tr><th>Campo</th><th>Tipo</th><th>Obrig.</th><th>Regra</th></tr>
+    <tr><td><code>gtin</code></td><td>string</td><td class="c">sim</td><td>EAN de 8 a 14 dígitos; zeros à esquerda são removidos</td></tr>
+    <tr><td><code>lojas</code></td><td>array</td><td class="c">sim</td><td>1 a 30 lojas <code>{codigo, geohash, precoVenda?}</code></td></tr>
+    <tr><td><code>lojas[].codigo</code></td><td>string</td><td class="c">sim</td><td>código da loja no seu sistema; volta igual em <code>loja</code></td></tr>
+    <tr><td><code>lojas[].geohash</code></td><td>string</td><td class="c">sim</td><td>5 a 12 caracteres</td></tr>
+    <tr><td><code>lojas[].precoVenda</code></td><td>number</td><td class="c">não</td><td>preço de venda atual da loja: com ele o agente reconhece a própria loja na fonte e a tira dos concorrentes</td></tr>
+    <tr><td><code>raio</code></td><td>number</td><td class="c">não</td><td>km, de 0,5 a 20; padrão 3</td></tr>
+    <tr><td><code>data</code></td><td>int</td><td class="c">não</td><td>janela da venda: -1 = 2 meses (padrão), 0 = 1 mês, 1 = 15 dias, 2 = 1 semana, 3 = 24 h, 4 = 12 h, 5 = 6 h, 6 = 1 h</td></tr></table>
+<pre><span class="g">$</span> curl -s -H <span class="s">"Authorization: Bearer rvpp_…"</span> -H <span class="s">"Content-Type: application/json"</span> \
+  -d <span class="s">'{"gtin":"7891010793463","raio":3,"lojas":[{"codigo":"001","geohash":"6gmp0v90nd4t","precoVenda":12.99}]}'</span> \
+  http://127.0.0.1:7710/v1/picprice/ranking</pre>
+  <p class="peq">Use timeout de 75 s: o agente tem até cerca de 40 s para consultar todas as lojas, e chamadas simultâneas esperam a vez.</p>
+  <div class="pe"><img src="logo-A.png" alt="">Aramo Tecnologia<span class="ver">agente 0.5.0 · API local v1 · emitido em 24/10/2026</span><span class="n">4</span></div>
+</section><section class="page">
+  <div class="run"><svg class="tag"><use href="#chip"/></svg><b>Agente RV</b> API local<span class="sec">Resposta do ranking</span></div>
+  <h1>A resposta do ranking</h1>
+  <p class="lead">Exemplo real do servidor de homologação, encurtado. Cada loja volta com até 10 concorrentes, do mais barato para o mais caro.</p>
+<pre>{
+  <span class="k">"estado"</span>: <span class="s">"OK"</span>,
+  <span class="k">"gtin"</span>: <span class="s">"7891010793463"</span>, <span class="k">"raio"</span>: 3, <span class="k">"data"</span>: -1,
+  <span class="k">"consultadoEm"</span>: <span class="s">"2026-10-24T18:22:19Z"</span>,
+  <span class="k">"lojas"</span>: [ {
+    <span class="k">"loja"</span>: <span class="s">"001"</span>, <span class="k">"geohash"</span>: <span class="s">"6gmp0v90nd4t"</span>,
+    <span class="k">"totalNaArea"</span>: 55, <span class="k">"propriaLojaNaFonte"</span>: false,
+    <span class="k">"precos"</span>: [
+      { <span class="k">"posicao"</span>: 1, <span class="k">"valor"</span>: 9.99, <span class="k">"distanciaKm"</span>: 0.06, <span class="k">"ha"</span>: <span class="s">"há 3 horas"</span>,
+        <span class="k">"dataHora"</span>: <span class="s">"2026-10-24T14:59:34.838Z"</span>, <span class="k">"descricao"</span>: <span class="s">"ABS S LIVRE ADAPT 16UN C ABAS SAUVE L"</span> },
+      { <span class="k">"posicao"</span>: 2, <span class="k">"valor"</span>: 9.99, <span class="k">"distanciaKm"</span>: 1.42, <span class="k">"ha"</span>: <span class="s">"há 2 horas"</span>, <span class="g">…</span> }
+    ]
+  } ],
+  <span class="k">"lojasSemResposta"</span>: [],
+  <span class="k">"uso"</span>: { <span class="k">"usado"</span>: 6, <span class="k">"limite"</span>: 200, <span class="k">"zeraEm"</span>: <span class="s">"2026-10-25T00:00:00-03:00"</span> }
+}</pre>
+  <table class="tab"><tr><th>Campo</th><th>O que é</th></tr>
+    <tr><td><code>lojas[].precos</code></td><td>Até 10 concorrentes, ordenados por preço e, no empate, pela distância. Numerados de 1 a 10 <b>já sem a própria loja</b>. Nunca há nome nem endereço de concorrente.</td></tr>
+    <tr><td><code>valor</code> · <code>distanciaKm</code></td><td>Preço de venda na nota e distância até o geohash da loja.</td></tr>
+    <tr><td><code>ha</code> · <code>dataHora</code></td><td>Há quanto tempo a venda aconteceu, em texto, e o instante da nota.</td></tr>
+    <tr><td><code>descricao</code></td><td>Descrição do produto como saiu na nota do concorrente.</td></tr>
+    <tr><td><code>totalNaArea</code></td><td>Quantos preços a fonte tem no raio, já descontada a própria loja.</td></tr>
+    <tr><td><code>propriaLojaNaFonte</code></td><td><code>true</code> quando um preço igual ao <code>precoVenda</code>, a até 0,2 km, foi reconhecido como a própria loja e tirado.</td></tr>
+    <tr><td><code>lojasSemResposta</code></td><td>Lojas em que a fonte falhou nesta consulta. As outras vêm normalmente.</td></tr>
+    <tr><td><code>uso</code></td><td>Uso do dia do token, depois desta chamada.</td></tr></table>
+  <div class="pratica"><h3>O que fica com quem chama</h3><p>A posição do <b>seu</b> preço no ranking, a margem, as simulações de preço e a meta de custo com o fornecedor. O SyncCompras calcula com os custos do ERP.</p></div>
+  <div class="pe"><img src="logo-A.png" alt="">Aramo Tecnologia<span class="ver">agente 0.5.0 · API local v1 · emitido em 24/10/2026</span><span class="n">5</span></div>
+</section><section class="page">
+  <div class="run"><svg class="tag"><use href="#chip"/></svg><b>Agente RV</b> API local<span class="sec">Estados</span></div>
+  <h1>Estados e o que fazer</h1>
+  <p class="lead">Toda resposta das rotas <code>/v1/picprice/*</code> traz <code>estado</code>. Trate pelo estado; o HTTP acompanha.</p>
+  <table class="tab"><tr><th>estado</th><th>HTTP</th><th>Quando</th><th>O que fazer</th></tr>
+    <tr><td><span class="st ok">OK</span></td><td>200</td><td>Deu certo.</td><td>Usar.</td></tr>
+    <tr><td><span class="st av">REQUISICAO_INVALIDA</span></td><td>400</td><td>JSON ou campos inválidos.</td><td>Corrigir o pedido.</td></tr>
+    <tr><td><span class="st av">ENDERECO_NAO_ENCONTRADO</span></td><td>400</td><td>Geohash: endereço fora do Paraná ou não achado.</td><td>Ajustar o endereço.</td></tr>
+    <tr><td><span class="st er">TOKEN_INVALIDO</span></td><td>401</td><td>Token inexistente, revogado (<code>motivo: "revogado"</code>) ou de outro cliente.</td><td>Mostrar "Serviço inválido - token revogado". Falar com o suporte.</td></tr>
+    <tr><td><span class="st er">MODULO_DESATIVADO</span></td><td>403</td><td>Módulo picprice desligado no cadastro do servidor.</td><td>Avisar; o suporte liga no painel da RV.</td></tr>
+    <tr><td><span class="st er">PROIBIDO</span></td><td>403</td><td>Chamada que não veio de 127.0.0.1.</td><td>Chamar do próprio servidor.</td></tr>
+    <tr><td><span class="st av">LIMITE_EXCEDIDO</span></td><td>429</td><td>Mais de 120 consultas por minuto no token.</td><td>Esperar um pouco.</td></tr>
+    <tr><td><span class="st av">LIMITE_DIARIO</span></td><td>429</td><td>Cota diária atingida. Traz <code>limite</code>, <code>usado</code> e <code>zeraEm</code>.</td><td>Não repetir até <code>zeraEm</code>.</td></tr>
+    <tr><td><span class="st cz">MANUTENCAO</span></td><td>503</td><td>Manutenção programada no painel. Traz <code>mensagem</code> e <code>previsao</code>.</td><td>Mostrar a mensagem.</td></tr>
+    <tr><td><span class="st cz">FONTE_INDISPONIVEL</span></td><td>503</td><td>A fonte não respondeu ou só mandou itens falsos.</td><td>Tentar depois, por ação do usuário.</td></tr>
+    <tr><td><span class="st cz">INALCANCAVEL</span></td><td>502</td><td>O agente não falou com a RV, ou a autorização veio inválida.</td><td>Tentar depois; conferir a internet do servidor.</td></tr></table>
+  <div class="nota"><h3>Do lado de quem chama</h3><p>Conexão recusada ou sem resposta do agente é <b>agente indisponível</b>. O SyncCompras devolve ao Hermes <code>AGENTE_INDISPONIVEL</code>, com "Agente RV não encontrado neste servidor".</p></div>
+<pre>{ <span class="k">"estado"</span>: <span class="s">"LIMITE_DIARIO"</span>, <span class="k">"mensagem"</span>: <span class="s">"Limite diário de consultas atingido"</span>,
+  <span class="k">"limite"</span>: 200, <span class="k">"usado"</span>: 200, <span class="k">"zeraEm"</span>: <span class="s">"2026-10-25T00:00:00-03:00"</span>, <span class="k">"uso"</span>: { … } }
+
+{ <span class="k">"estado"</span>: <span class="s">"MODULO_DESATIVADO"</span>, <span class="k">"mensagem"</span>: <span class="s">"Módulo RV Pic Price desligado neste servidor."</span> }</pre>
+  <p class="peq">Não repita automaticamente em <code>LIMITE_DIARIO</code>, <code>TOKEN_INVALIDO</code>, <code>MODULO_DESATIVADO</code> nem <code>MANUTENCAO</code>.</p>
+  <div class="pe"><img src="logo-A.png" alt="">Aramo Tecnologia<span class="ver">agente 0.5.0 · API local v1 · emitido em 24/10/2026</span><span class="n">6</span></div>
+</section><section class="page">
+  <div class="run"><svg class="tag"><use href="#chip"/></svg><b>Agente RV</b> API local<span class="sec">Limites de uso e segurança</span></div>
+  <h1>Limites de uso</h1>
+  <p class="lead">Estes limites fazem parte do contrato. O agente aplica a parte dele; quem chama aplica o resto.</p>
+  <ul class="passos">
+    <li><p><b>Só sob demanda.</b> Cada ranking corresponde a um item que o usuário selecionou. Sem pré-carregamento de outros itens, sem varredura, sem fila e sem rotina agendada.</p></li>
+    <li><p><b>Só as lojas do próprio cliente.</b> Nunca consultas para terceiros.</p></li>
+    <li><p><b>Uma consulta por vez no agente</b>, com <b>intervalo mínimo de 2 s</b> entre consultas à fonte. Chamadas simultâneas esperam a vez.</p></li>
+    <li><p><b>Cache local de 10 minutos</b> por EAN, loja, raio e período. Repetir o mesmo item logo em seguida não vai à fonte, mas conta na cota, porque toda chamada é autorizada pela RV.</p></li>
+    <li><p><b>Cota diária por token</b>, configurada no painel da RV (padrão 200), mais 120 por minuto. Status e saúde não contam.</p></li>
+  </ul>
+  <h1 style="margin-top:7mm">Segurança</h1>
+  <ul class="lista">
+    <li>Escuta só em <code>127.0.0.1</code> e recusa qualquer conexão que não seja local.</li>
+    <li>Antes de cada ranking o agente pede <b>autorização à plataforma da RV</b>, assinando o pedido com a chave do servidor, gerada no enroll. A chave privada nunca sai do servidor.</li>
+    <li>A RV confere o módulo, o token (tem que ser do mesmo cliente do servidor), a manutenção e a cota, conta a consulta e devolve uma autorização <b>assinada</b> (Ed25519, a mesma chave do lease).</li>
+    <li>A autorização vale 90 s e é amarrada ao servidor, ao EAN, às lojas, ao raio e ao período. O agente confere a assinatura antes de consultar a fonte. Alterar o agente localmente não libera consultas.</li>
+    <li>O binário é publicado com strip e ofuscação (garble) e só se atualiza com binário assinado pela RV.</li>
+  </ul>
+  <div class="alerta"><h3>O token é do cliente</h3><p>Quem tem o token consulta em nome do cliente e gasta a cota dele. Guarde só no backend e nunca registre o token em log.</p></div>
+  <div class="pe"><img src="logo-A.png" alt="">Aramo Tecnologia<span class="ver">agente 0.5.0 · API local v1 · emitido em 24/10/2026</span><span class="n">7</span></div>
+</section><section class="page">
+  <div class="run"><svg class="tag"><use href="#chip"/></svg><b>Agente RV</b> API local<span class="sec">Como integrar</span></div>
+  <h1>Como outro sistema deve chamar</h1>
+  <p class="lead">O roteiro abaixo é o que o SyncCompras faz. Siga o mesmo em qualquer sistema que rode no servidor do cliente.</p>
+  <ol class="passos">
+    <li><p><b>Descobrir o agente.</b> Na subida ou no "testar conexão", <code>GET /v1/saude</code>. Só siga se <code>modulos.picprice</code> for <code>true</code>.</p></li>
+    <li><p><b>Guardar o token</b> RV Pic Price do cliente no backend, junto com a porta do agente e o raio.</p></li>
+    <li><p><b>Localizar as lojas</b> uma vez, com <code>POST /v1/picprice/geohash</code>, e guardar o geohash de cada loja no seu banco.</p></li>
+    <li><p><b>Quando o usuário selecionar um item</b>, <code>POST /v1/picprice/ranking</code> com o EAN, as lojas (com o preço de venda de cada uma) e o raio. Timeout de 75 s.</p></li>
+    <li><p><b>Tratar o estado</b> conforme a página 6. Mostrar o uso do dia, se quiser, a partir de <code>uso</code>.</p></li>
+  </ol>
+<pre><span class="g">// pseudocódigo</span>
+saude = GET <span class="s">"http://127.0.0.1:"</span> + porta + <span class="s">"/v1/saude"</span>          <span class="g">// sem token</span>
+<span class="k">se</span> falhou: mostrar <span class="s">"Agente RV não encontrado neste servidor"</span>; parar
+<span class="k">se</span> !saude.modulos.picprice: mostrar <span class="s">"Módulo RV Pic Price desligado"</span>; parar
+
+<span class="g">// usuário clicou no item</span>
+r = POST <span class="s">"/v1/picprice/ranking"</span>, Bearer token, {
+      gtin: item.ean, raio: config.raio,
+      lojas: lojas.map(l =&gt; { codigo: l.cod, geohash: l.geohash, precoVenda: l.precoVenda }) }
+<span class="k">se</span> r.estado == <span class="s">"OK"</span>: para cada loja, posicao do cliente = 1 + (precos com valor &lt; precoVenda)
+<span class="k">senão</span>: mostrar r.mensagem conforme o estado</pre>
+  <h2>Implementação de referência</h2>
+  <table class="tab"><tr><th>Onde</th><th>O quê</th></tr>
+    <tr><td><code>SyncCompras · com.aramo.picprice.PicPriceCliente</code></td><td>Cliente HTTP da API local: saude, status, geohash e ranking, com o estado <code>AGENTE_INDISPONIVEL</code>.</td></tr>
+    <tr><td><code>SyncCompras · PicPriceResource</code></td><td>Monta o pedido com o preço de venda por loja e calcula margem, simulações e meta.</td></tr>
+    <tr><td><code>rvland-page · agent/docs/openapi.yaml</code></td><td>Especificação formal desta API (OpenAPI 3).</td></tr>
+    <tr><td><code>rvland-page · agent/picprice.go</code></td><td>O módulo picprice do agente.</td></tr></table>
+  <div class="pe"><img src="logo-A.png" alt="">Aramo Tecnologia<span class="ver">agente 0.5.0 · API local v1 · emitido em 24/10/2026</span><span class="n">8</span></div>
+</section>
+</body>
+</html>

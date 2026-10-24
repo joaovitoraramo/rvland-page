@@ -164,7 +164,7 @@ ul.lista li{font-size:9pt}
       <ul><li>preços de notas fiscais do Paraná</li><li>geocodificador do OpenStreetMap (endereço)</li></ul>
     </div>
   </div>
-  <div class="nao"><b>Nunca do navegador.</b> A API é chamada pelo backend do cliente. O token não pode ir para o front, para o app nem para o HTML: quem tem o token consulta em nome do cliente.</div>
+  <div class="nao"><b>A partir do agente 0.5.0, estas rotas são de uso interno do agente RV.</b> Sistemas do cliente consomem o RV Pic Price pela <b>API local do agente</b> (<code>http://127.0.0.1:7710</code>), que consulta a fonte do próprio servidor do cliente com autorização assinada da RV. Veja o guia <b>“API local do agente RV”</b>. As rotas abaixo continuam no ar por compatibilidade; o ranking chamado direto da plataforma tende a voltar <code>FONTE_INDISPONIVEL</code>.</div>
 
   <h2>O que a API entrega e o que fica com você</h2>
   <div class="cols c2">
@@ -189,7 +189,7 @@ ul.lista li{font-size:9pt}
       <p><b>Página 10.</b> Exemplo completo de consumo.</p>
     </div>
   </div>
-  <div class="pe"><img src="logo-A.png" alt="">Aramo Tecnologia<span class="ver">RV Pic Price · branch feat/rv-pic-price (027f64c) · emitido em 24/10/2026</span><span class="n">2</span></div>
+  <div class="pe"><img src="logo-A.png" alt="">Aramo Tecnologia<span class="ver">RV Pic Price · uso interno do agente desde a 0.5.0 · revisado em 24/10/2026</span><span class="n">2</span></div>
 </section>
 
 <!-- ============ 3. BASE URL E AUTENTICAÇÃO ============ -->
@@ -228,7 +228,7 @@ Content-Type: application/json        <span class="g"># só no POST</span></pre>
 
   <h2>Ordem das verificações</h2>
   <p>Em ranking e geohash, antes de qualquer consulta: <b>1.</b> token (inexistente ou revogado: 401) → <b>2.</b> status do serviço (manutenção: 503) → <b>3.</b> limite por minuto (429 <code>LIMITE_EXCEDIDO</code>, não conta no dia) → <b>4.</b> conta a requisição no dia; se passou do limite, 429 <code>LIMITE_DIARIO</code>. Só então a rota valida os parâmetros e consulta as fontes, por isso uma requisição com parâmetro inválido também conta. O <code>GET /api/picprice/status</code> faz só os passos 1 e 2 e não conta (página 7).</p>
-  <div class="pe"><img src="logo-A.png" alt="">Aramo Tecnologia<span class="ver">RV Pic Price · branch feat/rv-pic-price (027f64c) · emitido em 24/10/2026</span><span class="n">3</span></div>
+  <div class="pe"><img src="logo-A.png" alt="">Aramo Tecnologia<span class="ver">RV Pic Price · uso interno do agente desde a 0.5.0 · revisado em 24/10/2026</span><span class="n">3</span></div>
 </section>
 
 <!-- ============ 4. GEOHASH ============ -->
@@ -271,7 +271,7 @@ Content-Type: application/json        <span class="g"># só no POST</span></pre>
     <tr><td class="c">401 · 503 · 429</td><td>token, manutenção, limite</td><td>As verificações comuns da página 3.</td></tr>
   </table>
   <div class="pratica"><h3>Confira o endereço encontrado</h3><p>Mostre <code>endereco_encontrado</code> para quem configurou a loja. Se o geocodificador caiu na rua certa de outro bairro, o ranking vai olhar a região errada. Corrija o endereço enviado e localize de novo.</p></div>
-  <div class="pe"><img src="logo-A.png" alt="">Aramo Tecnologia<span class="ver">RV Pic Price · branch feat/rv-pic-price (027f64c) · emitido em 24/10/2026</span><span class="n">4</span></div>
+  <div class="pe"><img src="logo-A.png" alt="">Aramo Tecnologia<span class="ver">RV Pic Price · uso interno do agente desde a 0.5.0 · revisado em 24/10/2026</span><span class="n">4</span></div>
 </section>
 
 <!-- ============ 5. RANKING ============ -->
@@ -308,7 +308,7 @@ Content-Type: application/json        <span class="g"># só no POST</span></pre>
   <pre>{ <span class="k">"estado"</span>: <span class="s">"FONTE_INDISPONIVEL"</span>,
   <span class="k">"mensagem"</span>: <span class="s">"A fonte de preços não respondeu. Tente de novo em instantes."</span>,
   <span class="k">"detalhe"</span>: <span class="s">"a fonte devolveu só resultados falsos"</span> }</pre>
-  <div class="pe"><img src="logo-A.png" alt="">Aramo Tecnologia<span class="ver">RV Pic Price · branch feat/rv-pic-price (027f64c) · emitido em 24/10/2026</span><span class="n">5</span></div>
+  <div class="pe"><img src="logo-A.png" alt="">Aramo Tecnologia<span class="ver">RV Pic Price · uso interno do agente desde a 0.5.0 · revisado em 24/10/2026</span><span class="n">5</span></div>
 </section>
 
 <!-- ============ 6. RESPOSTA DO RANKING ============ -->
@@ -355,7 +355,7 @@ Content-Type: application/json        <span class="g"># só no POST</span></pre>
     <tr><td><code>uso</code></td><td>objeto</td><td>Consultas do token hoje: <code>usado</code> (já contando esta), <code>limite</code> diário e <code>zeraEm</code>, a próxima meia-noite de São Paulo (página 8). Vem em toda resposta OK de ranking e geohash. Use para avisar antes de estourar.</td></tr>
   </table>
   <div class="alerta" style="padding:2.4mm 4mm"><b style="color:var(--erro)">Nunca vem na resposta:</b> nome, razão social, endereço ou código do estabelecimento concorrente. A API compara preço, não identifica quem vende.</div>
-  <div class="pe"><img src="logo-A.png" alt="">Aramo Tecnologia<span class="ver">RV Pic Price · branch feat/rv-pic-price (027f64c) · emitido em 24/10/2026</span><span class="n">6</span></div>
+  <div class="pe"><img src="logo-A.png" alt="">Aramo Tecnologia<span class="ver">RV Pic Price · uso interno do agente desde a 0.5.0 · revisado em 24/10/2026</span><span class="n">6</span></div>
 </section>
 
 <!-- ============ 7. ESTADOS ============ -->
@@ -391,7 +391,7 @@ Content-Type: application/json        <span class="g"># só no POST</span></pre>
            <span class="k">"zeraEm"</span>: <span class="s">"2026-10-25T00:00:00-03:00"</span> } }</pre></div>
   </div>
   <p class="peq"><b><code>GET /api/picprice/status</code></b>, só com o header <code>Authorization</code>: confere o token e o status do serviço e devolve o uso do dia, <b>sem contar no limite</b>. Respostas: 200 com <code>OK</code> ou <code>LIMITE_DIARIO</code>; 503 <code>MANUTENCAO</code> (com <code>mensagem</code>, <code>previsao</code> e <code>uso</code>); 401 <code>TOKEN_INVALIDO</code>. Use para testar a conexão, como o botão "Testar conexão" do SyncCompras faz.</p>
-  <div class="pe"><img src="logo-A.png" alt="">Aramo Tecnologia<span class="ver">RV Pic Price · branch feat/rv-pic-price (027f64c) · emitido em 24/10/2026</span><span class="n">7</span></div>
+  <div class="pe"><img src="logo-A.png" alt="">Aramo Tecnologia<span class="ver">RV Pic Price · uso interno do agente desde a 0.5.0 · revisado em 24/10/2026</span><span class="n">7</span></div>
 </section>
 
 <!-- ============ 8. LIMITES ============ -->
@@ -430,7 +430,7 @@ Content-Type: application/json        <span class="g"># só no POST</span></pre>
     <li><b>Limite diário estourado:</b> trate o 429 LIMITE_DIARIO sem novas tentativas até a hora de <code>zeraEm</code>. Acompanhe <code>uso</code> nas respostas OK.</li>
     <li><b>Uma chamada para várias lojas:</b> mande todas as lojas da cotação no mesmo <code>lojas=</code>; o servidor consulta em paralelo.</li>
   </ul>
-  <div class="pe"><img src="logo-A.png" alt="">Aramo Tecnologia<span class="ver">RV Pic Price · branch feat/rv-pic-price (027f64c) · emitido em 24/10/2026</span><span class="n">8</span></div>
+  <div class="pe"><img src="logo-A.png" alt="">Aramo Tecnologia<span class="ver">RV Pic Price · uso interno do agente desde a 0.5.0 · revisado em 24/10/2026</span><span class="n">8</span></div>
 </section>
 
 <!-- ============ 9. REGRAS ============ -->
@@ -462,7 +462,7 @@ Content-Type: application/json        <span class="g"># só no POST</span></pre>
   <pre>custo  = cade_ctnota + cade_debvenda + cade_ctvenda
 margem = (preço − custo) ÷ preço × 100        <span class="g"># truncada em 2 casas</span></pre>
   <p>Nas simulações de preço, o débito de venda acompanha o preço no mesmo percentual de hoje e o custo de venda fica fixo em reais. O custo para manter a margem <i>m</i> num preço novo <i>P</i> é <code>P × (1 − m) − %débito × P − ctvenda</code>. O preço de venda usado é <code>cade_prvenda</code>, que é o promocional quando o item está em oferta.</p>
-  <div class="pe"><img src="logo-A.png" alt="">Aramo Tecnologia<span class="ver">RV Pic Price · branch feat/rv-pic-price (027f64c) · emitido em 24/10/2026</span><span class="n">9</span></div>
+  <div class="pe"><img src="logo-A.png" alt="">Aramo Tecnologia<span class="ver">RV Pic Price · uso interno do agente desde a 0.5.0 · revisado em 24/10/2026</span><span class="n">9</span></div>
 </section>
 
 <!-- ============ 10. EXEMPLO COMPLETO ============ -->
@@ -512,7 +512,7 @@ margem = (preço − custo) ÷ preço × 100        <span class="g"># truncada e
     <tr><td><code>repository/PicPriceRepository.java</code></td><td>Configuração, lojas, EAN, preço de venda e custos.</td></tr>
   </table>
   <p class="peq">Versão descrita: branch <b>feat/rv-pic-price</b> do painel rvland (027f64c), <code>lib/picprice/*</code> e <code>app/api/picprice/*</code>; tabelas <code>picprice_tokens</code> (com o limite e o contador do dia, migration 0019) e <code>picprice_cache</code>.</p>
-  <div class="pe"><img src="logo-A.png" alt="">Aramo Tecnologia<span class="ver">RV Pic Price · branch feat/rv-pic-price (027f64c) · emitido em 24/10/2026</span><span class="n">10</span></div>
+  <div class="pe"><img src="logo-A.png" alt="">Aramo Tecnologia<span class="ver">RV Pic Price · uso interno do agente desde a 0.5.0 · revisado em 24/10/2026</span><span class="n">10</span></div>
 </section>
 
 </body>

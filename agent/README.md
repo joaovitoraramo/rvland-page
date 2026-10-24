@@ -5,6 +5,21 @@ e status dos serviços, recebe uma **licença assinada** (lease) que decide se o
 serviços licenciados seguem no ar, executa verbos fechados (`status/start/stop/
 update`) e se auto-atualiza a partir de binários assinados.
 
+## Módulos
+
+O agente é modular; os módulos de cada servidor ficam no **cadastro do servidor no painel** e chegam
+dentro do **lease assinado** (servidores antigos: só licença).
+
+- `licenca` — aplica a licença (para/religa os serviços licenciados). Desligado, o agente nunca para nem
+  religa serviço por causa de licença (só devolve ao ar o que ele mesmo tinha bloqueado antes) e recusa
+  comandos `start/stop`.
+- `picprice` — API local do RV Pic Price em `127.0.0.1:7710` (porta: `--porta=N` no enroll/instalador ou
+  `RVLAND_PICPRICE_PORTA`). Contrato para quem chama: [`docs/api-local.md`](docs/api-local.md) e
+  [`docs/openapi.yaml`](docs/openapi.yaml).
+
+Instalar só com RV Pic Price (sem licença): cadastre o servidor no painel com só esse módulo e use o
+comando gerado (`--modulos=picprice`; vale o cadastro). `--driver=dry` garante que o systemd nunca é tocado.
+
 ## Instalação (produção)
 
 No painel, cadastre o servidor e cole o comando gerado no SSH:
@@ -14,7 +29,8 @@ curl -fsSL https://SEU-SITE/api/agente/instalar | sudo bash -s -- --token=SEU_TO
 ```
 
 Ele baixa o binário da arquitetura certa, faz o enroll, instala a unidade
-systemd e sobe o serviço.
+systemd e sobe o serviço. Opções: `--modulos=…` (informativo), `--versao=latest|X.Y.Z`
+(ex.: canary fixado no servidor), `--porta=7710`, `--driver=systemd|dry`.
 
 ## CLI
 
