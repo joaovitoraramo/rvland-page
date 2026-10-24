@@ -158,6 +158,12 @@ Do lado de quem chama: conexão recusada/timeout no agente = **agente indisponí
 - Cache local de **10 minutos** por EAN + loja + raio + período (repetir o mesmo item logo em seguida não
   vai à fonte, mas conta na cota, porque toda chamada é autorizada pela RV).
 - Prazo de uma consulta: até ~40 s para todas as lojas; use timeout de 75 s no cliente.
+- **Peça só as lojas necessárias.** Não mande todas as lojas de uma vez: o SyncCompras pede a loja que o
+  usuário está vendo e, por baixo, no máximo a loja seguinte do mesmo item.
+- **Guarde o resultado do dia no consumidor.** Cada chamada conta na cota diária do token. O SyncCompras
+  guarda o ranking de cada loja (por EAN + loja + geohash + raio + período) em `sync.sync_picprice_cache`
+  até o fim do dia (dia de São Paulo) e só chama o agente de novo quando o usuário pede para atualizar.
+  O filtro de horas (`pcpr_horas`) é aplicado na leitura, sobre a menor janela da fonte que cobre o período.
 
 ## Segurança
 

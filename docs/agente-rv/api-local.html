@@ -275,6 +275,8 @@ ul.lista li{font-size:9pt}
     <li><p><b>Só as lojas do próprio cliente.</b> Nunca consultas para terceiros.</p></li>
     <li><p><b>Uma consulta por vez no agente</b>, com <b>intervalo mínimo de 2 s</b> entre consultas à fonte. Chamadas simultâneas esperam a vez.</p></li>
     <li><p><b>Cache local de 10 minutos</b> por EAN, loja, raio e período. Repetir o mesmo item logo em seguida não vai à fonte, mas conta na cota, porque toda chamada é autorizada pela RV.</p></li>
+    <li><p><b>Peça só as lojas necessárias.</b> O SyncCompras pede a loja que o usuário está vendo e, por baixo, no máximo a seguinte do mesmo item.</p></li>
+    <li><p><b>Guarde o resultado do dia.</b> Toda chamada conta na cota. O SyncCompras guarda o ranking de cada loja em <code>sync.sync_picprice_cache</code> até o fim do dia e só chama o agente de novo quando o usuário pede para atualizar.</p></li>
     <li><p><b>Cota diária por token</b>, configurada no painel da RV (padrão 200), mais 120 por minuto. Status e saúde não contam.</p></li>
   </ul>
   <h1 style="margin-top:7mm">Segurança</h1>

@@ -425,10 +425,10 @@ Content-Type: application/json        <span class="g"># só no POST</span></pre>
   <ul class="lista">
     <li><b>Tempos limite:</b> conexão de 10 s; leitura de 40 s no geohash e 70 s no ranking. São os valores do SyncCompras (<code>PicPriceCliente</code>), acima dos 60 s da rota.</li>
     <li><b>Repetir só o que é passageiro:</b> 429 e 503 FONTE_INDISPONIVEL, no máximo uma vez, com espera. Nunca repetir 400, 401 ou 404, nem MANUTENCAO em laço.</li>
-    <li><b>Cache local:</b> guarde respostas OK por 20 a 30 minutos por item e cotação. O SyncCompras/Hermes usa 25 minutos e só guarda respostas estáveis.</li>
-    <li><b>Pré-carregamento com moderação:</b> cada item pré-carregado gasta uma consulta do limite diário, mesmo vindo do cache. Carregue poucos itens à frente, no máximo 2 ou 3 de cada vez, e pare ao receber TOKEN_INVALIDO, MANUTENCAO, LIMITE_DIARIO, FONTE_INDISPONIVEL ou INALCANCAVEL.</li>
+    <li><b>Guarde o dia:</b> guarde as respostas OK de cada loja até o fim do dia (dia de São Paulo). O SyncCompras guarda em <code>sync.sync_picprice_cache</code> e só consulta de novo quando o usuário pede para atualizar; erro nunca é guardado.</li>
+    <li><b>Sem varredura:</b> cada chamada gasta uma consulta do limite diário, mesmo vinda do cache. O Hermes carrega só a loja aberta do item selecionado e, por baixo, no máximo a loja seguinte; para ao receber TOKEN_INVALIDO, MANUTENCAO, LIMITE_DIARIO ou INALCANCAVEL.</li>
     <li><b>Limite diário estourado:</b> trate o 429 LIMITE_DIARIO sem novas tentativas até a hora de <code>zeraEm</code>. Acompanhe <code>uso</code> nas respostas OK.</li>
-    <li><b>Uma chamada para várias lojas:</b> mande todas as lojas da cotação no mesmo <code>lojas=</code>; o servidor consulta em paralelo.</li>
+    <li><b>Só as lojas necessárias:</b> peça a loja que o usuário está vendo (e, no máximo, a seguinte), não todas as lojas da cotação de uma vez.</li>
   </ul>
   <div class="pe"><img src="logo-A.png" alt="">Aramo Tecnologia<span class="ver">RV Pic Price · uso interno do agente desde a 0.5.0 · revisado em 24/10/2026</span><span class="n">8</span></div>
 </section>
