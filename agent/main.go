@@ -227,8 +227,7 @@ func umHeartbeat(cfg *Config, pendentes []map[string]any) ([]map[string]any, int
 	}
 
 	// auto-update (best-effort; se atualizar, o processo sai e reinicia)
-	base := cfg.Enderecos[0]
-	if err := autoAtualiza(base, resp.VersaoAlvo, versao); err != nil {
+	if err := autoAtualiza(cfg, resp.VersaoAlvo, versao); err != nil {
 		logf("update: %v", err)
 	}
 

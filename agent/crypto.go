@@ -63,3 +63,10 @@ func sha256Hex(b []byte) string {
 	h := sha256.Sum256(b)
 	return hex.EncodeToString(h[:])
 }
+
+// mensagemDownload: corpo canônico assinado no pedido de download do binário —
+// o mesmo que a plataforma monta em lib/servicos/download-auth.ts. A assinatura
+// final é mensagemHeartbeat(timestamp, mensagemDownload(...)).
+func mensagemDownload(versao, arch string) []byte {
+	return []byte(fmt.Sprintf("download:%s:%s", versao, arch))
+}

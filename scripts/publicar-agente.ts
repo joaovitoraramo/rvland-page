@@ -22,12 +22,15 @@ const GO = process.env.GO_BIN || "go";
 /**
  * Ofuscação: com o garble instalado (v0.16.0 é a última que aceita o Go 1.26 —
  * `go install mvdan.cc/garble@v0.16.0`), o build sai com nomes e textos
- * embaralhados (-literals -tiny). Sem ele, cai no build normal com strip (-s -w).
- * GARBLE_BIN aponta outro caminho; GARBLE_BIN=off desliga.
+ * embaralhados (-literals -tiny). GARBLE_BIN aponta outro caminho.
+ *
+ * SEM garble a publicação FALHA por padrão: nunca mandamos para produção um
+ * binário sem ofuscação por engano. Para depuração LOCAL dá para liberar o
+ * build sem ofuscação de forma explícita, com a flag `--sem-garble` ou
+ * `GARBLE_BIN=off` — aí sai um aviso grande e o build segue só com strip.
  */
 function garbleBin(): string | null {
-  if (process.env.GARBLE_BIN === "off") return null;
-  if (process.env.GARBLE_BIN) return process.env.GARBLE_BIN;
+  if (process.env.GARBLE_BIN && process.env.GARBLE_BIN !== "off") return process.env.GARBLE_BIN;
   try {
     const gopath = execFileSync(GO, ["env", "GOPATH"], { encoding: "utf8" }).trim();
     const caminho = `${gopath}/bin/garble`;
@@ -38,10 +41,13 @@ function garbleBin(): string | null {
 }
 
 async function main() {
-  const versao = process.argv[2];
-  const canal = (process.argv[3] as "estavel" | "canary") || "estavel";
+  const args = process.argv.slice(2);
+  const semGarble = args.includes("--sem-garble") || process.env.GARBLE_BIN === "off";
+  const pos = args.filter((a) => !a.startsWith("--"));
+  const versao = pos[0];
+  const canal = (pos[1] as "estavel" | "canary") || "estavel";
   if (!versao || !/^\d+\.\d+\.\d+$/.test(versao)) {
-    throw new Error("uso: publicar-agente.ts <versao semver> [estavel|canary]");
+    throw new Error("uso: publicar-agente.ts <versao semver> [estavel|canary] [--sem-garble]");
   }
 
   const releaseSk = readFileSync("chaves/release.key", "utf8").trim();
@@ -49,6 +55,27 @@ async function main() {
   const licensePub = process.env.RVLAND_LICENSE_PK;
   if (!licensePub) throw new Error("RVLAND_LICENSE_PK ausente no .env.local");
   if (!existsSync("agent/go.mod")) throw new Error("módulo do agente não encontrado em agent/");
+
+  // Ofuscação obrigatória: sem garble e sem opt-out explícito, aborta ANTES de
+  // compilar — para nunca publicar binário sem ofuscação por engano.
+  const garble = garbleBin();
+  if (!garble) {
+    if (!semGarble) {
+      throw new Error(
+        "garble não encontrado: a publicação exige ofuscação. Instale com " +
+          "`go install mvdan.cc/garble@v0.16.0` ou aponte GARBLE_BIN para o binário. " +
+          "Só para depuração LOCAL use --sem-garble (ou GARBLE_BIN=off) — nunca publique assim para produção."
+      );
+    }
+    console.warn(
+      "\n" +
+        "######################################################################\n" +
+        "#  ATENÇÃO: BUILD SEM OFUSCAÇÃO (--sem-garble / GARBLE_BIN=off).      #\n" +
+        "#  Binário sai só com strip (-s -w). USO APENAS LOCAL/DEPURAÇÃO.      #\n" +
+        "#  NÃO publique este artefato para produção.                         #\n" +
+        "######################################################################\n"
+    );
+  }
 
   // chaves públicas embutidas no binário (crypto.go, pacote main)
   const ld = [
@@ -65,11 +92,10 @@ async function main() {
   for (const arch of ARCHS) {
     const saida = `/tmp/agenterv-${versao}-${arch}`;
     console.log(`compilando ${arch}...`);
-    const garble = garbleBin();
     const [bin0, args0] = garble
       ? [garble, ["-literals", "-tiny", "build", "-ldflags", ld, "-o", saida, "."]]
       : [GO, ["build", "-ldflags", ld, "-o", saida, "."]];
-    console.log(garble ? "  (ofuscado com garble)" : "  (sem garble: só strip)");
+    console.log(garble ? "  (ofuscado com garble)" : "  (SEM garble: só strip — não é para produção)");
     execFileSync(bin0, args0, {
       cwd: "agent",
       env: { ...process.env, GOOS: "linux", GOARCH: arch, CGO_ENABLED: "0" },

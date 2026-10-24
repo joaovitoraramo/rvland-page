@@ -16,10 +16,12 @@ type metaRelease struct {
 
 // autoAtualiza baixa, verifica (sha256 + assinatura de release) e troca o
 // binário de forma atômica. O systemd reinicia o serviço quando o processo sai.
-func autoAtualiza(base, versaoAlvo, versaoAtual string) error {
+// O download é assinado com a chave do servidor (cfg) para o painel autenticar.
+func autoAtualiza(cfg *Config, versaoAlvo, versaoAtual string) error {
 	if versaoAlvo == "" || versaoAlvo == versaoAtual {
 		return nil
 	}
+	base := cfg.Enderecos[0]
 	arch := runtime.GOARCH
 	logf("atualização %s → %s (%s)...", versaoAtual, versaoAlvo, arch)
 
@@ -36,8 +38,8 @@ func autoAtualiza(base, versaoAlvo, versaoAtual string) error {
 		return err
 	}
 
-	// binário
-	bin, err := baixaBinario(base, versaoAlvo, arch)
+	// binário (pedido assinado com a chave do servidor)
+	bin, err := baixaBinario(base, versaoAlvo, arch, cfg.ServidorID, cfg.SeedB64)
 	if err != nil {
 		return err
 	}
