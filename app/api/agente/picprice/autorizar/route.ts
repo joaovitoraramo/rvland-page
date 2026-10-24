@@ -24,6 +24,10 @@ export async function POST(req: Request) {
   const timestamp = req.headers.get("x-rvland-timestamp") ?? "";
   const assinatura = req.headers.get("x-rvland-assinatura") ?? "";
   const rawBody = await req.text();
+  const naoAutenticado = () =>
+    NextResponse.json({ estado: "AGENTE_NAO_AUTENTICADO", mensagem: "Agente não autenticado." }, { status: 401 });
+  // id que não é uuid derrubaria a consulta no banco (500): recusa antes
+  if (!/^[0-9a-f]{8}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{12}$/i.test(servidorId)) return naoAutenticado();
 
   const [servidor] = await db
     .select()
@@ -34,7 +38,7 @@ export async function POST(req: Request) {
     !servidor?.agentePubkey ||
     !verificarHeartbeat({ pubkeyB64: servidor.agentePubkey, timestamp, rawBody, assinaturaB64: assinatura })
   ) {
-    return NextResponse.json({ estado: "AGENTE_NAO_AUTENTICADO", mensagem: "Agente não autenticado." }, { status: 401 });
+    return naoAutenticado();
   }
 
   let corpo: Record<string, unknown> = {};

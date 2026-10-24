@@ -1,0 +1,185 @@
+openapi: 3.0.3
+info:
+  title: API local do agente RV (rvland-agent)
+  version: "1.0.0"
+  description: |
+    API que o rvland-agent sobe no servidor do cliente, só em 127.0.0.1. Rotas /v1/picprice/*
+    exigem o módulo `picprice` ligado no cadastro do servidor (painel da RV) e o token RV Pic Price
+    do cliente. Toda resposta traz `estado` (exceto /v1/saude). Uso só sob demanda (um item
+    selecionado pelo usuário por chamada), sem pré-carregamento. Detalhes em api-local.md.
+servers:
+  - url: http://127.0.0.1:7710
+    description: Padrão (porta configurável no enroll/instalador)
+components:
+  securitySchemes:
+    tokenRvPicPrice:
+      type: http
+      scheme: bearer
+      description: Token RV Pic Price do cliente (rvpp_…), gerado no painel da RV.
+  schemas:
+    Uso:
+      type: object
+      properties:
+        usado: { type: integer, example: 6 }
+        limite: { type: integer, example: 200 }
+        zeraEm: { type: string, format: date-time, example: "2026-10-25T00:00:00-03:00" }
+    Estado:
+      type: object
+      required: [estado]
+      properties:
+        estado:
+          type: string
+          enum: [OK, REQUISICAO_INVALIDA, ENDERECO_NAO_ENCONTRADO, TOKEN_INVALIDO, MODULO_DESATIVADO, PROIBIDO,
+                 LIMITE_EXCEDIDO, LIMITE_DIARIO, MANUTENCAO, FONTE_INDISPONIVEL, INALCANCAVEL]
+        mensagem: { type: string }
+        motivo: { type: string, description: "TOKEN_INVALIDO: inexistente | revogado | outro_cliente" }
+        previsao: { type: string, nullable: true, description: "MANUTENCAO: previsão de volta" }
+        limite: { type: integer, description: "LIMITE_DIARIO" }
+        usado: { type: integer, description: "LIMITE_DIARIO" }
+        zeraEm: { type: string, format: date-time, description: "LIMITE_DIARIO" }
+        detalhe: { type: string, description: "FONTE_INDISPONIVEL: motivo técnico" }
+        uso: { $ref: "#/components/schemas/Uso" }
+    Saude:
+      type: object
+      properties:
+        agente: { type: string, example: rvland-agent }
+        versao: { type: string, example: "0.5.0" }
+        servidorId: { type: string, format: uuid }
+        modulos:
+          type: object
+          properties:
+            licenca: { type: boolean }
+            picprice: { type: boolean }
+        ultimoContatoRV: { type: string, format: date-time, nullable: true }
+        apiLocal:
+          type: object
+          properties:
+            porta: { type: integer, example: 7710 }
+            versao: { type: string, example: v1 }
+    PedidoGeohash:
+      type: object
+      required: [endereco]
+      properties:
+        endereco: { type: string, example: "Rua Exemplo, 123, Centro, Curitiba, PR" }
+    RespostaGeohash:
+      allOf:
+        - $ref: "#/components/schemas/Estado"
+        - type: object
+          properties:
+            geohash: { type: string, example: 6gmp0v90nd4t }
+            lat: { type: number }
+            lon: { type: number }
+            endereco_encontrado: { type: string }
+    LojaPedido:
+      type: object
+      required: [codigo, geohash]
+      properties:
+        codigo: { type: string, example: "001" }
+        geohash: { type: string, pattern: "^[0-9bcdefghjkmnpqrstuvwxyz]{5,12}$", example: 6gmp0v90nd4t }
+        precoVenda:
+          type: number
+          example: 12.99
+          description: Preço de venda atual da loja. Faz o agente reconhecer e tirar a própria loja (mesmo preço a até 0,2 km).
+    PedidoRanking:
+      type: object
+      required: [gtin, lojas]
+      properties:
+        gtin: { type: string, example: "7891010793463", description: "EAN de 8 a 14 dígitos" }
+        lojas:
+          type: array
+          minItems: 1
+          maxItems: 30
+          items: { $ref: "#/components/schemas/LojaPedido" }
+        raio: { type: number, minimum: 0.5, maximum: 20, default: 3 }
+        data:
+          type: integer
+          minimum: -1
+          maximum: 6
+          default: -1
+          description: "-1=2 meses, 0=1 mês, 1=15 dias, 2=1 semana, 3=24h, 4=12h, 5=6h, 6=1h"
+    Preco:
+      type: object
+      properties:
+        posicao: { type: integer, example: 1 }
+        valor: { type: number, example: 9.99 }
+        distanciaKm: { type: number, example: 0.06 }
+        ha: { type: string, example: "há 3 horas" }
+        dataHora: { type: string, format: date-time, nullable: true }
+        descricao: { type: string, example: "ABS S LIVRE ADAPT 16UN C ABAS SAUVE L" }
+    RankingLoja:
+      type: object
+      properties:
+        loja: { type: string, example: "001" }
+        geohash: { type: string }
+        totalNaArea: { type: integer, example: 55 }
+        propriaLojaNaFonte: { type: boolean }
+        precos:
+          type: array
+          maxItems: 10
+          items: { $ref: "#/components/schemas/Preco" }
+    RespostaRanking:
+      allOf:
+        - $ref: "#/components/schemas/Estado"
+        - type: object
+          properties:
+            gtin: { type: string }
+            raio: { type: number }
+            data: { type: integer }
+            consultadoEm: { type: string, format: date-time }
+            lojas:
+              type: array
+              items: { $ref: "#/components/schemas/RankingLoja" }
+            lojasSemResposta:
+              type: array
+              items: { type: string }
+paths:
+  /v1/saude:
+    get:
+      summary: Agente presente? Versão, módulos e último contato com a RV
+      responses:
+        "200":
+          description: Agente no ar
+          content: { application/json: { schema: { $ref: "#/components/schemas/Saude" } } }
+  /v1/picprice/status:
+    get:
+      summary: Token e status do serviço na RV, com o uso do dia (não conta na cota)
+      security: [ { tokenRvPicPrice: [] } ]
+      responses:
+        "200": { description: OK ou LIMITE_DIARIO, content: { application/json: { schema: { $ref: "#/components/schemas/Estado" } } } }
+        "401": { description: TOKEN_INVALIDO, content: { application/json: { schema: { $ref: "#/components/schemas/Estado" } } } }
+        "403": { description: MODULO_DESATIVADO ou PROIBIDO, content: { application/json: { schema: { $ref: "#/components/schemas/Estado" } } } }
+        "502": { description: INALCANCAVEL, content: { application/json: { schema: { $ref: "#/components/schemas/Estado" } } } }
+        "503": { description: MANUTENCAO, content: { application/json: { schema: { $ref: "#/components/schemas/Estado" } } } }
+  /v1/picprice/geohash:
+    post:
+      summary: Endereço da loja (PR) para geohash (conta 1 na cota)
+      security: [ { tokenRvPicPrice: [] } ]
+      requestBody:
+        required: true
+        content: { application/json: { schema: { $ref: "#/components/schemas/PedidoGeohash" } } }
+      responses:
+        "200": { description: OK, content: { application/json: { schema: { $ref: "#/components/schemas/RespostaGeohash" } } } }
+        "400": { description: REQUISICAO_INVALIDA ou ENDERECO_NAO_ENCONTRADO }
+        "401": { description: TOKEN_INVALIDO }
+        "403": { description: MODULO_DESATIVADO ou PROIBIDO }
+        "429": { description: LIMITE_EXCEDIDO ou LIMITE_DIARIO }
+        "502": { description: INALCANCAVEL }
+        "503": { description: MANUTENCAO ou FONTE_INDISPONIVEL }
+  /v1/picprice/ranking:
+    post:
+      summary: Os 10 menores preços do EAN em volta de cada loja (conta 1 na cota por chamada)
+      description: |
+        Só sob demanda (um item que o usuário selecionou). Uma consulta por vez no agente, intervalo
+        mínimo de 2 s, cache local de 10 min. Use timeout de 75 s.
+      security: [ { tokenRvPicPrice: [] } ]
+      requestBody:
+        required: true
+        content: { application/json: { schema: { $ref: "#/components/schemas/PedidoRanking" } } }
+      responses:
+        "200": { description: OK, content: { application/json: { schema: { $ref: "#/components/schemas/RespostaRanking" } } } }
+        "400": { description: REQUISICAO_INVALIDA }
+        "401": { description: TOKEN_INVALIDO }
+        "403": { description: MODULO_DESATIVADO ou PROIBIDO }
+        "429": { description: LIMITE_EXCEDIDO ou LIMITE_DIARIO }
+        "502": { description: INALCANCAVEL }
+        "503": { description: MANUTENCAO ou FONTE_INDISPONIVEL }
