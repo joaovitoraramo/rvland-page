@@ -43,7 +43,9 @@ esac
 
 [ -n "$MODULOS" ] && echo "rvland: módulos pedidos: $MODULOS (vale o cadastro do servidor no painel)"
 echo "rvland: baixando agente $VERSAO ($A)..."
-curl -fsSL "$SERVIDOR/api/agente/binario?versao=$VERSAO&arch=$A" -o /usr/local/bin/agenterv
+# Credencial de download: o token de enroll (uso único) autentica a instalação
+# nova. O enroll em si ainda consome o token adiante.
+curl -fsSL -H "X-RVLand-Enroll: $TOKEN" "$SERVIDOR/api/agente/binario?versao=$VERSAO&arch=$A" -o /usr/local/bin/agenterv
 chmod 0755 /usr/local/bin/agenterv
 
 echo "rvland: registrando servidor..."

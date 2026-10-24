@@ -116,9 +116,25 @@ func doHeartbeat(base, servidorID, seedB64 string, corpo []byte) (*RespHeartbeat
 	return &r, nil
 }
 
-func baixaBinario(base, versao, arch string) ([]byte, error) {
+// baixaBinario baixa o binário de update. Quando há servidorID+seed (agente já
+// enrolado), assina o pedido com a chave do servidor — mesmo esquema do
+// heartbeat, sobre mensagemDownload(versao, arch) — para o painel autenticar o
+// download. Sem credencial o painel ainda atende por ora (compat 0.5.0).
+func baixaBinario(base, versao, arch, servidorID, seedB64 string) ([]byte, error) {
 	url := fmt.Sprintf("%s/api/agente/binario?versao=%s&arch=%s", base, versao, arch)
-	resp, err := httpCli.Get(url)
+	req, err := http.NewRequest(http.MethodGet, url, nil)
+	if err != nil {
+		return nil, err
+	}
+	if servidorID != "" && seedB64 != "" {
+		ts := time.Now().UTC().Format(time.RFC3339)
+		if sig, e := assina(mensagemHeartbeat(ts, mensagemDownload(versao, arch)), seedB64); e == nil {
+			req.Header.Set("X-RVLand-Servidor", servidorID)
+			req.Header.Set("X-RVLand-Timestamp", ts)
+			req.Header.Set("X-RVLand-Assinatura", sig)
+		}
+	}
+	resp, err := httpCli.Do(req)
 	if err != nil {
 		return nil, err
 	}
