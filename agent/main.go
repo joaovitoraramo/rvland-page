@@ -44,7 +44,7 @@ func main() {
 func uso() {
 	fmt.Println(`rvland-agent — agente da plataforma RVLand
 uso:
-  agenterv enroll --token=TOKEN --servidor=URL [--driver=systemd|dry]
+  agenterv enroll --token=TOKEN --servidor=URL [--driver=systemd|dry] [--porta=7710]
   agenterv run          inicia o loop de heartbeat (rodar via systemd)
   agenterv status       mostra licença, serviços e último contato
   agenterv reconnect    força um heartbeat imediato
@@ -85,6 +85,14 @@ func cmdEnroll(args []string) {
 	if token == "" {
 		fatal("--token é obrigatório")
 	}
+	porta := 0
+	if p := flagArg(args, "porta"); p != "" {
+		n, err := strconv.Atoi(p)
+		if err != nil || n <= 0 || n > 65535 {
+			fatal("--porta inválida")
+		}
+		porta = n
+	}
 
 	seedB64, pubB64 := geraChaveAgente()
 	host, _ := os.Hostname()
@@ -105,18 +113,21 @@ func cmdEnroll(args []string) {
 	}
 
 	cfg := &Config{
-		Enderecos:  enderecos,
-		ServidorID: resp.ServidorID,
-		Driver:     driver,
-		SeedB64:    seedB64,
+		Enderecos:     enderecos,
+		ServidorID:    resp.ServidorID,
+		Driver:        driver,
+		PicpricePorta: porta,
+		SeedB64:       seedB64,
 	}
 	if err := salvaConfig(cfg); err != nil {
 		fatal("salvar config: " + err.Error())
 	}
 
-	// aplica o primeiro lease já
+	// aplica o primeiro lease já (só se o módulo licença estiver ligado)
 	if l, e := verificaLease(resp.Licenca); e == nil {
-		aplicaLease(l, novoGerenciador(driver), carregaEstado())
+		aplicaSeLicenca(l, novoGerenciador(driver), carregaEstado())
+		m := modulosDoLease(l)
+		logf("módulos deste servidor: licença=%v picprice=%v", m.Licenca, m.Picprice)
 	}
 	logf("enrollment concluído — servidor %s", resp.ServidorID)
 }
@@ -126,7 +137,7 @@ func montaCorpoHeartbeat(cfg *Config, lease *Lease, resultados []map[string]any)
 	gs := novoGerenciador(cfg.Driver)
 
 	servicos := []map[string]any{}
-	if lease != nil {
+	if lease != nil && modulosDoLease(lease).Licenca {
 		for _, u := range lease.ServicosLicenciados {
 			ativo, _ := gs.Ativo(u)
 			servicos = append(servicos, map[string]any{"unidade": u, "ativo": ativo})
@@ -155,9 +166,14 @@ func montaCorpoHeartbeat(cfg *Config, lease *Lease, resultados []map[string]any)
 func executaComandos(cfg *Config, cmds []ComandoPend) []map[string]any {
 	gs := novoGerenciador(cfg.Driver)
 	res := []map[string]any{}
+	licenca := modulosDoLease(carregaEstado().Lease).Licenca
 	for _, c := range cmds {
 		estado := "concluido"
 		saida := map[string]any{}
+		if !licenca && (c.Verbo == "start" || c.Verbo == "stop") {
+			res = append(res, map[string]any{"id": c.ID, "estado": "falhou", "saida": map[string]any{"erro": "módulo licença desligado neste servidor: o agente não gerencia serviços"}})
+			continue
+		}
 		switch c.Verbo {
 		case "status":
 			ativo, _ := gs.Ativo(c.ServicoUnidade)
@@ -198,13 +214,14 @@ func umHeartbeat(cfg *Config, pendentes []map[string]any) ([]map[string]any, int
 	if err != nil {
 		logf("heartbeat falhou: %v — reaplicando último lease", err)
 		if est.Lease != nil {
-			aplicaLease(est.Lease, novoGerenciador(cfg.Driver), est)
+			aplicaSeLicenca(est.Lease, novoGerenciador(cfg.Driver), est)
 		}
 		return nil, 60
 	}
+	rt.registrarContato()
 
 	if l, e := verificaLease(resp.Licenca); e == nil {
-		aplicaLease(l, novoGerenciador(cfg.Driver), est)
+		aplicaSeLicenca(l, novoGerenciador(cfg.Driver), est)
 	} else {
 		logf("lease inválido no heartbeat: %v", e)
 	}
@@ -234,8 +251,12 @@ func cmdRun() {
 	// Se o último lease era bloqueado, garante o serviço parado/desabilitado já
 	// no boot, sem depender da rede.
 	if est := carregaEstado(); est.Lease != nil {
-		aplicaLease(est.Lease, novoGerenciador(cfg.Driver), est)
+		aplicaSeLicenca(est.Lease, novoGerenciador(cfg.Driver), est)
 	}
+
+	// API local do RV Pic Price (127.0.0.1). Sobe sempre: com o módulo desligado
+	// responde MODULO_DESATIVADO, e /v1/saude deixa o chamador descobrir o agente.
+	go iniciaAPILocal(cfg)
 
 	var pendentes []map[string]any
 	for {
@@ -269,7 +290,14 @@ func cmdStatus() {
 	fmt.Printf("endereços:  %s\n", strings.Join(cfg.Enderecos, ", "))
 	fmt.Printf("driver:     %s\n", cfg.Driver)
 	fmt.Printf("versão:     %s\n", versao)
-	if est.Lease != nil {
+	mods := modulosDoLease(est.Lease)
+	fmt.Printf("módulos:    licença=%v picprice=%v\n", mods.Licenca, mods.Picprice)
+	if mods.Picprice {
+		fmt.Printf("api local:  http://127.0.0.1:%d (RV Pic Price)\n", cfg.portaPicprice())
+	}
+	if est.Lease != nil && !mods.Licenca {
+		fmt.Println("licença:    módulo desligado — o agente não para nem religa serviços")
+	} else if est.Lease != nil {
 		l := est.Lease
 		fmt.Printf("licença:    %s (operar até %s)\n", l.Status, l.OperarAte)
 		fmt.Printf("serviços:   %s\n", strings.Join(l.ServicosLicenciados, ", "))

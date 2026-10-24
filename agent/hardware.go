@@ -12,13 +12,13 @@ import (
 // Hardware é o inventário do servidor, enviado no heartbeat. Muda raramente,
 // mas é barato mandar sempre e a plataforma guarda o último.
 type Hardware struct {
-	Distro         string `json:"distro"`
-	Kernel         string `json:"kernel"`
-	CPUModelo      string `json:"cpu_modelo"`
-	CPUNucleos     int    `json:"cpu_nucleos"`
-	RAMTotalMB     int    `json:"ram_total_mb"`
-	Virtualizacao  *Virt  `json:"virtualizacao,omitempty"`
-	Discos         []Disco `json:"discos"`
+	Distro        string  `json:"distro"`
+	Kernel        string  `json:"kernel"`
+	CPUModelo     string  `json:"cpu_modelo"`
+	CPUNucleos    int     `json:"cpu_nucleos"`
+	RAMTotalMB    int     `json:"ram_total_mb"`
+	Virtualizacao *Virt   `json:"virtualizacao,omitempty"`
+	Discos        []Disco `json:"discos"`
 }
 
 // Virt: se a máquina é física, VM ou container, e a tecnologia detectada.
@@ -28,11 +28,11 @@ type Virt struct {
 }
 
 type Disco struct {
-	Montagem string `json:"montagem"`
+	Montagem    string `json:"montagem"`
 	Dispositivo string `json:"dispositivo"`
-	Fs       string `json:"fs"`
-	TotalGB  int    `json:"total_gb"`
-	UsadoPct int    `json:"usado_pct"`
+	Fs          string `json:"fs"`
+	TotalGB     int    `json:"total_gb"`
+	UsadoPct    int    `json:"usado_pct"`
 }
 
 func coletaHardware() Hardware {

@@ -22,9 +22,9 @@ type ComandoPend struct {
 }
 
 type RespEnroll struct {
-	ServidorID  string        `json:"servidor_id"`
-	Licenca     LeaseEnvelope `json:"licenca"`
-	IntervaloS  int           `json:"intervalo_seg"`
+	ServidorID string        `json:"servidor_id"`
+	Licenca    LeaseEnvelope `json:"licenca"`
+	IntervaloS int           `json:"intervalo_seg"`
 }
 
 type RespHeartbeat struct {
