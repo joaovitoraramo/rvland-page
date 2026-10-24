@@ -1,7 +1,7 @@
 import "server-only";
 import { and, eq } from "drizzle-orm";
 
-import { db, servicoGerenciados } from "@/lib/db";
+import { db, servicoGerenciados, servidores } from "@/lib/db";
 import { getConfig } from "@/lib/config";
 import { statusDeCliente } from "@/lib/consultas/licencas";
 import { hojeSP } from "@/lib/dominio/tempo";
@@ -17,7 +17,7 @@ export async function emitirLease(servidor: {
   id: string;
   clienteId: string;
 }): Promise<LeaseEnvelope> {
-  const [licenca, servicos, config] = await Promise.all([
+  const [licenca, servicos, config, mods] = await Promise.all([
     statusDeCliente(servidor.clienteId),
     db
       .select({ unidade: servicoGerenciados.unidadeSystemd })
@@ -30,7 +30,13 @@ export async function emitirLease(servidor: {
         )
       ),
     getConfig(),
+    db
+      .select({ licenca: servidores.moduloLicenca, picprice: servidores.moduloPicprice })
+      .from(servidores)
+      .where(eq(servidores.id, servidor.id))
+      .limit(1),
   ]);
+  const modulos = mods[0] ?? { licenca: true, picprice: false };
 
   const payload = montarLease({
     servidorId: servidor.id,
@@ -40,6 +46,7 @@ export async function emitirLease(servidor: {
     servicosLicenciados: servicos.map((s) => s.unidade),
     modoSimulacao: config.modoSimulacao,
     modoPanico: config.modoPanico,
+    modulos,
   });
 
   return assinarLease(payload);

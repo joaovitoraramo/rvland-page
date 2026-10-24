@@ -39,3 +39,13 @@ export function verificarLease(envelope: LeaseEnvelope): LeasePayload | null {
     return null;
   }
 }
+
+/**
+ * Assina qualquer payload JSON com a chave de licença (mesmo esquema do lease:
+ * base64(JSON) + assinatura). Usado na autorização do RV Pic Price para o agente,
+ * que confere com a mesma chave pública embutida (licensePK).
+ */
+export function assinarEnvelope(payload: unknown): LeaseEnvelope {
+  const bytes = Buffer.from(JSON.stringify(payload), "utf8");
+  return { payload: bytes.toString("base64"), assinatura: assinar(bytes, skLicenca()) };
+}

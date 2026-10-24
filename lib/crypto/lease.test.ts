@@ -14,6 +14,7 @@ const payload: LeasePayload = {
   servicos_licenciados: ["concicredit.service"],
   modo_simulacao: false,
   panico: false,
+  modulos: { licenca: true, picprice: false },
 };
 
 describe("assinatura do lease", () => {

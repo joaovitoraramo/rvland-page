@@ -141,6 +141,13 @@
       "when": 1792858465603,
       "tag": "0019_picprice_cota",
       "breakpoints": true
+    },
+    {
+      "idx": 20,
+      "version": "7",
+      "when": 1792864530206,
+      "tag": "0020_agente_modulos",
+      "breakpoints": true
     }
   ]
 }

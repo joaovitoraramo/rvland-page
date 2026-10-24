@@ -59,26 +59,34 @@ export function extrairToken(header: string | null): string | null {
   return m ? m[1] : null;
 }
 
-function respostaTokenInvalido(motivo: "inexistente" | "revogado"): Resposta {
+function respostaTokenInvalido(motivo: "inexistente" | "revogado" | "outro_cliente"): Resposta {
   return {
     status: 401,
     corpo: {
       estado: "TOKEN_INVALIDO",
       motivo,
-      mensagem: motivo === "revogado" ? "Serviço inválido - token revogado" : "Serviço inválido - token inválido",
+      mensagem:
+        motivo === "revogado"
+          ? "Serviço inválido - token revogado"
+          : motivo === "outro_cliente"
+            ? "Serviço inválido - token de outro cliente"
+            : "Serviço inválido - token inválido",
     },
   };
 }
 
 /** Token -> manutenção -> rajada por minuto -> cota diária. Devolve a resposta de erro ou o tokenId + uso. */
-async function porteiro(
+export async function porteiro(
   authorization: string | null,
   deps: DepsPicPrice,
-  agora: Date = new Date()
-): Promise<{ erro: Resposta } | { tokenId: string; uso: UsoDiario | null }> {
+  agora: Date = new Date(),
+  /** Se informado, o token precisa ser deste cliente (servidor do agente). Confere ANTES de contar a cota. */
+  exigirCliente?: string
+): Promise<{ erro: Resposta } | { tokenId: string; clienteId: string; uso: UsoDiario | null }> {
   const token = extrairToken(authorization);
   const v = token ? await deps.validarToken(token) : ({ ok: false, motivo: "inexistente" } as const);
   if (!v.ok) return { erro: respostaTokenInvalido(v.motivo) };
+  if (exigirCliente && v.clienteId !== exigirCliente) return { erro: respostaTokenInvalido("outro_cliente") };
   const st = await deps.statusServico();
   if (st.estado === "manutencao") {
     return {
@@ -96,7 +104,7 @@ async function porteiro(
     return { erro: { status: 429, corpo: { estado: "LIMITE_EXCEDIDO", mensagem: "Muitas consultas em pouco tempo. Tente de novo em instantes." } } };
   }
   const zeraEm = proximaMeiaNoiteSaoPaulo(agora);
-  if (!deps.consumirCota) return { tokenId: v.tokenId, uso: null };
+  if (!deps.consumirCota) return { tokenId: v.tokenId, clienteId: v.clienteId, uso: null };
   const c = await deps.consumirCota(v.tokenId, diaSaoPaulo(agora));
   const uso: UsoDiario = { usado: c.usado, limite: c.limite, zeraEm };
   if (!c.ok) {
@@ -107,7 +115,7 @@ async function porteiro(
       },
     };
   }
-  return { tokenId: v.tokenId, uso };
+  return { tokenId: v.tokenId, clienteId: v.clienteId, uso };
 }
 
 /**

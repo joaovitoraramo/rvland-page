@@ -17,6 +17,7 @@ import { SITE_URL } from "@/lib/site";
 import { statusAgora, segundosDesde } from "@/lib/consultas/servidores";
 import {
   adicionarServico,
+  definirModulos,
   regenerarToken,
   revogarServidor,
 } from "@/app/(app)/painel/servidores/actions";
@@ -24,6 +25,7 @@ import { PageHeader } from "@/components/painel/page-header";
 import { BadgeServidor } from "@/components/painel/badge-servidor";
 import { MonitorVivo } from "@/components/painel/monitor-vivo";
 import { RevelarToken } from "@/components/painel/revelar-token";
+import { CardModulos } from "@/components/painel/card-modulos";
 import { HardwareCard } from "@/components/painel/hardware-card";
 import { CardServicos } from "@/components/painel/card-servicos";
 import { Btn } from "@/components/painel/ui";
@@ -157,7 +159,12 @@ export default async function PaginaServidor({ params }: { params: Promise<{ id:
               </CardTitle>
             </CardHeader>
             <CardContent>
-              <RevelarToken acao={regenerarToken.bind(null, id)} siteUrl={SITE_URL} jaPendente={servidor.status === "pendente"} />
+              <RevelarToken
+                acao={regenerarToken.bind(null, id)}
+                siteUrl={SITE_URL}
+                jaPendente={servidor.status === "pendente"}
+                modulos={{ licenca: servidor.moduloLicenca, picprice: servidor.moduloPicprice }}
+              />
             </CardContent>
           </Card>
         </div>
@@ -188,6 +195,14 @@ export default async function PaginaServidor({ params }: { params: Promise<{ id:
           <HardwareCard hardware={servidor.hardware ?? null} />
         </div>
       ) : null}
+
+      <div className="rv-entrar-2 mb-4">
+        <CardModulos
+          acao={definirModulos.bind(null, id)}
+          modulos={{ licenca: servidor.moduloLicenca, picprice: servidor.moduloPicprice }}
+          podeEditar={pode(perfil, "servidores.editar")}
+        />
+      </div>
 
       <div className="grid gap-4 lg:grid-cols-2">
         <div className="rv-entrar-2">

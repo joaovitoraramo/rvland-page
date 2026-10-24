@@ -8,6 +8,7 @@ import { db, servidores, servicoGerenciados, comandos } from "@/lib/db";
 import { exigirPermissao } from "@/lib/auth";
 import { registrarAuditoria } from "@/lib/audit";
 import { gerarTokenParaServidor } from "@/lib/servicos/enrollment";
+import { descreverModulos, modulosDoForm, type ModulosServidor } from "@/lib/dominio/agente-modulos";
 
 // ── Servidor ─────────────────────────────────────────────────────────────────
 
@@ -25,6 +26,7 @@ export type EstadoServidor = {
   // sucesso: o token é revelado UMA vez para montar o comando de instalação
   servidorId?: string;
   token?: string;
+  modulos?: ModulosServidor;
 };
 
 export async function criarServidor(
@@ -40,6 +42,8 @@ export async function criarServidor(
     host: formData.get("host") || undefined,
     so: formData.get("so") || undefined,
   });
+  const modulos = modulosDoForm(formData);
+  if (!modulos.licenca && !modulos.picprice) return { erro: "Ligue pelo menos um módulo do agente." };
   if (!dados.success) {
     const erros: EstadoServidor["erros"] = {};
     for (const i of dados.error.issues) {
@@ -58,6 +62,8 @@ export async function criarServidor(
       host: dados.data.host || null,
       so: dados.data.so || null,
       status: "pendente",
+      moduloLicenca: modulos.licenca,
+      moduloPicprice: modulos.picprice,
     })
     .returning();
 
@@ -68,15 +74,15 @@ export async function criarServidor(
     acao: "servidor.cadastrado",
     entidade: "servidor",
     entidadeId: servidor.id,
-    detalhes: { nome: servidor.nome, clienteId: servidor.clienteId },
+    detalhes: { nome: servidor.nome, clienteId: servidor.clienteId, modulos },
   });
 
-  return { servidorId: servidor.id, token };
+  return { servidorId: servidor.id, token, modulos };
 }
 
 export type EstadoAcao = { erro?: string; ok?: string };
 
-export type EstadoToken = { token?: string; erro?: string };
+export type EstadoToken = { token?: string; erro?: string; modulos?: ModulosServidor };
 
 /** Regenera o token e o revela UMA vez (volta o servidor a pendente). */
 export async function regenerarToken(servidorId: string): Promise<EstadoToken> {
@@ -98,7 +104,39 @@ export async function regenerarToken(servidorId: string): Promise<EstadoToken> {
     entidadeId: servidorId,
   });
   revalidatePath(`/painel/servidores/${servidorId}`);
-  return { token };
+  return { token, modulos: { licenca: srv.moduloLicenca, picprice: srv.moduloPicprice } };
+}
+
+/**
+ * Liga/desliga os módulos do agente. Vale no próximo heartbeat (vai no lease
+ * assinado). Desligar `licenca` faz o agente parar de aplicar a licença: ele
+ * nunca para nem religa serviço por causa dela.
+ */
+export async function definirModulos(
+  servidorId: string,
+  _estado: EstadoAcao,
+  formData: FormData
+): Promise<EstadoAcao> {
+  const perfil = await exigirPermissao("servidores.editar");
+  const [srv] = await db.select().from(servidores).where(eq(servidores.id, servidorId));
+  if (!srv) return { erro: "Servidor não encontrado." };
+  const novo = modulosDoForm(formData);
+  if (!novo.licenca && !novo.picprice) return { erro: "Ligue pelo menos um módulo." };
+  const anterior = { licenca: srv.moduloLicenca, picprice: srv.moduloPicprice };
+
+  await db
+    .update(servidores)
+    .set({ moduloLicenca: novo.licenca, moduloPicprice: novo.picprice })
+    .where(eq(servidores.id, servidorId));
+  await registrarAuditoria({
+    ator: perfil,
+    acao: "servidor.modulos_alterados",
+    entidade: "servidor",
+    entidadeId: servidorId,
+    detalhes: { anterior, novo },
+  });
+  revalidatePath(`/painel/servidores/${servidorId}`);
+  return { ok: `Módulos: ${descreverModulos(novo)}. Vale no próximo contato do agente (até 1 min).` };
 }
 
 export async function revogarServidor(servidorId: string): Promise<void> {

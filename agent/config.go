@@ -4,6 +4,7 @@ import (
 	"encoding/json"
 	"os"
 	"path/filepath"
+	"strconv"
 )
 
 // Config persistida em /etc/rvland/agent.conf. `Enderecos` é uma lista tentada
@@ -12,7 +13,24 @@ type Config struct {
 	Enderecos  []string `json:"enderecos"`
 	ServidorID string   `json:"servidor_id"`
 	Driver     string   `json:"driver"` // "systemd" | "dry"
-	SeedB64    string   `json:"-"`      // vive em arquivo separado, não no conf
+	// Porta da API local do módulo picprice (escuta só em 127.0.0.1). 0 = padrão.
+	PicpricePorta int    `json:"picprice_porta,omitempty"`
+	SeedB64       string `json:"-"` // vive em arquivo separado, não no conf
+}
+
+const portaPicpricePadrao = 7710
+
+// portaPicprice: env RVLAND_PICPRICE_PORTA > config > padrão 7710.
+func (c *Config) portaPicprice() int {
+	if v := os.Getenv("RVLAND_PICPRICE_PORTA"); v != "" {
+		if n, err := strconv.Atoi(v); err == nil && n > 0 && n < 65536 {
+			return n
+		}
+	}
+	if c.PicpricePorta > 0 && c.PicpricePorta < 65536 {
+		return c.PicpricePorta
+	}
+	return portaPicpricePadrao
 }
 
 func dirConf() string {
@@ -29,7 +47,7 @@ func dirState() string {
 	return "/var/lib/rvland"
 }
 
-func caminhoConf() string { return filepath.Join(dirConf(), "agent.conf") }
+func caminhoConf() string  { return filepath.Join(dirConf(), "agent.conf") }
 func caminhoChave() string { return filepath.Join(dirConf(), "agente.key") }
 func caminhoLease() string { return filepath.Join(dirState(), "licenca.json") }
 

@@ -19,6 +19,23 @@ import { SITE_URL } from "../lib/site";
  */
 const ARCHS = ["amd64", "arm64"] as const;
 const GO = process.env.GO_BIN || "go";
+/**
+ * Ofuscação: com o garble instalado (v0.16.0 é a última que aceita o Go 1.26 —
+ * `go install mvdan.cc/garble@v0.16.0`), o build sai com nomes e textos
+ * embaralhados (-literals -tiny). Sem ele, cai no build normal com strip (-s -w).
+ * GARBLE_BIN aponta outro caminho; GARBLE_BIN=off desliga.
+ */
+function garbleBin(): string | null {
+  if (process.env.GARBLE_BIN === "off") return null;
+  if (process.env.GARBLE_BIN) return process.env.GARBLE_BIN;
+  try {
+    const gopath = execFileSync(GO, ["env", "GOPATH"], { encoding: "utf8" }).trim();
+    const caminho = `${gopath}/bin/garble`;
+    return existsSync(caminho) ? caminho : null;
+  } catch {
+    return null;
+  }
+}
 
 async function main() {
   const versao = process.argv[2];
@@ -48,7 +65,12 @@ async function main() {
   for (const arch of ARCHS) {
     const saida = `/tmp/agenterv-${versao}-${arch}`;
     console.log(`compilando ${arch}...`);
-    execFileSync(GO, ["build", "-ldflags", ld, "-o", saida, "."], {
+    const garble = garbleBin();
+    const [bin0, args0] = garble
+      ? [garble, ["-literals", "-tiny", "build", "-ldflags", ld, "-o", saida, "."]]
+      : [GO, ["build", "-ldflags", ld, "-o", saida, "."]];
+    console.log(garble ? "  (ofuscado com garble)" : "  (sem garble: só strip)");
+    execFileSync(bin0, args0, {
       cwd: "agent",
       env: { ...process.env, GOOS: "linux", GOARCH: arch, CGO_ENABLED: "0" },
       stdio: "inherit",

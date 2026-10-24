@@ -22,7 +22,17 @@ export type EntradaLease = {
   modoPanico: boolean;
   emitidoEm?: Date;
   renovarAposHoras?: number;
+  /** Módulos do agente neste servidor. Ausente = só licença (compatível com agentes antigos). */
+  modulos?: ModulosServidor;
 };
+
+/**
+ * Módulos do agente, definidos no cadastro do servidor e entregues DENTRO do
+ * lease assinado (o agente não aceita isso de outra fonte):
+ *   licenca  — aplica o lease (para/religa os serviços licenciados)
+ *   picprice — API local do RV Pic Price em 127.0.0.1
+ */
+export type ModulosServidor = { licenca: boolean; picprice: boolean };
 
 export type LeasePayload = {
   v: 1;
@@ -35,6 +45,7 @@ export type LeasePayload = {
   servicos_licenciados: string[];
   modo_simulacao: boolean;
   panico: boolean;
+  modulos: ModulosServidor;
 };
 
 // 03:00 America/Sao_Paulo (UTC-3) = 06:00 UTC — janela de corte de madrugada
@@ -88,5 +99,6 @@ export function montarLease(e: EntradaLease): LeasePayload {
     servicos_licenciados: e.servicosLicenciados,
     modo_simulacao: e.modoSimulacao,
     panico: e.modoPanico,
+    modulos: e.modulos ?? { licenca: true, picprice: false },
   };
 }

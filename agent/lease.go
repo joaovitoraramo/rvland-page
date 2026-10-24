@@ -19,6 +19,23 @@ type Lease struct {
 	ServicosLicenciados []string `json:"servicos_licenciados"`
 	ModoSimulacao       bool     `json:"modo_simulacao"`
 	Panico              bool     `json:"panico"`
+	// Módulos do agente neste servidor (cadastro no painel). Ausente em leases
+	// antigos = só licença, como sempre foi.
+	Modulos *Modulos `json:"modulos,omitempty"`
+}
+
+// Modulos ligados neste servidor. Só valem vindos de um lease com assinatura válida.
+type Modulos struct {
+	Licenca  bool `json:"licenca"`
+	Picprice bool `json:"picprice"`
+}
+
+// modulosDoLease: sem lease ou lease antigo -> só licença (compatível).
+func modulosDoLease(l *Lease) Modulos {
+	if l == nil || l.Modulos == nil {
+		return Modulos{Licenca: true}
+	}
+	return *l.Modulos
 }
 
 // EstadoAgente é persistido em disco: sobrevive a restart e permite recuperação

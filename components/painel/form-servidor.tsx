@@ -10,6 +10,8 @@ import { Label } from "@/components/ui/label";
 import { SelectRico } from "@/components/painel/select-rico";
 import { Copiavel } from "@/components/painel/copiavel";
 import { criarServidor, type EstadoServidor } from "@/app/(app)/painel/servidores/actions";
+import { CamposModulos } from "@/components/painel/campos-modulos";
+import { comandoInstalacao, descreverModulos } from "@/lib/dominio/agente-modulos";
 
 export function FormServidor({
   clientes,
@@ -25,7 +27,8 @@ export function FormServidor({
 
   // Sucesso: o token só existe agora — mostra o comando de instalação
   if (estado.servidorId && estado.token) {
-    const comando = `curl -fsSL ${siteUrl}/api/agente/instalar | sudo bash -s -- --token=${estado.token} --servidor=${siteUrl}`;
+    const modulos = estado.modulos ?? { licenca: true, picprice: false };
+    const comando = comandoInstalacao({ siteUrl, token: estado.token, modulos });
     return (
       <div className="max-w-2xl space-y-5">
         <div className="rounded-2xl border border-[rgba(0,255,138,0.2)] bg-[rgba(0,255,138,0.05)] p-6">
@@ -33,6 +36,10 @@ export function FormServidor({
           <p className="mt-1 text-sm text-white/60">
             Cole o comando abaixo no SSH do servidor para instalar o agente. O token vale 24h e é
             de uso único — guarde agora, não será mostrado de novo.
+          </p>
+          <p className="mt-2 text-sm text-white/75">
+            Módulos que serão ligados: <strong className="text-white">{descreverModulos(modulos)}</strong>
+            {!modulos.licenca ? " — a licença NÃO será aplicada neste servidor." : "."}
           </p>
           <div className="mt-4 space-y-4">
             <Copiavel rotulo="token de enrollment" valor={estado.token} />
@@ -95,6 +102,10 @@ export function FormServidor({
           <div className="sm:col-span-2">
             <Label htmlFor="descricao">Descrição</Label>
             <input id="descricao" name="descricao" />
+          </div>
+          <div className="sm:col-span-2">
+            <Label>Módulos do agente</Label>
+            <CamposModulos valor={{ licenca: true, picprice: false }} />
           </div>
         </div>
       </div>
