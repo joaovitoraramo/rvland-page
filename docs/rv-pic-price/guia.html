@@ -1,0 +1,519 @@
+<!doctype html>
+<html lang="pt-BR">
+<head>
+<meta charset="utf-8">
+<title>RV Pic Price — guia da API</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=Outfit:wght@300;400;500;600;700;800&family=IBM+Plex+Mono:wght@400;500;600&display=swap" rel="stylesheet">
+<style>
+:root{
+  --azul:#0069AF; --azul-esc:#00487A; --azul-claro:#E8F2FA; --azul-meio:#BFDDF2;
+  --ambar:#F59E0B; --ambar-claro:#FEF3C7;
+  --tinta:#13314B; --texto:#34495E; --suave:#6A7D90; --linha:#DCE5EE;
+  --ok:#047857; --okF:#ECFDF5; --erro:#B91C1C; --erroF:#FEF2F2; --av:#B45309; --avF:#FFFBEB;
+  --rosa:#A21CAF; --rosaF:#FDF4FF;
+}
+@page{size:A4;margin:0}
+*{box-sizing:border-box;margin:0;padding:0}
+html,body{background:#fff}
+body{font-family:'Outfit',sans-serif;color:var(--texto);font-size:10pt;line-height:1.48;-webkit-print-color-adjust:exact;print-color-adjust:exact;font-variant-numeric:tabular-nums}
+.page{width:210mm;height:297mm;position:relative;overflow:hidden;page-break-after:always;padding:22mm 18mm 18mm}
+.page:last-child{page-break-after:auto}
+.run{position:absolute;top:9mm;left:18mm;right:18mm;display:flex;align-items:center;gap:7px;font-size:8.4pt;color:var(--suave);border-bottom:1px solid var(--linha);padding-bottom:3mm}
+.run .tag{width:15px;height:15px;color:var(--rosa)}
+.run b{color:var(--azul);font-weight:700}
+.run .sec{margin-left:auto}
+.pe{position:absolute;bottom:8mm;left:18mm;right:18mm;display:flex;align-items:center;font-size:8pt;color:var(--suave)}
+.pe img{height:13px;margin-right:6px;background:var(--azul);border-radius:3px;padding:2px}
+.pe .ver{margin:0 auto;font-size:6.6pt;color:#9AA8B6}
+.pe .n{font-weight:600;color:var(--azul)}
+h1{font-size:22pt;line-height:1.1;color:var(--tinta);font-weight:700;letter-spacing:-.01em;margin-bottom:2.5mm}
+h2{font-size:12.4pt;color:var(--tinta);font-weight:700;margin:4.5mm 0 1.5mm}
+h3{font-size:10.2pt;color:var(--tinta);font-weight:600;margin:2.5mm 0 1mm}
+.lead{font-size:11.6pt;line-height:1.45;color:var(--texto);margin-bottom:4mm;font-weight:300}
+.lead b{font-weight:600;color:var(--tinta)}
+p+p{margin-top:1.8mm}
+b{color:var(--tinta);font-weight:600}
+.peq{font-size:8.6pt;color:var(--suave)}
+code,.mono{font-family:'IBM Plex Mono',monospace;font-size:.86em}
+p code,li code,td code{background:#F1F5F9;border:1px solid #E2E8F0;border-radius:4px;padding:0 1.2mm;color:#0F2B44;white-space:nowrap}
+pre{font-family:'IBM Plex Mono',monospace;font-size:7.3pt;line-height:1.45;background:#0F1E2E;color:#E2E8F0;border-radius:9px;padding:3.2mm 4mm;white-space:pre;overflow:hidden;margin:1.5mm 0 2.5mm}
+pre .c{color:#7DD3FC}.pre .k{color:#FCD34D}
+pre .s{color:#86EFAC}
+pre .k{color:#FCD34D}
+pre .g{color:#94A3B8}
+.rot{font-size:7.8pt;font-weight:600;color:var(--suave);text-transform:none;margin-top:2mm}
+.nota{background:var(--azul-claro);border-radius:10px;padding:3mm 4.2mm;margin:3mm 0}
+.nota h3{color:var(--azul-esc);margin-top:0}
+.pratica{background:var(--ambar-claro);border-left:4px solid var(--ambar);border-radius:0 10px 10px 0;padding:3mm 4.2mm;margin:3mm 0}
+.pratica h3{color:#7C4A03;margin-top:0}
+.pratica p{color:#5B4210}
+.alerta{background:var(--erroF);border-left:4px solid var(--erro);border-radius:0 10px 10px 0;padding:3mm 4.2mm;margin:3mm 0;color:#5c130c}
+.alerta h3{color:var(--erro);margin-top:0}
+.cols{display:grid;gap:5mm}
+.c2{grid-template-columns:1fr 1fr}
+.c3{grid-template-columns:1fr 1fr 1fr}
+.metodo{display:flex;align-items:center;gap:3mm;margin:1mm 0 3mm;font-family:'IBM Plex Mono',monospace;font-size:11pt;font-weight:600;color:var(--tinta)}
+.verbo{font-family:'Outfit',sans-serif;font-size:8.4pt;font-weight:700;border-radius:6px;padding:1mm 2.6mm;color:#fff}
+.verbo.post{background:#7C3AED}.verbo.get{background:#059669}
+.tab{width:100%;border-collapse:collapse;font-size:7.9pt;line-height:1.38;margin:1.2mm 0 1.6mm}
+.tab th{font-weight:600;color:#4b5b6b;text-align:left;padding:1.2mm 1.6mm;border-bottom:1.5px solid var(--linha);background:#F6F8FA;white-space:nowrap}
+.tab td{padding:1.15mm 1.6mm;border-bottom:1px solid #edf1f5;vertical-align:top;color:#1f2d3a}
+.tab td:first-child{white-space:nowrap}
+.tab td.c{text-align:center}
+.st{display:inline-block;border-radius:999px;padding:.2mm 2mm;font-size:7.4pt;font-weight:700;white-space:nowrap;font-family:'IBM Plex Mono',monospace}
+.st.ok{background:var(--okF);color:var(--ok)}
+.st.er{background:var(--erroF);color:var(--erro)}
+.st.av{background:var(--avF);color:var(--av)}
+.st.cz{background:#F1F5F9;color:#475569}
+.passos{list-style:none;counter-reset:p;display:grid;gap:2.2mm}
+.passos li{counter-increment:p;display:grid;grid-template-columns:9mm 1fr;gap:3mm;align-items:start}
+.passos li::before{content:counter(p);width:7.5mm;height:7.5mm;border-radius:50%;background:var(--azul);color:#fff;font-weight:700;display:flex;align-items:center;justify-content:center;font-size:9.4pt}
+.passos li p{font-size:9.4pt}
+ul.lista{padding-left:4.5mm;display:grid;gap:1.2mm}
+ul.lista li{font-size:9pt}
+/* diagrama */
+.fluxo{display:grid;grid-template-columns:1fr 13mm 1.25fr 13mm 1fr;align-items:stretch;margin:3mm 0 2mm}
+.caixa{border:1.5px solid var(--linha);border-radius:12px;padding:3mm 3.4mm;background:#fff}
+.caixa .t{font-weight:700;color:var(--tinta);font-size:10pt;display:flex;align-items:center;gap:2mm}
+.caixa .s{font-size:7.8pt;color:var(--suave);margin-top:.6mm}
+.caixa ul{list-style:none;margin-top:1.6mm;display:grid;gap:.6mm}
+.caixa li{font-size:7.9pt;color:#1f2d3a}
+.caixa li::before{content:"•";color:var(--azul);margin-right:1.4mm}
+.caixa.rv{border-color:#E9A8F2;background:var(--rosaF)}
+.caixa.rv .t{color:#86198F}
+.caixa.fonte{background:#F8FAFC}
+.seta{display:flex;flex-direction:column;align-items:center;justify-content:center;color:var(--azul);font-size:6.6pt;line-height:1.15;text-align:center;gap:1mm;padding:0 .5mm}
+.seta svg{width:9mm;height:6mm}
+.nao{display:block;border:1.5px dashed #F2A7A7;background:var(--erroF);border-radius:10px;padding:2.2mm 3.4mm;font-size:8.6pt;color:#5c130c;margin-top:2mm}
+.nao b{color:var(--erro)}
+/* capa */
+.capa{background:var(--azul);color:#fff;padding:18mm 20mm}
+.capa .brilho{position:absolute;width:190mm;height:190mm;left:-40mm;top:40mm;background:radial-gradient(circle,rgba(217,70,239,.22) 0%,transparent 62%)}
+.capa .brilho2{position:absolute;width:160mm;height:160mm;right:-70mm;bottom:-50mm;background:radial-gradient(circle,rgba(255,255,255,.10) 0%,transparent 65%)}
+.capa .aramo{display:flex;align-items:center;gap:10px;position:relative}
+.capa .aramo img{height:34px}
+.capa .aramo span{font-size:9.5pt;font-weight:600;letter-spacing:.16em;text-transform:uppercase;color:rgba(255,255,255,.78)}
+.capa .marca{display:flex;align-items:center;gap:16px;margin-top:40mm;position:relative}
+.capa .marca svg{width:60px;height:60px;color:#F5D0FE}
+.capa .marca .n{font-size:30pt;font-weight:700;line-height:1;letter-spacing:-.01em}
+.capa .marca .s{font-size:8.6pt;letter-spacing:.18em;text-transform:uppercase;color:rgba(255,255,255,.8);margin-top:5px;font-weight:600}
+.capa .titulo{position:relative;margin-top:20mm;font-size:44pt;font-weight:800;line-height:.98;letter-spacing:-.025em}
+.capa .pergunta{position:relative;margin-top:7mm;font-size:15pt;font-weight:300;line-height:1.32;max-width:150mm;color:rgba(255,255,255,.92)}
+.capa .demo{position:absolute;left:20mm;right:20mm;bottom:40mm;font-family:'IBM Plex Mono',monospace;font-size:8.6pt;line-height:1.6;background:rgba(0,0,0,.22);border:1px solid rgba(255,255,255,.18);border-radius:12px;padding:5mm 6mm;color:#E0F2FE}
+.capa .demo .g{color:rgba(255,255,255,.55)}
+.capa .demo .s{color:#BBF7D0}
+.capa .demo .k{color:#FDE68A}
+.capa .rodape{position:absolute;left:20mm;right:20mm;bottom:16mm;display:flex;justify-content:space-between;font-size:9pt;color:rgba(255,255,255,.75);border-top:1px solid rgba(255,255,255,.22);padding-top:4mm}
+.indice p{font-size:9.6pt}
+</style>
+</head>
+<body>
+
+<svg width="0" height="0" style="position:absolute">
+  <symbol id="tag" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round">
+    <path d="M12.6 2.6 21.4 11.4a2 2 0 0 1 0 2.8l-7.2 7.2a2 2 0 0 1-2.8 0L2.6 12.6A2 2 0 0 1 2 11.2V4a2 2 0 0 1 2-2h7.2a2 2 0 0 1 1.4.6Z"/>
+    <circle cx="7.5" cy="7.5" r="1.4"/>
+  </symbol>
+  <symbol id="seta" viewBox="0 0 36 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+    <path d="M2 12h30M24 4l8 8-8 8"/>
+  </symbol>
+</svg>
+
+<!-- ============ 1. CAPA ============ -->
+<section class="page capa">
+  <div class="brilho"></div><div class="brilho2"></div>
+  <div class="aramo"><img src="logo-A.png" alt="Aramo"><span>Aramo Tecnologia</span></div>
+  <div class="marca">
+    <svg><use href="#tag"/></svg>
+    <div><div class="n">RV Pic Price</div><div class="s">API do servidor da RV</div></div>
+  </div>
+  <div class="titulo">Guia de<br>integração</div>
+  <div class="pergunta">Os menores preços de venda de um produto perto de cada loja, pelo código de barras, para o backend do seu sistema.</div>
+  <div class="demo">
+<span class="g">$</span> curl -H <span class="s">"Authorization: Bearer rvpp_…"</span> \<br>
+&nbsp;&nbsp;<span class="s">"…/api/picprice/ranking?gtin=7891010793463&amp;lojas=001:6gmp0v90nd4t"</span><br>
+<span class="g">{</span> <span class="k">"estado"</span>: <span class="s">"OK"</span>, <span class="k">"lojas"</span>: [ { <span class="k">"loja"</span>: <span class="s">"001"</span>, <span class="k">"totalNaArea"</span>: 55,<br>
+&nbsp;&nbsp;<span class="k">"precos"</span>: [ { <span class="k">"posicao"</span>: 1, <span class="k">"valor"</span>: 8.99, <span class="k">"distanciaKm"</span>: 1.5 }, … ] } ] <span class="g">}</span>
+  </div>
+  <div class="rodape"><span>Para desenvolvedores que consomem a API</span><span>Branch feat/rv-pic-price · 24/10/2026</span></div>
+</section>
+
+<!-- ============ 2. VISÃO GERAL ============ -->
+<section class="page">
+  <div class="run"><svg class="tag"><use href="#tag"/></svg><b>RV Pic Price</b> Guia da API<span class="sec">Visão geral</span></div>
+  <h1>O que a API faz</h1>
+  <p class="lead">A API do <b>RV Pic Price</b> roda no servidor da RV e responde duas perguntas: <b>onde fica esta loja</b> (endereço para geohash) e <b>quais são os 10 menores preços de venda deste produto perto de cada loja</b> (pelo EAN). Os preços vêm de uma fonte pública de preços de notas fiscais do Paraná, consultada e filtrada pelo servidor da RV.</p>
+
+  <div class="fluxo">
+    <div class="caixa">
+      <div class="t">Backend do cliente</div>
+      <div class="s">Ex.: SyncCompras no servidor do cliente</div>
+      <ul><li>guarda o token</li><li>guarda o geohash de cada loja</li><li>calcula própria loja e margem</li></ul>
+    </div>
+    <div class="seta"><svg><use href="#seta"/></svg>HTTPS<br>Bearer</div>
+    <div class="caixa rv">
+      <div class="t"><svg style="width:14px;height:14px"><use href="#tag"/></svg>Servidor da RV</div>
+      <div class="s">Painel rvland · rotas <code style="font-size:7pt">/api/picprice/*</code></div>
+      <ul><li>valida o token e o status do serviço</li><li>limites por token: 120/min e 200/dia</li><li>cache de 45 minutos</li><li>tira resultados falsos e repetidos</li><li>região gru1 (São Paulo), junto do banco</li></ul>
+    </div>
+    <div class="seta"><svg><use href="#seta"/></svg>com<br>tentativas</div>
+    <div class="caixa fonte">
+      <div class="t">Fontes</div>
+      <div class="s">Consultadas só pelo servidor da RV</div>
+      <ul><li>preços de notas fiscais do Paraná</li><li>geocodificador do OpenStreetMap (endereço)</li></ul>
+    </div>
+  </div>
+  <div class="nao"><b>Nunca do navegador.</b> A API é chamada pelo backend do cliente. O token não pode ir para o front, para o app nem para o HTML: quem tem o token consulta em nome do cliente.</div>
+
+  <h2>O que a API entrega e o que fica com você</h2>
+  <div class="cols c2">
+    <div class="nota" style="margin:0"><h3>A API entrega</h3>
+      <p>Geohash de um endereço do Paraná. Para cada loja: os 10 menores preços do EAN no raio, com valor, distância, há quanto tempo e a descrição da nota, e quantos preços existem na área. Sem nome nem endereço de concorrente.</p></div>
+    <div class="pratica" style="margin:0"><h3>Fica com o consumidor</h3>
+      <p>Guardar o geohash das lojas. Saber o preço de venda e o custo do cliente. Reconhecer a própria loja na lista, posicionar o cliente e calcular margem e simulações. A página 9 mostra como o SyncCompras faz.</p></div>
+  </div>
+
+  <h2>Como este guia está organizado</h2>
+  <div class="cols c2 indice" style="margin-top:1mm">
+    <div>
+      <p><b>Página 3.</b> Base URL e autenticação.</p>
+      <p><b>Página 4.</b> <code>POST /api/picprice/geohash</code></p>
+      <p><b>Página 5.</b> <code>GET /api/picprice/ranking</code></p>
+      <p><b>Página 6.</b> Resposta do ranking, campo a campo.</p>
+    </div>
+    <div>
+      <p><b>Página 7.</b> Estados, códigos HTTP e <code>GET /api/picprice/status</code>.</p>
+      <p><b>Página 8.</b> Limites, cache e tempos.</p>
+      <p><b>Página 9.</b> Regras da resposta e o que o consumidor calcula.</p>
+      <p><b>Página 10.</b> Exemplo completo de consumo.</p>
+    </div>
+  </div>
+  <div class="pe"><img src="logo-A.png" alt="">Aramo Tecnologia<span class="ver">RV Pic Price · branch feat/rv-pic-price (027f64c) · emitido em 24/10/2026</span><span class="n">2</span></div>
+</section>
+
+<!-- ============ 3. BASE URL E AUTENTICAÇÃO ============ -->
+<section class="page">
+  <div class="run"><svg class="tag"><use href="#tag"/></svg><b>RV Pic Price</b> Guia da API<span class="sec">Base URL e autenticação</span></div>
+  <h1>Base URL e autenticação</h1>
+  <p class="lead">Todas as rotas ficam embaixo de <code>/api/picprice</code> no domínio do painel da RV. Toda requisição leva o token do cliente no header <b>Authorization</b>.</p>
+
+  <table class="tab">
+    <tr><th style="width:38mm">Ambiente</th><th>Base URL</th><th>Observação</th></tr>
+    <tr><td><b>Produção</b></td><td><code>https://&lt;domínio do painel da RV&gt;</code></td><td>Painel rvland na Vercel. Todas as funções rodam em gru1 (São Paulo), junto do banco (Supabase sa-east-1).</td></tr>
+    <tr><td><b>Teste local</b></td><td><code>http://127.0.0.1:7790</code></td><td>Servidor de teste do branch (<code>scripts/picprice-teste.ts</code>). Mesma lógica das rotas, com o token <code>rvpp_teste</code> e o status em memória.</td></tr>
+  </table>
+
+  <pre><span class="g"># headers de toda requisição</span>
+Authorization: Bearer rvpp_<span class="s">Q2x5c0Fh…(43 caracteres base64url)</span>
+Content-Type: application/json        <span class="g"># só no POST</span></pre>
+
+  <h2>O token</h2>
+  <ul class="lista">
+    <li><b>Um por cliente</b>, vinculado ao <b>CNPJ completo da matriz</b> (14 dígitos) do cadastro do cliente no painel. Sem CNPJ completo, o painel não gera.</li>
+    <li><b>Formato:</b> <code>rvpp_</code> seguido de 32 bytes aleatórios em base64url.</li>
+    <li><b>Mostrado uma única vez</b>, na hora de gerar ou trocar. O painel guarda só o <b>SHA-256</b> do token e os 10 primeiros caracteres, para identificar na lista.</li>
+    <li><b>Último uso:</b> cada requisição aceita atualiza a data de último uso, visível no painel.</li>
+    <li><b>Quem gerencia:</b> a aba <b>Tokens RV Pic Price</b> do painel, com as permissões <code>picprice.ver</code> (ver tokens e status) e <code>picprice.gerenciar</code> (gerar, trocar, revogar, reativar e mudar o status do serviço). Cada ação entra na auditoria do painel.</li>
+  </ul>
+
+  <h2>Ciclo de vida</h2>
+  <table class="tab">
+    <tr><th style="width:30mm">Ação no painel</th><th>Efeito na API</th></tr>
+    <tr><td><b>Gerar</b></td><td>Cria o token do cliente. Cole no backend do cliente; ele passa a responder <span class="st ok">OK</span>.</td></tr>
+    <tr><td><b>Trocar</b></td><td>Gera um token novo para o mesmo cliente. O anterior deixa de funcionar na hora.</td></tr>
+    <tr><td><b>Revogar</b></td><td>Toda requisição com esse token recebe <span class="st er">401 TOKEN_INVALIDO</span> com <code>"motivo": "revogado"</code> e a mensagem <b>Serviço inválido - token revogado</b>. Afeta só aquele cliente.</td></tr>
+    <tr><td><b>Reativar</b></td><td>O mesmo token volta a funcionar, sem precisar colar de novo.</td></tr>
+  </table>
+
+  <h2>Ordem das verificações</h2>
+  <p>Em ranking e geohash, antes de qualquer consulta: <b>1.</b> token (inexistente ou revogado: 401) → <b>2.</b> status do serviço (manutenção: 503) → <b>3.</b> limite por minuto (429 <code>LIMITE_EXCEDIDO</code>, não conta no dia) → <b>4.</b> conta a requisição no dia; se passou do limite, 429 <code>LIMITE_DIARIO</code>. Só então a rota valida os parâmetros e consulta as fontes, por isso uma requisição com parâmetro inválido também conta. O <code>GET /api/picprice/status</code> faz só os passos 1 e 2 e não conta (página 7).</p>
+  <div class="pe"><img src="logo-A.png" alt="">Aramo Tecnologia<span class="ver">RV Pic Price · branch feat/rv-pic-price (027f64c) · emitido em 24/10/2026</span><span class="n">3</span></div>
+</section>
+
+<!-- ============ 4. GEOHASH ============ -->
+<section class="page">
+  <div class="run"><svg class="tag"><use href="#tag"/></svg><b>RV Pic Price</b> Guia da API<span class="sec">Endpoint · geohash</span></div>
+  <h1>Localizar uma loja</h1>
+  <div class="metodo"><span class="verbo post">POST</span>/api/picprice/geohash</div>
+  <p class="lead">Recebe o endereço de uma loja do Paraná e devolve o <b>geohash</b> de 12 caracteres usado no ranking. Chame <b>uma vez por loja</b> e guarde o resultado no servidor do cliente: o endereço da loja não muda a cada consulta.</p>
+
+  <h3>Corpo</h3>
+  <table class="tab">
+    <tr><th style="width:28mm">Campo</th><th style="width:20mm">Tipo</th><th>Regra</th></tr>
+    <tr><td><code>endereco</code></td><td>texto</td><td>Obrigatório, ao menos 5 caracteres. Rua, número, bairro e cidade dão o melhor resultado.</td></tr>
+  </table>
+
+  <h3>Como o endereço é resolvido</h3>
+  <p>O servidor da RV consulta o geocodificador do OpenStreetMap limitado ao retângulo do Paraná, pega o primeiro resultado com estado Paraná e converte a coordenada em geohash de 12 caracteres (célula de poucos centímetros; o raio em km é que define a área do ranking).</p>
+
+  <p class="rot">Requisição</p>
+  <pre>curl -X POST <span class="s">"$BASE/api/picprice/geohash"</span> \
+  -H <span class="s">"Authorization: Bearer $TOKEN"</span> \
+  -H <span class="s">"Content-Type: application/json"</span> \
+  -d <span class="s">'{"endereco":"Rua XV de Novembro, 1000, Centro, Curitiba"}'</span></pre>
+
+  <p class="rot">Resposta 200 (real, servidor de teste, 24/10/2026)</p>
+  <pre>{
+  <span class="k">"estado"</span>: <span class="s">"OK"</span>,
+  <span class="k">"geohash"</span>: <span class="s">"6gkzqf298sdj"</span>,
+  <span class="k">"lat"</span>: -25.4316937,
+  <span class="k">"lon"</span>: -49.2729707,
+  <span class="k">"endereco_encontrado"</span>: <span class="s">"Rua XV de Novembro - Centro - Curitiba - Paraná"</span>
+}</pre>
+
+  <h3>Respostas de erro desta rota</h3>
+  <table class="tab">
+    <tr><th style="width:16mm">HTTP</th><th style="width:52mm">estado</th><th>Quando</th></tr>
+    <tr><td class="c">400</td><td><span class="st av">REQUISICAO_INVALIDA</span></td><td>Endereço vazio ou com menos de 5 caracteres. Mensagem: "Informe o endereço da loja."</td></tr>
+    <tr><td class="c">404</td><td><span class="st av">ENDERECO_NAO_ENCONTRADO</span></td><td>Nenhum resultado no Paraná. Mensagem: "Endereço não encontrado no Paraná." Revise o endereço e tente de novo.</td></tr>
+    <tr><td class="c">503</td><td><span class="st er">FONTE_INDISPONIVEL</span></td><td>O geocodificador falhou. Mensagem começa com "Geocodificador indisponível:".</td></tr>
+    <tr><td class="c">401 · 503 · 429</td><td>token, manutenção, limite</td><td>As verificações comuns da página 3.</td></tr>
+  </table>
+  <div class="pratica"><h3>Confira o endereço encontrado</h3><p>Mostre <code>endereco_encontrado</code> para quem configurou a loja. Se o geocodificador caiu na rua certa de outro bairro, o ranking vai olhar a região errada. Corrija o endereço enviado e localize de novo.</p></div>
+  <div class="pe"><img src="logo-A.png" alt="">Aramo Tecnologia<span class="ver">RV Pic Price · branch feat/rv-pic-price (027f64c) · emitido em 24/10/2026</span><span class="n">4</span></div>
+</section>
+
+<!-- ============ 5. RANKING ============ -->
+<section class="page">
+  <div class="run"><svg class="tag"><use href="#tag"/></svg><b>RV Pic Price</b> Guia da API<span class="sec">Endpoint · ranking</span></div>
+  <h1>Ranking de preços por EAN</h1>
+  <div class="metodo"><span class="verbo get">GET</span>/api/picprice/ranking</div>
+  <p class="lead">Para cada loja enviada, os <b>10 menores preços de venda</b> do produto no raio em volta do geohash dela, do mais barato para o mais caro. Várias lojas vão numa só chamada; cada uma é consultada em paralelo.</p>
+
+  <h3>Parâmetros da query</h3>
+  <table class="tab">
+    <tr><th style="width:18mm">Nome</th><th style="width:22mm">Padrão</th><th>Regra</th></tr>
+    <tr><td><code>gtin</code></td><td>obrigatório</td><td>EAN do produto. Só dígitos ficam; zeros à esquerda saem até restarem 8 dígitos. Precisa ter de 8 a 14 dígitos.</td></tr>
+    <tr><td><code>lojas</code></td><td>obrigatório</td><td>Lista separada por vírgula no formato <code>codigo:geohash</code>, ex.: <code>001:6gmp0v90nd4t,002:6gsbt0g0wusx</code>. Geohash de 5 a 12 caracteres do alfabeto base32 do geohash. Itens inválidos são ignorados; no máximo 30 lojas. O <code>codigo</code> é livre e volta igual na resposta.</td></tr>
+    <tr><td><code>raio</code></td><td><code>3</code></td><td>Raio em km, de 0,5 a 20. Fora disso, é ajustado para o limite.</td></tr>
+    <tr><td><code>data</code></td><td><code>-1</code></td><td>Janela da venda: <code>-1</code> últimos 2 meses · <code>0</code> último mês · <code>1</code> 15 dias · <code>2</code> semana · <code>3</code> 24 h · <code>4</code> 12 h · <code>5</code> 6 h · <code>6</code> última hora.</td></tr>
+  </table>
+
+  <p class="rot">Requisição</p>
+  <pre>curl -G <span class="s">"$BASE/api/picprice/ranking"</span> \
+  -H <span class="s">"Authorization: Bearer $TOKEN"</span> \
+  --data-urlencode <span class="s">"gtin=7891010793463"</span> \
+  --data-urlencode <span class="s">"lojas=001:6gmp0v90nd4t,004:6gmp05rwp4uf"</span> \
+  --data-urlencode <span class="s">"raio=3"</span> --data-urlencode <span class="s">"data=-1"</span></pre>
+
+  <h3>Respostas de erro desta rota</h3>
+  <table class="tab">
+    <tr><th style="width:16mm">HTTP</th><th style="width:48mm">estado</th><th>Quando</th></tr>
+    <tr><td class="c">400</td><td><span class="st av">REQUISICAO_INVALIDA</span></td><td>"EAN inválido." ou "Informe as lojas no formato codigo:geohash." (nenhuma loja válida).</td></tr>
+    <tr><td class="c">503</td><td><span class="st er">FONTE_INDISPONIVEL</span></td><td>Nenhuma loja conseguiu resposta da fonte. Vem com <code>detalhe</code>, ex.: "a fonte devolveu só resultados falsos".</td></tr>
+    <tr><td class="c">200</td><td><span class="st ok">OK</span> parcial</td><td>Algumas lojas responderam e outras não: as que falharam vêm em <code>lojasSemResposta</code>.</td></tr>
+  </table>
+  <p class="rot">Resposta 503 real (servidor de teste, 24/10/2026)</p>
+  <pre>{ <span class="k">"estado"</span>: <span class="s">"FONTE_INDISPONIVEL"</span>,
+  <span class="k">"mensagem"</span>: <span class="s">"A fonte de preços não respondeu. Tente de novo em instantes."</span>,
+  <span class="k">"detalhe"</span>: <span class="s">"a fonte devolveu só resultados falsos"</span> }</pre>
+  <div class="pe"><img src="logo-A.png" alt="">Aramo Tecnologia<span class="ver">RV Pic Price · branch feat/rv-pic-price (027f64c) · emitido em 24/10/2026</span><span class="n">5</span></div>
+</section>
+
+<!-- ============ 6. RESPOSTA DO RANKING ============ -->
+<section class="page">
+  <div class="run"><svg class="tag"><use href="#tag"/></svg><b>RV Pic Price</b> Guia da API<span class="sec">Resposta do ranking</span></div>
+  <h1>A resposta do ranking, campo a campo</h1>
+  <p class="rot" style="margin-top:0">Resposta 200 · formato exato do código. Preço, distância e "há" são de uma consulta real da loja 001 (EAN 7891010793463, 24/10/2026); datas e descrição são ilustrativas e a lista foi encurtada</p>
+  <pre>{
+  <span class="k">"estado"</span>: <span class="s">"OK"</span>,
+  <span class="k">"gtin"</span>: <span class="s">"7891010793463"</span>,
+  <span class="k">"raio"</span>: 3,
+  <span class="k">"data"</span>: -1,
+  <span class="k">"consultadoEm"</span>: <span class="s">"2026-10-24T15:38:12.481Z"</span>,
+  <span class="k">"lojas"</span>: [
+    {
+      <span class="k">"loja"</span>: <span class="s">"001"</span>,
+      <span class="k">"geohash"</span>: <span class="s">"6gmp0v90nd4t"</span>,
+      <span class="k">"totalNaArea"</span>: 55,
+      <span class="k">"precos"</span>: [
+        { <span class="k">"posicao"</span>: 1, <span class="k">"valor"</span>: 8.99, <span class="k">"distanciaKm"</span>: 1.5, <span class="k">"ha"</span>: <span class="s">"há um dia"</span>,
+          <span class="k">"dataHora"</span>: <span class="s">"2026-10-23T11:42:00.000Z"</span>, <span class="k">"descricao"</span>: <span class="s">"…descrição como veio na nota…"</span> },
+        { <span class="k">"posicao"</span>: 2, <span class="k">"valor"</span>: 9.99, <span class="k">"distanciaKm"</span>: 0.1, <span class="k">"ha"</span>: <span class="s">"há 12 minutos"</span>, <span class="g">…</span> },
+        { <span class="k">"posicao"</span>: 3, <span class="k">"valor"</span>: 9.99, <span class="k">"distanciaKm"</span>: 1.4, <span class="k">"ha"</span>: <span class="s">"há 17 horas"</span>, <span class="g">…</span> },
+        <span class="g">… até a posição 10</span>
+      ]
+    }
+  ],
+  <span class="k">"lojasSemResposta"</span>: [],
+  <span class="k">"uso"</span>: { <span class="k">"usado"</span>: 37, <span class="k">"limite"</span>: 200, <span class="k">"zeraEm"</span>: <span class="s">"2026-10-25T00:00:00-03:00"</span> }
+}</pre>
+
+  <table class="tab">
+    <tr><th style="width:40mm">Campo</th><th style="width:16mm">Tipo</th><th>Significado</th></tr>
+    <tr><td><code>gtin</code> · <code>raio</code> · <code>data</code></td><td>—</td><td>Os valores <b>realmente usados</b>, depois de normalizar a query. Mostre o raio desta resposta, não o que você pediu.</td></tr>
+    <tr><td><code>consultadoEm</code></td><td>ISO 8601</td><td>Hora da resposta do servidor da RV. Com cache, os preços podem ter sido buscados na fonte até 45 minutos antes.</td></tr>
+    <tr><td><code>lojas[].loja</code> · <code>geohash</code></td><td>texto</td><td>O código e o geohash que você mandou.</td></tr>
+    <tr><td><code>lojas[].totalNaArea</code></td><td>número</td><td>Quantos preços do produto a fonte tem na área e no período, <b>antes</b> de tirar repetidos e resultados falsos.</td></tr>
+    <tr><td><code>precos[].posicao</code></td><td>1 a 10</td><td>Posição contínua, do mais barato para o mais caro; empate de preço desempata pela menor distância.</td></tr>
+    <tr><td><code>precos[].valor</code></td><td>número</td><td>Preço de venda na nota, em reais.</td></tr>
+    <tr><td><code>precos[].distanciaKm</code></td><td>número</td><td>Distância do geohash da loja até o vendedor, arredondada em 2 casas.</td></tr>
+    <tr><td><code>precos[].ha</code> · <code>dataHora</code></td><td>texto</td><td>"há 3 horas" pronto para exibir, e a data e hora da venda (pode vir <code>null</code>).</td></tr>
+    <tr><td><code>precos[].descricao</code></td><td>texto</td><td>Descrição do produto como está na nota do vendedor. Útil para conferir embalagens diferentes com o mesmo EAN.</td></tr>
+    <tr><td><code>lojasSemResposta</code></td><td>lista</td><td>Códigos das lojas que não tiveram resposta da fonte nesta chamada.</td></tr>
+    <tr><td><code>uso</code></td><td>objeto</td><td>Consultas do token hoje: <code>usado</code> (já contando esta), <code>limite</code> diário e <code>zeraEm</code>, a próxima meia-noite de São Paulo (página 8). Vem em toda resposta OK de ranking e geohash. Use para avisar antes de estourar.</td></tr>
+  </table>
+  <div class="alerta" style="padding:2.4mm 4mm"><b style="color:var(--erro)">Nunca vem na resposta:</b> nome, razão social, endereço ou código do estabelecimento concorrente. A API compara preço, não identifica quem vende.</div>
+  <div class="pe"><img src="logo-A.png" alt="">Aramo Tecnologia<span class="ver">RV Pic Price · branch feat/rv-pic-price (027f64c) · emitido em 24/10/2026</span><span class="n">6</span></div>
+</section>
+
+<!-- ============ 7. ESTADOS ============ -->
+<section class="page">
+  <div class="run"><svg class="tag"><use href="#tag"/></svg><b>RV Pic Price</b> Guia da API<span class="sec">Estados e códigos HTTP</span></div>
+  <h1>Estados e o que fazer em cada um</h1>
+  <p class="lead">Toda resposta é um objeto JSON com o campo <b><code>estado</code></b>. Quando não é <code>OK</code>, vem também <b><code>mensagem</code></b>, já em português e pronta para mostrar ao usuário. Decida pelo <code>estado</code>, não pelo texto.</p>
+
+  <table class="tab">
+    <tr><th style="width:44mm">estado</th><th style="width:12mm">HTTP</th><th style="width:52mm">Quando e campos extras</th><th>O que o consumidor deve fazer</th></tr>
+    <tr><td><span class="st ok">OK</span></td><td class="c">200</td><td>Consulta atendida. No ranking, pode ser parcial (<code>lojasSemResposta</code>).</td><td>Mostrar. Guardar em cache local por 20 a 30 minutos.</td></tr>
+    <tr><td><span class="st er">TOKEN_INVALIDO</span></td><td class="c">401</td><td><code>motivo</code>: <code>"revogado"</code> → "Serviço inválido - token revogado"; <code>"inexistente"</code> → "Serviço inválido - token inválido".</td><td>Mostrar a mensagem e <b>parar de consultar</b> até o suporte trocar ou reativar o token. Não repetir.</td></tr>
+    <tr><td><span class="st av">MANUTENCAO</span></td><td class="c">503</td><td>Status do serviço em manutenção no painel. <code>mensagem</code> (padrão "Manutenção programada") e <code>previsao</code> (texto livre ou <code>null</code>).</td><td>Mostrar a mensagem e a previsão. Parar de consultar; tentar de novo só por ação do usuário ou depois de alguns minutos.</td></tr>
+    <tr><td><span class="st av">LIMITE_EXCEDIDO</span></td><td class="c">429</td><td>Mais de 120 requisições no minuto para o mesmo token. "Muitas consultas em pouco tempo. Tente de novo em instantes." Não conta no limite do dia.</td><td>Esperar alguns segundos e repetir uma vez. Reduzir o paralelismo do pré-carregamento.</td></tr>
+    <tr><td><span class="st er">LIMITE_DIARIO</span></td><td class="c">429</td><td>O token passou do limite do dia. "Limite diário de consultas atingido", com <code>limite</code>, <code>usado</code> e <code>zeraEm</code> no corpo e também em <code>uso</code>. No <code>/status</code> vem com HTTP 200.</td><td>Mostrar a mensagem e <b>não tentar de novo até a hora de <code>zeraEm</code></b>. Parar o pré-carregamento.</td></tr>
+    <tr><td><span class="st er">FONTE_INDISPONIVEL</span></td><td class="c">503</td><td>A fonte de preços (ou o geocodificador) não respondeu depois das tentativas internas. No ranking vem <code>detalhe</code>.</td><td>Mostrar "tente de novo". Repetir no máximo uma vez depois de alguns segundos; não insistir em laço nem em pré-carregamento.</td></tr>
+    <tr><td><span class="st av">REQUISICAO_INVALIDA</span></td><td class="c">400</td><td>Parâmetro faltando ou fora do formato (EAN, lojas, endereço).</td><td>Erro do consumidor: corrigir a chamada. Não repetir igual. Item sem EAN nem deve ser consultado.</td></tr>
+    <tr><td><span class="st av">ENDERECO_NAO_ENCONTRADO</span></td><td class="c">404</td><td>Só no geohash: nenhum resultado no Paraná.</td><td>Pedir um endereço mais completo.</td></tr>
+    <tr><td><span class="st cz">INALCANCAVEL</span></td><td class="c">—</td><td><b>Não sai do servidor da RV.</b> É o estado que o consumidor cria quando não consegue falar com a API: sem conexão, tempo esgotado, HTTP sem JSON ou JSON sem <code>estado</code>.</td><td>Mostrar "Serviço inoperante/inalcançável". Tentar de novo por ação do usuário. O SyncCompras usa exatamente esse nome e esse texto.</td></tr>
+  </table>
+
+  <h2>Exemplos e a rota de status</h2>
+  <div class="cols c2">
+    <div><p class="rot" style="margin-top:0">429 · limite diário (ranking ou geohash)</p>
+<pre>{ <span class="k">"estado"</span>: <span class="s">"LIMITE_DIARIO"</span>,
+  <span class="k">"mensagem"</span>: <span class="s">"Limite diário de consultas atingido"</span>,
+  <span class="k">"usado"</span>: 200, <span class="k">"limite"</span>: 200,
+  <span class="k">"zeraEm"</span>: <span class="s">"2026-10-25T00:00:00-03:00"</span>,
+  <span class="k">"uso"</span>: { <span class="g">mesmos três campos</span> } }</pre></div>
+    <div><p class="rot" style="margin-top:0">GET /api/picprice/status · 200</p>
+<pre>{ <span class="k">"estado"</span>: <span class="s">"OK"</span>,
+  <span class="k">"uso"</span>: { <span class="k">"usado"</span>: 37, <span class="k">"limite"</span>: 200,
+           <span class="k">"zeraEm"</span>: <span class="s">"2026-10-25T00:00:00-03:00"</span> } }</pre></div>
+  </div>
+  <p class="peq"><b><code>GET /api/picprice/status</code></b>, só com o header <code>Authorization</code>: confere o token e o status do serviço e devolve o uso do dia, <b>sem contar no limite</b>. Respostas: 200 com <code>OK</code> ou <code>LIMITE_DIARIO</code>; 503 <code>MANUTENCAO</code> (com <code>mensagem</code>, <code>previsao</code> e <code>uso</code>); 401 <code>TOKEN_INVALIDO</code>. Use para testar a conexão, como o botão "Testar conexão" do SyncCompras faz.</p>
+  <div class="pe"><img src="logo-A.png" alt="">Aramo Tecnologia<span class="ver">RV Pic Price · branch feat/rv-pic-price (027f64c) · emitido em 24/10/2026</span><span class="n">7</span></div>
+</section>
+
+<!-- ============ 8. LIMITES ============ -->
+<section class="page">
+  <div class="run"><svg class="tag"><use href="#tag"/></svg><b>RV Pic Price</b> Guia da API<span class="sec">Limites, cache e tempos</span></div>
+  <h1>Limites, cache e tempos</h1>
+  <p class="lead">A fonte de preços é lenta e instável. O servidor da RV absorve boa parte disso com cache e tentativas, mas o consumidor precisa de tempos limite generosos e de uma regra clara de quando repetir.</p>
+
+  <table class="tab">
+    <tr><th style="width:44mm">Item</th><th style="width:34mm">Valor</th><th>Detalhe</th></tr>
+    <tr><td><b>Limite por minuto</b></td><td>120 req/min</td><td>Por token, janela de 60 s contada na memória de cada instância da função. Acima disso: 429 LIMITE_EXCEDIDO, que não conta no limite do dia.</td></tr>
+    <tr><td><b>Limite por dia</b></td><td>200 req/dia (padrão)</td><td>Por token, configurável na aba de tokens do painel. Conta toda requisição aceita de ranking e de geohash, inclusive as atendidas pelo cache e as recusadas por parâmetro inválido. Não contam token inválido, manutenção, LIMITE_EXCEDIDO nem o <code>/status</code>. Zera à meia-noite de São Paulo. Acima disso: 429 LIMITE_DIARIO.</td></tr>
+    <tr><td><b>Cache do ranking</b></td><td>45 min</td><td>Por consulta à fonte (EAN, geohash, raio, janela e tamanho). Guardado no banco do painel (<code>picprice_cache</code>), vale para todos os clientes.</td></tr>
+    <tr><td><b>Resposta falsa da fonte</b></td><td>3 tentativas</td><td>A fonte às vezes devolve só itens inventados para atrapalhar robôs. O servidor detecta, espera 0,8 s, 1,6 s e 2,4 s e tenta de novo; isso nunca entra no cache. Se as três vierem falsas: 503.</td></tr>
+    <tr><td><b>Tentativas na fonte</b></td><td>até 4 rodadas</td><td>Cada requisição desiste em 15 s; sem resposta em 5 s sai uma cópia em paralelo (até 3 por rodada); entre rodadas, pausas de 1, 2,5 e 5 s (+ até 30%). Só repete erro de rede, tempo esgotado, 429 e 5xx.</td></tr>
+    <tr><td><b>Tamanho da busca</b></td><td>20, depois 50</td><td>Pede 20 resultados; se depois de limpar sobrarem menos de 10 e houver mais na área, pede 50.</td></tr>
+    <tr><td><b>Tempo máximo da rota</b></td><td>60 s</td><td><code>maxDuration</code> das duas rotas na Vercel.</td></tr>
+    <tr><td><b>Região</b></td><td>gru1</td><td>São Paulo, para todas as funções do painel, ao lado do banco (Supabase sa-east-1). A fonte responde melhor, e às vezes só, de dentro do Brasil.</td></tr>
+  </table>
+
+  <h2>Tempo de resposta esperado</h2>
+  <table class="tab">
+    <tr><th style="width:62mm">Situação</th><th>Tempo</th></tr>
+    <tr><td>Ranking já no cache do servidor da RV</td><td>0,1 a 0,3 s (medido no servidor de teste: 115 a 200 ms)</td></tr>
+    <tr><td>Ranking consultando a fonte</td><td>2 a 15 s por loja; as lojas rodam em paralelo</td></tr>
+    <tr><td>Fonte falhando até desistir</td><td>10 a 20 s, terminando em 503 FONTE_INDISPONIVEL</td></tr>
+    <tr><td>Geohash</td><td>cerca de 1 s</td></tr>
+  </table>
+
+  <h2>Recomendações para quem consome</h2>
+  <ul class="lista">
+    <li><b>Tempos limite:</b> conexão de 10 s; leitura de 40 s no geohash e 70 s no ranking. São os valores do SyncCompras (<code>PicPriceCliente</code>), acima dos 60 s da rota.</li>
+    <li><b>Repetir só o que é passageiro:</b> 429 e 503 FONTE_INDISPONIVEL, no máximo uma vez, com espera. Nunca repetir 400, 401 ou 404, nem MANUTENCAO em laço.</li>
+    <li><b>Cache local:</b> guarde respostas OK por 20 a 30 minutos por item e cotação. O SyncCompras/Hermes usa 25 minutos e só guarda respostas estáveis.</li>
+    <li><b>Pré-carregamento com moderação:</b> cada item pré-carregado gasta uma consulta do limite diário, mesmo vindo do cache. Carregue poucos itens à frente, no máximo 2 ou 3 de cada vez, e pare ao receber TOKEN_INVALIDO, MANUTENCAO, LIMITE_DIARIO, FONTE_INDISPONIVEL ou INALCANCAVEL.</li>
+    <li><b>Limite diário estourado:</b> trate o 429 LIMITE_DIARIO sem novas tentativas até a hora de <code>zeraEm</code>. Acompanhe <code>uso</code> nas respostas OK.</li>
+    <li><b>Uma chamada para várias lojas:</b> mande todas as lojas da cotação no mesmo <code>lojas=</code>; o servidor consulta em paralelo.</li>
+  </ul>
+  <div class="pe"><img src="logo-A.png" alt="">Aramo Tecnologia<span class="ver">RV Pic Price · branch feat/rv-pic-price (027f64c) · emitido em 24/10/2026</span><span class="n">8</span></div>
+</section>
+
+<!-- ============ 9. REGRAS ============ -->
+<section class="page">
+  <div class="run"><svg class="tag"><use href="#tag"/></svg><b>RV Pic Price</b> Guia da API<span class="sec">Regras da resposta</span></div>
+  <h1>Regras da resposta e o que o consumidor calcula</h1>
+
+  <h2>O que o servidor da RV faz com os preços</h2>
+  <ol class="passos">
+    <li><p><b>Tira os resultados falsos.</b> Item com id só de letras minúsculas, números e ponto <b>e</b> código de estabelecimento diferente de 43 caracteres é descartado. As duas marcas juntas evitam jogar fora item real.</p></li>
+    <li><p><b>Junta repetidos.</b> Mesmo estabelecimento, mesma descrição e mesmo preço viram uma linha só.</p></li>
+    <li><p><b>Ordena.</b> O mais barato primeiro; empate pela menor distância.</p></li>
+    <li><p><b>Corta em 10</b> e numera de 1 a 10, sem repetir posição.</p></li>
+    <li><p><b>Esconde o vendedor.</b> Sai só preço, distância, quando e descrição. O código do estabelecimento é usado internamente para deduplicar e nunca vai na resposta.</p></li>
+  </ol>
+  <p style="margin-top:2mm"><code>totalNaArea</code> é o total informado pela fonte para a área e o período, contado antes da limpeza. Serve para dar a dimensão ("55 na área"), não para somar com a lista.</p>
+
+  <h2>O que fica com o consumidor</h2>
+  <p>A API não conhece o cliente além do token: não sabe o preço de venda, o custo nem qual vendedor da lista é a própria loja. O SyncCompras faz assim, e serve de <b>implementação de referência</b>:</p>
+
+  <h3>1. Reconhecer a própria loja</h3>
+  <p>As vendas da loja do cliente também entram na fonte. O SyncCompras (<code>PicPriceResource</code>) trata como própria loja o preço que está a <b>até 0,2 km</b> do geohash da loja e é <b>igual ao preço de venda atual</b> dela (diferença menor que meio centavo). Esse preço sai da lista de concorrentes e é descontado do total na área; as posições dos concorrentes são renumeradas.</p>
+
+  <h3>2. Posicionar o cliente</h3>
+  <p>Posição = 1 + quantidade de concorrentes com preço <b>menor</b> que o preço de venda do cliente. Em empate, o cliente fica na frente.</p>
+
+  <h3>3. Margem</h3>
+  <p>Mesma conta da consulta de preço do aramoMobile (SyncProdutos, <code>PostgresEjb.java</code>, linhas 963 a 978), também usada pelo HiperSync como lucro ÷ venda:</p>
+  <pre>custo  = cade_ctnota + cade_debvenda + cade_ctvenda
+margem = (preço − custo) ÷ preço × 100        <span class="g"># truncada em 2 casas</span></pre>
+  <p>Nas simulações de preço, o débito de venda acompanha o preço no mesmo percentual de hoje e o custo de venda fica fixo em reais. O custo para manter a margem <i>m</i> num preço novo <i>P</i> é <code>P × (1 − m) − %débito × P − ctvenda</code>. O preço de venda usado é <code>cade_prvenda</code>, que é o promocional quando o item está em oferta.</p>
+  <div class="pe"><img src="logo-A.png" alt="">Aramo Tecnologia<span class="ver">RV Pic Price · branch feat/rv-pic-price (027f64c) · emitido em 24/10/2026</span><span class="n">9</span></div>
+</section>
+
+<!-- ============ 10. EXEMPLO COMPLETO ============ -->
+<section class="page">
+  <div class="run"><svg class="tag"><use href="#tag"/></svg><b>RV Pic Price</b> Guia da API<span class="sec">Exemplo completo</span></div>
+  <h1>Exemplo completo de consumo</h1>
+  <p class="lead">O caminho que o SyncCompras segue, do token guardado até o ranking na tela. Use como roteiro para qualquer outro backend.</p>
+
+  <ol class="passos">
+    <li><p><b>Guarde a configuração no servidor do cliente.</b> URL base, token e raio. No SyncCompras: tabela <code>sync.sync_picprice</code> (<code>pcpr_ativo</code>, <code>pcpr_url</code>, <code>pcpr_token</code>, <code>pcpr_raio</code>). O token nunca é devolvido ao front; o front só vê os 4 últimos caracteres.</p></li>
+    <li><p><b>Localize cada loja uma vez.</b> Chame o geohash com o endereço da loja e guarde o resultado. No SyncCompras: <code>sync.sync_empresas</code> (<code>semp_codempresa</code>, <code>semp_geohash</code>, <code>semp_lat</code>, <code>semp_lon</code>, <code>semp_endereco</code>, <code>semp_enderecoencontrado</code>).</p></li>
+    <li><p><b>Consulte o ranking por demanda.</b> Só com EAN válido e só das lojas já localizadas, todas na mesma chamada.</p></li>
+    <li><p><b>Calcule do seu lado</b> a própria loja, a posição do cliente e a margem (página 9), e trate o <code>estado</code> (página 7).</p></li>
+  </ol>
+
+  <p class="rot">Passo 2 · localizar</p>
+  <pre>curl -X POST <span class="s">"$BASE/api/picprice/geohash"</span> -H <span class="s">"Authorization: Bearer $TOKEN"</span> \
+  -H <span class="s">"Content-Type: application/json"</span> -d <span class="s">'{"endereco":"Rua Exemplo, 100, Centro, Pinhais"}'</span>
+<span class="g"># guardar: 001 → 6gmp0v90nd4t</span></pre>
+
+  <p class="rot">Passo 3 · ranking das lojas da cotação</p>
+  <pre>curl -G <span class="s">"$BASE/api/picprice/ranking"</span> -H <span class="s">"Authorization: Bearer $TOKEN"</span> \
+  --data-urlencode <span class="s">"gtin=7891010793463"</span> \
+  --data-urlencode <span class="s">"lojas=001:6gmp0v90nd4t,002:6gsbt0g0wusx,003:6gkyzvz1y8dr,004:6gmp05rwp4uf"</span> \
+  --data-urlencode <span class="s">"raio=3"</span> --data-urlencode <span class="s">"data=-1"</span></pre>
+
+  <p class="rot">Passo 4 · tratamento no backend (pseudocódigo)</p>
+  <pre><span class="k">resp</span> = GET ranking (conexão 10 s, leitura 70 s)
+<span class="k">se</span> falhou a conexão ou não veio JSON com "estado" → estado = <span class="s">INALCANCAVEL</span>
+<span class="k">conforme</span> resp.estado:
+  OK                 → para cada loja: tirar própria loja (≤ 0,2 km e preço = venda),
+                       renumerar, posição = 1 + concorrentes mais baratos, margens
+  TOKEN_INVALIDO     → mostrar mensagem; parar consultas
+  MANUTENCAO         → mostrar mensagem e previsão; parar consultas
+  LIMITE_EXCEDIDO    → esperar e repetir 1 vez
+  LIMITE_DIARIO      → mostrar mensagem; nada até zeraEm
+  (testar conexão: GET /status, não conta no limite)
+  FONTE_INDISPONIVEL → "tente de novo"; repetir no máximo 1 vez
+  REQUISICAO_INVALIDA→ corrigir a chamada (não repetir)</pre>
+
+  <h2>Implementação de referência</h2>
+  <table class="tab">
+    <tr><th style="width:52mm">Arquivo (SyncCompras 2.4.5.8)</th><th>Papel</th></tr>
+    <tr><td><code>picprice/PicPriceCliente.java</code></td><td>Chamadas HTTP à API (o "Testar conexão" usa o <code>/status</code>), tempos limite e o estado INALCANCAVEL.</td></tr>
+    <tr><td><code>rest/resource/PicPriceResource.java</code></td><td>Proxy para o front, própria loja, posição, margens e simulações.</td></tr>
+    <tr><td><code>picprice/PicPriceCalculo.java</code></td><td>Fórmulas de margem e de custo para manter a margem.</td></tr>
+    <tr><td><code>repository/PicPriceRepository.java</code></td><td>Configuração, lojas, EAN, preço de venda e custos.</td></tr>
+  </table>
+  <p class="peq">Versão descrita: branch <b>feat/rv-pic-price</b> do painel rvland (027f64c), <code>lib/picprice/*</code> e <code>app/api/picprice/*</code>; tabelas <code>picprice_tokens</code> (com o limite e o contador do dia, migration 0019) e <code>picprice_cache</code>.</p>
+  <div class="pe"><img src="logo-A.png" alt="">Aramo Tecnologia<span class="ver">RV Pic Price · branch feat/rv-pic-price (027f64c) · emitido em 24/10/2026</span><span class="n">10</span></div>
+</section>
+
+</body>
+</html>

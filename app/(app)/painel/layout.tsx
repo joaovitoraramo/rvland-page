@@ -37,6 +37,9 @@ export default async function LayoutPainel({ children }: { children: React.React
   if (pode(perfil, "servidores.ver")) {
     itens.push({ href: "/painel/servidores", rotulo: "Servidores", icone: "servidores" });
   }
+  if (pode(perfil, "picprice.ver")) {
+    itens.push({ href: "/painel/picprice", rotulo: "RV Pic Price", icone: "picprice" });
+  }
   if (pode(perfil, "plataforma.auditoria")) {
     itens.push({ href: "/painel/auditoria", rotulo: "Auditoria", icone: "auditoria" });
   }
