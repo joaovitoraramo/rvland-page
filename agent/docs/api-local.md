@@ -1,8 +1,10 @@
 # API local do agente RV (rvland-agent)
 
 API HTTP que o **rvland-agent** sobe no próprio servidor do cliente, escutando **só em `127.0.0.1`**.
-Hoje quem chama é o **SyncCompras**; qualquer outro sistema que rode **no mesmo servidor** pode chamar
-seguindo este contrato. Especificação formal: [`openapi.yaml`](openapi.yaml).
+O consumidor oficial é o **SyncRvLand**, módulo da Aramo que roda no mesmo servidor: é ele que guarda o token
+do cliente, localiza as lojas, guarda os preços do dia e calcula margem, simulações e meta. SyncCompras, Hermes,
+SuperBox e SuperSync chamam o SyncRvLand, não o agente (ver `SyncRvLand/docs/integracao-syncrvland.md`).
+Outro sistema no mesmo servidor só deve chamar o agente direto se não puder usar o SyncRvLand, seguindo este contrato. Especificação formal: [`openapi.yaml`](openapi.yaml).
 
 - Base: `http://127.0.0.1:7710` (porta configurável: `agenterv enroll --porta=N`, `RVLAND_PICPRICE_PORTA` ou instalador `--porta=N`).
 - Versão da API: `v1` (prefixo de todas as rotas).
@@ -38,7 +40,7 @@ curl -s http://127.0.0.1:7710/v1/saude
 }
 ```
 
-Sem resposta (conexão recusada) = agente não instalado ou parado. O SyncCompras mostra
+Sem resposta (conexão recusada) = agente não instalado ou parado. O SyncRvLand devolve
 `AGENTE_INDISPONIVEL` — "Agente RV não encontrado neste servidor".
 
 ## Autenticação das rotas do RV Pic Price
@@ -130,8 +132,8 @@ Resposta `200 OK`:
   da RV; sem ela o campo nunca aparece. Endereço de concorrente nunca é devolvido.
 - `totalNaArea`: quantos preços a fonte tem no raio, já descontada a própria loja.
 - `lojasSemResposta`: códigos das lojas em que a fonte falhou nesta consulta.
-- A posição do **seu** preço, margem e simulações são calculadas por quem chama (o SyncCompras faz isso
-  com os custos do ERP).
+- A posição do **seu** preço, margem e simulações são calculadas por quem chama (o SyncRvLand faz isso
+  com os custos do ERP, Hiper ou SuperBox).
 
 ## Estados
 
@@ -150,7 +152,7 @@ Resposta `200 OK`:
 | `FONTE_INDISPONIVEL` | 503 | a fonte de preços não respondeu ou só mandou itens falsos | tentar depois, por ação do usuário |
 | `INALCANCAVEL` | 502 | o agente não falou com a plataforma da RV, ou a autorização veio inválida | tentar depois; conferir a internet do servidor |
 
-Do lado de quem chama: conexão recusada/timeout no agente = **agente indisponível** (o SyncCompras usa
+Do lado de quem chama: conexão recusada/timeout no agente = **agente indisponível** (o SyncRvLand usa
 `AGENTE_INDISPONIVEL`, "Agente RV não encontrado neste servidor").
 
 ## Limites de uso (obrigatórios)
@@ -163,10 +165,11 @@ Do lado de quem chama: conexão recusada/timeout no agente = **agente indisponí
 - Cache local de **10 minutos** por EAN + loja + raio + período (repetir o mesmo item logo em seguida não
   vai à fonte, mas conta na cota, porque toda chamada é autorizada pela RV).
 - Prazo de uma consulta: até ~40 s para todas as lojas; use timeout de 75 s no cliente.
-- **Peça só as lojas necessárias.** Não mande todas as lojas de uma vez: o SyncCompras pede a loja que o
+- **Peça só as lojas necessárias.** Não mande todas as lojas de uma vez: o SyncRvLand recebe do SyncCompras a loja que o
   usuário está vendo e, por baixo, no máximo a loja seguinte do mesmo item.
-- **Guarde o resultado do dia no consumidor.** Cada chamada conta na cota diária do token. O SyncCompras
+- **Guarde o resultado do dia no consumidor.** Cada chamada conta na cota diária do token. O SyncRvLand
   guarda o ranking de cada loja (por EAN + loja + geohash + raio + período) em `sync.sync_picprice_cache`
+  (Hiper) ou `SYNC_PICPRICE_CACHE` (SuperBox)
   até o fim do dia (dia de São Paulo) e só chama o agente de novo quando o usuário pede para atualizar.
   O filtro de horas (`pcpr_horas`) é aplicado na leitura, sobre a menor janela da fonte que cobre o período.
 
@@ -191,5 +194,5 @@ Do lado de quem chama: conexão recusada/timeout no agente = **agente indisponí
 5. Trate `estado` conforme a tabela. Não repita automaticamente em `LIMITE_DIARIO`, `TOKEN_INVALIDO`, `TOKEN_EXPIRADO`,
    `MODULO_DESATIVADO` nem `MANUTENCAO`.
 
-Implementação de referência: `SyncCompras` — `com.aramo.picprice.PicPriceCliente` e
-`com.aramo.rest.resource.PicPriceResource`.
+Implementação de referência: `SyncRvLand` — `com.aramo.rvland.picprice.ClienteDoAgente` (cliente HTTP desta API)
+e `com.aramo.rvland.picprice.ServicoPicPrice` (lojas, preços do dia, margem, simulações e meta).
