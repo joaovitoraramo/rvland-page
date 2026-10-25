@@ -136,9 +136,9 @@ ul.lista li{font-size:9pt}
 </section><section class="page">
   <div class="run"><svg class="tag"><use href="#chip"/></svg><b>Agente RV</b> API local<span class="sec">Visão geral</span></div>
   <h1>O que é a API local</h1>
-  <p class="lead">O <b>rvland-agent</b> roda no servidor do cliente e sobe uma API HTTP que escuta <b>só em 127.0.0.1</b>. Com o módulo <b>picprice</b> ligado, ela entrega os 10 menores preços de venda de um produto perto de cada loja, consultando a fonte de preços <b>a partir do próprio servidor do cliente</b>. Hoje quem chama é o SyncCompras; qualquer sistema no mesmo servidor pode chamar seguindo este guia.</p>
+  <p class="lead">O <b>rvland-agent</b> roda no servidor do cliente e sobe uma API HTTP que escuta <b>só em 127.0.0.1</b>. Com o módulo <b>picprice</b> ligado, ela entrega os 10 menores preços de venda de um produto perto de cada loja, consultando a fonte de preços <b>a partir do próprio servidor do cliente</b>. O consumidor oficial é o <b>SyncRvLand</b>, módulo da Aramo no mesmo servidor; SyncCompras, Hermes, SuperBox e SuperSync chamam o SyncRvLand, não o agente.</p>
   <div class="fluxo">
-    <div class="caixa"><div class="t">Sistema do cliente</div><div class="s">Ex.: SyncCompras, no mesmo servidor</div>
+    <div class="caixa"><div class="t">SyncRvLand</div><div class="s">Consumidor oficial, no mesmo servidor</div>
       <ul><li>guarda o token RV Pic Price</li><li>guarda o geohash das lojas</li><li>calcula margem e simulações</li></ul></div>
     <div class="seta"><svg><use href="#seta"/></svg>local<br>porta 7710</div>
     <div class="caixa rv"><div class="t"><svg style="width:14px;height:14px"><use href="#chip"/></svg>Agente RV</div><div class="s">rvland-agent · módulo picprice</div>
@@ -176,7 +176,7 @@ ul.lista li{font-size:9pt}
   <span class="k">"apiLocal"</span>: { <span class="k">"porta"</span>: 7710, <span class="k">"versao"</span>: <span class="s">"v1"</span> }
 }</pre>
   <div class="cols c2">
-    <div class="nota" style="margin:0"><h3>Conexão recusada ou sem resposta</h3><p>Agente não instalado ou parado. O SyncCompras mostra <code>AGENTE_INDISPONIVEL</code>, "Agente RV não encontrado neste servidor". Não insista: avise o suporte.</p></div>
+    <div class="nota" style="margin:0"><h3>Conexão recusada ou sem resposta</h3><p>Agente não instalado ou parado. O SyncRvLand devolve <code>AGENTE_INDISPONIVEL</code>, "Agente RV não encontrado neste servidor". Não insista: avise o suporte.</p></div>
     <div class="pratica" style="margin:0"><h3>Porta</h3><p>Padrão <b>7710</b>. Muda no enroll (<code>--porta=N</code>), no instalador ou em <code>RVLAND_PICPRICE_PORTA</code>. Guarde a porta na configuração do seu sistema.</p></div>
   </div>
   <h2>Autenticação</h2>
@@ -241,7 +241,7 @@ ul.lista li{font-size:9pt}
     <tr><td><code>propriaLojaNaFonte</code></td><td><code>true</code> quando um preço igual ao <code>precoVenda</code>, a até 0,2 km, foi reconhecido como a própria loja e tirado.</td></tr>
     <tr><td><code>lojasSemResposta</code></td><td>Lojas em que a fonte falhou nesta consulta. As outras vêm normalmente.</td></tr>
     <tr><td><code>uso</code></td><td>Uso do dia do token, depois desta chamada.</td></tr></table>
-  <div class="pratica"><h3>O que fica com quem chama</h3><p>A posição do <b>seu</b> preço no ranking, a margem, as simulações de preço e a meta de custo com o fornecedor. O SyncCompras calcula com os custos do ERP.</p></div>
+  <div class="pratica"><h3>O que fica com quem chama</h3><p>A posição do <b>seu</b> preço no ranking, a margem, as simulações de preço e a meta de custo com o fornecedor. O SyncRvLand calcula com os custos do ERP, Hiper ou SuperBox.</p></div>
   <div class="pe"><img src="logo-A.png" alt="">Aramo Tecnologia<span class="ver">agente 0.5.0 · API local v1 · emitido em 24/10/2026</span><span class="n">5</span></div>
 </section><section class="page">
   <div class="run"><svg class="tag"><use href="#chip"/></svg><b>Agente RV</b> API local<span class="sec">Estados</span></div>
@@ -259,7 +259,7 @@ ul.lista li{font-size:9pt}
     <tr><td><span class="st cz">MANUTENCAO</span></td><td>503</td><td>Manutenção programada no painel. Traz <code>mensagem</code> e <code>previsao</code>.</td><td>Mostrar a mensagem.</td></tr>
     <tr><td><span class="st cz">FONTE_INDISPONIVEL</span></td><td>503</td><td>A fonte não respondeu ou só mandou itens falsos.</td><td>Tentar depois, por ação do usuário.</td></tr>
     <tr><td><span class="st cz">INALCANCAVEL</span></td><td>502</td><td>O agente não falou com a RV, ou a autorização veio inválida.</td><td>Tentar depois; conferir a internet do servidor.</td></tr></table>
-  <div class="nota"><h3>Do lado de quem chama</h3><p>Conexão recusada ou sem resposta do agente é <b>agente indisponível</b>. O SyncCompras devolve ao Hermes <code>AGENTE_INDISPONIVEL</code>, com "Agente RV não encontrado neste servidor".</p></div>
+  <div class="nota"><h3>Do lado de quem chama</h3><p>Conexão recusada ou sem resposta do agente é <b>agente indisponível</b>. O SyncRvLand devolve <code>AGENTE_INDISPONIVEL</code>, com "Agente RV não encontrado neste servidor".</p></div>
 <pre>{ <span class="k">"estado"</span>: <span class="s">"LIMITE_DIARIO"</span>, <span class="k">"mensagem"</span>: <span class="s">"Limite diário de consultas atingido"</span>,
   <span class="k">"limite"</span>: 200, <span class="k">"usado"</span>: 200, <span class="k">"zeraEm"</span>: <span class="s">"2026-10-25T00:00:00-03:00"</span>, <span class="k">"uso"</span>: { … } }
 
@@ -275,8 +275,8 @@ ul.lista li{font-size:9pt}
     <li><p><b>Só as lojas do próprio cliente.</b> Nunca consultas para terceiros.</p></li>
     <li><p><b>Uma consulta por vez no agente</b>, com <b>intervalo mínimo de 2 s</b> entre consultas à fonte. Chamadas simultâneas esperam a vez.</p></li>
     <li><p><b>Cache local de 10 minutos</b> por EAN, loja, raio e período. Repetir o mesmo item logo em seguida não vai à fonte, mas conta na cota, porque toda chamada é autorizada pela RV.</p></li>
-    <li><p><b>Peça só as lojas necessárias.</b> O SyncCompras pede a loja que o usuário está vendo e, por baixo, no máximo a seguinte do mesmo item.</p></li>
-    <li><p><b>Guarde o resultado do dia.</b> Toda chamada conta na cota. O SyncCompras guarda o ranking de cada loja em <code>sync.sync_picprice_cache</code> até o fim do dia e só chama o agente de novo quando o usuário pede para atualizar.</p></li>
+    <li><p><b>Peça só as lojas necessárias.</b> O SyncRvLand recebe do SyncCompras a loja que o usuário está vendo e, por baixo, no máximo a seguinte do mesmo item.</p></li>
+    <li><p><b>Guarde o resultado do dia.</b> Toda chamada conta na cota. O SyncRvLand guarda o ranking de cada loja em <code>sync.sync_picprice_cache</code> (ou <code>SYNC_PICPRICE_CACHE</code> no SuperBox) até o fim do dia e só chama o agente de novo quando o usuário pede para atualizar.</p></li>
     <li><p><b>Cota diária por token</b>, configurada no painel da RV (padrão 200), mais 120 por minuto. Status e saúde não contam.</p></li>
   </ul>
   <h1 style="margin-top:7mm">Segurança</h1>
@@ -292,7 +292,7 @@ ul.lista li{font-size:9pt}
 </section><section class="page">
   <div class="run"><svg class="tag"><use href="#chip"/></svg><b>Agente RV</b> API local<span class="sec">Como integrar</span></div>
   <h1>Como outro sistema deve chamar</h1>
-  <p class="lead">O roteiro abaixo é o que o SyncCompras faz. Siga o mesmo em qualquer sistema que rode no servidor do cliente.</p>
+  <p class="lead">O roteiro abaixo é o que o SyncRvLand faz. Os sistemas da Aramo chamam o SyncRvLand; chame o agente direto só se não puder usá-lo.</p>
   <ol class="passos">
     <li><p><b>Descobrir o agente.</b> Na subida ou no "testar conexão", <code>GET /v1/saude</code>. Só siga se <code>modulos.picprice</code> for <code>true</code>.</p></li>
     <li><p><b>Guardar o token</b> RV Pic Price do cliente no backend, junto com a porta do agente e o raio.</p></li>
@@ -313,8 +313,8 @@ r = POST <span class="s">"/v1/picprice/ranking"</span>, Bearer token, {
 <span class="k">senão</span>: mostrar r.mensagem conforme o estado</pre>
   <h2>Implementação de referência</h2>
   <table class="tab"><tr><th>Onde</th><th>O quê</th></tr>
-    <tr><td><code>SyncCompras · com.aramo.picprice.PicPriceCliente</code></td><td>Cliente HTTP da API local: saude, status, geohash e ranking, com o estado <code>AGENTE_INDISPONIVEL</code>.</td></tr>
-    <tr><td><code>SyncCompras · PicPriceResource</code></td><td>Monta o pedido com o preço de venda por loja e calcula margem, simulações e meta.</td></tr>
+    <tr><td><code>SyncRvLand · com.aramo.rvland.picprice.ClienteDoAgente</code></td><td>Cliente HTTP da API local: saude, status, geohash e ranking, com o estado <code>AGENTE_INDISPONIVEL</code>.</td></tr>
+    <tr><td><code>SyncRvLand · ServicoPicPrice</code></td><td>Monta o pedido com o preço de venda por loja, guarda os preços do dia e calcula margem, simulações e meta.</td></tr>
     <tr><td><code>rvland-page · agent/docs/openapi.yaml</code></td><td>Especificação formal desta API (OpenAPI 3).</td></tr>
     <tr><td><code>rvland-page · agent/picprice.go</code></td><td>O módulo picprice do agente.</td></tr></table>
   <div class="pe"><img src="logo-A.png" alt="">Aramo Tecnologia<span class="ver">agente 0.5.0 · API local v1 · emitido em 24/10/2026</span><span class="n">8</span></div>
