@@ -7,7 +7,7 @@ import { tratarGeohash, tratarRanking, tratarStatus, type DepsPicPrice } from ".
 function depsComCota(limite: number) {
   const estado = { dia: null as string | null, qtde: 0, limite };
   const deps: DepsPicPrice = {
-    validarToken: async (t) => (t === "bom" ? { ok: true, clienteId: "c", tokenId: "t" } : { ok: false, motivo: "inexistente" }),
+    validarToken: async (t) => (t === "bom" ? { ok: true, clienteId: "c", tokenId: "t", verEstabelecimento: false } : { ok: false, motivo: "inexistente" }),
     statusServico: async () => ({ estado: "operante" }),
     cacheGet: async () => ({ total: 1, produtos: [] }),
     cacheSet: async () => undefined,

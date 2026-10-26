@@ -39,14 +39,14 @@ export async function setStatusServico(s: StatusServico): Promise<void> {
 
 export async function validarTokenPicPrice(token: string): Promise<ValidacaoToken> {
   const [t] = await db
-    .select({ id: picpriceTokens.id, clienteId: picpriceTokens.clienteId, status: picpriceTokens.status, expiraEm: picpriceTokens.expiraEm })
+    .select({ id: picpriceTokens.id, clienteId: picpriceTokens.clienteId, status: picpriceTokens.status, expiraEm: picpriceTokens.expiraEm, verEstabelecimento: picpriceTokens.verEstabelecimento })
     .from(picpriceTokens)
     .where(eq(picpriceTokens.tokenHash, hashTokenPicPrice(token)))
     .limit(1);
   if (!t) return { ok: false, motivo: "inexistente" };
   if (t.status !== "ativo") return { ok: false, motivo: "revogado" };
   if (t.expiraEm && t.expiraEm.getTime() <= Date.now()) return { ok: false, motivo: "expirado" };
-  return { ok: true, clienteId: t.clienteId, tokenId: t.id };
+  return { ok: true, clienteId: t.clienteId, tokenId: t.id, verEstabelecimento: t.verEstabelecimento };
 }
 
 /** Gera (ou troca) o token do cliente. Um por cliente: trocar invalida o anterior. */
@@ -83,6 +83,18 @@ export async function definirValidadeToken(clienteId: string, expiraEm: Date | n
   if (!atual) throw new Error("O cliente ainda não tem token.");
   await db.update(picpriceTokens).set({ expiraEm }).where(eq(picpriceTokens.clienteId, clienteId));
   return { anterior: atual.exp };
+}
+
+/** Permite (ou não) o agente devolver o nome do estabelecimento no ranking. Devolve o anterior. */
+export async function definirVerEstabelecimento(clienteId: string, ver: boolean): Promise<{ anterior: boolean }> {
+  const [atual] = await db
+    .select({ ver: picpriceTokens.verEstabelecimento })
+    .from(picpriceTokens)
+    .where(eq(picpriceTokens.clienteId, clienteId))
+    .limit(1);
+  if (!atual) throw new Error("O cliente ainda não tem token.");
+  await db.update(picpriceTokens).set({ verEstabelecimento: ver }).where(eq(picpriceTokens.clienteId, clienteId));
+  return { anterior: atual.ver };
 }
 
 /** Limite diário de requisições do token do cliente (inteiro ≥ 1). Devolve o anterior. */
@@ -154,6 +166,7 @@ export async function listarTokensPicPrice() {
       usoDia: picpriceTokens.usoDia,
       usoQtde: picpriceTokens.usoQtde,
       expiraEm: picpriceTokens.expiraEm,
+      verEstabelecimento: picpriceTokens.verEstabelecimento,
     })
     .from(clientes)
     .leftJoin(picpriceTokens, eq(picpriceTokens.clienteId, clientes.id))

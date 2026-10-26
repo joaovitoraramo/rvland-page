@@ -23,7 +23,7 @@ const cota = { dia: null as string | null, qtde: 0, limite: Number(process.env.P
 
 const deps: DepsPicPrice = {
   validarToken: async (t) =>
-    t !== TOKEN ? { ok: false, motivo: "inexistente" } : tokenStatus === "revogado" ? { ok: false, motivo: "revogado" } : { ok: true, clienteId: "teste", tokenId: "teste" },
+    t !== TOKEN ? { ok: false, motivo: "inexistente" } : tokenStatus === "revogado" ? { ok: false, motivo: "revogado" } : { ok: true, clienteId: "teste", tokenId: "teste", verEstabelecimento: false },
   statusServico: async () => servico,
   cacheGet: async (k) => {
     const c = cache.get(k);

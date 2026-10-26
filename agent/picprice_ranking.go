@@ -18,13 +18,36 @@ import (
 
 // Formato da resposta da fonte (só os campos usados).
 type produtoFonte struct {
-	ID              string                   `json:"id"`
-	Desc            string                   `json:"desc"`
-	Valor           json.Number              `json:"valor"`
-	Distkm          json.Number              `json:"distkm"`
-	Tempo           string                   `json:"tempo"`
-	Datahora        *string                  `json:"datahora"`
-	Estabelecimento *struct{ Codigo string } `json:"estabelecimento"`
+	ID              string                `json:"id"`
+	Desc            string                `json:"desc"`
+	Valor           json.Number           `json:"valor"`
+	Distkm          json.Number           `json:"distkm"`
+	Tempo           string                `json:"tempo"`
+	Datahora        *string               `json:"datahora"`
+	Estabelecimento *estabelecimentoFonte `json:"estabelecimento"`
+}
+
+// estabelecimentoFonte: o código (hash de 43 chars) sempre vem; o nome pode vir
+// em campos variados conforme a fonte — pegamos o primeiro não-vazio.
+type estabelecimentoFonte struct {
+	Codigo     string `json:"codigo"`
+	NmFan      string `json:"nm_fan"`
+	NmFantasia string `json:"nm_fantasia"`
+	NmEmp      string `json:"nm_emp"`
+	Nome       string `json:"nome"`
+	Razao      string `json:"razao"`
+}
+
+func (e *estabelecimentoFonte) nome() string {
+	if e == nil {
+		return ""
+	}
+	for _, s := range []string{e.NmFan, e.NmFantasia, e.NmEmp, e.Nome, e.Razao} {
+		if t := strings.TrimSpace(s); t != "" {
+			return t
+		}
+	}
+	return ""
 }
 
 type respostaFonte struct {
@@ -68,6 +91,8 @@ type precoRanking struct {
 	Ha          string  `json:"ha"`
 	DataHora    *string `json:"dataHora"`
 	Descricao   string  `json:"descricao"`
+	// nome do estabelecimento — só preenchido quando o lease da RV autoriza
+	Estabelecimento string `json:"estabelecimento,omitempty"`
 }
 
 // ordenarSemRepetidos: tira isca, junta repetidos (loja+descrição+preço), ordena por preço e distância.
@@ -102,7 +127,7 @@ func ordenarSemRepetidos(r *respostaFonte) []produtoFonte {
 // montarRankingLoja: tira a PRÓPRIA loja (preço igual ao de venda dela a até
 // 0,2 km do geohash — as vendas dela também estão na fonte) e devolve os 10
 // menores concorrentes, numerados de 1 a 10.
-func montarRankingLoja(r *respostaFonte, precoVenda float64) (precos []precoRanking, totalNaArea int, propria int) {
+func montarRankingLoja(r *respostaFonte, precoVenda float64, verEstabelecimento bool) (precos []precoRanking, totalNaArea int, propria int) {
 	for _, p := range ordenarSemRepetidos(r) {
 		v, d := num(p.Valor), num(p.Distkm)
 		if precoVenda > 0 && d <= raioPropriaLojaKm && math.Abs(v-precoVenda) < 0.005 {
@@ -110,14 +135,18 @@ func montarRankingLoja(r *respostaFonte, precoVenda float64) (precos []precoRank
 			continue
 		}
 		if len(precos) < tamanhoRanking {
-			precos = append(precos, precoRanking{
+			pr := precoRanking{
 				Posicao:     len(precos) + 1,
 				Valor:       v,
 				DistanciaKm: math.Round(d*100) / 100,
 				Ha:          p.Tempo,
 				DataHora:    p.Datahora,
 				Descricao:   strings.TrimSpace(p.Desc),
-			})
+			}
+			if verEstabelecimento {
+				pr.Estabelecimento = p.Estabelecimento.nome()
+			}
+			precos = append(precos, pr)
 		}
 	}
 	totalNaArea = max(0, int(num(r.Total))-propria)
@@ -130,15 +159,15 @@ func urlProdutos(geohash, gtin string, raio float64, data, size int) string {
 }
 
 // rankingDaLoja: size 20; se faltou para 10 e a área tem mais, pede 50. Cache local curto.
-func (a *apiLocal) rankingDaLoja(ctx context.Context, gtin string, l lojaPedido, raio float64, data int) (map[string]any, error) {
+func (a *apiLocal) rankingDaLoja(ctx context.Context, gtin string, l lojaPedido, raio float64, data int, verEstabelecimento bool) (map[string]any, error) {
 	r, err := a.buscarComCache(ctx, urlProdutos(l.Geohash, gtin, raio, data, 20))
 	if err != nil {
 		return nil, err
 	}
-	precos, total, propria := montarRankingLoja(r, l.PrecoVenda)
+	precos, total, propria := montarRankingLoja(r, l.PrecoVenda, verEstabelecimento)
 	if len(precos) < tamanhoRanking && total > len(precos) {
 		if r2, err := a.buscarComCache(ctx, urlProdutos(l.Geohash, gtin, raio, data, 50)); err == nil {
-			precos, total, propria = montarRankingLoja(r2, l.PrecoVenda)
+			precos, total, propria = montarRankingLoja(r2, l.PrecoVenda, verEstabelecimento)
 		}
 	}
 	if precos == nil {

@@ -1,0 +1,1 @@
+ALTER TABLE "picprice_tokens" ADD COLUMN "ver_estabelecimento" boolean DEFAULT false NOT NULL;

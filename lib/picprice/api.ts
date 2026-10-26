@@ -16,7 +16,7 @@ import { parseLojas, rankingDaLoja, soIsca, type RankingLoja, type RespostaFonte
 import { diaSaoPaulo, proximaMeiaNoiteSaoPaulo, type UsoDiario } from "./cota";
 
 export type ValidacaoToken =
-  | { ok: true; clienteId: string; tokenId: string }
+  | { ok: true; clienteId: string; tokenId: string; verEstabelecimento: boolean }
   | { ok: false; motivo: "inexistente" | "revogado" | "expirado" };
 
 export type StatusServico = { estado: "operante" | "manutencao"; mensagem?: string | null; previsao?: string | null };
@@ -89,7 +89,7 @@ export async function porteiro(
   agora: Date = new Date(),
   /** Se informado, o token precisa ser deste cliente (servidor do agente). Confere ANTES de contar a cota. */
   exigirCliente?: string
-): Promise<{ erro: Resposta } | { tokenId: string; clienteId: string; uso: UsoDiario | null }> {
+): Promise<{ erro: Resposta } | { tokenId: string; clienteId: string; uso: UsoDiario | null; verEstabelecimento: boolean }> {
   const token = extrairToken(authorization);
   const v = token ? await deps.validarToken(token) : ({ ok: false, motivo: "inexistente" } as const);
   if (!v.ok) return { erro: respostaEstadoToken(v.motivo) };
@@ -111,7 +111,7 @@ export async function porteiro(
     return { erro: { status: 429, corpo: { estado: "LIMITE_EXCEDIDO", mensagem: "Muitas consultas em pouco tempo. Tente de novo em instantes." } } };
   }
   const zeraEm = proximaMeiaNoiteSaoPaulo(agora);
-  if (!deps.consumirCota) return { tokenId: v.tokenId, clienteId: v.clienteId, uso: null };
+  if (!deps.consumirCota) return { tokenId: v.tokenId, clienteId: v.clienteId, uso: null, verEstabelecimento: v.verEstabelecimento };
   const c = await deps.consumirCota(v.tokenId, diaSaoPaulo(agora));
   const uso: UsoDiario = { usado: c.usado, limite: c.limite, zeraEm };
   if (!c.ok) {
@@ -122,7 +122,7 @@ export async function porteiro(
       },
     };
   }
-  return { tokenId: v.tokenId, clienteId: v.clienteId, uso };
+  return { tokenId: v.tokenId, clienteId: v.clienteId, uso, verEstabelecimento: v.verEstabelecimento };
 }
 
 /**

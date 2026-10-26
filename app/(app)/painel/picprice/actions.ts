@@ -5,7 +5,7 @@ import { z } from "zod";
 
 import { exigirPermissao } from "@/lib/auth";
 import { registrarAuditoria } from "@/lib/audit";
-import { definirLimiteDiario, definirValidadeToken, gerarTokenDoCliente, mudarStatusToken, setStatusServico } from "@/lib/picprice/servidor";
+import { definirLimiteDiario, definirValidadeToken, definirVerEstabelecimento, gerarTokenDoCliente, mudarStatusToken, setStatusServico } from "@/lib/picprice/servidor";
 
 export type EstadoTokenPicPrice = { token?: string; erro?: string };
 
@@ -130,6 +130,28 @@ export async function salvarValidadePicPrice(formData: FormData): Promise<void> 
     entidade: "picprice",
     entidadeId: d.clienteId,
     detalhes: { expiraEm: expiraEm?.toISOString() ?? null, anterior: anterior?.toISOString() ?? null },
+  });
+  revalidatePath("/painel/picprice");
+}
+
+const esquemaVerEstab = z.object({
+  clienteId: z.string().uuid(),
+  ver: z
+    .union([z.literal("true"), z.literal("false"), z.literal("on"), z.literal(null)])
+    .transform((v) => v === "true" || v === "on"),
+});
+
+/** Liga/desliga o envio do nome do estabelecimento no ranking (default desligado). */
+export async function salvarVerEstabelecimentoPicPrice(formData: FormData): Promise<void> {
+  const perfil = await exigirPermissao("picprice.gerenciar");
+  const d = esquemaVerEstab.parse({ clienteId: formData.get("clienteId"), ver: formData.get("ver") });
+  const { anterior } = await definirVerEstabelecimento(d.clienteId, d.ver);
+  await registrarAuditoria({
+    ator: perfil,
+    acao: "picprice.ver_estabelecimento_alterado",
+    entidade: "picprice",
+    entidadeId: d.clienteId,
+    detalhes: { verEstabelecimento: d.ver, anterior },
   });
   revalidatePath("/painel/picprice");
 }

@@ -575,6 +575,8 @@ export const picpriceTokens = pgTable(
     usoQtde: integer("uso_qtde").notNull().default(0),
     // validade do token; NULL = não expira
     expiraEm: timestamp("expira_em", { withTimezone: true }),
+    // quando true, o agente pode devolver o NOME do estabelecimento no ranking
+    verEstabelecimento: boolean("ver_estabelecimento").notNull().default(false),
   },
   (t) => [
     uniqueIndex("picprice_tokens_cliente_uidx").on(t.clienteId),

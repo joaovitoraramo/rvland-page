@@ -284,8 +284,10 @@ type payloadAutorizacao struct {
 	Lojas      []string `json:"lojas"`
 	Raio       float64  `json:"raio"`
 	Data       int      `json:"data"`
-	EmitidoEm  string   `json:"emitido_em"`
-	ExpiraEm   string   `json:"expira_em"`
+	// quando true, o agente pode devolver o nome do estabelecimento no ranking
+	VerEstabelecimento bool   `json:"ver_estabelecimento"`
+	EmitidoEm          string `json:"emitido_em"`
+	ExpiraEm           string `json:"expira_em"`
 }
 
 // normalizaPedido valida e normaliza (mesmas regras da plataforma).
@@ -376,7 +378,8 @@ func (a *apiLocal) ranking(w http.ResponseWriter, r *http.Request) {
 		responder(w, statusHTTP(ra.Estado), ra.bruto)
 		return
 	}
-	if err := a.confereAutorizacao(ra.Autorizacao, auth); err != nil {
+	verEstab, err := a.confereAutorizacao(ra.Autorizacao, auth)
+	if err != nil {
 		logf("picprice: autorização recusada: %v", err)
 		responder(w, http.StatusBadGateway, estadoMsg("INALCANCAVEL", msgInalcancavel+" (autorização inválida)"))
 		return
@@ -393,7 +396,7 @@ func (a *apiLocal) ranking(w http.ResponseWriter, r *http.Request) {
 		if i > 0 {
 			_ = a.dormir(ctxFonte, 300*time.Millisecond)
 		}
-		rl, err := a.rankingDaLoja(ctxFonte, ped.Gtin, l, *ped.Raio, *ped.Data)
+		rl, err := a.rankingDaLoja(ctxFonte, ped.Gtin, l, *ped.Raio, *ped.Data, verEstab)
 		if err != nil {
 			semResposta = append(semResposta, l.Codigo)
 			motivo = err.Error()
@@ -459,37 +462,38 @@ func (a *apiLocal) autorizarNaRV(ctx context.Context, token string, p pedidoAuto
 }
 
 // confereAutorizacao: assinatura (licensePK) + servidor, EAN, lojas, raio, data e validade.
-func (a *apiLocal) confereAutorizacao(env *LeaseEnvelope, p pedidoAutorizacao) error {
+// Devolve também se o lease libera o nome do estabelecimento (flag assinada pela RV).
+func (a *apiLocal) confereAutorizacao(env *LeaseEnvelope, p pedidoAutorizacao) (bool, error) {
 	if env == nil {
-		return errors.New("sem autorização")
+		return false, errors.New("sem autorização")
 	}
 	payload, err := base64.StdEncoding.DecodeString(env.Payload)
 	if err != nil {
-		return errors.New("payload inválido")
+		return false, errors.New("payload inválido")
 	}
 	if !verificaComPub(payload, env.Assinatura, licensePK) {
-		return errors.New("assinatura não confere")
+		return false, errors.New("assinatura não confere")
 	}
 	var pa payloadAutorizacao
 	if err := json.Unmarshal(payload, &pa); err != nil {
-		return err
+		return false, err
 	}
 	exp, err := time.Parse(time.RFC3339, pa.ExpiraEm)
 	switch {
 	case pa.Tipo != "picprice_autorizacao":
-		return errors.New("tipo errado")
+		return false, errors.New("tipo errado")
 	case pa.ServidorID != a.cfg.ServidorID:
-		return errors.New("autorização de outro servidor")
+		return false, errors.New("autorização de outro servidor")
 	case pa.Gtin != p.Gtin:
-		return errors.New("EAN diferente do pedido")
+		return false, errors.New("EAN diferente do pedido")
 	case strings.Join(pa.Lojas, ",") != strings.Join(p.Lojas, ","):
-		return errors.New("lojas diferentes do pedido")
+		return false, errors.New("lojas diferentes do pedido")
 	case pa.Raio != p.Raio || pa.Data != p.Data:
-		return errors.New("raio/período diferentes do pedido")
+		return false, errors.New("raio/período diferentes do pedido")
 	case err != nil || !a.agora().Before(exp):
-		return errors.New("autorização vencida")
+		return false, errors.New("autorização vencida")
 	}
-	return nil
+	return pa.VerEstabelecimento, nil
 }
 
 func dormirCtx(ctx context.Context, d time.Duration) error {

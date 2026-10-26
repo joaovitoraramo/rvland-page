@@ -13,7 +13,7 @@ import (
 
 func prod(id, cod, desc, valor, dist string) produtoFonte {
 	return produtoFonte{ID: id, Desc: desc, Valor: json.Number(valor), Distkm: json.Number(dist), Tempo: "há 1 hora",
-		Estabelecimento: &struct{ Codigo string }{Codigo: cod}}
+		Estabelecimento: &estabelecimentoFonte{Codigo: cod}}
 }
 
 var cod43 = strings.Repeat("A", 43)
@@ -42,7 +42,7 @@ func TestRankingTiraPropriaLojaEDuplicados(t *testing.T) {
 		prod("abc.9", strings.Repeat("z", 88), "LIXO", "1.00", "0.1"), // isca
 		prod("A4", strings.Repeat("D", 43), "COCA", "8.49", "1.2"),
 	}}
-	precos, total, propria := montarRankingLoja(r, 9.99)
+	precos, total, propria := montarRankingLoja(r, 9.99, false)
 	if propria != 1 || total != 6 {
 		t.Fatalf("propria=%d total=%d", propria, total)
 	}
@@ -55,8 +55,23 @@ func TestRankingTiraPropriaLojaEDuplicados(t *testing.T) {
 		}
 	}
 	// sem preço de venda: nada é tirado
-	if _, _, pr := montarRankingLoja(r, 0); pr != 0 {
+	if _, _, pr := montarRankingLoja(r, 0, false); pr != 0 {
 		t.Fatal("sem preço de venda não reconhece a própria loja")
+	}
+}
+
+func TestRankingNomeEstabelecimentoCondicional(t *testing.T) {
+	p := prod("A2", cod43, "COCA", "9.99", "2.5")
+	p.Estabelecimento.NmFan = "SUPER XPTO"
+	r := &respostaFonte{Total: "1", Produtos: []produtoFonte{p}}
+
+	semNome, _, _ := montarRankingLoja(r, 0, false)
+	if len(semNome) != 1 || semNome[0].Estabelecimento != "" {
+		t.Fatalf("sem autorização não deveria trazer nome: %+v", semNome)
+	}
+	comNome, _, _ := montarRankingLoja(r, 0, true)
+	if len(comNome) != 1 || comNome[0].Estabelecimento != "SUPER XPTO" {
+		t.Fatalf("com autorização deveria trazer o nome: %+v", comNome)
 	}
 }
 
@@ -100,27 +115,27 @@ func TestConfereAutorizacao(t *testing.T) {
 	base := payloadAutorizacao{V: 1, Tipo: "picprice_autorizacao", ServidorID: "srv-1", Gtin: ped.Gtin, Lojas: ped.Lojas,
 		Raio: 3, Data: -1, ExpiraEm: agora.Add(time.Minute).Format(time.RFC3339)}
 
-	if err := a.confereAutorizacao(autorizacaoAssinada(t, base), ped); err != nil {
+	if _, err := a.confereAutorizacao(autorizacaoAssinada(t, base), ped); err != nil {
 		t.Fatalf("deveria aceitar: %v", err)
 	}
 	outro := base
 	outro.ServidorID = "srv-2"
-	if a.confereAutorizacao(autorizacaoAssinada(t, outro), ped) == nil {
+	if _, err := a.confereAutorizacao(autorizacaoAssinada(t, outro), ped); err == nil {
 		t.Fatal("autorização de outro servidor aceita")
 	}
 	vencida := base
 	vencida.ExpiraEm = agora.Add(-time.Second).Format(time.RFC3339)
-	if a.confereAutorizacao(autorizacaoAssinada(t, vencida), ped) == nil {
+	if _, err := a.confereAutorizacao(autorizacaoAssinada(t, vencida), ped); err == nil {
 		t.Fatal("autorização vencida aceita")
 	}
 	outroEAN := base
 	outroEAN.Gtin = "7890000000000"
-	if a.confereAutorizacao(autorizacaoAssinada(t, outroEAN), ped) == nil {
+	if _, err := a.confereAutorizacao(autorizacaoAssinada(t, outroEAN), ped); err == nil {
 		t.Fatal("EAN diferente aceito")
 	}
 	env := autorizacaoAssinada(t, base)
 	env.Payload = base64.StdEncoding.EncodeToString([]byte(`{"tipo":"picprice_autorizacao","servidor_id":"srv-1"}`))
-	if a.confereAutorizacao(env, ped) == nil {
+	if _, err := a.confereAutorizacao(env, ped); err == nil {
 		t.Fatal("payload adulterado aceito")
 	}
 }

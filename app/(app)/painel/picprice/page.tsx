@@ -15,6 +15,7 @@ import {
   salvarLimitePicPrice,
   salvarStatusPicPrice,
   salvarValidadePicPrice,
+  salvarVerEstabelecimentoPicPrice,
 } from "./actions";
 
 export const metadata = { title: "Tokens RV Pic Price" };
@@ -85,6 +86,7 @@ export default async function PaginaPicPrice() {
                 <TableHead>Uso hoje / limite diário</TableHead>
                 <TableHead>Último uso</TableHead>
                 <TableHead>Validade</TableHead>
+                <TableHead>Nome do estabelecimento</TableHead>
                 <TableHead className="text-right">Ações</TableHead>
               </TableRow>
             </TableHeader>
@@ -120,6 +122,9 @@ export default async function PaginaPicPrice() {
                   <TableCell className="text-xs text-white/55">{l.ultimoUsoEm ? formatarDataHoraBR(l.ultimoUsoEm) : "nunca"}</TableCell>
                   <TableCell className="min-w-[170px]">
                     {l.tokenId ? <Validade expiraEm={l.expiraEm ?? null} clienteId={l.clienteId} editar={gerencia} /> : <span className="text-xs text-white/40">—</span>}
+                  </TableCell>
+                  <TableCell className="min-w-[160px]">
+                    {l.tokenId ? <VerEstabelecimento ver={Boolean(l.verEstabelecimento)} clienteId={l.clienteId} editar={gerencia} /> : <span className="text-xs text-white/40">—</span>}
                   </TableCell>
                   <TableCell className="text-right">
                     {gerencia ? (
@@ -179,6 +184,26 @@ function UsoDiario({ usado, limite, clienteId, editar }: { usado: number; limite
             className="h-8 w-24 rounded-md border border-white/10 bg-black/40 px-2 text-xs text-white"
           />
           <Btn type="submit" tamanho="sm">Salvar</Btn>
+        </form>
+      ) : null}
+    </div>
+  );
+}
+
+/** Liga/desliga o envio do nome do estabelecimento no ranking (default desligado). */
+function VerEstabelecimento({ ver, clienteId, editar }: { ver: boolean; clienteId: string; editar: boolean }) {
+  return (
+    <div className="grid gap-1.5">
+      <span className={`text-xs ${ver ? "text-emerald-300" : "text-white/50"}`}>
+        {ver ? "nome liberado" : "nome oculto"}
+      </span>
+      {editar ? (
+        <form action={salvarVerEstabelecimentoPicPrice}>
+          <input type="hidden" name="clienteId" value={clienteId} />
+          <input type="hidden" name="ver" value={ver ? "false" : "true"} />
+          <Btn type="submit" tamanho="sm" variante={ver ? "perigo" : undefined}>
+            {ver ? "Ocultar nome" : "Liberar nome"}
+          </Btn>
         </form>
       ) : null}
     </div>

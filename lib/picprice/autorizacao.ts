@@ -24,6 +24,8 @@ export type PayloadAutorizacao = {
   lojas: string[]; // geohashes, ordenados
   raio: number;
   data: number;
+  // quando true, o agente pode devolver o nome do estabelecimento no ranking
+  ver_estabelecimento: boolean;
   emitido_em: string;
   expira_em: string;
 };
@@ -71,6 +73,7 @@ export async function tratarAutorizacao(
     servidor_id: servidor.id,
     cliente_id: servidor.clienteId,
     ...pedido,
+    ver_estabelecimento: p.verEstabelecimento,
     emitido_em: agora.toISOString(),
     expira_em: new Date(agora.getTime() + VALIDADE_AUTORIZACAO_S * 1000).toISOString(),
   };

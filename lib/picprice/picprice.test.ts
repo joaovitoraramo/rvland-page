@@ -67,7 +67,7 @@ describe("filtro de isca e ranking", () => {
 
 describe("porteiro e estados", () => {
   const base = (over: Partial<DepsPicPrice> = {}): DepsPicPrice => ({
-    validarToken: async () => ({ ok: true, clienteId: "c", tokenId: "t-" + Math.random() }),
+    validarToken: async () => ({ ok: true, clienteId: "c", tokenId: "t-" + Math.random(), verEstabelecimento: false }),
     statusServico: async () => ({ estado: "operante" }),
     cacheGet: async () => null,
     cacheSet: async () => undefined,

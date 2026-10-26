@@ -115,6 +115,8 @@ Resposta `200 OK`:
         { "posicao": 1, "valor": 9.99, "distanciaKm": 0.06, "ha": "há 3 horas",
           "dataHora": "2026-10-24T14:59:34.838Z", "descricao": "ABS S LIVRE ADAPT 16UN C ABAS SAUVE L" }
       ]
+      // quando o token do cliente tem "ver nome do estabelecimento" ligado no painel da RV,
+      // cada preço traz também "estabelecimento": "NOME DA LOJA" (o lease assinado autoriza).
     }
   ],
   "lojasSemResposta": [],
@@ -123,7 +125,9 @@ Resposta `200 OK`:
 ```
 
 - `precos`: até 10 concorrentes, do mais barato para o mais caro (desempate pela distância), numerados 1..10
-  **já sem a própria loja**. Nunca há nome nem endereço de concorrente.
+  **já sem a própria loja**. Cada preço pode trazer `estabelecimento` (nome da loja) **somente** quando o
+  token do cliente tem "ver nome do estabelecimento" ligado no painel — a permissão vem no lease assinado
+  da RV; sem ela o campo nunca aparece. Endereço de concorrente nunca é devolvido.
 - `totalNaArea`: quantos preços a fonte tem no raio, já descontada a própria loja.
 - `lojasSemResposta`: códigos das lojas em que a fonte falhou nesta consulta.
 - A posição do **seu** preço, margem e simulações são calculadas por quem chama (o SyncCompras faz isso

@@ -57,3 +57,4 @@ agent/agenterv
 agent/*.exe
 .playwright-fotos-site/
 .playwright-fotos-regressao/
+/agent/rvland-agent

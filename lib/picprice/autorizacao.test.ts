@@ -11,8 +11,9 @@ function deps(extra: Partial<DepsPicPrice> = {}) {
   const assinados: PayloadAutorizacao[] = [];
   const d = {
     validarToken: async (t: string) =>
-      t === "bom" ? ({ ok: true, clienteId: "cli-1", tokenId: "tk1" } as const)
-      : t === "outro" ? ({ ok: true, clienteId: "cli-2", tokenId: "tk2" } as const)
+      t === "bom" ? ({ ok: true, clienteId: "cli-1", tokenId: "tk1", verEstabelecimento: false } as const)
+      : t === "v" ? ({ ok: true, clienteId: "cli-1", tokenId: "tk1", verEstabelecimento: true } as const)
+      : t === "outro" ? ({ ok: true, clienteId: "cli-2", tokenId: "tk2", verEstabelecimento: false } as const)
       : ({ ok: false, motivo: "inexistente" } as const),
     statusServico: async () => ({ estado: "operante" as const }),
     cacheGet: async () => null,
@@ -52,7 +53,15 @@ describe("autorização do agente (RV Pic Price)", () => {
     expect(p.cliente_id).toBe("cli-1");
     expect(p.gtin).toBe("7891010793463");
     expect(p.lojas).toEqual(["6gkzmg4bx", "6gkzq99z5j5f"]);
+    expect(p.ver_estabelecimento).toBe(false);
     expect(Date.parse(p.expira_em) - agora.getTime()).toBe(VALIDADE_AUTORIZACAO_S * 1000);
+  });
+
+  it("ver_estabelecimento do token entra no payload assinado", async () => {
+    const { d, assinados } = deps();
+    const r = await tratarAutorizacao(servidor, "Bearer v", corpoOk, d);
+    expect(r.corpo.estado).toBe("OK");
+    expect(assinados[0].ver_estabelecimento).toBe(true);
   });
 
   it("estoura a cota: LIMITE_DIARIO", async () => {
