@@ -1,6 +1,6 @@
 "use client";
 
-import { useActionState } from "react";
+import { useActionState, useState } from "react";
 import { KeyRound, RefreshCw } from "lucide-react";
 
 import { Btn } from "@/components/painel/ui";
@@ -18,6 +18,7 @@ export function GerarTokenPicPrice({
   troca: boolean;
 }) {
   const [estado, dispatch, pendente] = useActionState<EstadoTokenPicPrice, FormData>(acao, {});
+  const [validade, setValidade] = useState("1m");
   if (estado.token) {
     return (
       <div className="max-w-md space-y-1.5">
@@ -30,6 +31,31 @@ export function GerarTokenPicPrice({
     <form action={dispatch} className="inline-flex flex-col items-end gap-1">
       <input type="hidden" name="clienteId" value={clienteId} />
       {troca ? <input type="hidden" name="troca" value="1" /> : null}
+      <div className="inline-flex items-center gap-1">
+        <select
+          name="validade"
+          value={validade}
+          onChange={(e) => setValidade(e.target.value)}
+          aria-label="Validade do token"
+          className="h-8 rounded-md border border-white/10 bg-black/40 px-2 text-xs text-white"
+        >
+          <option value="1m">1 mês</option>
+          <option value="3m">3 meses</option>
+          <option value="6m">6 meses</option>
+          <option value="1a">1 ano</option>
+          <option value="nao_expira">Não expira</option>
+          <option value="custom">Data…</option>
+        </select>
+        {validade === "custom" ? (
+          <input
+            type="date"
+            name="validadeCustom"
+            required
+            aria-label="Data de validade"
+            className="h-8 rounded-md border border-white/10 bg-black/40 px-2 text-xs text-white"
+          />
+        ) : null}
+      </div>
       <Btn type="submit" tamanho="sm" variante={troca ? "secundario" : "primario"} disabled={pendente}>
         {troca ? <RefreshCw /> : <KeyRound />}
         {pendente ? "Gerando..." : troca ? "Trocar token" : "Gerar token"}

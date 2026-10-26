@@ -3,7 +3,7 @@
  * (dependências injetadas). As rotas em app/api/picprice só ligam isto ao banco.
  *
  * Toda resposta traz `estado`, que o servidor do cliente repassa ao Hermes:
- *   OK | TOKEN_INVALIDO | MANUTENCAO | FONTE_INDISPONIVEL | LIMITE_EXCEDIDO
+ *   OK | TOKEN_INVALIDO | TOKEN_EXPIRADO | MANUTENCAO | FONTE_INDISPONIVEL | LIMITE_EXCEDIDO
  *   | LIMITE_DIARIO | REQUISICAO_INVALIDA | ENDERECO_NAO_ENCONTRADO
  *
  * Cota diária por token (padrão 200): toda requisição aceita em ranking e
@@ -17,7 +17,7 @@ import { diaSaoPaulo, proximaMeiaNoiteSaoPaulo, type UsoDiario } from "./cota";
 
 export type ValidacaoToken =
   | { ok: true; clienteId: string; tokenId: string }
-  | { ok: false; motivo: "inexistente" | "revogado" };
+  | { ok: false; motivo: "inexistente" | "revogado" | "expirado" };
 
 export type StatusServico = { estado: "operante" | "manutencao"; mensagem?: string | null; previsao?: string | null };
 
@@ -59,6 +59,13 @@ export function extrairToken(header: string | null): string | null {
   return m ? m[1] : null;
 }
 
+function respostaEstadoToken(motivo: "inexistente" | "revogado" | "outro_cliente" | "expirado"): Resposta {
+  if (motivo === "expirado") {
+    return { status: 401, corpo: { estado: "TOKEN_EXPIRADO", motivo, mensagem: "Serviço inválido - token expirado" } };
+  }
+  return respostaTokenInvalido(motivo);
+}
+
 function respostaTokenInvalido(motivo: "inexistente" | "revogado" | "outro_cliente"): Resposta {
   return {
     status: 401,
@@ -85,7 +92,7 @@ export async function porteiro(
 ): Promise<{ erro: Resposta } | { tokenId: string; clienteId: string; uso: UsoDiario | null }> {
   const token = extrairToken(authorization);
   const v = token ? await deps.validarToken(token) : ({ ok: false, motivo: "inexistente" } as const);
-  if (!v.ok) return { erro: respostaTokenInvalido(v.motivo) };
+  if (!v.ok) return { erro: respostaEstadoToken(v.motivo) };
   if (exigirCliente && v.clienteId !== exigirCliente) return { erro: respostaTokenInvalido("outro_cliente") };
   const st = await deps.statusServico();
   if (st.estado === "manutencao") {
@@ -125,7 +132,10 @@ export async function porteiro(
 export async function tratarStatus(authorization: string | null, deps: DepsPicPrice, agora: Date = new Date()): Promise<Resposta> {
   const token = extrairToken(authorization);
   const v = token ? await deps.validarToken(token) : ({ ok: false, motivo: "inexistente" } as const);
-  if (!v.ok) return respostaTokenInvalido(v.motivo);
+  if (!v.ok) {
+    if (v.motivo === "expirado") return { status: 200, corpo: { estado: "TOKEN_EXPIRADO", motivo: "expirado", mensagem: "Serviço inválido - token expirado", uso: null } };
+    return respostaTokenInvalido(v.motivo);
+  }
   const lido = deps.lerCota ? await deps.lerCota(v.tokenId, diaSaoPaulo(agora)) : null;
   const uso: UsoDiario | null = lido ? { ...lido, zeraEm: proximaMeiaNoiteSaoPaulo(agora) } : null;
   const st = await deps.statusServico();

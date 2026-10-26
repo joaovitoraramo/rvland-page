@@ -2,7 +2,7 @@ import { describe, expect, it, vi } from "vitest";
 
 import { geohashDecode, geohashEncode } from "./geohash";
 import { ehIsca, montarTop, parseLojas, rankingDaLoja, type RespostaFonte } from "./ranking";
-import { dentroDoLimite, extrairToken, PRAZO_RANKING_MS, tratarRanking, type DepsPicPrice } from "./api";
+import { dentroDoLimite, extrairToken, PRAZO_RANKING_MS, tratarRanking, tratarStatus, type DepsPicPrice } from "./api";
 
 const REAL_COD = "x".repeat(43);
 const item = (id: string, valor: number, extra: Partial<{ cod: string; desc: string; dist: number }> = {}) => ({
@@ -85,6 +85,18 @@ describe("porteiro e estados", () => {
     const r = await tratarRanking("Bearer x", q, base({ validarToken: async () => ({ ok: false, motivo: "revogado" }) }));
     expect(r.status).toBe(401);
     expect(r.corpo).toMatchObject({ estado: "TOKEN_INVALIDO", mensagem: "Serviço inválido - token revogado" });
+  });
+
+  it("token expirado -> TOKEN_EXPIRADO 401 no ranking", async () => {
+    const r = await tratarRanking("Bearer x", q, base({ validarToken: async () => ({ ok: false, motivo: "expirado" }) }));
+    expect(r.status).toBe(401);
+    expect(r.corpo).toMatchObject({ estado: "TOKEN_EXPIRADO", mensagem: "Serviço inválido - token expirado" });
+  });
+
+  it("token expirado -> TOKEN_EXPIRADO 200 no /status (não derruba o agente)", async () => {
+    const r = await tratarStatus("Bearer x", base({ validarToken: async () => ({ ok: false, motivo: "expirado" }) }));
+    expect(r.status).toBe(200);
+    expect(r.corpo).toMatchObject({ estado: "TOKEN_EXPIRADO", mensagem: "Serviço inválido - token expirado" });
   });
 
   it("manutenção -> MANUTENCAO com mensagem e previsão", async () => {

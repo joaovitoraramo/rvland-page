@@ -573,6 +573,8 @@ export const picpriceTokens = pgTable(
     limiteDiario: integer("limite_diario").notNull().default(200),
     usoDia: date("uso_dia", { mode: "string" }),
     usoQtde: integer("uso_qtde").notNull().default(0),
+    // validade do token; NULL = não expira
+    expiraEm: timestamp("expira_em", { withTimezone: true }),
   },
   (t) => [
     uniqueIndex("picprice_tokens_cliente_uidx").on(t.clienteId),

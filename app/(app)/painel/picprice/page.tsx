@@ -14,6 +14,7 @@ import {
   revogarTokenPicPrice,
   salvarLimitePicPrice,
   salvarStatusPicPrice,
+  salvarValidadePicPrice,
 } from "./actions";
 
 export const metadata = { title: "Tokens RV Pic Price" };
@@ -83,6 +84,7 @@ export default async function PaginaPicPrice() {
                 <TableHead>Status</TableHead>
                 <TableHead>Uso hoje / limite diário</TableHead>
                 <TableHead>Último uso</TableHead>
+                <TableHead>Validade</TableHead>
                 <TableHead className="text-right">Ações</TableHead>
               </TableRow>
             </TableHeader>
@@ -116,6 +118,9 @@ export default async function PaginaPicPrice() {
                     )}
                   </TableCell>
                   <TableCell className="text-xs text-white/55">{l.ultimoUsoEm ? formatarDataHoraBR(l.ultimoUsoEm) : "nunca"}</TableCell>
+                  <TableCell className="min-w-[170px]">
+                    {l.tokenId ? <Validade expiraEm={l.expiraEm ?? null} clienteId={l.clienteId} editar={gerencia} /> : <span className="text-xs text-white/40">—</span>}
+                  </TableCell>
                   <TableCell className="text-right">
                     {gerencia ? (
                       <div className="flex flex-wrap items-start justify-end gap-2">
@@ -174,6 +179,31 @@ function UsoDiario({ usado, limite, clienteId, editar }: { usado: number; limite
             className="h-8 w-24 rounded-md border border-white/10 bg-black/40 px-2 text-xs text-white"
           />
           <Btn type="submit" tamanho="sm">Salvar</Btn>
+        </form>
+      ) : null}
+    </div>
+  );
+}
+
+/** Validade do token: mostra quando expira (ou "não expira") e permite estender sem trocar. */
+function Validade({ expiraEm, clienteId, editar }: { expiraEm: Date | null; clienteId: string; editar: boolean }) {
+  const expirado = expiraEm ? expiraEm.getTime() <= Date.now() : false;
+  return (
+    <div className="grid gap-1.5">
+      <span className={`text-xs ${expirado ? "text-red-300" : expiraEm ? "text-white/70" : "text-white/40"}`}>
+        {expiraEm ? (expirado ? `expirado em ${formatarDataHoraBR(expiraEm)}` : `até ${formatarDataHoraBR(expiraEm)}`) : "não expira"}
+      </span>
+      {editar ? (
+        <form action={salvarValidadePicPrice} className="flex items-center gap-1.5">
+          <input type="hidden" name="clienteId" value={clienteId} />
+          <select name="validade" defaultValue="1m" aria-label="Nova validade" className="h-8 rounded-md border border-white/10 bg-black/40 px-2 text-xs text-white">
+            <option value="1m">+1 mês</option>
+            <option value="3m">+3 meses</option>
+            <option value="6m">+6 meses</option>
+            <option value="1a">+1 ano</option>
+            <option value="nao_expira">Não expira</option>
+          </select>
+          <Btn type="submit" tamanho="sm">Aplicar</Btn>
         </form>
       ) : null}
     </div>

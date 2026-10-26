@@ -141,7 +141,7 @@ func statusHTTP(estado string) int {
 		return http.StatusOK
 	case "REQUISICAO_INVALIDA", "ENDERECO_NAO_ENCONTRADO":
 		return http.StatusBadRequest
-	case "TOKEN_INVALIDO", "AGENTE_NAO_AUTENTICADO":
+	case "TOKEN_INVALIDO", "TOKEN_EXPIRADO", "AGENTE_NAO_AUTENTICADO":
 		return http.StatusUnauthorized
 	case "MODULO_DESATIVADO":
 		return http.StatusForbidden

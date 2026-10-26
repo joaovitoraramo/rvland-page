@@ -39,17 +39,18 @@ export async function setStatusServico(s: StatusServico): Promise<void> {
 
 export async function validarTokenPicPrice(token: string): Promise<ValidacaoToken> {
   const [t] = await db
-    .select({ id: picpriceTokens.id, clienteId: picpriceTokens.clienteId, status: picpriceTokens.status })
+    .select({ id: picpriceTokens.id, clienteId: picpriceTokens.clienteId, status: picpriceTokens.status, expiraEm: picpriceTokens.expiraEm })
     .from(picpriceTokens)
     .where(eq(picpriceTokens.tokenHash, hashTokenPicPrice(token)))
     .limit(1);
   if (!t) return { ok: false, motivo: "inexistente" };
   if (t.status !== "ativo") return { ok: false, motivo: "revogado" };
+  if (t.expiraEm && t.expiraEm.getTime() <= Date.now()) return { ok: false, motivo: "expirado" };
   return { ok: true, clienteId: t.clienteId, tokenId: t.id };
 }
 
 /** Gera (ou troca) o token do cliente. Um por cliente: trocar invalida o anterior. */
-export async function gerarTokenDoCliente(clienteId: string): Promise<{ token: string; cnpj: string }> {
+export async function gerarTokenDoCliente(clienteId: string, expiraEm: Date | null = null): Promise<{ token: string; cnpj: string }> {
   const [cliente] = await db.select().from(clientes).where(eq(clientes.id, clienteId)).limit(1);
   if (!cliente) throw new Error("Cliente não encontrado.");
   const cnpj = soDigitos(cliente.documento);
@@ -63,12 +64,25 @@ export async function gerarTokenDoCliente(clienteId: string): Promise<{ token: s
     criadoEm: new Date(),
     revogadoEm: null,
     ultimoUsoEm: null,
+    expiraEm,
   };
   await db
     .insert(picpriceTokens)
     .values({ clienteId, ...valores })
     .onConflictDoUpdate({ target: picpriceTokens.clienteId, set: valores });
   return { token, cnpj };
+}
+
+/** Validade do token do cliente (NULL = não expira). Estende/altera sem trocar o token. Devolve a anterior. */
+export async function definirValidadeToken(clienteId: string, expiraEm: Date | null): Promise<{ anterior: Date | null }> {
+  const [atual] = await db
+    .select({ exp: picpriceTokens.expiraEm })
+    .from(picpriceTokens)
+    .where(eq(picpriceTokens.clienteId, clienteId))
+    .limit(1);
+  if (!atual) throw new Error("O cliente ainda não tem token.");
+  await db.update(picpriceTokens).set({ expiraEm }).where(eq(picpriceTokens.clienteId, clienteId));
+  return { anterior: atual.exp };
 }
 
 /** Limite diário de requisições do token do cliente (inteiro ≥ 1). Devolve o anterior. */
@@ -139,6 +153,7 @@ export async function listarTokensPicPrice() {
       limiteDiario: picpriceTokens.limiteDiario,
       usoDia: picpriceTokens.usoDia,
       usoQtde: picpriceTokens.usoQtde,
+      expiraEm: picpriceTokens.expiraEm,
     })
     .from(clientes)
     .leftJoin(picpriceTokens, eq(picpriceTokens.clienteId, clientes.id))

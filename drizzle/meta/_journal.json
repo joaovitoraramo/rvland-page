@@ -148,6 +148,13 @@
       "when": 1792864530206,
       "tag": "0020_agente_modulos",
       "breakpoints": true
+    },
+    {
+      "idx": 21,
+      "version": "7",
+      "when": 1793024168124,
+      "tag": "0021_glossy_mariko_yashida",
+      "breakpoints": true
     }
   ]
 }

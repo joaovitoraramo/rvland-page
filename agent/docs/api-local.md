@@ -137,6 +137,7 @@ Resposta `200 OK`:
 | `REQUISICAO_INVALIDA` | 400 | JSON ou campos inválidos | corrigir o pedido |
 | `ENDERECO_NAO_ENCONTRADO` | 400 | geohash: endereço fora do PR/não achado | ajustar o endereço |
 | `TOKEN_INVALIDO` | 401 | token inexistente, revogado (`motivo: "revogado"`) ou de outro cliente | mostrar "Serviço inválido - token revogado"; falar com o suporte |
+| `TOKEN_EXPIRADO` | 401 | token com validade vencida (`motivo: "expirado"`) | mostrar "Serviço inválido - token expirado"; pedir renovação ao suporte |
 | `MODULO_DESATIVADO` | 403 | módulo `picprice` desligado no cadastro do servidor | esconder/avisar; ligar no painel da RV |
 | `PROIBIDO` | 403 | chamada que não veio de 127.0.0.1 | chamar do próprio servidor |
 | `LIMITE_EXCEDIDO` | 429 | mais de 120 consultas/minuto no token | esperar um pouco |
@@ -183,7 +184,7 @@ Do lado de quem chama: conexão recusada/timeout no agente = **agente indisponí
 3. Localize cada loja uma vez com `POST /v1/picprice/geohash` e guarde o geohash no seu banco.
 4. Quando o usuário selecionar um item: `POST /v1/picprice/ranking` com o EAN, as lojas (com o preço de
    venda de cada uma) e o raio. Timeout de 75 s.
-5. Trate `estado` conforme a tabela. Não repita automaticamente em `LIMITE_DIARIO`, `TOKEN_INVALIDO`,
+5. Trate `estado` conforme a tabela. Não repita automaticamente em `LIMITE_DIARIO`, `TOKEN_INVALIDO`, `TOKEN_EXPIRADO`,
    `MODULO_DESATIVADO` nem `MANUTENCAO`.
 
 Implementação de referência: `SyncCompras` — `com.aramo.picprice.PicPriceCliente` e

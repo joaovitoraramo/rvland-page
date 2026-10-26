@@ -1,0 +1,1 @@
+ALTER TABLE "picprice_tokens" ADD COLUMN "expira_em" timestamp with time zone;
