@@ -143,9 +143,9 @@ export async function tratarStatus(authorization: string | null, deps: DepsPicPr
     return { status: 503, corpo: { estado: "MANUTENCAO", mensagem: st.mensagem || "Manutenção programada", previsao: st.previsao ?? null, uso } };
   }
   if (uso && uso.usado >= uso.limite) {
-    return { status: 200, corpo: { estado: "LIMITE_DIARIO", mensagem: "Limite diário de consultas atingido", ...uso, uso } };
+    return { status: 200, corpo: { estado: "LIMITE_DIARIO", mensagem: "Limite diário de consultas atingido", ...uso, uso, verEstabelecimento: v.verEstabelecimento } };
   }
-  return { status: 200, corpo: { estado: "OK", uso } };
+  return { status: 200, corpo: { estado: "OK", uso, verEstabelecimento: v.verEstabelecimento } };
 }
 
 /** POST /api/picprice/geohash {endereco} */

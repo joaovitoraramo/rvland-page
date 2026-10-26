@@ -99,6 +99,13 @@ describe("porteiro e estados", () => {
     expect(r.corpo).toMatchObject({ estado: "TOKEN_EXPIRADO", mensagem: "Serviço inválido - token expirado" });
   });
 
+  it("/status reflete a flag ver nome do estabelecimento do token", async () => {
+    const off = await tratarStatus("Bearer x", base());
+    expect(off.corpo).toMatchObject({ estado: "OK", verEstabelecimento: false });
+    const on = await tratarStatus("Bearer x", base({ validarToken: async () => ({ ok: true, clienteId: "c", tokenId: "t", verEstabelecimento: true }) }));
+    expect(on.corpo).toMatchObject({ estado: "OK", verEstabelecimento: true });
+  });
+
   it("manutenção -> MANUTENCAO com mensagem e previsão", async () => {
     const r = await tratarRanking("Bearer x", q, base({ statusServico: async () => ({ estado: "manutencao", mensagem: "Atualizando", previsao: "18h" }) }));
     expect(r.corpo).toMatchObject({ estado: "MANUTENCAO", mensagem: "Atualizando", previsao: "18h" });
