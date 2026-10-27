@@ -149,21 +149,40 @@ Resposta `200 OK`:
 | `LIMITE_EXCEDIDO` | 429 | mais de 120 consultas/minuto no token | esperar um pouco |
 | `LIMITE_DIARIO` | 429 | cota diária do token atingida (traz `limite`, `usado`, `zeraEm`) | não repetir até `zeraEm` |
 | `MANUTENCAO` | 503 | manutenção programada no painel (traz `mensagem` e `previsao`) | mostrar a mensagem |
-| `FONTE_INDISPONIVEL` | 503 | a fonte de preços não respondeu ou só mandou itens falsos | tentar depois, por ação do usuário |
+| `FONTE_INDISPONIVEL` | 503 | a fonte de preços não respondeu (timeout/sem resposta) — não é bloqueio | tentar depois, por ação do usuário |
+| `FONTE_BLOQUEADA` | 503 | a fonte limitou o IP (devolveu só itens falsos); o agente abre um cooldown (traz `cooldownSegundos`, `liberaEm`) | **não consultar antes de `liberaEm`** |
+| `FONTE_EM_COOLDOWN` | 503 | o agente ainda está no cooldown de um bloqueio recente e nem tentou a fonte (traz `cooldownSegundos`, `liberaEm`) | segurar até `liberaEm` |
+| `MUITAS_REQUISICOES` | 429 | **o agente segurou o chamador**: consultas rápidas demais (balde de fichas esgotado); ban temporário (traz `cooldownSegundos`, `liberaEm`) | parar até `liberaEm`; insistir aumenta o ban |
 | `INALCANCAVEL` | 502 | o agente não falou com a plataforma da RV, ou a autorização veio inválida | tentar depois; conferir a internet do servidor |
 
 Do lado de quem chama: conexão recusada/timeout no agente = **agente indisponível** (o SyncRvLand usa
 `AGENTE_INDISPONIVEL`, "Agente RV não encontrado neste servidor").
+
+### Autoproteção (o agente é a autoridade sobre o ritmo)
+
+O agente conhece os limites da fonte e **se defende de quem o chama**, para um sistema acima dele (ou uma
+enxurrada de requisições) não entupir a fonte e queimar o IP do cliente:
+
+- **Balde de fichas:** cada consulta real à fonte gasta 1 ficha; o balde (capacidade ~30) repõe ~1 ficha a
+  cada 20 s. Esvaziou = o chamador está rápido demais → `MUITAS_REQUISICOES`, **sem** bater na fonte nem
+  gastar cota. Insistir durante o ban aumenta o tempo (30 s → … → 15 min).
+- **Breaker da fonte:** ao detectar bloqueio-isca, o agente para de consultar a fonte por um tempo longo e
+  crescente (5 min → … → 60 min): `FONTE_BLOQUEADA` na hora, `FONTE_EM_COOLDOWN` nas próximas.
+- Os três trazem `cooldownSegundos` e `liberaEm`. **Regra única: não consultar antes de `liberaEm`.**
+- O estado sobrevive a restart/update (gravado em `/var/lib/rvland/picprice-estado.json`) e aparece no
+  objeto `fonte` de `GET /v1/saude` (fichas, cooldown/ban em vigor, maior burst já observado).
 
 ## Limites de uso (obrigatórios)
 
 - **Só sob demanda.** Cada ranking corresponde a um item que o usuário selecionou. **Sem pré-carregamento**
   de outros itens, sem varredura, sem fila, sem rotina agendada.
 - **Só as lojas do próprio cliente**, nunca consultas para terceiros.
-- O agente faz **uma consulta por vez** e mantém **intervalo mínimo de 2 s** entre consultas à fonte;
-  chamadas simultâneas esperam a vez.
-- Cache local de **10 minutos** por EAN + loja + raio + período (repetir o mesmo item logo em seguida não
-  vai à fonte, mas conta na cota, porque toda chamada é autorizada pela RV).
+- O agente faz **uma consulta por vez**, mantém **intervalo mínimo de 2 s** entre consultas à fonte e, acima
+  disso, **se autolimita pelo balde de fichas** (ver "Autoproteção"): chamadas simultâneas esperam a vez e um
+  excesso é barrado com `MUITAS_REQUISICOES`.
+- Cache local de **1 hora** por EAN + loja + raio + período, **persistido em disco** (repetir o mesmo item não
+  vai à fonte nem gasta ficha; ainda conta na cota, porque toda chamada é autorizada pela RV). O campo
+  opcional `forcar: true` no ranking ignora o cache nesta consulta (use só no "atualizar" do usuário).
 - Prazo de uma consulta: até ~40 s para todas as lojas; use timeout de 75 s no cliente.
 - **Peça só as lojas necessárias.** Não mande todas as lojas de uma vez: o SyncRvLand recebe do SyncCompras a loja que o
   usuário está vendo e, por baixo, no máximo a loja seguinte do mesmo item.

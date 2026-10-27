@@ -35,7 +35,7 @@ import (
 const (
 	intervaloMinimoConsulta = 2 * time.Second  // entre duas consultas à fonte
 	prazoConsulta           = 40 * time.Second // ranking inteiro (todas as lojas)
-	validadeCacheFonte      = 10 * time.Minute // cache local curto
+	validadeCacheFonte      = 1 * time.Hour    // cache local (preço de concorrente muda devagar); persiste em disco
 	raioPropriaLojaKm       = 0.2
 	tamanhoRanking          = 10
 )
@@ -74,11 +74,26 @@ type apiLocal struct {
 	autorizar  func(ctx context.Context, token string, p pedidoAutorizacao) (respAutorizacao, error)
 	buscarFont func(ctx context.Context, url string) (*respostaFonte, error)
 	repassar   func(ctx context.Context, metodo, caminho, token string, corpo []byte) ([]byte, int, error)
+
+	// guarda da fonte (balde de fichas + breaker + telemetria), ver picprice_guarda.go
+	estadoMu       sync.Mutex
+	fichas         float64   // balde de autoproteção contra enxurrada do chamador
+	fichasEm       time.Time // última reposição do balde
+	banAteh        time.Time // chamador segurado até aqui (flood)
+	banNivel       int
+	breakerAteh    time.Time // fonte em cooldown até aqui (bloqueio-isca)
+	breakerNivel   int
+	acertos        int       // consultas OK seguidas desde o último bloqueio (burst atual)
+	ultimoBloqueio time.Time // telemetria do limiar
+	ultimoBurst    int
+	maiorBurst     int
+	ultimaGravacao time.Time
 }
 
 type itemCache struct {
-	dados  *respostaFonte
-	expira time.Time
+	dados     *respostaFonte
+	expira    time.Time
+	buscadoEm time.Time
 }
 
 func novaAPILocal(cfg *Config) http.Handler {
@@ -92,6 +107,7 @@ func novaAPILocal(cfg *Config) http.Handler {
 	a.autorizar = a.autorizarNaRV
 	a.buscarFont = buscarFonteReal
 	a.repassar = a.repassarParaRV
+	a.carregarEstado() // retoma cache + balde + breaker do disco (sobrevive a restart/update)
 	return a.rotas()
 }
 
@@ -145,11 +161,11 @@ func statusHTTP(estado string) int {
 		return http.StatusUnauthorized
 	case "MODULO_DESATIVADO":
 		return http.StatusForbidden
-	case "LIMITE_DIARIO", "LIMITE_EXCEDIDO":
+	case "LIMITE_DIARIO", "LIMITE_EXCEDIDO", "MUITAS_REQUISICOES":
 		return http.StatusTooManyRequests
 	case "INALCANCAVEL":
 		return http.StatusBadGateway
-	default: // MANUTENCAO, FONTE_INDISPONIVEL, ...
+	default: // MANUTENCAO, FONTE_INDISPONIVEL, FONTE_BLOQUEADA, FONTE_EM_COOLDOWN, ...
 		return http.StatusServiceUnavailable
 	}
 }
@@ -175,6 +191,7 @@ func (a *apiLocal) saude(w http.ResponseWriter, _ *http.Request) {
 		"modulos":         map[string]bool{"licenca": m.Licenca, "picprice": m.Picprice},
 		"ultimoContatoRV": contato,
 		"apiLocal":        map[string]any{"porta": a.cfg.portaPicprice(), "versao": "v1"},
+		"fonte":           a.snapshotFonte(), // limiar aprendido, cooldown/ban em vigor
 	})
 }
 
@@ -255,10 +272,11 @@ type lojaPedido struct {
 }
 
 type pedidoRanking struct {
-	Gtin  string       `json:"gtin"`
-	Lojas []lojaPedido `json:"lojas"`
-	Raio  *float64     `json:"raio"`
-	Data  *int         `json:"data"`
+	Gtin   string       `json:"gtin"`
+	Lojas  []lojaPedido `json:"lojas"`
+	Raio   *float64     `json:"raio"`
+	Data   *int         `json:"data"`
+	Forcar bool         `json:"forcar,omitempty"` // "atualizar": ignora o cache local nesta consulta
 }
 
 type pedidoAutorizacao struct {
@@ -361,6 +379,16 @@ func (a *apiLocal) ranking(w http.ResponseWriter, r *http.Request) {
 	// uma consulta por vez, com intervalo mínimo entre elas
 	a.consulta.Lock()
 	defer a.consulta.Unlock()
+
+	// GUARDA (antes de autorizar/bater na fonte): breaker da fonte + ban do
+	// chamador. Se não liberar, nem gasta cota nem toca a fonte — o agente segura
+	// o chamador e devolve o tempo de espera. Ver picprice_guarda.go.
+	if ok, corpo, status := a.permissaoConsulta(); !ok {
+		a.salvarEstado(false)
+		responder(w, status, corpo)
+		return
+	}
+
 	if espera := intervaloMinimoConsulta - a.agora().Sub(a.ultimaVez); espera > 0 {
 		if err := a.dormir(ctx, espera); err != nil {
 			responder(w, http.StatusServiceUnavailable, estadoMsg("FONTE_INDISPONIVEL", "Consulta cancelada."))
@@ -392,37 +420,68 @@ func (a *apiLocal) ranking(w http.ResponseWriter, r *http.Request) {
 	lojas := []map[string]any{}
 	semResposta := []string{}
 	var motivo string
+	bloqueios, dataDados := 0, time.Time{}
 	for i, l := range ped.Lojas {
 		if i > 0 {
 			_ = a.dormir(ctxFonte, 300*time.Millisecond)
 		}
-		rl, err := a.rankingDaLoja(ctxFonte, ped.Gtin, l, *ped.Raio, *ped.Data, verEstab)
+		rl, bEm, err := a.rankingDaLoja(ctxFonte, ped.Gtin, l, *ped.Raio, *ped.Data, verEstab, ped.Forcar)
 		if err != nil {
 			semResposta = append(semResposta, l.Codigo)
 			motivo = err.Error()
+			if errors.Is(err, errFonteBloqueada) {
+				bloqueios++
+			}
 			continue
 		}
 		lojas = append(lojas, rl)
+		if dataDados.IsZero() || bEm.Before(dataDados) {
+			dataDados = bEm
+		}
 	}
 	a.ultimaVez = a.agora()
-	if len(lojas) == 0 {
-		responder(w, http.StatusServiceUnavailable, map[string]any{
-			"estado":   "FONTE_INDISPONIVEL",
-			"mensagem": "A fonte de preços não respondeu. Tente de novo em instantes.",
-			"detalhe":  motivo,
-			"uso":      ra.Uso,
+
+	// 3) classifica o resultado -> breaker + telemetria
+	if len(lojas) > 0 {
+		a.registrarAcerto(len(lojas))
+		a.salvarEstado(false)
+		quando := dataDados
+		if quando.IsZero() {
+			quando = a.agora()
+		}
+		responder(w, http.StatusOK, map[string]any{
+			"estado":           "OK",
+			"gtin":             ped.Gtin,
+			"raio":             *ped.Raio,
+			"data":             *ped.Data,
+			"consultadoEm":     quando.UTC().Format(time.RFC3339),
+			"lojas":            lojas,
+			"lojasSemResposta": semResposta,
+			"uso":              ra.Uso,
 		})
 		return
 	}
-	responder(w, http.StatusOK, map[string]any{
-		"estado":           "OK",
-		"gtin":             ped.Gtin,
-		"raio":             *ped.Raio,
-		"data":             *ped.Data,
-		"consultadoEm":     a.agora().UTC().Format(time.RFC3339),
-		"lojas":            lojas,
-		"lojasSemResposta": semResposta,
-		"uso":              ra.Uso,
+
+	if bloqueios > 0 {
+		// a fonte bloqueou: abre/escala o cooldown e segura as próximas consultas
+		d := a.registrarBloqueioFonte()
+		a.salvarEstado(true)
+		responder(w, http.StatusServiceUnavailable, map[string]any{
+			"estado":           "FONTE_BLOQUEADA",
+			"mensagem":         "A fonte está limitando as consultas (bloqueio temporário). Pausando novas consultas por " + duracaoHumana(d) + ".",
+			"cooldownSegundos": int(d.Seconds()),
+			"liberaEm":         a.agora().Add(d).UTC().Format(time.RFC3339),
+			"uso":              ra.Uso,
+		})
+		return
+	}
+
+	// só timeouts (fonte muda/fora do ar) — NÃO mexe no breaker
+	responder(w, http.StatusServiceUnavailable, map[string]any{
+		"estado":   "FONTE_INDISPONIVEL",
+		"mensagem": "A fonte de preços não respondeu. Tente de novo em instantes.",
+		"detalhe":  motivo,
+		"uso":      ra.Uso,
 	})
 }
 

@@ -55,6 +55,6 @@ chaves/
 # binários compilados do agente
 agent/agenterv
 agent/*.exe
+agent/rvland-agent
 .playwright-fotos-site/
 .playwright-fotos-regressao/
-/agent/rvland-agent
