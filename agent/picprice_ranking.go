@@ -129,15 +129,21 @@ func urlProdutos(geohash, gtin string, raio float64, data, size int) string {
 		fonteBase, geohash, strconv.FormatFloat(raio, 'f', -1, 64), url.QueryEscape(gtin), data, size)
 }
 
-// rankingDaLoja: size 20; se faltou para 10 e a área tem mais, pede 50. Cache local curto.
-func (a *apiLocal) rankingDaLoja(ctx context.Context, gtin string, l lojaPedido, raio float64, data int) (map[string]any, error) {
-	r, err := a.buscarComCache(ctx, urlProdutos(l.Geohash, gtin, raio, data, 20))
+// errFonteBloqueada: a fonte devolveu só itens falsos (resposta-isca inteira) =
+// bloqueio por IP. Distinto de um timeout/sem-resposta, para o chamador saber
+// que está limitado (e não que a fonte apenas caiu).
+var errFonteBloqueada = errors.New("a fonte está bloqueando as consultas (resposta-isca)")
+
+// rankingDaLoja: size 20; se faltou para 10 e a área tem mais, pede 50. Devolve
+// também o instante em que os dados foram buscados (idade real, pelo cache).
+func (a *apiLocal) rankingDaLoja(ctx context.Context, gtin string, l lojaPedido, raio float64, data int, forcar bool) (map[string]any, time.Time, error) {
+	r, bEm, err := a.buscarComCache(ctx, urlProdutos(l.Geohash, gtin, raio, data, 20), forcar)
 	if err != nil {
-		return nil, err
+		return nil, time.Time{}, err
 	}
 	precos, total, propria := montarRankingLoja(r, l.PrecoVenda)
 	if len(precos) < tamanhoRanking && total > len(precos) {
-		if r2, err := a.buscarComCache(ctx, urlProdutos(l.Geohash, gtin, raio, data, 50)); err == nil {
+		if r2, _, err := a.buscarComCache(ctx, urlProdutos(l.Geohash, gtin, raio, data, 50), forcar); err == nil {
 			precos, total, propria = montarRankingLoja(r2, l.PrecoVenda)
 		}
 	}
@@ -150,38 +156,39 @@ func (a *apiLocal) rankingDaLoja(ctx context.Context, gtin string, l lojaPedido,
 		"totalNaArea":        total,
 		"precos":             precos,
 		"propriaLojaNaFonte": propria > 0,
-	}, nil
+	}, bEm, nil
 }
 
-func (a *apiLocal) buscarComCache(ctx context.Context, u string) (*respostaFonte, error) {
+// buscarComCache: serve do cache se válido (a menos de `forcar`). Na falta, bate
+// na fonte UMA vez — sem retentar na isca (retentar em bloqueio só aprofunda a
+// punição). Gasta 1 ficha do balde por batida real. Devolve o instante da busca.
+func (a *apiLocal) buscarComCache(ctx context.Context, u string, forcar bool) (*respostaFonte, time.Time, error) {
+	if !forcar {
+		a.cacheMu.Lock()
+		c, ok := a.cache[u]
+		a.cacheMu.Unlock()
+		if ok && a.agora().Before(c.expira) {
+			return c.dados, c.buscadoEm, nil
+		}
+	}
+	r, err := a.buscarFont(ctx, u)
+	a.debitarFicha() // bateu na fonte: gasta 1 ficha (sucesso, bloqueio ou timeout)
+	if err != nil {
+		return nil, time.Time{}, err
+	}
+	if soIsca(r) {
+		return nil, time.Time{}, errFonteBloqueada
+	}
+	agora := a.agora()
 	a.cacheMu.Lock()
-	c, ok := a.cache[u]
+	a.cache[u] = itemCache{dados: r, expira: agora.Add(validadeCacheFonte), buscadoEm: agora}
+	for k, v := range a.cache { // faxina
+		if agora.After(v.expira) {
+			delete(a.cache, k)
+		}
+	}
 	a.cacheMu.Unlock()
-	if ok && a.agora().Before(c.expira) {
-		return c.dados, nil
-	}
-	// resposta só de itens falsos: uma tentativa a mais e nunca entra no cache
-	for tentativa := 0; tentativa < 2; tentativa++ {
-		r, err := a.buscarFont(ctx, u)
-		if err != nil {
-			return nil, err
-		}
-		if !soIsca(r) {
-			a.cacheMu.Lock()
-			a.cache[u] = itemCache{dados: r, expira: a.agora().Add(validadeCacheFonte)}
-			for k, v := range a.cache { // faxina
-				if a.agora().After(v.expira) {
-					delete(a.cache, k)
-				}
-			}
-			a.cacheMu.Unlock()
-			return r, nil
-		}
-		if err := a.dormir(ctx, time.Second); err != nil {
-			return nil, err
-		}
-	}
-	return nil, errors.New("a fonte devolveu só resultados falsos")
+	return r, agora, nil
 }
 
 type erroFonte struct {

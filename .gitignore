@@ -57,3 +57,6 @@ agent/agenterv
 agent/*.exe
 .playwright-fotos-site/
 .playwright-fotos-regressao/
+
+# binário do agente (build local)
+/agent/rvland-agent
