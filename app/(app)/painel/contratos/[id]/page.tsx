@@ -8,6 +8,7 @@ import { exigirPermissao, pode } from "@/lib/auth";
 import { encerrarContrato, novaVigenciaPreco } from "@/app/(app)/painel/contratos/actions";
 import { PageHeader } from "@/components/painel/page-header";
 import { FormVigencia } from "@/components/painel/form-vigencia";
+import { GraficoVigencias } from "@/components/painel/grafico-vigencias";
 import { Btn } from "@/components/painel/ui";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import {
@@ -182,6 +183,10 @@ export default async function PaginaContrato({
                 ))}
               </TableBody>
             </Table>
+
+            <GraficoVigencias
+              vigencias={vigencias.map((v) => ({ vigenteDesde: v.vigenteDesde, valorCentavos: v.valorCentavos }))}
+            />
 
             {contrato.status === "ativo" &&
             contrato.tipo === "recorrente" &&
