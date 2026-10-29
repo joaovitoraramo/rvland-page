@@ -59,7 +59,7 @@ describe("linhaDoClique", () => {
       linhaDoClique({ rotulo: "CoolSculpting Elite", secao: "mega-menu", destino: "https://sculptedcontours.com/body/coolsculpting/" })
     ).toBe("• CoolSculpting Elite → sculptedcontours.com [mega-menu]");
     expect(linhaDoClique({ rotulo: "404.872.8578", secao: "nav", destino: "tel:+14048728578" })).toBe("• 404.872.8578 (ligar) [nav]");
-    expect(linhaDoClique({ rotulo: "Contact", secao: "nav", destino: "https://rvland-page.vercel.app/c/sculpted#contact" }, "rvland-page.vercel.app")).toBe("• Contact [nav]");
+    expect(linhaDoClique({ rotulo: "Contact", secao: "nav", destino: "https://rvland.com.br/c/sculpted#contact" }, "rvland.com.br")).toBe("• Contact [nav]");
     expect(linhaDoClique({ rotulo: "Start over", secao: null, destino: null })).toBe("• Start over");
   });
 });

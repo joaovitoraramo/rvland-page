@@ -1102,13 +1102,13 @@ npx vercel env ls | grep TELEGRAM   # conferir as três
 git checkout main && git pull && git merge plataforma --no-edit
 npm test && git push origin main && git checkout plataforma
 ```
-Aguardar o deploy: `curl -s -o /dev/null -w "%{http_code}" -X GET https://rvland-page.vercel.app/api/telegram/webhook` até responder **405** (rota só aceita POST; 404 = deploy antigo).
+Aguardar o deploy: `curl -s -o /dev/null -w "%{http_code}" -X GET https://rvland.com.br/api/telegram/webhook` até responder **405** (rota só aceita POST; 404 = deploy antigo).
 
 - [ ] **Step 4: Registrar o webhook**
 
 ```bash
 curl -s "https://api.telegram.org/bot<TOKEN_DO_BOT>/setWebhook" \
-  -d url="https://rvland-page.vercel.app/api/telegram/webhook" \
+  -d url="https://rvland.com.br/api/telegram/webhook" \
   -d secret_token="<SECRET_GERADO_NA_TASK_2>" \
   -d allowed_updates='["message"]' \
   -d drop_pending_updates=true

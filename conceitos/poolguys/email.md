@@ -2,7 +2,7 @@
 
 **Para:** poolguys@att.net
 **Dono:** Norm Nelson, President / Owner
-**Conceito:** https://rvland-page.vercel.app/c/poolguys
+**Conceito:** https://rvland.com.br/c/poolguys
 
 ## Assuntos (escolha um)
 
@@ -34,7 +34,7 @@ no quote form anywhere on the site, so every lead has to stop and dial.
 
 So I rebuilt your homepage as a concept. Open it on your phone too:
 
-https://rvland-page.vercel.app/c/poolguys
+https://rvland.com.br/c/poolguys
 
 Your real services, your real photos, your number. Plus something none of
 your competitors offer: a client area where the homeowner logs in and sees
@@ -67,7 +67,7 @@ Hi Norm,
 
 Following up once, in case this got buried. The concept is still up:
 
-https://rvland-page.vercel.app/c/poolguys
+https://rvland.com.br/c/poolguys
 
 No pitch here. The one thing worth doing even if you never reply: open
 azpoolguys.com on your phone. If you can't read it, neither can the

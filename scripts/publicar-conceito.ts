@@ -50,7 +50,7 @@ async function main() {
   // proposta privada não entra no índice do Google
   html = html.replace('<meta charset="utf-8">', `<meta charset="utf-8">\n${NOINDEX}`);
 
-  const base = process.env.NEXT_PUBLIC_SITE_URL ?? "https://rvland-page.vercel.app";
+  const base = process.env.NEXT_PUBLIC_SITE_URL ?? "https://rvland.com.br";
   const url = `${base}/c/${slug}`;
   const qr = await QRCode.toDataURL(url, {
     width: 360,

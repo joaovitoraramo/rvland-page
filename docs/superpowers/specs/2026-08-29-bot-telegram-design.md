@@ -87,7 +87,7 @@ de licença, e registro de pagamento pelo comando `/fatura`.
 - `TELEGRAM_BOT_TOKEN`, `TELEGRAM_CHAT_ID`, `TELEGRAM_WEBHOOK_SECRET` em
   `.env.local` e na Vercel (Production) — via `vercel env add` com o CLI
   logado; fallback: dashboard.
-- Registro: `setWebhook` com `url=https://rvland-page.vercel.app/api/telegram/webhook`,
+- Registro: `setWebhook` com `url=https://rvland.com.br/api/telegram/webhook`,
   `secret_token`, `allowed_updates=["message"]`, `drop_pending_updates=true`.
 
 ## 8. Validação

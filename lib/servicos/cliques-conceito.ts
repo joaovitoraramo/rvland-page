@@ -42,7 +42,7 @@ export async function registrarCliques(entrada: EntradaCliques): Promise<{
     try {
       await enviarTelegram(
         marcarComoTeste(
-          mensagemCliques({ negocio: await negocioDoSlug(entrada.slug), slug: entrada.slug, itens, visita: null, totalNaSessao: itens.length, conceitoHost: process.env.NEXT_PUBLIC_SITE_HOST ?? "rvland-page.vercel.app" })
+          mensagemCliques({ negocio: await negocioDoSlug(entrada.slug), slug: entrada.slug, itens, visita: null, totalNaSessao: itens.length, conceitoHost: process.env.NEXT_PUBLIC_SITE_HOST ?? "rvland.com.br" })
         )
       );
     } catch (err) {
@@ -101,7 +101,7 @@ async function avisar(entrada: EntradaCliques, itens: ItemClique[]) {
         itens,
         visita: visita ?? null,
         totalNaSessao: total,
-        conceitoHost: process.env.NEXT_PUBLIC_SITE_HOST ?? "rvland-page.vercel.app",
+        conceitoHost: process.env.NEXT_PUBLIC_SITE_HOST ?? "rvland.com.br",
       })
     );
   } catch (err) {

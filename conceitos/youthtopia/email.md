@@ -2,7 +2,7 @@
 
 **Para:** info@youthtopiamedspa.com (dona: Tracy Olson, Founder)
 **DM:** @youthtopiamedspa (6.193 seguidores)
-**Conceito:** https://rvland-page.vercel.app/c/youthtopia
+**Conceito:** https://rvland.com.br/c/youthtopia
 **Remetente:** John Novaz <contato.rvlandd@gmail.com> (assina John)
 
 ## Assuntos (escolha um)
@@ -46,7 +46,7 @@ So I rebuilt your homepage around that photo, just to show what
 Youthtopia could feel like online. Thirty seconds, on your phone or
 desktop:
 
-https://rvland-page.vercel.app/c/youthtopia
+https://rvland.com.br/c/youthtopia
 
 It keeps what already works for you: the text chat (redesigned, still
 Aesthetix underneath), the Phorest booking, and the $50 new-client
@@ -71,7 +71,7 @@ Hi Tracy,
 
 Following up once, in case this got buried. The concept is still up:
 
-https://rvland-page.vercel.app/c/youthtopia
+https://rvland.com.br/c/youthtopia
 
 No pitch. The one thing worth doing even if you never reply: open your
 homepage on your phone and look at the first screen. If the first thing
@@ -93,7 +93,7 @@ Hi! Quick one: I opened your site on my phone and the first thing on
 screen is the Academy badge, then a white headline over a white gap.
 Meanwhile your Oct '25 team editorial (the dresses + brick wall) is
 nowhere on it. I'm a web designer and rebuilt your homepage around that
-photo, free, just to show the idea: rvland-page.vercel.app/c/youthtopia
+photo, free, just to show the idea: rvland.com.br/c/youthtopia
 Takes 30 seconds on your phone. If it's not for you, no worries at all 🤍
 ```
 

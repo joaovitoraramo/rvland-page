@@ -135,7 +135,7 @@ reporta intenção; senão `now>=operar_ate && status∈{bloqueado}`→para lice
 
 ## 5. O agente (Go, binário único)
 
-Config `/etc/rvland/agent.conf` (TOML): `enderecos=["https://api.rvland...","https://rvland-page.vercel.app"]` (tenta em ordem — resolve troca de domínio sem hardcode), `servidor_id`, caminho das chaves. Chaves do agente em `/etc/rvland/agente.key` (0600). Lease em cache em `/var/lib/rvland/licenca.json`.
+Config `/etc/rvland/agent.conf` (TOML): `enderecos=["https://api.rvland...","https://rvland.com.br"]` (tenta em ordem — resolve troca de domínio sem hardcode), `servidor_id`, caminho das chaves. Chaves do agente em `/etc/rvland/agente.key` (0600). Lease em cache em `/var/lib/rvland/licenca.json`.
 
 CLI:
 ```

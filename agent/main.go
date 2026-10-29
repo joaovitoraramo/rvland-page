@@ -14,8 +14,13 @@ import (
 // versao e defaultEndereco são injetados no build via -ldflags.
 var (
 	versao          = "dev"
-	defaultEndereco = "https://rvland-page.vercel.app"
+	defaultEndereco = "https://rvland.com.br"
 )
+
+// enderecoLegado é o alias antigo do painel na Vercel. Fica como último
+// fallback por compatibilidade com agentes já instalados, que fizeram o enroll
+// apontando para ele.
+const enderecoLegado = "https://rvland-page.vercel.app"
 
 func main() {
 	if len(os.Args) < 2 {
@@ -72,6 +77,7 @@ func enderecosDe(servidor string) []string {
 	}
 	add(servidor)
 	add(defaultEndereco)
+	add(enderecoLegado)
 	return out
 }
 

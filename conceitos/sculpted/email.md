@@ -2,7 +2,7 @@
 
 **Para:** sculpted@sculptedcontours.com (dona: Kathy King, Owner / Managing Director)
 **Alternativa:** pmsculpted@sculptedcontours.com · DM @sculptedcontours (769 seguidores)
-**Conceito:** https://rvland-page.vercel.app/c/sculpted
+**Conceito:** https://rvland.com.br/c/sculpted
 **Remetente:** John Novaz <contato.rvlandd@gmail.com> (assina John)
 
 ## Assuntos (escolha um)
@@ -47,7 +47,7 @@ So I rebuilt your homepage around what you already have: the photo of
 your suite, your awards, your numbers, your Contour Club. Thirty seconds,
 on your phone or desktop:
 
-https://rvland-page.vercel.app/c/sculpted
+https://rvland.com.br/c/sculpted
 
 This is the homepage only. Every menu and link opens your current pages,
 so you can see how the two fit together; in the full build, every page
@@ -75,7 +75,7 @@ Hi Kathy,
 
 Following up once, in case this got buried. The concept is still up:
 
-https://rvland-page.vercel.app/c/sculpted
+https://rvland.com.br/c/sculpted
 
 No pitch. The one thing worth doing even if you never reply: open your
 homepage on your phone and try to read the headline over the suite
@@ -98,7 +98,7 @@ suite photo is white on white, half of it gone. Meanwhile Best of the
 City ten years running is way down the page. I'm a web designer and
 rebuilt your homepage around what you already have (the suite, the
 awards, the Contour Club), free, just to show the idea:
-rvland-page.vercel.app/c/sculpted
+rvland.com.br/c/sculpted
 Takes 30 seconds on your phone. If it's not for you, no worries at all.
 ```
 
