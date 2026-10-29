@@ -233,8 +233,8 @@ function BlocoUso({ item, gerencia, acao }: { item: ItemToken; gerencia: boolean
       {gerencia ? (
         <form action={acao} className="flex items-center gap-2">
           <input type="hidden" name="clienteId" value={item.clienteId} />
-          <label className="flex h-8 flex-1 items-center gap-2 rounded-lg border border-white/10 bg-black/40 px-2.5 text-xs text-white/45 focus-within:border-[rgba(0,229,255,0.45)]">
-            limite/dia
+          <label className="flex h-8 min-w-0 flex-1 items-center gap-2 rounded-lg border border-white/10 bg-black/40 px-2.5 text-[11px] text-white/45 transition-colors focus-within:border-[rgba(0,229,255,0.45)]">
+            <span className="shrink-0 whitespace-nowrap">limite diário</span>
             <input
               name="limite"
               value={limite}
