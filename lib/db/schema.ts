@@ -11,7 +11,9 @@ import {
   primaryKey,
   uniqueIndex,
   index,
+  varchar,
 } from "drizzle-orm/pg-core";
+import { sql } from "drizzle-orm";
 
 // ─── Fase 0: acesso, permissões, auditoria, configurações ───────────────────
 
@@ -70,6 +72,7 @@ export const auditoria = pgTable(
         | "lead"
         | "prospeccao"
         | "picprice"
+        | "hermes"
       >(),
     entidadeId: text("entidade_id"),
     detalhes: jsonb("detalhes").$type<Record<string, unknown>>(),
@@ -332,6 +335,14 @@ export const eventos = pgTable(
         | "agente_offline"
         | "update_aplicado"
         | "update_falhou"
+        | "hermes_bloqueio"
+        | "hermes_bloqueio_simulado"
+        | "hermes_liberado"
+        | "hermes_update_ok"
+        | "hermes_update_falhou"
+        | "hermes_adulteracao"
+        | "hermes_relogio"
+        | "hermes_clone_suspeito"
       >(),
     severidade: text("severidade").notNull().default("info").$type<"info" | "aviso" | "critico">(),
     mensagem: text("mensagem").notNull(),
@@ -353,7 +364,7 @@ export const comandos = pgTable(
     servicoId: uuid("servico_id").references(() => servicoGerenciados.id, {
       onDelete: "cascade",
     }),
-    verbo: text("verbo").notNull().$type<"status" | "start" | "stop" | "update">(),
+    verbo: text("verbo").notNull().$type<"status" | "start" | "stop" | "update" | "hermes_update">(),
     estado: text("estado")
       .notNull()
       .default("pendente")
@@ -589,3 +600,153 @@ export const picpriceCache = pgTable("picprice_cache", {
   dados: jsonb("dados").notNull().$type<unknown>(),
   expiraEm: timestamp("expira_em", { withTimezone: true }).notNull(),
 });
+
+// ─── Hermes: licenciamento/instalações (Fase 2; ver docs do Hermes LICENCA-FASE2) ──
+
+// Licença Hermes por cliente: contrato vinculado + exceções do painel
+export const hermesLicencas = pgTable("hermes_licencas", {
+  clienteId: uuid("cliente_id")
+    .primaryKey()
+    .references(() => clientes.id),
+  // contrato recorrente Hermes que dita a licença (tolerância = carência); NULL = sem contrato
+  contratoId: uuid("contrato_id").references(() => contratos.id),
+  // true: não depende do financeiro; renova sozinha (hoje + renovacao_dias, rolante)
+  independeFinanceiro: boolean("independe_financeiro").notNull().default(false),
+  renovacaoDias: integer("renovacao_dias").notNull().default(30),
+  bloqueioManual: boolean("bloqueio_manual").notNull().default(false),
+  bloqueioMotivo: text("bloqueio_motivo"),
+  bloqueadoPor: text("bloqueado_por"),
+  bloqueadoEm: timestamp("bloqueado_em", { withTimezone: true }),
+  diasConfianca: integer("dias_confianca").notNull().default(0),
+  atualizadoEm: timestamp("atualizado_em", { withTimezone: true }).notNull().defaultNow(),
+});
+
+export const hermesInstalacoes = pgTable(
+  "hermes_instalacoes",
+  {
+    id: uuid("id").primaryKey().defaultRandom(),
+    clienteId: uuid("cliente_id")
+      .notNull()
+      .references(() => clientes.id),
+    // servidor com o agente RV; no máximo uma instalação por servidor
+    servidorId: uuid("servidor_id")
+      .unique()
+      .references(() => servidores.id),
+    nome: text("nome").notNull(),
+    // só dígitos; a raiz (8) casa matriz e filiais
+    cnpj: varchar("cnpj", { length: 14 }),
+    cnpjRaiz: varchar("cnpj_raiz", { length: 8 }),
+    // dados lidos pelo instalador (razão social, fantasia, município/UF, lojas…); sem credenciais
+    identificacao: jsonb("identificacao").$type<Record<string, unknown>>(),
+    origemIdentificacao: text("origem_identificacao"),
+    status: text("status")
+      .notNull()
+      .default("aguardando_ativacao")
+      .$type<"aguardando_ativacao" | "ativa" | "revogada" | "desinstalada">(),
+    canal: text("canal").notNull().default("stable").$type<"stable" | "preview">(),
+    // exceção por instalação: "simular" nunca bloqueia, mesmo com o enforcement global ativo
+    enforcement: text("enforcement").notNull().default("herdar").$type<"herdar" | "simular">(),
+    versao: text("versao"),
+    sha: text("sha"),
+    digest: text("digest"),
+    canalEmUso: text("canal_em_uso"),
+    saude: jsonb("saude").$type<Record<string, unknown>>(),
+    fingerprint: jsonb("fingerprint").$type<Record<string, unknown>>(),
+    // anti-replay / relógio / clone
+    ultimoTsAgente: timestamp("ultimo_ts_agente", { withTimezone: true }),
+    relogioOffsetMs: integer("relogio_offset_ms"),
+    cloneSuspeitoEm: timestamp("clone_suspeito_em", { withTimezone: true }),
+    ultimoDocEmitidoEm: timestamp("ultimo_doc_emitido_em", { withTimezone: true }),
+    ultimoEstadoEm: timestamp("ultimo_estado_em", { withTimezone: true }),
+    ativadaEm: timestamp("ativada_em", { withTimezone: true }),
+    criadoPor: text("criado_por"),
+    criadoEm: timestamp("criado_em", { withTimezone: true }).notNull().defaultNow(),
+    atualizadoEm: timestamp("atualizado_em", { withTimezone: true }).notNull().defaultNow(),
+  },
+  (t) => [
+    index("hermes_instalacoes_cliente_idx").on(t.clienteId),
+    index("hermes_instalacoes_cnpj_raiz_idx").on(t.cnpjRaiz),
+  ]
+);
+
+// Chaves de instalação/adoção: uso único, com expiração; só o hash é guardado
+export const hermesChaves = pgTable(
+  "hermes_chaves",
+  {
+    id: uuid("id").primaryKey().defaultRandom(),
+    tipo: text("tipo").notNull().$type<"instalacao" | "adocao">(),
+    clienteId: uuid("cliente_id")
+      .notNull()
+      .references(() => clientes.id),
+    // CNPJ do cliente no momento da emissão (snapshot)
+    cnpj: varchar("cnpj", { length: 14 }),
+    // adoção: instalação existente que será adotada
+    instalacaoId: uuid("instalacao_id").references(() => hermesInstalacoes.id),
+    tokenHash: text("token_hash").notNull().unique(),
+    prefixo: varchar("prefixo", { length: 8 }).notNull(),
+    canalInicial: text("canal_inicial").notNull().default("stable").$type<"stable" | "preview">(),
+    expiraEm: timestamp("expira_em", { withTimezone: true }).notNull(),
+    usadaEm: timestamp("usada_em", { withTimezone: true }),
+    usadaIp: text("usada_ip"),
+    usadaFingerprint: jsonb("usada_fingerprint").$type<Record<string, unknown>>(),
+    resultadoInstalacaoId: uuid("resultado_instalacao_id").references(() => hermesInstalacoes.id),
+    revogadaEm: timestamp("revogada_em", { withTimezone: true }),
+    revogadaPor: text("revogada_por"),
+    criadoPor: text("criado_por").notNull(),
+    criadoEm: timestamp("criado_em", { withTimezone: true }).notNull().defaultNow(),
+  },
+  (t) => [
+    // varredura de chaves ainda utilizáveis (alerta de expirada sem uso)
+    index("hermes_chaves_expira_idx")
+      .on(t.expiraEm)
+      .where(sql`${t.usadaEm} is null and ${t.revogadaEm} is null`),
+  ]
+);
+
+// Tentativas de instalar sem chave: "Pendente de chave de instalação" no painel
+export const hermesSolicitacoes = pgTable(
+  "hermes_solicitacoes",
+  {
+    id: uuid("id").primaryKey().defaultRandom(),
+    protocolo: text("protocolo").notNull().unique(), // HP-XXXXXX
+    cnpj: varchar("cnpj", { length: 14 }).notNull(),
+    cnpjRaiz: varchar("cnpj_raiz", { length: 8 }).notNull(),
+    identificacao: jsonb("identificacao").$type<Record<string, unknown>>(),
+    fingerprint: jsonb("fingerprint").notNull().$type<{ machine_id_hash?: string } & Record<string, unknown>>(),
+    origemIdentificacao: text("origem_identificacao"),
+    ipOrigem: text("ip_origem"),
+    versaoInstalador: text("versao_instalador"),
+    status: text("status")
+      .notNull()
+      .default("pendente")
+      .$type<"pendente" | "vinculada" | "descartada" | "suspeita">(),
+    clienteProvavelId: uuid("cliente_provavel_id").references(() => clientes.id),
+    tentativas: integer("tentativas").notNull().default(1),
+    primeiraEm: timestamp("primeira_em", { withTimezone: true }).notNull().defaultNow(),
+    ultimaEm: timestamp("ultima_em", { withTimezone: true }).notNull().defaultNow(),
+    resolvidaPor: text("resolvida_por"),
+    resolvidaEm: timestamp("resolvida_em", { withTimezone: true }),
+    motivo: text("motivo"),
+  },
+  (t) => [
+    // dedupe: mesma máquina (hash do machine-id) tentando o mesmo CNPJ = mesma solicitação.
+    // coalesce: sem machine_id_hash o NULL não deduplicaria. ATENÇÃO: o ON CONFLICT da rota
+    // deve repetir EXATAMENTE a expressão do índice: (cnpj, coalesce(fingerprint->>'machine_id_hash',''))
+    uniqueIndex("hermes_solicitacoes_cnpj_maquina_uidx").on(
+      t.cnpj,
+      sql`coalesce(${t.fingerprint}->>'machine_id_hash', '')`
+    ),
+    index("hermes_solicitacoes_status_idx").on(t.status),
+  ]
+);
+
+// Rate limit das rotas públicas (por chave e janela)
+export const hermesLimites = pgTable(
+  "hermes_limites",
+  {
+    chave: text("chave").notNull(),
+    janela: timestamp("janela", { withTimezone: true }).notNull(),
+    contagem: integer("contagem").notNull().default(0),
+  },
+  (t) => [primaryKey({ columns: [t.chave, t.janela] })]
+);

@@ -15,7 +15,8 @@ type Entidade =
   | "servidor"
   | "lead"
   | "prospeccao"
-  | "picprice";
+  | "picprice"
+  | "hermes";
 
 /**
  * Trilha de auditoria. Nunca lança: falha de auditoria não pode derrubar a
