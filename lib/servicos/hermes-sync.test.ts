@@ -83,6 +83,83 @@ describe("POST /api/agente/hermes: autenticação e relógio", () => {
   });
 });
 
+describe("POST /api/agente/hermes: contato do servidor (evita alerta agente_offline falso)", () => {
+  it("sync autenticado e aceito registra o contato do servidor (ultimo_contato_em = agora do servidor)", async () => {
+    const { mundo, deps, pedido } = criarMundoAgente();
+    const r = await tratarSyncHermes(pedido(corpoSyncValido()), deps);
+    expect(r.status).toBe(200);
+    expect(mundo.contatos).toEqual([{ servidorId: SERVIDOR_ID, em: mundo.agoraAtual }]);
+  });
+
+  it("não registra contato: não autenticado (assinatura/servidor), relógio fora, sem instalação, corpo inválido e REPLAY", async () => {
+    const { mundo, deps, pedido } = criarMundoAgente();
+    const outra = (await import("@/lib/crypto/ed25519")).gerarParEd25519().privadaB64;
+    await tratarSyncHermes(pedido(corpoSyncValido(), { assinarCom: outra }), deps);
+    await tratarSyncHermes(pedido(corpoSyncValido(), { servidorId: "99999999-9999-4999-8999-999999999999" }), deps);
+    await tratarSyncHermes(pedido(corpoSyncValido(), { ts: new Date(mundo.agoraAtual.getTime() + min(10)) }), deps);
+    await tratarSyncHermes(pedido({ agente_versao: "1" }), deps);
+    expect(mundo.contatos).toHaveLength(0);
+
+    expect((await tratarSyncHermes(pedido(corpoSyncValido()), deps)).status).toBe(200);
+    expect(mundo.contatos).toHaveLength(1);
+    // REPLAY (mesmo timestamp) não conta como contato novo
+    expect((await tratarSyncHermes(pedido(corpoSyncValido()), deps)).status).toBe(409);
+    expect(mundo.contatos).toHaveLength(1);
+
+    const sem = criarMundoAgente({ semInstalacao: true });
+    await tratarSyncHermes(sem.pedido(corpoSyncValido()), sem.deps);
+    expect(sem.mundo.contatos).toHaveLength(0);
+  });
+
+  it("REPLAY por perda da corrida atômica não registra contato", async () => {
+    const { mundo, deps, pedido } = criarMundoAgente();
+    mundo.avancarSempre = false;
+    expect((await tratarSyncHermes(pedido(corpoSyncValido()), deps)).status).toBe(409);
+    expect(mundo.contatos).toHaveLength(0);
+  });
+
+  it("falha ao registrar o contato nunca derruba o sync (best-effort)", async () => {
+    vi.spyOn(console, "error").mockImplementation(() => {});
+    const { mundo, deps, pedido } = criarMundoAgente();
+    mundo.falhaContato = true;
+    expect((await tratarSyncHermes(pedido(corpoSyncValido()), deps)).status).toBe(200);
+  });
+});
+
+describe("POST /api/agente/hermes: agente_alvo (auto-update do agente pelo canal Hermes)", () => {
+  const alvo = async (m: ReturnType<typeof criarMundoAgente>) =>
+    ((await tratarSyncHermes(m.pedido(corpoSyncValido()), m.deps)).corpo as { agente_alvo?: unknown }).agente_alvo;
+
+  it("sem release no painel: agente_alvo null (campo SEMPRE presente)", async () => {
+    expect(await alvo(criarMundoAgente())).toBeNull();
+  });
+
+  it("com versão-alvo do painel: { versao, url: null, sha256: null } (url/sha256 reservados para o P4)", async () => {
+    const m = criarMundoAgente();
+    m.mundo.versaoAlvoAgente = "0.6.1";
+    expect(await alvo(m)).toEqual({ versao: "0.6.1", url: null, sha256: null });
+  });
+
+  it("falha ao consultar o painel de release: agente_alvo null e o sync segue 200 com a licença", async () => {
+    vi.spyOn(console, "error").mockImplementation(() => {});
+    const m = criarMundoAgente();
+    m.mundo.versaoAlvoAgente = "erro";
+    const r = await tratarSyncHermes(m.pedido(corpoSyncValido()), m.deps);
+    expect(r.status).toBe(200);
+    expect(r.corpo).toMatchObject({ agente_alvo: null, digest_alvo: null });
+    expect((r.corpo as { licenca: unknown }).licenca).toBeTruthy();
+  });
+
+  it("503 (chave indisponível) não leva agente_alvo", async () => {
+    vi.spyOn(console, "error").mockImplementation(() => {});
+    const m = criarMundoAgente();
+    m.mundo.falhaAssinatura = true;
+    m.mundo.versaoAlvoAgente = "0.6.1";
+    const r = await tratarSyncHermes(m.pedido(corpoSyncValido()), m.deps);
+    expect(r).toEqual({ status: 503, corpo: { erro: "INDISPONIVEL" } });
+  });
+});
+
 describe("POST /api/agente/hermes: validação estrita", () => {
   it("400 para JSON inválido e 422 para campo desconhecido/ausente", async () => {
     const { deps, pedido } = criarMundoAgente();

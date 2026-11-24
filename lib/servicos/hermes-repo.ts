@@ -317,13 +317,17 @@ export const repoAtivacao: RepoAtivacao = {
 /**
  * Servidor criado pela ativação Hermes (instalação com `criado_por 'chave:%'`)? O Credit e o
  * Pic Price o tratam como desconhecido. Servidor adotado (já existente) NÃO conta.
+ *
+ * `rota`: informada pelas rotas do Credit que RECUSAM por isso; gera um aviso no log (só servidor_id e
+ * rota, sem segredos) para diagnosticar marcação errada. Não muda o retorno nem a resposta da rota.
  */
-export async function servidorEhHermes(servidorId: string): Promise<boolean> {
+export async function servidorEhHermes(servidorId: string, rota?: string): Promise<boolean> {
   const [i] = await db
     .select({ id: hermesInstalacoes.id })
     .from(hermesInstalacoes)
     .where(and(eq(hermesInstalacoes.servidorId, servidorId), like(hermesInstalacoes.criadoPor, `${PREFIXO_CRIADOR_CHAVE}%`)))
     .limit(1);
+  if (i && rota) console.warn(`[hermes] servidor ${servidorId} recusado em ${rota}: criado pela ativação Hermes`);
   return !!i;
 }
 
@@ -393,6 +397,11 @@ export async function gravarControleClone(instalacaoId: string, controle: Contro
            atualizado_em = now()
      WHERE id = ${instalacaoId}::uuid
   `);
+}
+
+/** Marca o contato do servidor (o sync aceito do Hermes faz o papel do heartbeat: ver DepsSync). */
+export async function registrarContatoServidor(servidorId: string, em: Date): Promise<void> {
+  await db.update(servidores).set({ ultimoContatoEm: em }).where(eq(servidores.id, servidorId));
 }
 
 /** Promoção atômica e condicional aguardando_ativacao -> ativa; true = esta chamada mudou a linha. */

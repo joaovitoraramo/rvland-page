@@ -29,6 +29,17 @@ export interface DepsSync extends DepsAuthAgente, DepsLicenca, DepsEfeitos {
    */
   gravarControleClone(instalacaoId: string, controle: ControleClone): Promise<void>;
   inserirEventos(servidorId: string, eventos: EventoNovo[]): Promise<void>;
+  /**
+   * `UPDATE servidores SET ultimo_contato_em=$em WHERE id=$id`: o sync aceito é o "heartbeat" do
+   * servidor Hermes (que não usa o do Credit); sem isto o cron de telemetria e o painel o
+   * tratariam como offline.
+   */
+  registrarContato(servidorId: string, em: Date): Promise<void>;
+  /**
+   * Versão-alvo do agente RV (pin do servidor, senão a última estável do painel de release; a
+   * MESMA regra do heartbeat do Credit). Null = sem release.
+   */
+  versaoAlvoAgente(servidorId: string): Promise<string | null>;
   /** Assina com RVLAND_HERMES_SK; lança se a chave não está disponível. */
   assinar(doc: DocumentoHermes): EnvelopeHermes;
 }
@@ -135,6 +146,13 @@ export async function tratarSyncHermes(e: EntradaAgente, deps: DepsSync): Promis
     return tratarReplay(instalacao, servidor.id, agora, deps);
   }
 
+  // sync aceito = servidor vivo (best-effort: falha aqui não derruba o ciclo de licença)
+  try {
+    await deps.registrarContato(servidor.id, agora);
+  } catch {
+    console.error("[hermes] não foi possível registrar o contato do servidor");
+  }
+
   const eventos = eventosDoAgente(corpo);
 
   // relógio: um evento só na transição confiável -> não confiável
@@ -207,6 +225,15 @@ export async function tratarSyncHermes(e: EntradaAgente, deps: DepsSync): Promis
 
   if (!envelope) return { status: 503, corpo: { erro: "INDISPONIVEL" } };
 
+  // auto-update do agente RV pelo canal Hermes (P4); url/sha256 reservados, o agente resolve a release
+  let agenteAlvo: { versao: string; url: null; sha256: null } | null = null;
+  try {
+    const versao = await deps.versaoAlvoAgente(servidor.id);
+    if (versao) agenteAlvo = { versao, url: null, sha256: null };
+  } catch {
+    console.error("[hermes] não foi possível consultar a versão-alvo do agente");
+  }
+
   return {
     status: 200,
     corpo: {
@@ -216,6 +243,8 @@ export async function tratarSyncHermes(e: EntradaAgente, deps: DepsSync): Promis
       canal: instalacao.canal,
       // reservado: preenchido no passo de atualização dirigida pelo RV
       digest_alvo: null,
+      // retrocompatível: campo novo; agente que o desconhece ignora
+      agente_alvo: agenteAlvo,
     },
   };
 }

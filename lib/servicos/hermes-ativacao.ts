@@ -185,12 +185,14 @@ export async function validarChaveHermes(e: { corpo: string; ip: string }, deps:
 
 /**
  * Prova de posse do agente RV existente, no domínio PRÓPRIO do Hermes
- * (lib/hermes/assinatura-agente.ts): `hermes:ativacao:<timestamp>.<sha256(instalacao_id)>`,
- * janela ±5 min. Assinatura do heartbeat do Credit ou de outra rota Hermes não vale.
+ * (lib/hermes/assinatura-agente.ts): `hermes:ativacao:<timestamp>.<sha256(instalacao_id + "\n" +
+ * machine_id_hash)>`, janela ±5 min. O machine_id_hash é o do fingerprint da PRÓPRIA requisição:
+ * a prova fica amarrada à máquina que ativa (não vale para outro fingerprint). Assinatura do heartbeat do Credit ou de outra rota Hermes não vale.
  */
 async function provaDeAdocao(
   chave: ChaveHermes,
   prova: { servidor_id: string; timestamp: string; assinatura: string } | undefined,
+  machineIdHash: string,
   agora: Date,
   deps: DepsAtivacao
 ): Promise<string | null> {
@@ -204,7 +206,7 @@ async function provaDeAdocao(
     rota: "ativacao",
     pubkeyB64: s.agentePubkey,
     timestamp: prova.timestamp,
-    rawBody: chave.instalacaoId,
+    rawBody: `${chave.instalacaoId}\n${machineIdHash}`,
     assinaturaB64: prova.assinatura,
   });
   return ok ? s.id : null;
@@ -215,7 +217,7 @@ async function provaDeAdocao(
  *
  * `instalar`: cria servidor pendente + instalação e devolve o token de enroll
  * do agente. `adotar`: o agente RV já instalado prova a posse (assinatura
- * `hermes:ativacao:...`, ver provaDeAdocao) e a instalação passa a apontar para o servidor dele.
+ * `hermes:ativacao:...` sobre instalacao_id + machine_id_hash, ver provaDeAdocao) e a instalação passa a apontar para o servidor dele.
  * Reentrada idempotente (mesma chave + machine_id_hash, ≤ 30 min).
  */
 export async function ativarHermes(e: { corpo: string; ip: string }, deps: DepsAtivacao): Promise<RespostaHttp> {
@@ -243,7 +245,7 @@ export async function ativarHermes(e: { corpo: string; ip: string }, deps: DepsA
 
   // ── adoção ──
   if (chave.tipo === "adocao") {
-    const servidorId = await provaDeAdocao(chave, c.agente_existente, agora, deps);
+    const servidorId = await provaDeAdocao(chave, c.agente_existente, c.fingerprint.machine_id_hash, agora, deps);
     if (!servidorId) return falhar(e.ip, deps);
 
     if (!prep.livre) {

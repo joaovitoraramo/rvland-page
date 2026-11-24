@@ -13,8 +13,10 @@ import { assinar, verificar } from "@/lib/crypto/ed25519";
  *     credencial  → /api/agente/hermes/credencial
  *     ativacao    → POST /api/hermes/ativacao, SÓ a prova de adoção (`agente_existente`):
  *                   não usa headers; servidor, timestamp e assinatura vão no JSON, e o
- *                   "corpo" assinado é o `instalacao_id` da chave de adoção (a prova
- *                   fica DENTRO do corpo da requisição, então não dá para assinar o corpo todo).
+ *                   "corpo" assinado é `instalacao_id + "\n" + machine_id_hash` (o id da instalação
+ *                   da chave de adoção e o machine_id_hash do fingerprint da MESMA requisição,
+ *                   o que amarra a prova à máquina; a prova fica DENTRO do corpo da requisição,
+ *                   então não dá para assinar o corpo todo).
  *
  *   Headers:
  *     X-RVLand-Servidor   : uuid do servidor (agente RV já enrolado)

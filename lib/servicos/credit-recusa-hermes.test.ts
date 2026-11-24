@@ -20,6 +20,7 @@ const estado = vi.hoisted(() => ({
   leaseChamado: 0,
   autorizacaoChamada: 0,
   modulosNoBanco: { licenca: true, picprice: true },
+  rotasRecusa: [] as (string | undefined)[],
 }));
 
 // Cadeia thenable do drizzle: o 1º select devolve o servidor; os demais, [] (ou os módulos no lease).
@@ -55,7 +56,12 @@ vi.mock("@/lib/db", () => {
     comandos: t("comandos"),
   };
 });
-vi.mock("@/lib/servicos/hermes-repo", () => ({ servidorEhHermes: async () => estado.hermes }));
+vi.mock("@/lib/servicos/hermes-repo", () => ({
+  servidorEhHermes: async (_id: string, rota?: string) => {
+    estado.rotasRecusa.push(rota);
+    return estado.hermes;
+  },
+}));
 vi.mock("@/lib/servicos/releases", () => ({ ultimaVersaoEstavel: async () => "1.2.3" }));
 vi.mock("@/lib/servicos/emitir-lease", () => ({
   emitirLease: async () => {
@@ -109,6 +115,21 @@ beforeEach(() => {
   estado.leaseChamado = 0;
   estado.autorizacaoChamada = 0;
   estado.modulosNoBanco = { licenca: true, picprice: true };
+  estado.rotasRecusa = [];
+});
+
+describe("diagnóstico: cada rota do Credit informa o nome ao verificar o servidor Hermes", () => {
+  it("heartbeat, picprice/autorizar e licenca passam a rota para o aviso de log", async () => {
+    const hb = await import("@/app/api/agente/heartbeat/route");
+    await hb.POST(pedido("/api/agente/heartbeat", "{}"));
+    estado.selects = 0;
+    const pp = await import("@/app/api/agente/picprice/autorizar/route");
+    await pp.POST(pedido("/api/agente/picprice/autorizar", "{}"));
+    estado.selects = 0;
+    const lic = await import("@/app/api/licenca/[servidor]/route");
+    await lic.GET(new Request("http://t/api/licenca/x"), { params: Promise.resolve({ servidor: SERVIDOR_ID }) });
+    expect(estado.rotasRecusa).toEqual(expect.arrayContaining(["heartbeat", "picprice/autorizar", "licenca"]));
+  });
 });
 
 describe("heartbeat do Credit", () => {

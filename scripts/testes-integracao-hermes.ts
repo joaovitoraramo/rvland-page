@@ -13,7 +13,10 @@
  *   6. reentrada idempotente da chave (mesma máquina, ≤ 30 min);
  *   7. promoção condicional aguardando_ativacao -> ativa (revogada nunca é promovida);
  *   2c. adoção de instalação revogada/desinstalada: recusada e a chave NÃO é consumida;
- *   1d/2d. `servidorEhHermes` (SQL): servidor criado pela ativação = true; servidor adotado = false.
+ *   1d/2d. `servidorEhHermes` (SQL): servidor criado pela ativação = true; servidor adotado = false;
+ *   8. `servidorEhHermes(id, rota)`: aviso de log só quando a rota informada recusa um servidor Hermes;
+ *   9. contato: `registrarContatoServidor` grava só o servidor certo; o sync aceito atualiza
+ *      `servidores.ultimo_contato_em`; REPLAY/401/422 não atualizam; falha ao gravar não derruba o sync.
  *
  * Uso (o banco precisa ter as migrações aplicadas: `DATABASE_URL=<descartavel> npm run db:migrate`):
  *
@@ -54,11 +57,15 @@ function confere(nome: string, ok: boolean, detalhe = "") {
 
 async function main() {
   const { sql, eq, inArray } = await import("drizzle-orm");
-  const { db, clientes, servidores, hermesChaves, hermesInstalacoes, hermesSolicitacoes, hermesLimites } = await import("../lib/db");
+  const { db, clientes, servidores, eventos, hermesChaves, hermesInstalacoes, hermesSolicitacoes, hermesLimites } = await import("../lib/db");
   const { gerarChaveHermes, expiraEmChave } = await import("../lib/hermes/chave");
   const { gerarParEd25519 } = await import("../lib/crypto/ed25519");
   const { assinarPedidoHermes } = await import("../lib/hermes/assinatura-agente");
-  const { repoAtivacao, repoLimites, repoSolicitacoes, avancarTimestamp, ativarSeAguardando, servidorEhHermes } = await import("../lib/servicos/hermes-repo");
+  const {
+    repoAtivacao, repoLimites, repoSolicitacoes, avancarTimestamp, ativarSeAguardando, servidorEhHermes,
+    registrarContatoServidor, servidorAtivo, instalacaoPorServidor, gravarInstalacao, gravarControleClone, inserirEventos, dadosLicencaCliente,
+  } = await import("../lib/servicos/hermes-repo");
+  const { tratarSyncHermes } = await import("../lib/servicos/hermes-sync");
   const { ativarHermes: ativarHermesSemRastro } = await import("../lib/servicos/hermes-ativacao");
   const { chaveDeIp } = await import("../lib/servicos/hermes-http");
 
@@ -145,9 +152,10 @@ async function main() {
     criados.instalacoes.push(instAd.id);
     const g2 = await novaChave("adocao", instAd.id);
     const ts = new Date().toISOString();
-    const prova = { servidor_id: srv.id, timestamp: ts, assinatura: assinarPedidoHermes("ativacao", ts, instAd.id, agente.privadaB64) };
+    // a prova assina instalacao_id + "\n" + machine_id_hash do fingerprint de CADA requisição
+    const provaDe = (m: string) => ({ servidor_id: srv.id, timestamp: ts, assinatura: assinarPedidoHermes("ativacao", ts, `${instAd.id}\n${fp(m).machine_id_hash}`, agente.privadaB64) });
     const r2 = await Promise.all(
-      Array.from({ length: N }, (_, i) => ativarHermes({ corpo: corpo(g2.chave, String(i + 1), { agente_existente: prova }), ip: `10.0.2.${i + 1}` }, efeitos))
+      Array.from({ length: N }, (_, i) => ativarHermes({ corpo: corpo(g2.chave, String(i + 1), { agente_existente: provaDe(String(i + 1)) }), ip: `10.0.2.${i + 1}` }, efeitos))
     );
     confere("2. N adoções simultâneas → exatamente UMA ok", r2.filter((r) => r.status === 200).length === 1, `ok=${r2.filter((r) => r.status === 200).length}`);
     const [ad] = await db.select({ servidorId: hermesInstalacoes.servidorId }).from(hermesInstalacoes).where(eq(hermesInstalacoes.id, instAd.id));
@@ -164,7 +172,7 @@ async function main() {
       criados.instalacoes.push(instMorta.id);
       const gm = await novaChave("adocao", instMorta.id);
       const tsm = new Date().toISOString();
-      const provaM = { servidor_id: srvM.id, timestamp: tsm, assinatura: assinarPedidoHermes("ativacao", tsm, instMorta.id, agM.privadaB64) };
+      const provaM = { servidor_id: srvM.id, timestamp: tsm, assinatura: assinarPedidoHermes("ativacao", tsm, `${instMorta.id}\n${fp("1").machine_id_hash}`, agM.privadaB64) };
       const rm = await ativarHermes({ corpo: corpo(gm.chave, "1", { agente_existente: provaM }), ip: "10.0.3.1" }, efeitos);
       const [km] = await db.select({ usadaEm: hermesChaves.usadaEm }).from(hermesChaves).where(eq(hermesChaves.tokenHash, gm.hash));
       const [im] = await db.select({ servidorId: hermesInstalacoes.servidorId }).from(hermesInstalacoes).where(eq(hermesInstalacoes.id, instMorta.id));
@@ -212,7 +220,69 @@ async function main() {
     confere("7b. revogada nunca é promovida a ativa", (await ativarSeAguardando(instRev.id, new Date())) === false);
     const [pr] = await db.select({ status: hermesInstalacoes.status }).from(hermesInstalacoes).where(eq(hermesInstalacoes.id, instRev.id));
     confere("7c. revogada continua revogada", pr.status === "revogada");
+
+    // 8) servidorEhHermes com/sem rota (aviso de diagnóstico só quando a rota do Credit recusa)
+    const agC = gerarParEd25519();
+    const [srvH] = await db.insert(servidores).values({ clienteId: cliente.id, nome: `SrvH ${tag}`, status: "ativo", agentePubkey: agC.publicaB64 }).returning({ id: servidores.id });
+    const [srvN] = await db.insert(servidores).values({ clienteId: cliente.id, nome: `SrvN ${tag}`, status: "ativo" }).returning({ id: servidores.id });
+    const [srvAd8] = await db.insert(servidores).values({ clienteId: cliente.id, nome: `SrvAd ${tag}`, status: "ativo" }).returning({ id: servidores.id });
+    await db.insert(hermesInstalacoes).values({ clienteId: cliente.id, nome: `IH ${tag}`, servidorId: srvH.id, criadoPor: `chave:${tag}` });
+    await db.insert(hermesInstalacoes).values({ clienteId: cliente.id, nome: `IAd8 ${tag}`, servidorId: srvAd8.id });
+    const avisos: string[] = [];
+    const warn0 = console.warn;
+    console.warn = (...a: unknown[]) => void avisos.push(a.join(" "));
+    try {
+      confere("8. servidor criado pela ativação, sem rota → true e nenhum aviso", (await servidorEhHermes(srvH.id)) === true && avisos.length === 0);
+      confere("8b. com rota → true e UM aviso com servidor_id e rota", (await servidorEhHermes(srvH.id, "heartbeat")) === true && avisos.length === 1 && avisos[0].includes(srvH.id) && avisos[0].includes("heartbeat"));
+      confere("8c. sem instalação, adotado ou inexistente, com rota → false e sem novo aviso",
+        (await servidorEhHermes(srvN.id, "licenca")) === false && (await servidorEhHermes(srvAd8.id, "licenca")) === false &&
+        (await servidorEhHermes("00000000-0000-4000-8000-000000000000", "x")) === false && avisos.length === 1);
+    } finally {
+      console.warn = warn0;
+    }
+
+    // 9) contato do servidor: registrarContatoServidor e o sync aceito (tratarSyncHermes real + repositório real)
+    const lerContato = async (id: string) => (await db.select({ c: servidores.ultimoContatoEm }).from(servidores).where(eq(servidores.id, id)))[0].c;
+    const limparContato = () => db.update(servidores).set({ ultimoContatoEm: null }).where(eq(servidores.id, srvH.id));
+    confere("9. ultimo_contato_em começa null", (await lerContato(srvH.id)) === null);
+    const em = new Date("2030-01-02T03:04:05.000Z");
+    await registrarContatoServidor(srvH.id, em);
+    confere("9b. registrarContatoServidor grava o instante e não toca outro servidor", (await lerContato(srvH.id))?.getTime() === em.getTime() && (await lerContato(srvN.id)) === null);
+    await limparContato();
+
+    // só efeitos, licença e assinatura são stubs
+    const depsSync = {
+      agora: () => new Date(), auditar: async () => {}, telegram: async () => true,
+      servidorAtivo, instalacaoPorServidor, avancarTimestamp, gravarInstalacao, gravarControleClone,
+      ativarSeAguardando, inserirEventos, registrarContato: registrarContatoServidor,
+      async dadosLicenca(c: string) { return { ...(await dadosLicencaCliente(c)), modoPanico: false, maxDiasConfianca: 0 }; },
+      async configEnforcement() { return { enforcementAtivo: false, offlineHoras: 72 }; },
+      versaoAlvoAgente: async () => null,
+      assinar: () => ({ stub: true }) as never,
+    };
+    const corpoSync = JSON.stringify({ container: { estado: "rodando" }, fingerprint: fp("sync") });
+    const pedidoSync = (ts: string, raw = corpoSync, pk = agC.privadaB64) => ({ servidorId: srvH.id, timestamp: ts, rawBody: raw, assinatura: assinarPedidoHermes("sync", ts, raw, pk) });
+    const antes = Date.now();
+    const ts1 = new Date().toISOString();
+    const s1 = await tratarSyncHermes(pedidoSync(ts1), depsSync);
+    const c1 = await lerContato(srvH.id);
+    confere("9c. sync aceito → 200 e atualiza servidores.ultimo_contato_em", s1.status === 200 && !!c1 && c1.getTime() >= antes - 1000 && c1.getTime() <= Date.now() + 1000, `status=${s1.status}`);
+    await limparContato();
+    const sRe = await tratarSyncHermes(pedidoSync(ts1), depsSync);
+    confere("9d. REPLAY → 409 e NÃO atualiza o contato", sRe.status === 409 && (await lerContato(srvH.id)) === null, `status=${sRe.status}`);
+    const sBad = await tratarSyncHermes(pedidoSync(new Date(Date.now() + 1000).toISOString(), corpoSync, gerarParEd25519().privadaB64), depsSync);
+    confere("9e. assinatura inválida → 401 e NÃO atualiza o contato", sBad.status === 401 && (await lerContato(srvH.id)) === null, `status=${sBad.status}`);
+    const sCorpo = await tratarSyncHermes(pedidoSync(new Date(Date.now() + 2000).toISOString(), JSON.stringify({ lixo: 1 })), depsSync);
+    confere("9f. corpo inválido → 422 e NÃO atualiza o contato", sCorpo.status === 422 && (await lerContato(srvH.id)) === null, `status=${sCorpo.status}`);
+    const erros: string[] = [];
+    const err0 = console.error;
+    console.error = (...a: unknown[]) => void erros.push(a.join(" "));
+    const sFalha = await tratarSyncHermes(pedidoSync(new Date(Date.now() + 3000).toISOString()), { ...depsSync, registrarContato: async () => { throw new Error("falha simulada"); } });
+    console.error = err0;
+    confere("9g. registrarContato falhando → sync segue 200 (best-effort)", sFalha.status === 200, `status=${sFalha.status}`);
   } finally {
+    const srvsDoCliente = await db.select({ id: servidores.id }).from(servidores).where(eq(servidores.clienteId, cliente.id));
+    if (srvsDoCliente.length) await db.delete(eventos).where(inArray(eventos.servidorId, srvsDoCliente.map((x) => x.id)));
     await db.delete(hermesSolicitacoes).where(inArray(hermesSolicitacoes.cnpj, [CNPJ2]));
     const chavesLimite = [`itest:${tag}`, ...[...ipsUsados].map((ip) => chaveDeIp("ativfalha", ip))];
     await db.delete(hermesLimites).where(inArray(hermesLimites.chave, chavesLimite));

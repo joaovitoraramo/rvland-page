@@ -9,6 +9,11 @@ import { exigirPermissao } from "@/lib/auth";
 import { registrarAuditoria } from "@/lib/audit";
 import { gerarTokenParaServidor } from "@/lib/servicos/enrollment";
 import { descreverModulos, modulosDoForm, type ModulosServidor } from "@/lib/dominio/agente-modulos";
+import { servidorEhHermes } from "@/lib/servicos/hermes-repo";
+
+// Servidor criado pela ativação Hermes não usa módulos, serviços gerenciados nem comandos do Credit/Pic Price.
+const MSG_SERVIDOR_HERMES =
+  "Este servidor foi criado pela ativação do Hermes e não usa módulos, serviços nem comandos do Credit ou do RV Pic Price.";
 
 // ── Servidor ─────────────────────────────────────────────────────────────────
 
@@ -120,6 +125,7 @@ export async function definirModulos(
   const perfil = await exigirPermissao("servidores.editar");
   const [srv] = await db.select().from(servidores).where(eq(servidores.id, servidorId));
   if (!srv) return { erro: "Servidor não encontrado." };
+  if (await servidorEhHermes(servidorId)) return { erro: MSG_SERVIDOR_HERMES };
   const novo = modulosDoForm(formData);
   if (!novo.licenca && !novo.picprice) return { erro: "Ligue pelo menos um módulo." };
   const anterior = { licenca: srv.moduloLicenca, picprice: srv.moduloPicprice };
@@ -200,6 +206,7 @@ export async function adicionarServico(
   formData: FormData
 ): Promise<EstadoServico> {
   const perfil = await exigirPermissao("servidores.editar");
+  if (await servidorEhHermes(servidorId)) return { erro: MSG_SERVIDOR_HERMES };
 
   const dados = esquemaServico.safeParse({
     nome: formData.get("nome"),
@@ -281,6 +288,8 @@ export async function enfileirarComando(
 
   const [srv] = await db.select().from(servidores).where(eq(servidores.id, servidorId));
   if (!srv || srv.status !== "ativo") return;
+  // o form action não exibe retorno: o erro sobe com a mensagem (a tela de servidor já é só do Credit)
+  if (await servidorEhHermes(servidorId)) throw new Error(MSG_SERVIDOR_HERMES);
 
   await db.insert(comandos).values({
     servidorId,

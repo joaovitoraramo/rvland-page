@@ -104,7 +104,7 @@ export async function POST(req: Request) {
     .limit(1);
 
   // servidor criado pela ativação Hermes não fala com o Credit: mesma resposta de desconhecido
-  if (!servidor || !servidor.agentePubkey || (await servidorEhHermes(servidor.id))) {
+  if (!servidor || !servidor.agentePubkey || (await servidorEhHermes(servidor.id, "heartbeat"))) {
     return NextResponse.json({ erro: "servidor desconhecido" }, { status: 401 });
   }
 

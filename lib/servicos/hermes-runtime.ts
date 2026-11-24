@@ -1,7 +1,7 @@
 import "server-only";
 import { eq } from "drizzle-orm";
 
-import { db, configuracoes } from "@/lib/db";
+import { db, configuracoes, servidores } from "@/lib/db";
 import { getConfig } from "@/lib/config";
 import { registrarAuditoria } from "@/lib/audit";
 import { enviarTelegram } from "@/lib/telegram";
@@ -9,6 +9,7 @@ import { getConfigHermes } from "@/lib/hermes/config";
 import { assinarDocumentoHermesAmbiente } from "@/lib/crypto/hermes";
 import { supabaseAdmin } from "@/lib/supabase/admin";
 import { gerarTokenParaServidor } from "@/lib/servicos/enrollment";
+import { ultimaVersaoEstavel } from "@/lib/servicos/releases";
 import {
   ativarSeAguardando,
   avancarTimestamp,
@@ -18,6 +19,7 @@ import {
   gravarInstalacao,
   inserirEventos,
   instalacaoPorServidor,
+  registrarContatoServidor,
   repoAtivacao,
   repoLimites,
   repoSolicitacoes,
@@ -71,6 +73,12 @@ export const depsSync: DepsSync = {
   gravarControleClone,
   ativarSeAguardando,
   inserirEventos,
+  registrarContato: registrarContatoServidor,
+  // mesma regra do heartbeat do Credit (pin do servidor tem prioridade; senão, a última estável)
+  async versaoAlvoAgente(servidorId) {
+    const [s] = await db.select({ versaoAlvo: servidores.versaoAlvo }).from(servidores).where(eq(servidores.id, servidorId)).limit(1);
+    return s?.versaoAlvo ?? (await ultimaVersaoEstavel());
+  },
   assinar: assinarDocumentoHermesAmbiente,
 };
 

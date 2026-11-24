@@ -90,6 +90,11 @@ export function criarMundoAgente(
     auditoria: [] as EntradaAuditoria[],
     telegrams: [] as string[],
     patches: [] as PatchInstalacao[],
+    /** Contatos registrados em `servidores.ultimo_contato_em` (sync autenticado e aceito). */
+    contatos: [] as { servidorId: string; em: Date }[],
+    falhaContato: false,
+    /** Versão-alvo do agente (painel de release); "erro" simula falha da consulta. */
+    versaoAlvoAgente: null as string | null | "erro",
     avancarSempre: true,
     falhaAssinatura: false,
     set agora(d: Date) {
@@ -141,6 +146,14 @@ export function criarMundoAgente(
     },
     async inserirEventos(servidorId: string, evs: EventoNovo[]) {
       for (const e of evs) mundo.eventos.push({ ...e, servidorId });
+    },
+    async registrarContato(servidorId: string, em: Date) {
+      if (mundo.falhaContato) throw new Error("banco indisponível");
+      mundo.contatos.push({ servidorId, em });
+    },
+    async versaoAlvoAgente() {
+      if (mundo.versaoAlvoAgente === "erro") throw new Error("banco indisponível");
+      return mundo.versaoAlvoAgente;
     },
     assinar(doc: DocumentoHermes) {
       if (mundo.falhaAssinatura) throw new Error("RVLAND_HERMES_SK não configurada (detalhe interno)");

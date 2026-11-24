@@ -255,15 +255,16 @@ describe("POST /api/hermes/ativacao: adotar", () => {
     w.mundo.servidores.set(SERVIDOR, { id: SERVIDOR, clienteId: "c1", status: "ativo", agentePubkey: agente.publicaB64 });
     w.mundo.instalacoes.push({ id: "inst-1", servidorId: null, clienteId: "c1", canal: "stable", cnpj: CNPJ_CLIENTE, fingerprint: null });
     const chave = w.emitirChave({ tipo: "adocao", instalacaoId: "inst-1" });
-    const prova = (ts = w.mundo.agoraAtual, instalacao = "inst-1", priv = agente.privadaB64) => ({
+    // "corpo" assinado = instalacao_id + "\n" + machine_id_hash (amarra a prova ao fingerprint da requisição)
+    const prova = (ts = w.mundo.agoraAtual, instalacao = "inst-1", priv = agente.privadaB64, machine = MACHINE_ID) => ({
       servidor_id: SERVIDOR,
       timestamp: ts.toISOString(),
-      assinatura: assinarPedidoHermes("ativacao", ts.toISOString(), instalacao, priv),
+      assinatura: assinarPedidoHermes("ativacao", ts.toISOString(), `${instalacao}\n${machine}`, priv),
     });
     return { ...w, chave, agente, prova };
   }
 
-  it("verifica a assinatura `hermes:ativacao:<ts>.<sha256(instalacao_id)>` e vincula o servidor ativo", async () => {
+  it("verifica a assinatura `hermes:ativacao:<ts>.<sha256(instalacao_id\\nmachine_id_hash)>` e vincula o servidor ativo", async () => {
     const { mundo, deps, chave, prova } = cenario();
     const r = await ativarHermes({ corpo: body(chave, { agente_existente: prova() }), ip: IP }, deps);
     expect(r.status).toBe(200);
@@ -289,12 +290,24 @@ describe("POST /api/hermes/ativacao: adotar", () => {
     const assinaturas = [
       assinar(mensagemAssinada(ts, "ativar:inst-1"), agente.privadaB64), // esquema antigo (heartbeat do Credit)
       assinar(mensagemAssinada(ts, "inst-1"), agente.privadaB64), // heartbeat do Credit sobre o id
-      assinarPedidoHermes("sync", ts, "inst-1", agente.privadaB64),
-      assinarPedidoHermes("credencial", ts, "inst-1", agente.privadaB64),
+      assinarPedidoHermes("sync", ts, `inst-1\n${MACHINE_ID}`, agente.privadaB64),
+      assinarPedidoHermes("credencial", ts, `inst-1\n${MACHINE_ID}`, agente.privadaB64),
+      assinarPedidoHermes("ativacao", ts, "inst-1", agente.privadaB64), // esquema anterior: só o instalacao_id
     ];
     for (const [i, assinatura] of assinaturas.entries()) {
       const ae = { servidor_id: SERVIDOR, timestamp: ts, assinatura };
       const r = await ativarHermes({ corpo: body(chave, { agente_existente: ae }), ip: `6.6.6.${i + 1}` }, deps);
+      expect(r, String(i)).toEqual({ status: 401, corpo: { erro: "CHAVE_INVALIDA" } });
+    }
+    expect([...mundo.chaves.values()][0].usadaEm).toBeNull();
+  });
+
+  it("a prova está amarrada ao fingerprint: assinada para OUTRO machine_id_hash (ou só o instalacao_id) é recusada e não consome a chave", async () => {
+    const { mundo, deps, chave, prova, agente } = cenario();
+    const ts = mundo.agoraAtual.toISOString();
+    const soInstalacao = { servidor_id: SERVIDOR, timestamp: ts, assinatura: assinarPedidoHermes("ativacao", ts, "inst-1", agente.privadaB64) };
+    for (const [i, ae] of [prova(undefined, "inst-1", undefined, "e".repeat(64)), soInstalacao].entries()) {
+      const r = await ativarHermes({ corpo: body(chave, { agente_existente: ae }), ip: `7.7.7.${i + 1}` }, deps);
       expect(r, String(i)).toEqual({ status: 401, corpo: { erro: "CHAVE_INVALIDA" } });
     }
     expect([...mundo.chaves.values()][0].usadaEm).toBeNull();
@@ -346,7 +359,7 @@ describe("POST /api/hermes/ativacao: adotar", () => {
 
   it("consumo atômico na adoção: duas simultâneas → uma só", async () => {
     const { deps, chave, prova } = cenario();
-    const mk = (mid: string, ip: string) => ativarHermes({ corpo: body(chave, { fingerprint: { machine_id_hash: mid }, agente_existente: prova() }), ip }, deps);
+    const mk = (mid: string, ip: string) => ativarHermes({ corpo: body(chave, { fingerprint: { machine_id_hash: mid }, agente_existente: prova(undefined, "inst-1", undefined, mid) }), ip }, deps);
     const [x, y] = await Promise.all([mk("a".repeat(64), "1.1.1.1"), mk("b".repeat(64), "2.2.2.2")]);
     expect([x.status, y.status].sort()).toEqual([200, 401]);
   });
@@ -371,7 +384,7 @@ describe("servidor criado pela ativação Hermes é marcável (isolamento do Cre
     w.mundo.instalacoes.push({ id: "inst-1", servidorId: null, clienteId: "c1", canal: "stable", cnpj: CNPJ_CLIENTE, fingerprint: null, criadoPor: "painel" });
     const chave = w.emitirChave({ tipo: "adocao", instalacaoId: "inst-1" });
     const ts = w.mundo.agoraAtual.toISOString();
-    const prova = { servidor_id: "55555555-5555-4555-8555-555555555555", timestamp: ts, assinatura: assinarPedidoHermes("ativacao", ts, "inst-1", agente.privadaB64) };
+    const prova = { servidor_id: "55555555-5555-4555-8555-555555555555", timestamp: ts, assinatura: assinarPedidoHermes("ativacao", ts, `inst-1\n${MACHINE_ID}`, agente.privadaB64) };
     expect((await ativarHermes({ corpo: body(chave, { agente_existente: prova }), ip: IP }, w.deps)).status).toBe(200);
     expect(foiCriadaPorChave(w.mundo.instalacoes[0].criadoPor)).toBe(false);
   });

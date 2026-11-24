@@ -28,7 +28,7 @@ export async function GET(
     .where(eq(servidores.id, servidorId))
     .limit(1);
 
-  if (!servidor || servidor.status !== "ativo" || (await servidorEhHermes(servidor.id))) {
+  if (!servidor || servidor.status !== "ativo" || (await servidorEhHermes(servidor.id, "licenca"))) {
     return NextResponse.json({ erro: "servidor não encontrado" }, { status: 404 });
   }
 

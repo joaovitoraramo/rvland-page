@@ -37,7 +37,7 @@ export async function POST(req: Request) {
     .limit(1);
   if (
     !servidor?.agentePubkey ||
-    (await servidorEhHermes(servidor.id)) || // servidor Hermes não usa o Pic Price: igual a desconhecido
+    (await servidorEhHermes(servidor.id, "picprice/autorizar")) || // servidor Hermes não usa o Pic Price: igual a desconhecido
     !verificarHeartbeat({ pubkeyB64: servidor.agentePubkey, timestamp, rawBody, assinaturaB64: assinatura })
   ) {
     return naoAutenticado();

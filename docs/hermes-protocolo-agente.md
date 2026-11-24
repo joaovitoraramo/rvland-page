@@ -25,7 +25,6 @@ servidor do Credit) não é marcado e continua como era. A marca é `hermes_inst
 |---|---|---|
 | `sync` | `POST /api/agente/hermes` | JSON estrito (`esquemaSync`; campo desconhecido = 422) |
 | `credencial` | `POST /api/agente/hermes/credencial` | exatamente `{"pedido":"credencial"}` (obrigatório e estrito) |
-
 | `ativacao` | `POST /api/hermes/ativacao` (só a prova de adoção) | ver "Prova de adoção" |
 
 Corpo máximo: 64 KB. `Content-Type: application/json`.
@@ -65,16 +64,19 @@ chave privada no objeto `agente_existente` do JSON (não usa os headers `X-RVLan
 { "agente_existente": { "servidor_id": "<uuid>", "timestamp": "<RFC 3339>", "assinatura": "<base64>" } }
 ```
 
-A mensagem assinada segue o esquema comum, com a rota `ativacao` e o `instalacao_id` da chave de
-adoção como "corpo" (a prova fica dentro do corpo da requisição, então não dá para assinar o corpo todo):
+A mensagem assinada segue o esquema comum, com a rota `ativacao` e, como "corpo",
+`instalacao_id + "\n" + machine_id_hash` (a prova fica dentro do corpo da requisição, então não dá para
+assinar o corpo todo):
 
 ```
-hermes:ativacao:<timestamp>.<sha256_hex(instalacao_id)>
+hermes:ativacao:<timestamp>.<sha256_hex(instalacao_id + "\n" + machine_id_hash)>
 ```
 
 `instalacao_id` = uuid da instalação a adotar (o mesmo devolvido por `validar`/exibido pelo painel),
-em texto minúsculo, UTF-8. `timestamp` dentro de ±5 min. Não valem: `ativar:<instalacao>` (esquema antigo),
-a assinatura do heartbeat do Credit, nem a de `sync`/`credencial`. Falha = 401 `CHAVE_INVALIDA`
+em texto minúsculo, UTF-8. `machine_id_hash` = o do `fingerprint` da MESMA requisição de ativação (a prova
+fica amarrada à máquina que ativa; assinada para outro fingerprint, é recusada). O separador é um único `\n`
+(0x0A). `timestamp` dentro de ±5 min. Não valem: o esquema anterior (só o `instalacao_id`), `ativar:<instalacao>`
+(esquema antigo), a assinatura do heartbeat do Credit, nem a de `sync`/`credencial`. Falha = 401 `CHAVE_INVALIDA`
 (igual a chave inexistente) e a chave NÃO é consumida.
 
 ## `sync`
@@ -88,8 +90,15 @@ canal_em_uso?, iniciado_em?}`, `fingerprint{machine_id_hash, boot_id?, hostname_
 
 ```json
 { "licenca": { "payload": "<base64 JSON>", "assinatura": "<base64>", "kid": "h1" },
-  "agora": "<ISO do servidor>", "intervalo_seg": 60, "canal": "stable|preview", "digest_alvo": null }
+  "agora": "<ISO do servidor>", "intervalo_seg": 60, "canal": "stable|preview", "digest_alvo": null,
+  "agente_alvo": { "versao": "0.6.1", "url": null, "sha256": null } }
 ```
+
+`agente_alvo` (retrocompatível; agente que não o conhece ignora): versão-alvo do agente RV, ou `null` quando não há
+release. É a MESMA regra do `versao_alvo` do heartbeat do Credit: pin do servidor (`servidores.versao_alvo`) e, se não
+houver, a última release estável ativa do painel de release. `url` e `sha256` são reservados (hoje sempre `null`,
+dependem da arquitetura): o P4 resolve a release por `GET /api/agente/release?versao=<versao>&arch=<arch>` (sha256 e
+assinatura de release) e `GET /api/agente/binario`. `digest_alvo` (container) segue `null` até a atualização dirigida pelo RV.
 
 `licenca` é o documento assinado com a chave Hermes (kid `h1`; verificar com a `RVLAND_HERMES_PK`
 embutida). O modo (`simulacao`/`valendo`) vem só dele: o agente só bloqueia com `modo=valendo`.
@@ -97,6 +106,19 @@ embutida). O modo (`simulacao`/`valendo`) vem só dele: o agente só bloqueia co
 Ciclo normal: 1 sync a cada 60 s, com `X-RVLand-Timestamp` estritamente crescente.
 O servidor só ALERTA (nunca bloqueia) sobre sinais de clone: boot_id alternando, mais de 2 syncs em
 60 s, `machine_id_hash` mudando entre syncs e REPLAYs assinados repetidos (3 em 10 min).
+
+## Modo Hermes do agente (P4)
+
+Agente em servidor criado por chave de instalação (`criado_por 'chave:%'`) NÃO chama `POST /api/agente/heartbeat`
+(recebe 401, como servidor desconhecido): usa só `POST /api/agente/hermes` (`sync`) e `POST /api/agente/hermes/credencial`
+(mais enroll/download do binário). Não há módulos, serviços gerenciados nem comandos do Credit/Pic Price para ele (o lease do
+enroll sai sem módulos, sem serviços e sem o status de licença do Credit; o painel recusa editá-los).
+
+- **Presença**: cada `sync` aceito (autenticado, sem RELOGIO/REPLAY) atualiza `servidores.ultimo_contato_em`; é o que mantém o
+  servidor "online" no painel e evita o alerta `agente_offline` do cron de telemetria. O agente só precisa manter o ciclo de 60 s.
+- **Auto-update do agente**: o `sync` traz `agente_alvo` (acima). Se `versao` difere da instalada, baixar e verificar a release
+  (sha256 + assinatura de release) como o agente do Credit faz; hoje `url`/`sha256` vêm `null`.
+- **Auto-update do container**: o `sync` traz `digest_alvo` (hoje `null`) e a credencial do registro vem da rota `credencial`.
 
 ## `credencial`
 

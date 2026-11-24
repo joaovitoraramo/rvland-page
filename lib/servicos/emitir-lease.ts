@@ -38,15 +38,16 @@ export async function emitirLease(servidor: {
       .limit(1),
     servidorEhHermes(servidor.id),
   ]);
-  // servidor criado pela ativação Hermes nunca habilita o Pic Price, mesmo com a flag ligada
-  const modulos = { ...(mods[0] ?? { licenca: true, picprice: false }), ...(hermes ? { picprice: false } : {}) };
+  // servidor criado pela ativação Hermes não recebe NADA do Credit: sem módulos (mesmo com a flag
+  // ligada no cadastro), sem serviços licenciados e sem o status de licença do cliente
+  const modulos = hermes ? { licenca: false, picprice: false } : (mods[0] ?? { licenca: true, picprice: false });
 
   const payload = montarLease({
     servidorId: servidor.id,
     clienteId: servidor.clienteId,
     hoje: hojeSP(),
-    licenca,
-    servicosLicenciados: servicos.map((s) => s.unidade),
+    licenca: hermes ? { status: "sem_licenca", venceEm: null, toleradoAte: null } : licenca,
+    servicosLicenciados: hermes ? [] : servicos.map((s) => s.unidade),
     modoSimulacao: config.modoSimulacao,
     modoPanico: config.modoPanico,
     modulos,
