@@ -14,7 +14,10 @@ import {
   ScrollText,
   LogOut,
   Menu,
-  X, Tag } from "lucide-react";
+  X,
+  Tag,
+  Boxes,
+} from "lucide-react";
 
 import { cn } from "@/lib/utils";
 import { Avatar } from "@/components/painel/ui";
@@ -30,6 +33,7 @@ const ICONES = {
   config: Settings2,
   auditoria: ScrollText,
   picprice: Tag,
+  hermes: Boxes,
 } as const;
 
 /**

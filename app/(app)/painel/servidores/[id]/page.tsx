@@ -1,7 +1,7 @@
 import Link from "next/link";
 import { notFound } from "next/navigation";
 import { and, desc, eq } from "drizzle-orm";
-import { ArrowUpRight, Ban, Clock, Cpu, HardDrive, MemoryStick, Server, User } from "lucide-react";
+import { ArrowUpRight, Ban, Boxes, Clock, Cpu, HardDrive, MemoryStick, Server, User } from "lucide-react";
 
 import {
   db,
@@ -15,6 +15,9 @@ import {
 import { exigirPermissao, pode } from "@/lib/auth";
 import { SITE_URL } from "@/lib/site";
 import { statusAgora, segundosDesde } from "@/lib/consultas/servidores";
+import { capacidadesServidorPainel } from "@/lib/dominio/servidor-painel";
+import { instalacaoIdDoServidor } from "@/lib/servicos/hermes-painel-repo";
+import { servidorEhHermes } from "@/lib/servicos/hermes-repo";
 import {
   adicionarServico,
   definirModulos,
@@ -107,7 +110,14 @@ export default async function PaginaServidor({ params }: { params: Promise<{ id:
 
   const status = statusAgora({ status: servidor.status, ultimoContatoEm: servidor.ultimoContatoEm });
   const ativo = servidor.status === "ativo";
-  const podeExecutar = pode(perfil, "servidores.executar") && ativo;
+  const ehHermes = await servidorEhHermes(id);
+  const instalacaoHermesId = ehHermes ? await instalacaoIdDoServidor(id) : null;
+  const cap = capacidadesServidorPainel({
+    ehHermes,
+    ativo,
+    podeExecutar: pode(perfil, "servidores.executar"),
+  });
+  const podeExecutar = cap.mostrarComandos;
   const podeEditar = pode(perfil, "servidores.editar");
 
   const uptimeStr =
@@ -125,6 +135,9 @@ export default async function PaginaServidor({ params }: { params: Promise<{ id:
           <>
             {ativo ? <MonitorVivo segundosIniciais={segundosDesde(servidor.ultimoContatoEm)} /> : null}
             <BadgeServidor status={status} />
+            {ehHermes ? (
+              <span className="rv-eyebrow rounded-full border border-[rgba(0,229,255,0.3)] bg-[rgba(0,229,255,0.08)] px-3 py-1.5 !text-[#8AF0FF]">Hermes</span>
+            ) : null}
             {servidor.agenteVersao ? (
               <span className="rv-eyebrow rounded-full border border-white/12 px-3 py-1.5">v{servidor.agenteVersao}</span>
             ) : null}
@@ -170,7 +183,7 @@ export default async function PaginaServidor({ params }: { params: Promise<{ id:
         </div>
       ) : null}
 
-      {ativo ? (
+      {ativo && !ehHermes ? (
         <div className="rv-entrar-1 mb-4">
           <Card>
             <CardHeader>
@@ -190,32 +203,62 @@ export default async function PaginaServidor({ params }: { params: Promise<{ id:
         </div>
       ) : null}
 
-      {ativo ? (
+      {ativo && !ehHermes ? (
         <div className="rv-entrar-2 mb-4">
           <HardwareCard hardware={servidor.hardware ?? null} />
         </div>
       ) : null}
 
-      <div className="rv-entrar-2 mb-4">
-        <CardModulos
-          acao={definirModulos.bind(null, id)}
-          modulos={{ licenca: servidor.moduloLicenca, picprice: servidor.moduloPicprice }}
-          podeEditar={pode(perfil, "servidores.editar")}
-        />
-      </div>
+      {cap.mostrarCartaoHermes ? (
+        <div className="rv-entrar-2 mb-4">
+          <Card>
+            <CardHeader>
+              <CardTitle className="flex items-center gap-2 text-base text-white">
+                <Boxes className="size-4 text-[#8AF0FF]" />
+                Servidor Hermes
+              </CardTitle>
+            </CardHeader>
+            <CardContent className="space-y-3">
+              <p className="text-sm leading-relaxed text-white/60">
+                Este servidor foi criado pela ativação do Hermes. Ele não usa módulos, serviços gerenciados nem comandos (iniciar, parar, atualizar) do Credit ou do RV Pic Price:
+                a licença, o canal e a atualização são geridos na tela do Hermes.
+              </p>
+              {instalacaoHermesId ? (
+                <Btn asChild variante="primario" tamanho="sm">
+                  <Link href={`/painel/hermes/${instalacaoHermesId}`}>
+                    Abrir a instalação Hermes <ArrowUpRight className="size-3.5" />
+                  </Link>
+                </Btn>
+              ) : null}
+            </CardContent>
+          </Card>
+        </div>
+      ) : null}
 
-      <div className="grid gap-4 lg:grid-cols-2">
-        <div className="rv-entrar-2">
-          <CardServicos
-            servidorId={id}
-            servicos={servicos}
-            snapshots={snapshots}
-            pendentes={pendentes}
-            podeExecutar={podeExecutar}
-            podeEditar={podeEditar}
-            acaoServico={adicionarServico.bind(null, id)}
+      {cap.mostrarModulos ? (
+        <div className="rv-entrar-2 mb-4">
+          <CardModulos
+            acao={definirModulos.bind(null, id)}
+            modulos={{ licenca: servidor.moduloLicenca, picprice: servidor.moduloPicprice }}
+            podeEditar={pode(perfil, "servidores.editar")}
           />
         </div>
+      ) : null}
+
+      <div className="grid gap-4 lg:grid-cols-2">
+        {cap.mostrarServicos ? (
+          <div className="rv-entrar-2">
+            <CardServicos
+              servidorId={id}
+              servicos={servicos}
+              snapshots={snapshots}
+              pendentes={pendentes}
+              podeExecutar={podeExecutar}
+              podeEditar={podeEditar}
+              acaoServico={adicionarServico.bind(null, id)}
+            />
+          </div>
+        ) : null}
 
         <Card className="rv-entrar-3">
           <CardHeader>

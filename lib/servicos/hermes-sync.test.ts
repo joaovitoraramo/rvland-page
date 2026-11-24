@@ -1,6 +1,7 @@
 import { describe, it, expect, vi, afterEach } from "vitest";
 
 import { verificarDocumentoHermes } from "@/lib/crypto/hermes";
+import { avaliarProntidaoEnforcement, chaveConfigurada } from "@/lib/hermes/painel";
 import { tratarSyncHermes } from "./hermes-sync";
 import type { RespostaHttp } from "./hermes-http";
 import { criarMundoAgente, corpoSyncValido, INSTALACAO_ID, SERVIDOR_ID } from "./hermes-memoria";
@@ -89,6 +90,72 @@ describe("POST /api/agente/hermes: contato do servidor (evita alerta agente_offl
     const r = await tratarSyncHermes(pedido(corpoSyncValido()), deps);
     expect(r.status).toBe(200);
     expect(mundo.contatos).toEqual([{ servidorId: SERVIDOR_ID, em: mundo.agoraAtual }]);
+  });
+
+  it("sync aceito grava a versão do agente na coluna; sem a versão (ausente ou vazia) a coluna anterior fica", async () => {
+    const { mundo, deps, pedido } = criarMundoAgente();
+    expect((await tratarSyncHermes(pedido(corpoSyncValido({ agente_versao: "0.7.0" })), deps)).status).toBe(200);
+    expect(mundo.servidorAgenteVersao).toBe("0.7.0");
+
+    // ausente
+    mundo.agora = new Date(mundo.agoraAtual.getTime() + min(1));
+    const semVersao: Record<string, unknown> = corpoSyncValido();
+    delete semVersao.agente_versao;
+    expect((await tratarSyncHermes(pedido(semVersao), deps)).status).toBe(200);
+    expect(mundo.servidorAgenteVersao).toBe("0.7.0");
+
+    // vazia
+    mundo.agora = new Date(mundo.agoraAtual.getTime() + min(1));
+    expect((await tratarSyncHermes(pedido(corpoSyncValido({ agente_versao: "" })), deps)).status).toBe(200);
+    expect(mundo.servidorAgenteVersao).toBe("0.7.0");
+
+    // nova versão troca
+    mundo.agora = new Date(mundo.agoraAtual.getTime() + min(1));
+    await tratarSyncHermes(pedido(corpoSyncValido({ agente_versao: "0.7.1" })), deps);
+    expect(mundo.servidorAgenteVersao).toBe("0.7.1");
+    expect(mundo.contatos).toHaveLength(4); // o contato é sempre registrado; só a versão é condicional
+    // NOTA: quem garante o "não sobrescreve" é este mundo em memória, que reproduz a regra do repositório;
+    // a regra real do repositório (UPDATE sem a coluna) está em hermes-repo-contato.test.ts e, no SQL, no caso 5e
+    // de scripts/testes-integracao-hermes-painel.ts.
+  });
+
+  it("`container.chave_configurada`: o valor vem SÓ do corpo autenticado; o servidor nunca inventa `true`", async () => {
+    const { mundo, deps, pedido } = criarMundoAgente();
+    // agente antigo (sem o campo): ausente no saude => painel continua bloqueado (fail-closed)
+    expect((await tratarSyncHermes(pedido(corpoSyncValido()), deps)).status).toBe(200);
+    const semCampo = mundo.patches.at(-1)?.saude as Record<string, unknown>;
+    expect(semCampo).toMatchObject({ container: "rodando", saude: "saudavel", agente_versao: "0.7.0" });
+    expect(semCampo).not.toHaveProperty("chave_configurada");
+    expect(chaveConfigurada(mundo.instalacao.saude)).toBeNull();
+    expect(avaliarProntidaoEnforcement([{ id: INSTALACAO_ID, nome: "x", status: "ativa", saude: mundo.instalacao.saude }]).pode).toBe(false);
+
+    // o agente prova a cadeia imagem↔agente: true gravado exatamente como veio
+    const comCampo = (v: unknown) => corpoSyncValido({ container: { ...corpoSyncValido().container, chave_configurada: v } });
+    mundo.agora = new Date(mundo.agoraAtual.getTime() + min(1));
+    expect((await tratarSyncHermes(pedido(comCampo(true)), deps)).status).toBe(200);
+    expect((mundo.patches.at(-1)?.saude as Record<string, unknown>).chave_configurada).toBe(true);
+    expect(avaliarProntidaoEnforcement([{ id: INSTALACAO_ID, nome: "x", status: "ativa", saude: mundo.instalacao.saude }]).pode).toBe(true);
+
+    // false do agente: gravado false, bloqueia
+    mundo.agora = new Date(mundo.agoraAtual.getTime() + min(2));
+    expect((await tratarSyncHermes(pedido(comCampo(false)), deps)).status).toBe(200);
+    expect(chaveConfigurada(mundo.instalacao.saude)).toBe(false);
+
+    // o agente parou de mandar (rollback do agente): o `saude` é regravado inteiro, a prova some
+    mundo.agora = new Date(mundo.agoraAtual.getTime() + min(3));
+    await tratarSyncHermes(pedido(comCampo(true)), deps);
+    mundo.agora = new Date(mundo.agoraAtual.getTime() + min(4));
+    await tratarSyncHermes(pedido(corpoSyncValido()), deps);
+    expect(chaveConfigurada(mundo.instalacao.saude)).toBeNull();
+  });
+
+  it("`container.chave_configurada` só aceita booleano (esquema estrito): string/número = 422 e nada gravado", async () => {
+    const { mundo, deps, pedido } = criarMundoAgente();
+    for (const v of ["true", 1, null]) {
+      const r = await tratarSyncHermes(pedido(corpoSyncValido({ container: { ...corpoSyncValido().container, chave_configurada: v } })), deps);
+      expect(r.status).toBe(422);
+    }
+    expect(mundo.patches).toHaveLength(0);
   });
 
   it("não registra contato: não autenticado (assinatura/servidor), relógio fora, sem instalação, corpo inválido e REPLAY", async () => {

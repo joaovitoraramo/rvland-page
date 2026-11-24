@@ -92,6 +92,14 @@ export function criarMundoAgente(
     patches: [] as PatchInstalacao[],
     /** Contatos registrados em `servidores.ultimo_contato_em` (sync autenticado e aceito). */
     contatos: [] as { servidorId: string; em: Date }[],
+    /**
+     * Coluna `servidores.agente_versao` do servidor do mundo. Reproduz a regra de `registrarContatoServidor`
+     * (hermes-repo.ts): versão ausente/vazia NÃO sobrescreve. A regra do repo em si é provada em
+     * hermes-repo-contato.test.ts (unidade) e no caso 5e da integração do painel (SQL real).
+     */
+    servidorAgenteVersao: null as string | null,
+    /** Versões efetivamente gravadas na coluna, em ordem. */
+    versoesAgente: [] as { servidorId: string; versao: string }[],
     falhaContato: false,
     /** Versão-alvo do agente (painel de release); "erro" simula falha da consulta. */
     versaoAlvoAgente: null as string | null | "erro",
@@ -147,9 +155,13 @@ export function criarMundoAgente(
     async inserirEventos(servidorId: string, evs: EventoNovo[]) {
       for (const e of evs) mundo.eventos.push({ ...e, servidorId });
     },
-    async registrarContato(servidorId: string, em: Date) {
+    async registrarContato(servidorId: string, em: Date, agenteVersao?: string | null) {
       if (mundo.falhaContato) throw new Error("banco indisponível");
       mundo.contatos.push({ servidorId, em });
+      if (agenteVersao) {
+        mundo.servidorAgenteVersao = agenteVersao;
+        mundo.versoesAgente.push({ servidorId, versao: agenteVersao });
+      }
     },
     async versaoAlvoAgente() {
       if (mundo.versaoAlvoAgente === "erro") throw new Error("banco indisponível");

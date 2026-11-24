@@ -79,12 +79,19 @@ export default async function PaginaServidores() {
               {lista.map((s) => (
                 <TableRow key={s.id}>
                   <TableCell>
-                    <Link
-                      href={`/painel/servidores/${s.id}`}
-                      className="font-medium text-white hover:text-[#8AF0FF]"
-                    >
-                      {s.nome}
-                    </Link>
+                    <div className="flex flex-wrap items-center gap-2">
+                      <Link
+                        href={`/painel/servidores/${s.id}`}
+                        className="font-medium text-white hover:text-[#8AF0FF]"
+                      >
+                        {s.nome}
+                      </Link>
+                      {s.hermes ? (
+                        <span className="rv-eyebrow rounded-full border border-[rgba(0,229,255,0.3)] bg-[rgba(0,229,255,0.08)] px-2 py-0.5 !text-[#8AF0FF]">
+                          Hermes
+                        </span>
+                      ) : null}
+                    </div>
                     {s.host ? <div className="rv-num mt-0.5 text-xs text-white/40">{s.host}</div> : null}
                   </TableCell>
                   <TableCell rotulo="cliente" className="text-white/70">{s.clienteNome}</TableCell>

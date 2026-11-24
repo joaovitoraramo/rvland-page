@@ -32,9 +32,10 @@ export interface DepsSync extends DepsAuthAgente, DepsLicenca, DepsEfeitos {
   /**
    * `UPDATE servidores SET ultimo_contato_em=$em WHERE id=$id`: o sync aceito é o "heartbeat" do
    * servidor Hermes (que não usa o do Credit); sem isto o cron de telemetria e o painel o
-   * tratariam como offline.
+   * tratariam como offline. `agenteVersao` (do corpo do sync) atualiza `servidores.agente_versao`;
+   * null/ausente NÃO sobrescreve a coluna (mesma regra do heartbeat do Credit).
    */
-  registrarContato(servidorId: string, em: Date): Promise<void>;
+  registrarContato(servidorId: string, em: Date, agenteVersao?: string | null): Promise<void>;
   /**
    * Versão-alvo do agente RV (pin do servidor, senão a última estável do painel de release; a
    * MESMA regra do heartbeat do Credit). Null = sem release.
@@ -148,7 +149,7 @@ export async function tratarSyncHermes(e: EntradaAgente, deps: DepsSync): Promis
 
   // sync aceito = servidor vivo (best-effort: falha aqui não derruba o ciclo de licença)
   try {
-    await deps.registrarContato(servidor.id, agora);
+    await deps.registrarContato(servidor.id, agora, corpo.agente_versao ?? null);
   } catch {
     console.error("[hermes] não foi possível registrar o contato do servidor");
   }
@@ -203,6 +204,8 @@ export async function tratarSyncHermes(e: EntradaAgente, deps: DepsSync): Promis
       agente_versao: corpo.agente_versao ?? null,
       relogio_confiavel: relogioConfiavel ?? null,
       doc_agente_emitido_em: corpo.ultimo_emitido_em ?? null,
+      // só o booleano que o agente mandou (corpo autenticado e validado); ausente = sem prova
+      ...(typeof c.chave_configurada === "boolean" ? { chave_configurada: c.chave_configurada } : {}),
       _controle: clone.controle,
     },
     relogioOffsetMs: agora.getTime() - tsAgente.getTime(),

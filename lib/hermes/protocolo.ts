@@ -44,6 +44,12 @@ export const esquemaSync = z.strictObject({
     digest: z.string().regex(/^sha256:[0-9a-f]{64}$/).optional(),
     canal_em_uso: z.enum(["stable", "preview"]).optional(),
     iniciado_em: iso.optional(),
+    /**
+     * Prova do AGENTE de que a imagem em uso fecha a cadeia de chave com ele: label
+     * `org.aramo.hermes.licenca-chave=real` E `org.aramo.hermes.licenca-chave-fp` igual ao fp da chave h1
+     * embutida no agente. Ausente (agente antigo, docker desconhecido) = sem prova (o painel bloqueia).
+     */
+    chave_configurada: z.boolean().optional(),
   }),
   fingerprint: fingerprintObrigatorio,
   relogio: z.strictObject({ confiavel: z.boolean(), sincronizado: z.boolean().optional() }).optional(),

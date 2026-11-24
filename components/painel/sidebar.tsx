@@ -12,7 +12,10 @@ import {
   Server,
   Settings2,
   ScrollText,
-  LogOut, Tag } from "lucide-react";
+  LogOut,
+  Tag,
+  Boxes,
+} from "lucide-react";
 
 import { cn } from "@/lib/utils";
 import { Avatar } from "@/components/painel/ui";
@@ -29,7 +32,8 @@ export type ItemNav = {
     | "servidores"
     | "config"
     | "auditoria"
-    | "picprice";
+    | "picprice"
+    | "hermes";
 };
 
 const ICONES = {
@@ -42,6 +46,7 @@ const ICONES = {
   config: Settings2,
   auditoria: ScrollText,
   picprice: Tag,
+  hermes: Boxes,
 } as const;
 
 export function Sidebar({

@@ -3,6 +3,7 @@ import { desc, eq } from "drizzle-orm";
 
 import { db, servidores, clientes, telemetriaAtual } from "@/lib/db";
 import { statusServidor, type StatusServidor } from "@/lib/dominio/servidor";
+import { idsServidoresHermes } from "@/lib/servicos/hermes-painel-repo";
 
 /**
  * Status "agora" — lê o relógio aqui (módulo server-only) e não no render,
@@ -31,10 +32,17 @@ export type LinhaServidor = {
   status: StatusServidor;
   cpuPct: number | null;
   discoPct: number | null;
+  /** Criado pela ativação Hermes: sem módulos, serviços nem comandos do Credit/Pic Price. */
+  hermes: boolean;
 };
 
 export async function listarServidores(): Promise<LinhaServidor[]> {
-  const linhas = await db
+  const [linhas, hermes] = await Promise.all([consultaServidores(), idsServidoresHermes()]);
+  return montarLinhasServidor(linhas, hermes);
+}
+
+function consultaServidores() {
+  return db
     .select({
       id: servidores.id,
       nome: servidores.nome,
@@ -50,7 +58,9 @@ export async function listarServidores(): Promise<LinhaServidor[]> {
     .innerJoin(clientes, eq(clientes.id, servidores.clienteId))
     .leftJoin(telemetriaAtual, eq(telemetriaAtual.servidorId, servidores.id))
     .orderBy(desc(servidores.criadoEm));
+}
 
+function montarLinhasServidor(linhas: Awaited<ReturnType<typeof consultaServidores>>, hermes: Set<string>): LinhaServidor[] {
   const agora = Date.now();
   const ordem: Record<StatusServidor, number> = {
     offline: 0,
@@ -70,6 +80,7 @@ export async function listarServidores(): Promise<LinhaServidor[]> {
       status: statusServidor({ status: l.statusBruto, ultimoContatoEm: l.ultimoContatoEm }, agora),
       cpuPct: l.cpuPct,
       discoPct: l.discoPct,
+      hermes: hermes.has(l.id),
     }))
     .sort((a, b) => ordem[a.status] - ordem[b.status] || a.nome.localeCompare(b.nome));
 }

@@ -23,7 +23,7 @@ import {
   servidores,
 } from "@/lib/db";
 import { novoProtocolo } from "@/lib/hermes/chave";
-import { criadoPorChave, PREFIXO_CRIADOR_CHAVE } from "@/lib/hermes/origem-servidor";
+import { criadoPorChave, PADRAO_LIKE_CRIADOR_CHAVE } from "@/lib/hermes/origem-servidor";
 import type { ControleClone } from "@/lib/hermes/clone";
 import { proximoVencimentoAgendado } from "@/lib/dominio/faturas";
 import { competenciaDe, hojeSP } from "@/lib/dominio/tempo";
@@ -325,7 +325,7 @@ export async function servidorEhHermes(servidorId: string, rota?: string): Promi
   const [i] = await db
     .select({ id: hermesInstalacoes.id })
     .from(hermesInstalacoes)
-    .where(and(eq(hermesInstalacoes.servidorId, servidorId), like(hermesInstalacoes.criadoPor, `${PREFIXO_CRIADOR_CHAVE}%`)))
+    .where(and(eq(hermesInstalacoes.servidorId, servidorId), like(hermesInstalacoes.criadoPor, PADRAO_LIKE_CRIADOR_CHAVE)))
     .limit(1);
   if (i && rota) console.warn(`[hermes] servidor ${servidorId} recusado em ${rota}: criado pela ativação Hermes`);
   return !!i;
@@ -400,8 +400,12 @@ export async function gravarControleClone(instalacaoId: string, controle: Contro
 }
 
 /** Marca o contato do servidor (o sync aceito do Hermes faz o papel do heartbeat: ver DepsSync). */
-export async function registrarContatoServidor(servidorId: string, em: Date): Promise<void> {
-  await db.update(servidores).set({ ultimoContatoEm: em }).where(eq(servidores.id, servidorId));
+export async function registrarContatoServidor(servidorId: string, em: Date, agenteVersao?: string | null): Promise<void> {
+  // versão ausente não sobrescreve a coluna (como o heartbeat do Credit: `agente_versao ?? servidor.agenteVersao`)
+  await db
+    .update(servidores)
+    .set({ ultimoContatoEm: em, ...(agenteVersao ? { agenteVersao } : {}) })
+    .where(eq(servidores.id, servidorId));
 }
 
 /** Promoção atômica e condicional aguardando_ativacao -> ativa; true = esta chamada mudou a linha. */

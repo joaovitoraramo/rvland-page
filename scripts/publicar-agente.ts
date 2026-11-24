@@ -9,6 +9,7 @@ import { db, agenteReleases } from "../lib/db";
 import { supabaseAdmin } from "../lib/supabase/admin";
 import { assinar } from "../lib/crypto/ed25519";
 import { SITE_URL } from "../lib/site";
+import { montarLdflags } from "./agente-ldflags";
 
 /**
  * Compila, assina (chave de release OFFLINE) e publica o agente. Uso:
@@ -77,15 +78,17 @@ async function main() {
     );
   }
 
-  // chaves públicas embutidas no binário (crypto.go, pacote main)
-  const ld = [
-    "-s",
-    "-w",
-    `-X main.versao=${versao}`,
-    `-X main.defaultEndereco=${SITE_URL}`,
-    `-X main.licensePK=${licensePub}`,
-    `-X main.releasePK=${releasePub}`,
-  ].join(" ");
+  // chaves públicas embutidas no binário (crypto.go e hermes_doc.go, pacote main). A h1 do Hermes vem
+  // de RVLAND_HERMES_PK (lida sem logar); sem ela o build segue SEM o -X e o agente nunca aplica
+  // documento do Hermes (seguro), com aviso. Valor inválido aborta antes de compilar.
+  const { ld, avisoHermes } = montarLdflags({
+    versao,
+    siteUrl: SITE_URL,
+    licensePub,
+    releasePub,
+    hermesPk: process.env.RVLAND_HERMES_PK,
+  });
+  if (avisoHermes) console.warn(`\n${avisoHermes}\n`);
 
   const storage = supabaseAdmin().storage.from("agentes");
 
