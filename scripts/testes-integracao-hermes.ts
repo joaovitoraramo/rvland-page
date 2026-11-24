@@ -12,14 +12,16 @@
  *   5. anti-replay atômico (avancarTimestamp): mesmo timestamp simultâneo → um só avança;
  *   6. reentrada idempotente da chave (mesma máquina, ≤ 30 min);
  *   7. promoção condicional aguardando_ativacao -> ativa (revogada nunca é promovida);
- *   2c. adoção de instalação revogada/desinstalada: recusada e a chave NÃO é consumida.
+ *   2c. adoção de instalação revogada/desinstalada: recusada e a chave NÃO é consumida;
+ *   1d/2d. `servidorEhHermes` (SQL): servidor criado pela ativação = true; servidor adotado = false.
  *
  * Uso (o banco precisa ter as migrações aplicadas: `DATABASE_URL=<descartavel> npm run db:migrate`):
  *
  *   HERMES_TESTE_DATABASE_URL=postgres://.../hermes_teste npx tsx scripts/testes-integracao-hermes.ts
  *
  * Salvaguardas: só roda se o NOME do banco contiver test|teste|tmp|descart; não
- * lê .env*; não imprime a URL; limpa o que criou (tag única por execução).
+ * lê .env*; não imprime a URL; limpa o que criou (tag única por execução; as linhas `ativfalha:*` de hermes_limites
+ * são removidas pelas chaves exatas dos IPs usados, nunca por LIKE).
  */
 import { randomBytes } from "node:crypto";
 
@@ -51,13 +53,14 @@ function confere(nome: string, ok: boolean, detalhe = "") {
 }
 
 async function main() {
-  const { sql, eq, inArray, like } = await import("drizzle-orm");
+  const { sql, eq, inArray } = await import("drizzle-orm");
   const { db, clientes, servidores, hermesChaves, hermesInstalacoes, hermesSolicitacoes, hermesLimites } = await import("../lib/db");
   const { gerarChaveHermes, expiraEmChave } = await import("../lib/hermes/chave");
-  const { gerarParEd25519, assinar } = await import("../lib/crypto/ed25519");
-  const { mensagemAssinada } = await import("../lib/crypto/heartbeat-auth");
-  const { repoAtivacao, repoLimites, repoSolicitacoes, avancarTimestamp, ativarSeAguardando } = await import("../lib/servicos/hermes-repo");
-  const { ativarHermes } = await import("../lib/servicos/hermes-ativacao");
+  const { gerarParEd25519 } = await import("../lib/crypto/ed25519");
+  const { assinarPedidoHermes } = await import("../lib/hermes/assinatura-agente");
+  const { repoAtivacao, repoLimites, repoSolicitacoes, avancarTimestamp, ativarSeAguardando, servidorEhHermes } = await import("../lib/servicos/hermes-repo");
+  const { ativarHermes: ativarHermesSemRastro } = await import("../lib/servicos/hermes-ativacao");
+  const { chaveDeIp } = await import("../lib/servicos/hermes-http");
 
   const tag = `itest-${randomBytes(4).toString("hex")}`;
   const CNPJ = "11222333000181";
@@ -84,6 +87,13 @@ async function main() {
     clientePorRaiz: async () => null,
     repo: repoAtivacao,
     gerarTokenEnroll: async (id: string) => `enroll-${id}`,
+  };
+  // IPs usados nas ativações: cada falha grava `ativfalha:<hash do IP>` em hermes_limites (compartilhado);
+  // no fim removemos EXATAMENTE essas chaves (nunca `like 'ativfalha:%'`).
+  const ipsUsados = new Set<string>();
+  const ativarHermes: typeof ativarHermesSemRastro = (e, deps) => {
+    ipsUsados.add(e.ip);
+    return ativarHermesSemRastro(e, deps);
   };
   const fp = (m: string) => ({ machine_id_hash: m.repeat(64).slice(0, 64) });
   const corpo = (chave: string, m: string, extra: Record<string, unknown> = {}) =>
@@ -113,6 +123,10 @@ async function main() {
       criados.instalacoes.push(i.id);
       if (i.servidorId) criados.servidores.push(i.servidorId);
     }
+    confere(
+      "1d. servidor criado pela ativação é Hermes (o Credit/Pic Price o recusam)",
+      !!insts[0]?.servidorId && (await servidorEhHermes(insts[0].servidorId)) === true
+    );
     const [k1] = await db.select().from(hermesChaves).where(eq(hermesChaves.tokenHash, g1.hash));
     confere("1c. chave marcada usada com o resultado gravado", !!k1.usadaEm && k1.resultadoInstalacaoId === insts[0]?.id);
 
@@ -131,13 +145,14 @@ async function main() {
     criados.instalacoes.push(instAd.id);
     const g2 = await novaChave("adocao", instAd.id);
     const ts = new Date().toISOString();
-    const prova = { servidor_id: srv.id, timestamp: ts, assinatura: assinar(mensagemAssinada(ts, `ativar:${instAd.id}`), agente.privadaB64) };
+    const prova = { servidor_id: srv.id, timestamp: ts, assinatura: assinarPedidoHermes("ativacao", ts, instAd.id, agente.privadaB64) };
     const r2 = await Promise.all(
       Array.from({ length: N }, (_, i) => ativarHermes({ corpo: corpo(g2.chave, String(i + 1), { agente_existente: prova }), ip: `10.0.2.${i + 1}` }, efeitos))
     );
     confere("2. N adoções simultâneas → exatamente UMA ok", r2.filter((r) => r.status === 200).length === 1, `ok=${r2.filter((r) => r.status === 200).length}`);
     const [ad] = await db.select({ servidorId: hermesInstalacoes.servidorId }).from(hermesInstalacoes).where(eq(hermesInstalacoes.id, instAd.id));
     confere("2b. instalação adotada aponta para o servidor", ad.servidorId === srv.id);
+    confere("2d. servidor ADOTADO não é Hermes (continua servidor normal do Credit)", (await servidorEhHermes(srv.id)) === false);
 
     // 2c) adoção de instalação revogada/desinstalada: recusada e a chave NÃO é consumida (rollback)
     for (const st of ["revogada", "desinstalada"] as const) {
@@ -149,7 +164,7 @@ async function main() {
       criados.instalacoes.push(instMorta.id);
       const gm = await novaChave("adocao", instMorta.id);
       const tsm = new Date().toISOString();
-      const provaM = { servidor_id: srvM.id, timestamp: tsm, assinatura: assinar(mensagemAssinada(tsm, `ativar:${instMorta.id}`), agM.privadaB64) };
+      const provaM = { servidor_id: srvM.id, timestamp: tsm, assinatura: assinarPedidoHermes("ativacao", tsm, instMorta.id, agM.privadaB64) };
       const rm = await ativarHermes({ corpo: corpo(gm.chave, "1", { agente_existente: provaM }), ip: "10.0.3.1" }, efeitos);
       const [km] = await db.select({ usadaEm: hermesChaves.usadaEm }).from(hermesChaves).where(eq(hermesChaves.tokenHash, gm.hash));
       const [im] = await db.select({ servidorId: hermesInstalacoes.servidorId }).from(hermesInstalacoes).where(eq(hermesInstalacoes.id, instMorta.id));
@@ -199,7 +214,8 @@ async function main() {
     confere("7c. revogada continua revogada", pr.status === "revogada");
   } finally {
     await db.delete(hermesSolicitacoes).where(inArray(hermesSolicitacoes.cnpj, [CNPJ2]));
-    await db.delete(hermesLimites).where(like(hermesLimites.chave, `itest:${tag}%`));
+    const chavesLimite = [`itest:${tag}`, ...[...ipsUsados].map((ip) => chaveDeIp("ativfalha", ip))];
+    await db.delete(hermesLimites).where(inArray(hermesLimites.chave, chavesLimite));
     await db.delete(hermesChaves).where(eq(hermesChaves.clienteId, cliente.id));
     await db.delete(hermesInstalacoes).where(eq(hermesInstalacoes.clienteId, cliente.id));
     await db.delete(servidores).where(eq(servidores.clienteId, cliente.id));

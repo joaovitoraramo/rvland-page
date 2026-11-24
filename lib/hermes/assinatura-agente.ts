@@ -11,6 +11,10 @@ import { assinar, verificar } from "@/lib/crypto/ed25519";
  *   Rotas (POST, corpo JSON):
  *     sync        → /api/agente/hermes
  *     credencial  → /api/agente/hermes/credencial
+ *     ativacao    → POST /api/hermes/ativacao, SÓ a prova de adoção (`agente_existente`):
+ *                   não usa headers; servidor, timestamp e assinatura vão no JSON, e o
+ *                   "corpo" assinado é o `instalacao_id` da chave de adoção (a prova
+ *                   fica DENTRO do corpo da requisição, então não dá para assinar o corpo todo).
  *
  *   Headers:
  *     X-RVLand-Servidor   : uuid do servidor (agente RV já enrolado)
@@ -20,7 +24,7 @@ import { assinar, verificar } from "@/lib/crypto/ed25519";
  *
  *   Mensagem assinada (UTF-8, sem quebra de linha):
  *     hermes:<rota>:<timestamp>.<sha256_hex(corpo_cru)>
- *   onde <rota> é `sync` ou `credencial`, <timestamp> é o valor do header e
+ *   onde <rota> é `sync`, `credencial` ou `ativacao`, <timestamp> é o valor do header e
  *   sha256_hex é o SHA-256 em hexadecimal minúsculo dos bytes UTF-8 do corpo
  *   exatamente como enviado (corpo vazio = hash de "").
  *
@@ -32,8 +36,8 @@ import { assinar, verificar } from "@/lib/crypto/ed25519";
  *   nenhuma rota Hermes. Janela de frescor: ±5 min do relógio do servidor.
  */
 
-export type RotaAgenteHermes = "sync" | "credencial";
-export const ROTAS_AGENTE_HERMES: readonly RotaAgenteHermes[] = ["sync", "credencial"];
+export type RotaAgenteHermes = "sync" | "credencial" | "ativacao";
+export const ROTAS_AGENTE_HERMES: readonly RotaAgenteHermes[] = ["sync", "credencial", "ativacao"];
 
 const JANELA_MS = 5 * 60 * 1000;
 

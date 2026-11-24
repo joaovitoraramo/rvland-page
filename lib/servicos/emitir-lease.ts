@@ -7,6 +7,7 @@ import { statusDeCliente } from "@/lib/consultas/licencas";
 import { hojeSP } from "@/lib/dominio/tempo";
 import { montarLease } from "@/lib/dominio/lease";
 import { assinarLease, type LeaseEnvelope } from "@/lib/crypto/lease";
+import { servidorEhHermes } from "@/lib/servicos/hermes-repo";
 
 /**
  * Emite o lease assinado de um servidor: deriva o status de licença do
@@ -17,7 +18,7 @@ export async function emitirLease(servidor: {
   id: string;
   clienteId: string;
 }): Promise<LeaseEnvelope> {
-  const [licenca, servicos, config, mods] = await Promise.all([
+  const [licenca, servicos, config, mods, hermes] = await Promise.all([
     statusDeCliente(servidor.clienteId),
     db
       .select({ unidade: servicoGerenciados.unidadeSystemd })
@@ -35,8 +36,10 @@ export async function emitirLease(servidor: {
       .from(servidores)
       .where(eq(servidores.id, servidor.id))
       .limit(1),
+    servidorEhHermes(servidor.id),
   ]);
-  const modulos = mods[0] ?? { licenca: true, picprice: false };
+  // servidor criado pela ativação Hermes nunca habilita o Pic Price, mesmo com a flag ligada
+  const modulos = { ...(mods[0] ?? { licenca: true, picprice: false }), ...(hermes ? { picprice: false } : {}) };
 
   const payload = montarLease({
     servidorId: servidor.id,

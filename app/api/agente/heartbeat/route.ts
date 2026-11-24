@@ -13,6 +13,7 @@ import {
 } from "@/lib/db";
 import { verificarHeartbeat } from "@/lib/crypto/heartbeat-auth";
 import { emitirLease } from "@/lib/servicos/emitir-lease";
+import { servidorEhHermes } from "@/lib/servicos/hermes-repo";
 import { ultimaVersaoEstavel } from "@/lib/servicos/releases";
 
 export const dynamic = "force-dynamic";
@@ -102,7 +103,8 @@ export async function POST(req: Request) {
     .where(and(eq(servidores.id, servidorId), eq(servidores.status, "ativo")))
     .limit(1);
 
-  if (!servidor || !servidor.agentePubkey) {
+  // servidor criado pela ativação Hermes não fala com o Credit: mesma resposta de desconhecido
+  if (!servidor || !servidor.agentePubkey || (await servidorEhHermes(servidor.id))) {
     return NextResponse.json({ erro: "servidor desconhecido" }, { status: 401 });
   }
 

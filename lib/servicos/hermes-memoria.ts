@@ -197,6 +197,7 @@ export function corpoSyncValido(over: Record<string, unknown> = {}) {
 
 // ── Mundo público em memória (solicitações e ativação) ──────────────────────
 import { gerarChaveHermes, expiraEmChave } from "@/lib/hermes/chave";
+import { criadoPorChave } from "@/lib/hermes/origem-servidor";
 import type { ChaveHermes, RepoAtivacao, RepoSolicitacoes, DadosSolicitacao } from "./hermes-ativacao-tipos";
 
 export const CNPJ_CLIENTE = "11222333000181";
@@ -206,7 +207,7 @@ export function criarMundoPublico(over: { agora?: Date } = {}) {
   const m = {
     chaves: new Map<string, ChaveHermes>(), // por hash
     solicitacoes: [] as (DadosSolicitacao & { protocolo: string; tentativas: number; status: "pendente" | "suspeita" })[],
-    instalacoes: [] as { id: string; servidorId: string | null; clienteId: string; canal: string; cnpj: string | null; fingerprint: unknown; status?: string }[],
+    instalacoes: [] as { id: string; servidorId: string | null; clienteId: string; canal: string; cnpj: string | null; fingerprint: unknown; status?: string; criadoPor?: string | null }[],
     servidores: new Map<string, { id: string; clienteId: string; status: string; agentePubkey: string | null }>(),
     clientes: new Map([["c1", { nome: "Mercado Teste", cnpj: CNPJ_CLIENTE as string | null }]]),
     auditoria: [] as EntradaAuditoria[],
@@ -265,7 +266,7 @@ export function criarMundoPublico(over: { agora?: Date } = {}) {
       const servidorId = `s-${++seqId}`;
       const instalacaoId = `i-${++seqId}`;
       m.servidores.set(servidorId, { id: servidorId, clienteId: c.clienteId, status: "pendente", agentePubkey: null });
-      m.instalacoes.push({ id: instalacaoId, servidorId, clienteId: c.clienteId, canal: c.canalInicial, cnpj: uso.cnpj, fingerprint: uso.fingerprint });
+      m.instalacoes.push({ id: instalacaoId, servidorId, clienteId: c.clienteId, canal: c.canalInicial, cnpj: uso.cnpj, fingerprint: uso.fingerprint, criadoPor: criadoPorChave(c.prefixo) });
       c.resultadoInstalacaoId = instalacaoId;
       return { chave: { ...c }, instalacaoId, servidorId, canal: c.canalInicial };
     },

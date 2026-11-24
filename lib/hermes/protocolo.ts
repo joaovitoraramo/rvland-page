@@ -91,7 +91,7 @@ export const esquemaAtivacao = z.strictObject({
   cnpj: z.string().min(1).max(30),
   fingerprint: fingerprintObrigatorio,
   ...dadosInstalador,
-  /** Adoção: prova de posse do agente RV já instalado (assinatura sobre `ativar:<instalacao>`). */
+  /** Adoção: prova de posse do agente RV já instalado (assinatura `hermes:ativacao:<timestamp>.<sha256(instalacao_id)>`). */
   agente_existente: z
     .strictObject({
       servidor_id: z.string().uuid(),

@@ -6,6 +6,7 @@ import { verificarHeartbeat } from "@/lib/crypto/heartbeat-auth";
 import { assinarEnvelope } from "@/lib/crypto/lease";
 import { tratarAutorizacao } from "@/lib/picprice/autorizacao";
 import { depsBanco } from "@/lib/picprice/servidor";
+import { servidorEhHermes } from "@/lib/servicos/hermes-repo";
 
 export const dynamic = "force-dynamic";
 
@@ -36,6 +37,7 @@ export async function POST(req: Request) {
     .limit(1);
   if (
     !servidor?.agentePubkey ||
+    (await servidorEhHermes(servidor.id)) || // servidor Hermes não usa o Pic Price: igual a desconhecido
     !verificarHeartbeat({ pubkeyB64: servidor.agentePubkey, timestamp, rawBody, assinaturaB64: assinatura })
   ) {
     return naoAutenticado();

@@ -5,6 +5,7 @@ import { db, servidores, servicoGerenciados } from "@/lib/db";
 import { getConfig } from "@/lib/config";
 import { statusDeCliente } from "@/lib/consultas/licencas";
 import { hojeSP } from "@/lib/dominio/tempo";
+import { servidorEhHermes } from "@/lib/servicos/hermes-repo";
 import { montarLease } from "@/lib/dominio/lease";
 
 export const dynamic = "force-dynamic";
@@ -27,7 +28,7 @@ export async function GET(
     .where(eq(servidores.id, servidorId))
     .limit(1);
 
-  if (!servidor || servidor.status !== "ativo") {
+  if (!servidor || servidor.status !== "ativo" || (await servidorEhHermes(servidor.id))) {
     return NextResponse.json({ erro: "servidor não encontrado" }, { status: 404 });
   }
 

@@ -1,4 +1,4 @@
-import { verificarHeartbeat } from "@/lib/crypto/heartbeat-auth";
+import { timestampFrescoHermes, verificarPedidoHermes } from "@/lib/hermes/assinatura-agente";
 import { formatoChaveValido, hashChaveHermes } from "@/lib/hermes/chave";
 import { cnpjsMesmaRaiz, cnpjValido, mascararCnpjRaiz, raizCnpj, soDigitosCnpj } from "@/lib/hermes/cnpj";
 import { esquemaAtivacao, esquemaValidar, sanitizarIdentificacao } from "@/lib/hermes/protocolo";
@@ -183,7 +183,11 @@ export async function validarChaveHermes(e: { corpo: string; ip: string }, deps:
   };
 }
 
-/** Prova de posse do agente RV existente: assinatura sobre `ativar:<instalacao>`, janela ±5 min (a de verificarHeartbeat). */
+/**
+ * Prova de posse do agente RV existente, no domínio PRÓPRIO do Hermes
+ * (lib/hermes/assinatura-agente.ts): `hermes:ativacao:<timestamp>.<sha256(instalacao_id)>`,
+ * janela ±5 min. Assinatura do heartbeat do Credit ou de outra rota Hermes não vale.
+ */
 async function provaDeAdocao(
   chave: ChaveHermes,
   prova: { servidor_id: string; timestamp: string; assinatura: string } | undefined,
@@ -195,12 +199,13 @@ async function provaDeAdocao(
   if (!s || s.status !== "ativo" || !s.agentePubkey) return null;
   if (s.clienteId !== chave.clienteId) return null;
   if (s.instalacaoVinculadaId && s.instalacaoVinculadaId !== chave.instalacaoId) return null;
-  const ok = verificarHeartbeat({
+  if (!timestampFrescoHermes(prova.timestamp, agora.getTime())) return null;
+  const ok = verificarPedidoHermes({
+    rota: "ativacao",
     pubkeyB64: s.agentePubkey,
     timestamp: prova.timestamp,
-    rawBody: `ativar:${chave.instalacaoId}`,
+    rawBody: chave.instalacaoId,
     assinaturaB64: prova.assinatura,
-    agora: agora.getTime(),
   });
   return ok ? s.id : null;
 }
@@ -209,8 +214,8 @@ async function provaDeAdocao(
  * POST /api/hermes/ativacao — CONSOME a chave (uso único, atômico no banco).
  *
  * `instalar`: cria servidor pendente + instalação e devolve o token de enroll
- * do agente. `adotar`: o agente RV já instalado prova a posse (assinatura de
- * `ativar:<instalacao>`) e a instalação passa a apontar para o servidor dele.
+ * do agente. `adotar`: o agente RV já instalado prova a posse (assinatura
+ * `hermes:ativacao:...`, ver provaDeAdocao) e a instalação passa a apontar para o servidor dele.
  * Reentrada idempotente (mesma chave + machine_id_hash, ≤ 30 min).
  */
 export async function ativarHermes(e: { corpo: string; ip: string }, deps: DepsAtivacao): Promise<RespostaHttp> {

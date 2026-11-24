@@ -8,7 +8,7 @@
  * atômico da chave, upsert de solicitação com ON CONFLICT na expressão do
  * índice, incremento atômico do rate limit, avanço atômico do anti-replay.
  */
-import { and, eq, isNull, lt, or, sql } from "drizzle-orm";
+import { and, eq, isNull, like, lt, or, sql } from "drizzle-orm";
 
 import {
   db,
@@ -23,6 +23,7 @@ import {
   servidores,
 } from "@/lib/db";
 import { novoProtocolo } from "@/lib/hermes/chave";
+import { criadoPorChave, PREFIXO_CRIADOR_CHAVE } from "@/lib/hermes/origem-servidor";
 import type { ControleClone } from "@/lib/hermes/clone";
 import { proximoVencimentoAgendado } from "@/lib/dominio/faturas";
 import { competenciaDe, hojeSP } from "@/lib/dominio/tempo";
@@ -259,7 +260,7 @@ export const repoAtivacao: RepoAtivacao = {
             status: "aguardando_ativacao",
             canal: chave.canalInicial,
             fingerprint: uso.fingerprint,
-            criadoPor: `chave:${chave.prefixo}`,
+            criadoPor: criadoPorChave(chave.prefixo),
           })
           .returning({ id: hermesInstalacoes.id });
         await tx.update(hermesChaves).set({ resultadoInstalacaoId: inst.id }).where(eq(hermesChaves.id, chave.id));
@@ -312,6 +313,19 @@ export const repoAtivacao: RepoAtivacao = {
 };
 
 // ── agente: servidor, instalação, anti-replay, eventos, licença ─────────────
+
+/**
+ * Servidor criado pela ativação Hermes (instalação com `criado_por 'chave:%'`)? O Credit e o
+ * Pic Price o tratam como desconhecido. Servidor adotado (já existente) NÃO conta.
+ */
+export async function servidorEhHermes(servidorId: string): Promise<boolean> {
+  const [i] = await db
+    .select({ id: hermesInstalacoes.id })
+    .from(hermesInstalacoes)
+    .where(and(eq(hermesInstalacoes.servidorId, servidorId), like(hermesInstalacoes.criadoPor, `${PREFIXO_CRIADOR_CHAVE}%`)))
+    .limit(1);
+  return !!i;
+}
 
 export async function servidorAtivo(id: string): Promise<ServidorAgente | null> {
   const [s] = await db

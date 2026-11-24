@@ -1,7 +1,9 @@
 import { describe, it, expect } from "vitest";
 import { assinar, gerarParEd25519 } from "@/lib/crypto/ed25519";
 import { mensagemAssinada } from "@/lib/crypto/heartbeat-auth";
+import { assinarPedidoHermes } from "@/lib/hermes/assinatura-agente";
 import { hashChaveHermes } from "@/lib/hermes/chave";
+import { foiCriadaPorChave } from "@/lib/hermes/origem-servidor";
 import { ativarHermes, validarChaveHermes } from "./hermes-ativacao";
 import { criarMundoPublico, CNPJ_CLIENTE, MACHINE_ID } from "./hermes-memoria";
 
@@ -256,12 +258,12 @@ describe("POST /api/hermes/ativacao: adotar", () => {
     const prova = (ts = w.mundo.agoraAtual, instalacao = "inst-1", priv = agente.privadaB64) => ({
       servidor_id: SERVIDOR,
       timestamp: ts.toISOString(),
-      assinatura: assinar(mensagemAssinada(ts.toISOString(), `ativar:${instalacao}`), priv),
+      assinatura: assinarPedidoHermes("ativacao", ts.toISOString(), instalacao, priv),
     });
     return { ...w, chave, agente, prova };
   }
 
-  it("verifica a assinatura sobre `ativar:<instalacao>` e vincula o servidor ativo", async () => {
+  it("verifica a assinatura `hermes:ativacao:<ts>.<sha256(instalacao_id)>` e vincula o servidor ativo", async () => {
     const { mundo, deps, chave, prova } = cenario();
     const r = await ativarHermes({ corpo: body(chave, { agente_existente: prova() }), ip: IP }, deps);
     expect(r.status).toBe(200);
@@ -277,6 +279,23 @@ describe("POST /api/hermes/ativacao: adotar", () => {
     for (const ae of [prova(undefined, "inst-OUTRA"), prova(undefined, "inst-1", outra.privadaB64), undefined]) {
       const r = await ativarHermes({ corpo: body(chave, ae ? { agente_existente: ae } : {}), ip: `5.5.5.${Math.random() * 200 | 0}` }, deps);
       expect(r).toEqual({ status: 401, corpo: { erro: "CHAVE_INVALIDA" } });
+    }
+    expect([...mundo.chaves.values()][0].usadaEm).toBeNull();
+  });
+
+  it("assinaturas de OUTRO domínio não valem: `ativar:<instalacao>` do esquema antigo, heartbeat do Credit e rotas sync/credencial", async () => {
+    const { mundo, deps, chave, agente } = cenario();
+    const ts = mundo.agoraAtual.toISOString();
+    const assinaturas = [
+      assinar(mensagemAssinada(ts, "ativar:inst-1"), agente.privadaB64), // esquema antigo (heartbeat do Credit)
+      assinar(mensagemAssinada(ts, "inst-1"), agente.privadaB64), // heartbeat do Credit sobre o id
+      assinarPedidoHermes("sync", ts, "inst-1", agente.privadaB64),
+      assinarPedidoHermes("credencial", ts, "inst-1", agente.privadaB64),
+    ];
+    for (const [i, assinatura] of assinaturas.entries()) {
+      const ae = { servidor_id: SERVIDOR, timestamp: ts, assinatura };
+      const r = await ativarHermes({ corpo: body(chave, { agente_existente: ae }), ip: `6.6.6.${i + 1}` }, deps);
+      expect(r, String(i)).toEqual({ status: 401, corpo: { erro: "CHAVE_INVALIDA" } });
     }
     expect([...mundo.chaves.values()][0].usadaEm).toBeNull();
   });
@@ -330,5 +349,30 @@ describe("POST /api/hermes/ativacao: adotar", () => {
     const mk = (mid: string, ip: string) => ativarHermes({ corpo: body(chave, { fingerprint: { machine_id_hash: mid }, agente_existente: prova() }), ip }, deps);
     const [x, y] = await Promise.all([mk("a".repeat(64), "1.1.1.1"), mk("b".repeat(64), "2.2.2.2")]);
     expect([x.status, y.status].sort()).toEqual([200, 401]);
+  });
+});
+
+describe("servidor criado pela ativação Hermes é marcável (isolamento do Credit/Pic Price)", () => {
+  it("instalação nova: a instalação nasce com criado_por `chave:<prefixo>`", async () => {
+    const { mundo, deps, emitirChave } = criarMundoPublico();
+    const chave = emitirChave();
+    const r = await ativarHermes({ corpo: body(chave), ip: IP }, deps);
+    expect(r.status).toBe(200);
+    const servidorId = (r.corpo as { servidor_id: string }).servidor_id;
+    const inst = mundo.instalacoes.find((i) => i.servidorId === servidorId)!;
+    expect(foiCriadaPorChave(inst.criadoPor)).toBe(true);
+    expect(inst.criadoPor).toBe(`chave:${[...mundo.chaves.values()][0].prefixo}`);
+  });
+
+  it("adoção NÃO marca o servidor existente (continua um servidor normal do Credit)", async () => {
+    const w = criarMundoPublico();
+    const agente = gerarParEd25519();
+    w.mundo.servidores.set("55555555-5555-4555-8555-555555555555", { id: "55555555-5555-4555-8555-555555555555", clienteId: "c1", status: "ativo", agentePubkey: agente.publicaB64 });
+    w.mundo.instalacoes.push({ id: "inst-1", servidorId: null, clienteId: "c1", canal: "stable", cnpj: CNPJ_CLIENTE, fingerprint: null, criadoPor: "painel" });
+    const chave = w.emitirChave({ tipo: "adocao", instalacaoId: "inst-1" });
+    const ts = w.mundo.agoraAtual.toISOString();
+    const prova = { servidor_id: "55555555-5555-4555-8555-555555555555", timestamp: ts, assinatura: assinarPedidoHermes("ativacao", ts, "inst-1", agente.privadaB64) };
+    expect((await ativarHermes({ corpo: body(chave, { agente_existente: prova }), ip: IP }, w.deps)).status).toBe(200);
+    expect(foiCriadaPorChave(w.mundo.instalacoes[0].criadoPor)).toBe(false);
   });
 });

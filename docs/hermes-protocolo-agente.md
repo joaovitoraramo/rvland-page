@@ -6,6 +6,18 @@ Contrato que o agente Go (P4) implementa. Fonte de verdade no código:
 
 Esquema PRÓPRIO do Hermes: não é o do heartbeat do Credit. Uma assinatura do
 heartbeat não vale em nenhuma rota Hermes, e a de uma rota não vale na outra.
+O agente Go tem UM único esquema para tudo: `hermes:<rota>:<timestamp>.<sha256_hex(corpo)>`
+(rotas `sync`, `credencial` e `ativacao`).
+
+## Isolamento: servidor Hermes não fala com o Credit nem com o Pic Price
+
+Servidor criado pela ativação Hermes (chave de instalação) é recusado como se fosse
+DESCONHECIDO (mesma resposta, sem revelar que existe) em `POST /api/agente/heartbeat`,
+`POST /api/agente/picprice/autorizar` e `GET /api/licenca/<servidor>`; e o lease emitido para ele
+(no enroll) nunca traz o módulo Pic Price. O agente Hermes deve usar SÓ as rotas deste documento
+(mais o enroll/download do binário, que são compartilhados). Servidor ADOTADO (já existia como
+servidor do Credit) não é marcado e continua como era. A marca é `hermes_instalacoes.criado_por =
+'chave:<prefixo>'` (lib/hermes/origem-servidor.ts), sem coluna nova.
 
 ## Rotas
 
@@ -13,6 +25,8 @@ heartbeat não vale em nenhuma rota Hermes, e a de uma rota não vale na outra.
 |---|---|---|
 | `sync` | `POST /api/agente/hermes` | JSON estrito (`esquemaSync`; campo desconhecido = 422) |
 | `credencial` | `POST /api/agente/hermes/credencial` | exatamente `{"pedido":"credencial"}` (obrigatório e estrito) |
+
+| `ativacao` | `POST /api/hermes/ativacao` (só a prova de adoção) | ver "Prova de adoção" |
 
 Corpo máximo: 64 KB. `Content-Type: application/json`.
 
@@ -30,7 +44,7 @@ Corpo máximo: 64 KB. `Content-Type: application/json`.
 hermes:<rota>:<timestamp>.<sha256_hex(corpo_cru)>
 ```
 
-- `<rota>`: `sync` ou `credencial`.
+- `<rota>`: `sync`, `credencial` ou `ativacao`.
 - `<timestamp>`: o valor do header `X-RVLand-Timestamp`.
 - `sha256_hex`: SHA-256 dos bytes do corpo EXATAMENTE como enviado (o que vai no fio, sem
   reserializar), em hexadecimal minúsculo (64 caracteres). Corpo vazio = hash de `""`.
@@ -41,6 +55,27 @@ Exemplo (credencial, corpo `{"pedido":"credencial"}`):
 ```
 hermes:credencial:2026-11-23T12:00:00.000Z.e36e5509ba40f9a4c2c38fe1c99c3e0c68410f73ac822a9d130af8f5450cf333
 ```
+
+## Prova de adoção (`ativacao`)
+
+Em `POST /api/hermes/ativacao` com chave de adoção, o agente RV já instalado prova a posse da
+chave privada no objeto `agente_existente` do JSON (não usa os headers `X-RVLand-*`):
+
+```json
+{ "agente_existente": { "servidor_id": "<uuid>", "timestamp": "<RFC 3339>", "assinatura": "<base64>" } }
+```
+
+A mensagem assinada segue o esquema comum, com a rota `ativacao` e o `instalacao_id` da chave de
+adoção como "corpo" (a prova fica dentro do corpo da requisição, então não dá para assinar o corpo todo):
+
+```
+hermes:ativacao:<timestamp>.<sha256_hex(instalacao_id)>
+```
+
+`instalacao_id` = uuid da instalação a adotar (o mesmo devolvido por `validar`/exibido pelo painel),
+em texto minúsculo, UTF-8. `timestamp` dentro de ±5 min. Não valem: `ativar:<instalacao>` (esquema antigo),
+a assinatura do heartbeat do Credit, nem a de `sync`/`credencial`. Falha = 401 `CHAVE_INVALIDA`
+(igual a chave inexistente) e a chave NÃO é consumida.
 
 ## `sync`
 
