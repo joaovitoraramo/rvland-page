@@ -40,6 +40,8 @@ func main() {
 		fmt.Println("rvland-agent", versao)
 	case "logs":
 		cmdLogs()
+	case "hermes":
+		cmdHermes(os.Args[2:])
 	default:
 		uso()
 		os.Exit(1)
@@ -54,7 +56,11 @@ uso:
   agenterv status       mostra licença, serviços e último contato
   agenterv reconnect    força um heartbeat imediato
   agenterv version
-  agenterv logs`)
+  agenterv logs
+  agenterv enroll ... --modo=hermes --instalacao=ID [--canal=stable|preview]   (servidor Hermes)
+  agenterv hermes credencial   imprime usuário e senha do registro (hook do hermes-imagem)
+  agenterv hermes sync|status  um ciclo de licença do Hermes / estado
+  agenterv hermes configurar --instalacao=ID [--canal=...] [--modo=hermes]   (adoção)`)
 }
 
 func flagArg(args []string, nome string) string {
@@ -100,6 +106,14 @@ func cmdEnroll(args []string) {
 		porta = n
 	}
 
+	// modo Hermes (servidor criado por chave de instalação): valida antes de gastar o token
+	hermes := flagArg(args, "modo") != "" || flagArg(args, "instalacao") != ""
+	if hermes {
+		if err := configurarHermes(&Config{}, args); err != nil {
+			fatal(err.Error())
+		}
+	}
+
 	seedB64, pubB64 := geraChaveAgente()
 	host, _ := os.Hostname()
 	so := runtime.GOOS
@@ -125,8 +139,16 @@ func cmdEnroll(args []string) {
 		PicpricePorta: porta,
 		SeedB64:       seedB64,
 	}
+	if hermes {
+		_ = configurarHermes(cfg, args) // já validado antes do enroll
+	}
 	if err := salvaConfig(cfg); err != nil {
 		fatal("salvar config: " + err.Error())
+	}
+	if cfg.Modo == modoHermes {
+		// servidor Hermes: sem lease do Credit, sem serviços, sem Pic Price
+		logf("enrollment concluído — servidor %s (modo hermes, instalação %s)", resp.ServidorID, cfg.Hermes.InstalacaoID)
+		return
 	}
 
 	// aplica o primeiro lease já (só se o módulo licença estiver ligado)
@@ -250,7 +272,20 @@ func cmdRun() {
 	if err != nil {
 		fatal("config: " + err.Error() + " (rode `agenterv enroll` primeiro)")
 	}
+	credit, hermes, _ := planoExecucao(cfg)
+	if !credit {
+		// modo Hermes: só o ciclo de licença do Hermes (sem heartbeat, lease, Pic Price ou comandos)
+		logf("iniciando em modo hermes (servidor %s, v%s)", cfg.ServidorID, versao)
+		iniciaHermes(cfg, true).loop()
+		return
+	}
 	logf("iniciando (servidor %s, driver %s, v%s)", cfg.ServidorID, cfg.Driver, versao)
+	if hermes {
+		// servidor adotado: Credit como sempre + sync Hermes. iniciaHermes roda AQUI (antes das
+		// goroutines) porque registra o adiamento do auto-update do Credit.
+		ah := iniciaHermes(cfg, false)
+		go ah.loop()
+	}
 
 	// Reforço imediato na subida: aplica o lease em cache antes do 1º heartbeat.
 	// Se o último lease era bloqueado, garante o serviço parado/desabilitado já
@@ -281,6 +316,10 @@ func cmdReconnect() {
 	if err != nil {
 		fatal("config: " + err.Error())
 	}
+	if cfg.Modo == modoHermes {
+		cmdHermes([]string{"sync"})
+		return
+	}
 	umHeartbeat(cfg, nil)
 	logf("reconnect concluído")
 }
@@ -289,6 +328,13 @@ func cmdStatus() {
 	cfg, err := carregaConfig()
 	if err != nil {
 		fatal("config: " + err.Error())
+	}
+	if cfg.Modo == modoHermes {
+		fmt.Printf("servidor:   %s\n", cfg.ServidorID)
+		fmt.Printf("endereços:  %s\n", strings.Join(cfg.Enderecos, ", "))
+		fmt.Printf("versão:     %s\n", versao)
+		statusHermes(cfg)
+		return
 	}
 	est := carregaEstado()
 	fmt.Printf("servidor:   %s\n", cfg.ServidorID)

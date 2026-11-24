@@ -20,6 +20,27 @@ dentro do **lease assinado** (servidores antigos: só licença).
 Instalar só com RV Pic Price (sem licença): cadastre o servidor no painel com só esse módulo e use o
 comando gerado (`--modulos=picprice`; vale o cadastro). `--driver=dry` garante que o systemd nunca é tocado.
 
+## Modo Hermes
+
+Servidor criado pela chave de instalação do Hermes: `agenterv enroll --token=… --modo=hermes --instalacao=ID`
+(grava `"modo":"hermes"` e o bloco `hermes` no `agent.conf`). O `run` então NÃO faz heartbeat, lease, Pic Price
+nem comandos: só o ciclo de licença (`POST /api/agente/hermes` a cada 60 s) e a credencial do registro. Servidor
+do Credit que adotou o Hermes: `agenterv hermes configurar --instalacao=ID` (Credit segue igual + ciclo Hermes).
+Contrato e regras: [`../docs/hermes-protocolo-agente.md`](../docs/hermes-protocolo-agente.md).
+
+- Entrega ao Hermes, em `/var/lib/hermes`: `licenca/licenca.json`, `licenca/obrigatoria`, `licenca/bloqueio` e
+  `rv/canal` (0644, atômico). Rede/RV fora = fail-open (nada muda).
+- Só arma `obrigatoria` se o container aceitaria o documento (relógio do host, `HERMES_INSTALACAO_ID`) e a imagem
+  traz `org.aramo.hermes.licenca-chave=real` + `org.aramo.hermes.licenca-chave-fp` igual ao fp do `hermesPK`.
+- Observa o container `hermes` pela CLI `docker` (sem docker = estado `desconhecido`) e, com `digest_alvo`, roda
+  `/usr/local/bin/hermes-imagem <canal>` (um por vez; o auto-update do agente espera ele terminar).
+- `agenterv hermes credencial` (usuário e senha, uma linha cada, para o hook `/etc/hermes/credencial.sh`),
+  `agenterv hermes sync` (um ciclo) e `agenterv hermes status`.
+- Build: a chave pública Hermes (`h1`) entra por `-ldflags "-X main.hermesPK=<base64>"` (o `publicar-agente.ts` lê
+  `RVLAND_HERMES_PK`); sem ela nenhum documento é aplicado. A unidade systemd não muda (o agente já roda como root).
+- O sync reporta `container.chave_configurada` (imagem com chave real e fp igual ao do agente), que destrava o
+  "Passar a valer" do painel.
+
 ## Instalação (produção)
 
 No painel, cadastre o servidor e cole o comando gerado no SSH:

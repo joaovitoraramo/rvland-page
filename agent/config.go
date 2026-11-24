@@ -16,6 +16,11 @@ type Config struct {
 	// Porta da API local do módulo picprice (escuta só em 127.0.0.1). 0 = padrão.
 	PicpricePorta int    `json:"picprice_porta,omitempty"`
 	SeedB64       string `json:"-"` // vive em arquivo separado, não no conf
+	// Modo Hermes (hermes_config.go). Ausentes = agente do Credit/Pic Price como sempre.
+	// Modo "hermes" = servidor criado por chave de instalação (só sync Hermes); só o bloco
+	// Hermes = servidor adotado (Credit como sempre + sync Hermes).
+	Modo   string        `json:"modo,omitempty"`
+	Hermes *ConfigHermes `json:"hermes,omitempty"`
 }
 
 const portaPicpricePadrao = 7710

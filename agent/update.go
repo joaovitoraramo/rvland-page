@@ -8,6 +8,15 @@ import (
 	"runtime"
 )
 
+// adiarAutoUpdate é registrado pelo módulo Hermes (iniciaHermes); nil no agente sem Hermes.
+var adiarAutoUpdate func() bool
+
+// Pontos de troca só para os testes (o comportamento é o de sempre: os.Executable e os.Exit).
+var (
+	executavelAgente = os.Executable
+	sairAgente       = os.Exit
+)
+
 type metaRelease struct {
 	Versao     string `json:"versao"`
 	SHA256     string `json:"sha256"`
@@ -20,6 +29,11 @@ type metaRelease struct {
 func autoAtualiza(cfg *Config, versaoAlvo, versaoAtual string) error {
 	if versaoAlvo == "" || versaoAlvo == versaoAtual {
 		return nil
+	}
+	// Servidor com o ciclo Hermes: não reinicia o agente enquanto o hermes-imagem roda (o restart
+	// cortaria o update do container no meio). nil = agente sem Hermes, comportamento de sempre.
+	if adiarAutoUpdate != nil && adiarAutoUpdate() {
+		return fmt.Errorf("atualização para %s adiada: atualização do Hermes em andamento", versaoAlvo)
 	}
 	base := cfg.Enderecos[0]
 	arch := runtime.GOARCH
@@ -51,7 +65,7 @@ func autoAtualiza(cfg *Config, versaoAlvo, versaoAtual string) error {
 	}
 
 	// troca atômica: grava temp no mesmo diretório, rename por cima, guarda .bak
-	exe, err := os.Executable()
+	exe, err := executavelAgente()
 	if err != nil {
 		return err
 	}
@@ -60,13 +74,18 @@ func autoAtualiza(cfg *Config, versaoAlvo, versaoAtual string) error {
 	if err := os.WriteFile(tmp, bin, 0o755); err != nil {
 		return err
 	}
+	// reconfere: um hermes_update pode ter começado durante o download (TOCTOU)
+	if adiarAutoUpdate != nil && adiarAutoUpdate() {
+		_ = os.Remove(tmp)
+		return fmt.Errorf("atualização para %s adiada: atualização do Hermes começou durante o download", versaoAlvo)
+	}
 	_ = os.Rename(exe, exe+".bak")
 	if err := os.Rename(tmp, exe); err != nil {
 		_ = os.Rename(exe+".bak", exe) // rollback
 		return err
 	}
 	logf("atualizado para %s — reiniciando", versaoAlvo)
-	os.Exit(0) // systemd reinicia com o binário novo
+	sairAgente(0) // systemd reinicia com o binário novo
 	return nil
 }
 
