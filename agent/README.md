@@ -64,6 +64,19 @@ agenterv version
 agenterv logs
 ```
 
+### Token do enroll fora do `ps`
+
+`--token=TOKEN` fica visível no argv (`ps`). Prefira uma das alternativas (precedência:
+`--token-stdin` > `RVLAND_ENROLL_TOKEN` > `--token=`):
+
+```
+printf '%s\n' "$TOKEN" | agenterv enroll --token-stdin --servidor=URL    # lê UMA linha do stdin, sem eco no terminal
+RVLAND_ENROLL_TOKEN=... agenterv enroll --servidor=URL                    # a variável é removida do ambiente do processo após a leitura
+```
+
+Se mais de uma fonte for informada e os valores divergirem, o enroll aborta (a mensagem cita só os
+nomes das fontes). O valor nunca vai para log, erro ou estado. `--token=` segue funcionando.
+
 `--driver=dry` não toca no systemd (registra a intenção) — para testar fora de
 um servidor Linux.
 

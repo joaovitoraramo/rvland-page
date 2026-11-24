@@ -29,6 +29,76 @@ describe("POST /api/hermes/ativacao/validar", () => {
     expect([...mundo.chaves.values()][0].usadaEm).toBeNull();
   });
 
+  describe("instalacao_id na resposta (chave de adoção)", () => {
+    const INST = "0A1B2C3D-4E5F-4A6B-8C7D-9E0F1A2B3C4D";
+
+    it("adoção válida + CNPJ conferido: devolve instalacao_id (uuid minúsculo); sem consumir", async () => {
+      const { mundo, deps, emitirChave } = criarMundoPublico();
+      const chave = emitirChave({ tipo: "adocao", instalacaoId: INST });
+      const r = await validarChaveHermes({ corpo: body(chave), ip: IP }, deps);
+      expect(r.status).toBe(200);
+      expect(r.corpo).toMatchObject({ tipo: "adocao", instalacao_id: INST.toLowerCase() });
+      expect([...mundo.chaves.values()][0].usadaEm).toBeNull();
+      // filial (mesma raiz) também conta como conferido
+      const f = await validarChaveHermes({ corpo: body(chave, { cnpj: "11222333000262" }), ip: IP }, deps);
+      expect((f.corpo as Record<string, unknown>).instalacao_id).toBe(INST.toLowerCase());
+    });
+
+    it("chave de instalação NUNCA traz instalacao_id (mesmo que o registro tenha o campo)", async () => {
+      const { deps, emitirChave } = criarMundoPublico();
+      const r = await validarChaveHermes({ corpo: body(emitirChave({ tipo: "instalacao", instalacaoId: INST })), ip: IP }, deps);
+      expect(r.status).toBe(200);
+      expect(r.corpo).not.toHaveProperty("instalacao_id");
+    });
+
+    it("adoção ainda sem instalação associada: omite o campo (não inventa)", async () => {
+      const { deps, emitirChave } = criarMundoPublico();
+      const r = await validarChaveHermes({ corpo: body(emitirChave({ tipo: "adocao", instalacaoId: null })), ip: IP }, deps);
+      expect(r.status).toBe(200);
+      expect(r.corpo).not.toHaveProperty("instalacao_id");
+    });
+
+    it("adoção sem CNPJ de referência (não conferido): 200 sem instalacao_id", async () => {
+      const { mundo, deps, emitirChave } = criarMundoPublico();
+      mundo.clientes.set("c1", { nome: "Mercado Teste", cnpj: null });
+      const r = await validarChaveHermes({ corpo: body(emitirChave({ tipo: "adocao", instalacaoId: INST, cnpj: null })), ip: IP }, deps);
+      expect(r.status).toBe(200);
+      expect(r.corpo).not.toHaveProperty("instalacao_id");
+    });
+
+    it("chave inválida/expirada/usada/revogada ou CNPJ divergente: resposta uniforme, sem o id em lugar nenhum", async () => {
+      const { mundo, deps, emitirChave } = criarMundoPublico();
+      const antes = new Date(mundo.agoraAtual.getTime() - 5 * 3600_000);
+      const mortas = [
+        emitirChave({ tipo: "adocao", instalacaoId: INST, expiraEm: new Date(mundo.agoraAtual.getTime() - 1000) }),
+        emitirChave({ tipo: "adocao", instalacaoId: INST, usadaEm: antes }),
+        emitirChave({ tipo: "adocao", instalacaoId: INST, revogadaEm: new Date() }),
+      ];
+      for (const c of mortas) {
+        const r = await validarChaveHermes({ corpo: body(c), ip: IP }, deps);
+        expect(r).toEqual({ status: 401, corpo: { erro: "CHAVE_INVALIDA" } });
+      }
+      const viva = emitirChave({ tipo: "adocao", instalacaoId: INST });
+      const div = await validarChaveHermes({ corpo: body(viva, { cnpj: "11444777000161" }), ip: IP }, deps);
+      expect(div).toEqual({ status: 409, corpo: { erro: "CNPJ_DIVERGENTE" } });
+      expect(JSON.stringify(div)).not.toContain(INST.toLowerCase());
+    });
+
+    it("reentrada (chave já usada, mesma máquina, < 30 min) NÃO devolve o id: só chave ainda não consumida", async () => {
+      const { mundo, deps, emitirChave } = criarMundoPublico();
+      const chave = emitirChave({
+        tipo: "adocao",
+        instalacaoId: INST,
+        usadaEm: new Date(mundo.agoraAtual.getTime() - 60_000),
+        usadaFingerprint: FP,
+        resultadoInstalacaoId: INST,
+      });
+      const r = await validarChaveHermes({ corpo: body(chave), ip: IP }, deps);
+      expect(r.status).toBe(200);
+      expect(r.corpo).not.toHaveProperty("instalacao_id");
+    });
+  });
+
   it("401 CHAVE_INVALIDA IDÊNTICO para inexistente, expirada, usada, revogada e malformada", async () => {
     const { mundo, deps, emitirChave } = criarMundoPublico();
     const expirada = emitirChave({ expiraEm: new Date(mundo.agoraAtual.getTime() - 1000) });

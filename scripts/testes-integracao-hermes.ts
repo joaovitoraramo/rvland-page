@@ -66,7 +66,7 @@ async function main() {
     registrarContatoServidor, servidorAtivo, instalacaoPorServidor, gravarInstalacao, gravarControleClone, inserirEventos, dadosLicencaCliente,
   } = await import("../lib/servicos/hermes-repo");
   const { tratarSyncHermes } = await import("../lib/servicos/hermes-sync");
-  const { ativarHermes: ativarHermesSemRastro } = await import("../lib/servicos/hermes-ativacao");
+  const { ativarHermes: ativarHermesSemRastro, validarChaveHermes: validarSemRastro } = await import("../lib/servicos/hermes-ativacao");
   const { chaveDeIp } = await import("../lib/servicos/hermes-http");
 
   const tag = `itest-${randomBytes(4).toString("hex")}`;
@@ -101,6 +101,10 @@ async function main() {
   const ativarHermes: typeof ativarHermesSemRastro = (e, deps) => {
     ipsUsados.add(e.ip);
     return ativarHermesSemRastro(e, deps);
+  };
+  const validarChaveHermes: typeof validarSemRastro = (e, deps) => {
+    ipsUsados.add(e.ip);
+    return validarSemRastro(e, deps);
   };
   const fp = (m: string) => ({ machine_id_hash: m.repeat(64).slice(0, 64) });
   const corpo = (chave: string, m: string, extra: Record<string, unknown> = {}) =>
@@ -151,6 +155,17 @@ async function main() {
     const [instAd] = await db.insert(hermesInstalacoes).values({ clienteId: cliente.id, nome: `Adocao ${tag}`, cnpj: CNPJ, cnpjRaiz: CNPJ.slice(0, 8) }).returning({ id: hermesInstalacoes.id });
     criados.instalacoes.push(instAd.id);
     const g2 = await novaChave("adocao", instAd.id);
+    // 2e) validar com SQL real: adoção devolve instalacao_id (sem consumir); instalação não
+    const v2 = await validarChaveHermes({ corpo: corpo(g2.chave, "1"), ip: "10.0.4.1" }, efeitos);
+    confere(
+      "2e. validar de chave de adoção devolve instalacao_id da instalação (uuid minúsculo) e não consome",
+      v2.status === 200 && (v2.corpo as { instalacao_id?: string }).instalacao_id === instAd.id.toLowerCase() &&
+        (await db.select({ u: hermesChaves.usadaEm }).from(hermesChaves).where(eq(hermesChaves.tokenHash, g2.hash)))[0].u === null,
+      `status=${v2.status}`
+    );
+    const gv = await novaChave("instalacao");
+    const vi = await validarChaveHermes({ corpo: corpo(gv.chave, "1"), ip: "10.0.4.2" }, efeitos);
+    confere("2f. validar de chave de INSTALAÇÃO não traz instalacao_id", vi.status === 200 && !("instalacao_id" in (vi.corpo as object)), `status=${vi.status}`);
     const ts = new Date().toISOString();
     // a prova assina instalacao_id + "\n" + machine_id_hash do fingerprint de CADA requisição
     const provaDe = (m: string) => ({ servidor_id: srv.id, timestamp: ts, assinatura: assinarPedidoHermes("ativacao", ts, `${instAd.id}\n${fp(m).machine_id_hash}`, agente.privadaB64) });
@@ -161,6 +176,9 @@ async function main() {
     const [ad] = await db.select({ servidorId: hermesInstalacoes.servidorId }).from(hermesInstalacoes).where(eq(hermesInstalacoes.id, instAd.id));
     confere("2b. instalação adotada aponta para o servidor", ad.servidorId === srv.id);
     confere("2d. servidor ADOTADO não é Hermes (continua servidor normal do Credit)", (await servidorEhHermes(srv.id)) === false);
+
+    const v2b = await validarChaveHermes({ corpo: corpo(g2.chave, "9"), ip: "10.0.4.3" }, efeitos);
+    confere("2g. validar da adoção JÁ consumida (outra máquina) → 401 uniforme, sem instalacao_id", v2b.status === 401 && JSON.stringify(v2b.corpo) === '{"erro":"CHAVE_INVALIDA"}', `status=${v2b.status}`);
 
     // 2c) adoção de instalação revogada/desinstalada: recusada e a chave NÃO é consumida (rollback)
     for (const st of ["revogada", "desinstalada"] as const) {

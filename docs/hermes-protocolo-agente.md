@@ -55,6 +55,16 @@ Exemplo (credencial, corpo `{"pedido":"credencial"}`):
 hermes:credencial:2026-11-23T12:00:00.000Z.e36e5509ba40f9a4c2c38fe1c99c3e0c68410f73ac822a9d130af8f5450cf333
 ```
 
+## `validar` (`POST /api/hermes/ativacao/validar`)
+
+Confere a chave sem consumi-la. 200: `tipo`, `cliente_nome`, `cnpj_mascarado`, `canal`, `expira_em` e, **só para chave de
+adoção**, `instalacao_id` (uuid minúsculo da instalação a adotar; é o valor que entra na prova de adoção abaixo). O campo
+só aparece quando TODAS as validações passaram: chave de adoção ainda utilizável (não usada/expirada/revogada; a
+reentrada pós-uso não o devolve), CNPJ conferido contra a referência da chave/cliente (sem referência = aceita como
+`suspeita`, mas sem o campo) e instalação já associada à chave (se não houver, o campo é omitido; nada é inventado).
+Chave de instalação nunca traz `instalacao_id`. Qualquer falha continua a mesma resposta uniforme (401 `CHAVE_INVALIDA`;
+409 `CNPJ_DIVERGENTE` para outra raiz de CNPJ), sem o id.
+
 ## Prova de adoção (`ativacao`)
 
 Em `POST /api/hermes/ativacao` com chave de adoção, o agente RV já instalado prova a posse da

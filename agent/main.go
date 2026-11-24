@@ -1,8 +1,11 @@
 package main
 
 import (
+	"bufio"
 	"encoding/json"
+	"errors"
 	"fmt"
+	"io"
 	"os"
 	"os/exec"
 	"runtime"
@@ -73,6 +76,85 @@ func flagArg(args []string, nome string) string {
 	return ""
 }
 
+// envTokenEnroll é a variável de ambiente alternativa a --token= (o argv é
+// visível a outros usuários via `ps`; o ambiente de um processo não é).
+const envTokenEnroll = "RVLAND_ENROLL_TOKEN"
+
+// resolveTokenEnroll escolhe a fonte do token do enroll. Precedência:
+// --token-stdin > RVLAND_ENROLL_TOKEN > --token=. Fontes que divirjam são erro
+// (as mensagens citam só os NOMES das fontes, nunca os valores). A variável de
+// ambiente é removida do processo logo após a leitura. lookup/unset/stdin são
+// injetados para teste.
+func resolveTokenEnroll(args []string, lookup func(string) (string, bool), unset func(string) error, stdin func() (string, error)) (string, error) {
+	type fonte struct{ nome, valor string }
+	var fontes []fonte
+
+	if contemArg(args, "--token-stdin") {
+		v, err := stdin()
+		if err != nil {
+			return "", errors.New("--token-stdin: não foi possível ler o token do stdin")
+		}
+		if v == "" {
+			return "", errors.New("--token-stdin: stdin vazio (esperado uma linha com o token)")
+		}
+		fontes = append(fontes, fonte{"--token-stdin", v})
+	}
+	if v, ok := lookup(envTokenEnroll); ok {
+		_ = unset(envTokenEnroll) // o valor não deve ficar no ambiente do processo (nem herdado por filhos)
+		if v = strings.TrimSpace(v); v != "" {
+			fontes = append(fontes, fonte{envTokenEnroll, v})
+		}
+	}
+	if v := strings.TrimSpace(flagArg(args, "token")); v != "" {
+		fontes = append(fontes, fonte{"--token", v})
+	}
+
+	if len(fontes) == 0 {
+		return "", errors.New("token é obrigatório (--token-stdin, " + envTokenEnroll + " ou --token=)")
+	}
+	for _, f := range fontes[1:] {
+		if f.valor != fontes[0].valor {
+			return "", errors.New("fontes de token divergentes (" + fontes[0].nome + " e " + f.nome + "): informe só uma")
+		}
+	}
+	return fontes[0].valor, nil
+}
+
+func contemArg(args []string, alvo string) bool {
+	for _, a := range args {
+		if a == alvo {
+			return true
+		}
+	}
+	return false
+}
+
+// leTokenStdin lê uma linha do stdin. Em terminal, desliga o eco (stty -echo,
+// best-effort) para o token não aparecer na tela.
+func leTokenStdin() (string, error) {
+	if fi, err := os.Stdin.Stat(); err == nil && fi.Mode()&os.ModeCharDevice != 0 {
+		off := exec.Command("stty", "-echo")
+		off.Stdin = os.Stdin
+		if off.Run() == nil {
+			defer func() {
+				on := exec.Command("stty", "echo")
+				on.Stdin = os.Stdin
+				_ = on.Run()
+				fmt.Fprintln(os.Stderr)
+			}()
+		}
+	}
+	return leLinhaToken(os.Stdin)
+}
+
+func leLinhaToken(r io.Reader) (string, error) {
+	linha, err := bufio.NewReader(r).ReadString('\n')
+	if err != nil && err != io.EOF {
+		return "", err
+	}
+	return strings.TrimSpace(linha), nil
+}
+
 func enderecosDe(servidor string) []string {
 	out := []string{}
 	add := func(u string) {
@@ -88,14 +170,14 @@ func enderecosDe(servidor string) []string {
 }
 
 func cmdEnroll(args []string) {
-	token := flagArg(args, "token")
+	token, err := resolveTokenEnroll(args, os.LookupEnv, os.Unsetenv, leTokenStdin)
+	if err != nil {
+		fatal(err.Error())
+	}
 	servidor := flagArg(args, "servidor")
 	driver := flagArg(args, "driver")
 	if driver == "" {
 		driver = "systemd"
-	}
-	if token == "" {
-		fatal("--token é obrigatório")
 	}
 	porta := 0
 	if p := flagArg(args, "porta"); p != "" {
@@ -120,7 +202,7 @@ func cmdEnroll(args []string) {
 
 	enderecos := enderecosDe(servidor)
 	var resp *RespEnroll
-	err := tentaEnderecos(enderecos, func(base string) error {
+	err = tentaEnderecos(enderecos, func(base string) error {
 		r, e := doEnroll(base, token, pubB64, host, so, versao)
 		if e != nil {
 			return e

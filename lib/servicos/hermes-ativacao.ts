@@ -45,7 +45,7 @@ function reentrada(c: ChaveHermes | null, machineId: string | undefined, agora: 
 
 type Preparo =
   | { ok: false; resposta: RespostaHttp }
-  | { ok: true; chave: ChaveHermes; hash: string; cnpj: string; livre: boolean };
+  | { ok: true; chave: ChaveHermes; hash: string; cnpj: string; livre: boolean; cnpjConferido: boolean };
 
 /**
  * Passos comuns de validar/ativar, SEM consumir: limite de falhas, CNPJ,
@@ -123,7 +123,7 @@ async function preparar(
     await registrarOcorrencia(deps.limites, chaveFalhas(e.ip), UMA_HORA_MS, agora);
     return { ok: false, resposta: { status: 409, corpo: { erro: "CNPJ_DIVERGENTE" } } };
   }
-  return { ok: true, chave: c, hash, cnpj, livre };
+  return { ok: true, chave: c, hash, cnpj, livre, cnpjConferido: temReferencia };
 }
 
 function lerJson(corpo: string): { ok: true; valor: unknown } | { ok: false; resposta: RespostaHttp } {
@@ -171,10 +171,17 @@ export async function validarChaveHermes(e: { corpo: string; ip: string }, deps:
 
   const cliente = await deps.repo.clienteBasico(prep.chave.clienteId);
   const refCnpj = prep.chave.cnpj ?? cliente?.cnpj ?? prep.cnpj;
+  // instalacao_id (uuid minúsculo) SÓ quando tudo passou: chave de adoção ainda não consumida, com
+  // instalação associada e CNPJ realmente conferido contra a referência. Nos demais casos o campo some.
+  const instalacaoId =
+    prep.chave.tipo === "adocao" && prep.livre && prep.cnpjConferido && prep.chave.instalacaoId
+      ? prep.chave.instalacaoId.toLowerCase()
+      : null;
   return {
     status: 200,
     corpo: {
       tipo: prep.chave.tipo,
+      ...(instalacaoId ? { instalacao_id: instalacaoId } : {}),
       cliente_nome: cliente?.nome ?? "",
       cnpj_mascarado: mascararCnpjRaiz(refCnpj),
       canal: prep.chave.canalInicial,
