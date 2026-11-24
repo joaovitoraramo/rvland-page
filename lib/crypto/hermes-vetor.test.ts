@@ -22,12 +22,12 @@ const DOC: DocumentoHermes = {
   cliente_id: "cli-vetor-1",
   cnpj: "12345678000190",
   emitido_em: "2026-11-20T12:00:00.000Z",
-  status: "em_dia",
+  status: "ativa",
   origem: "contrato",
-  expira_em: "2026-12-20T12:00:00.000Z",
-  carencia_ate: "2026-12-23T12:00:00.000Z",
-  operar_ate: "2026-12-24T12:00:00.000Z",
-  offline_ate: "2026-12-27T12:00:00.000Z",
+  expira_em: "2026-12-20",
+  carencia_ate: "2026-12-23",
+  operar_ate: "2026-12-24T06:00:00.000Z",
+  offline_ate: "2026-12-27T06:00:00.000Z",
   modo: "valendo",
   obrigatoria: true,
   canal: "stable",
@@ -38,9 +38,9 @@ const DOC: DocumentoHermes = {
 
 const ENVELOPE_ESPERADO: EnvelopeHermes = {
   payload:
-    "eyJ0aXBvIjoiaGVybWVzX2xpY2VuY2EiLCJ2IjoxLCJraWQiOiJoMSIsImluc3RhbGFjYW9faWQiOiJpbnN0LXZldG9yLTEiLCJzZXJ2aWRvcl9pZCI6InNydi12ZXRvci0xIiwiY2xpZW50ZV9pZCI6ImNsaS12ZXRvci0xIiwiY25waiI6IjEyMzQ1Njc4MDAwMTkwIiwiZW1pdGlkb19lbSI6IjIwMjYtMTEtMjBUMTI6MDA6MDAuMDAwWiIsInN0YXR1cyI6ImVtX2RpYSIsIm9yaWdlbSI6ImNvbnRyYXRvIiwiZXhwaXJhX2VtIjoiMjAyNi0xMi0yMFQxMjowMDowMC4wMDBaIiwiY2FyZW5jaWFfYXRlIjoiMjAyNi0xMi0yM1QxMjowMDowMC4wMDBaIiwib3BlcmFyX2F0ZSI6IjIwMjYtMTItMjRUMTI6MDA6MDAuMDAwWiIsIm9mZmxpbmVfYXRlIjoiMjAyNi0xMi0yN1QxMjowMDowMC4wMDBaIiwibW9kbyI6InZhbGVuZG8iLCJvYnJpZ2F0b3JpYSI6dHJ1ZSwiY2FuYWwiOiJzdGFibGUiLCJhdmlzbyI6bnVsbCwicGFuaWNvIjpmYWxzZSwiYmxvcXVlYW50ZSI6ZmFsc2V9",
+    "eyJ0aXBvIjoiaGVybWVzX2xpY2VuY2EiLCJ2IjoxLCJraWQiOiJoMSIsImluc3RhbGFjYW9faWQiOiJpbnN0LXZldG9yLTEiLCJzZXJ2aWRvcl9pZCI6InNydi12ZXRvci0xIiwiY2xpZW50ZV9pZCI6ImNsaS12ZXRvci0xIiwiY25waiI6IjEyMzQ1Njc4MDAwMTkwIiwiZW1pdGlkb19lbSI6IjIwMjYtMTEtMjBUMTI6MDA6MDAuMDAwWiIsInN0YXR1cyI6ImF0aXZhIiwib3JpZ2VtIjoiY29udHJhdG8iLCJleHBpcmFfZW0iOiIyMDI2LTEyLTIwIiwiY2FyZW5jaWFfYXRlIjoiMjAyNi0xMi0yMyIsIm9wZXJhcl9hdGUiOiIyMDI2LTEyLTI0VDA2OjAwOjAwLjAwMFoiLCJvZmZsaW5lX2F0ZSI6IjIwMjYtMTItMjdUMDY6MDA6MDAuMDAwWiIsIm1vZG8iOiJ2YWxlbmRvIiwib2JyaWdhdG9yaWEiOnRydWUsImNhbmFsIjoic3RhYmxlIiwiYXZpc28iOm51bGwsInBhbmljbyI6ZmFsc2UsImJsb3F1ZWFudGUiOmZhbHNlfQ==",
   assinatura:
-    "CIBTpXSoHBjcDn/qAEL4A/zCT4BXluSzOHVxdwqA7uKkyQDyWPkXGV7M3Zf2bBP4P4dOJD/Tiy04Od2ElVCgBQ==",
+    "m16f1O3uMLZSNgTFRjW3+uET97u3MFpMGgigW15NES7u6poxa1hCf2QjMig7DOWwAc5WaUbjVRIXoEYNbtCzBw==",
   kid: "h1",
 };
 
