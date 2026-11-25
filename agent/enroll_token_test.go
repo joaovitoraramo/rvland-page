@@ -151,3 +151,35 @@ func TestLeLinhaToken(t *testing.T) {
 		}
 	}
 }
+
+func TestLeLinhaTokenExcedeLimiteSemVazar(t *testing.T) {
+	entrada := "SEGREDOVAZADO" + strings.Repeat("x", maxTokenStdin+10)
+	got, err := leLinhaToken(strings.NewReader(entrada))
+	if err == nil {
+		t.Fatalf("esperava erro, veio %d bytes", len(got))
+	}
+	if got != "" {
+		t.Fatal("não deve devolver conteúdo no erro")
+	}
+	if strings.Contains(err.Error(), "SEGREDOVAZADO") || strings.Contains(err.Error(), "xxxx") {
+		t.Fatalf("erro vaza entrada: %v", err)
+	}
+}
+
+func TestLeLinhaTokenNoLimiteComNewlineOK(t *testing.T) {
+	tok := strings.Repeat("a", maxTokenStdin)
+	for _, in := range []string{tok + "\n", tok + "\r\n", tok} {
+		got, err := leLinhaToken(strings.NewReader(in))
+		if err != nil || got != tok {
+			t.Fatalf("len=%d err %v", len(got), err)
+		}
+	}
+}
+
+func TestLeLinhaTokenLimiteExatoSemNewlineOK(t *testing.T) {
+	tok := strings.Repeat("a", maxTokenStdin)
+	got, err := leLinhaToken(strings.NewReader(tok))
+	if err != nil || got != tok {
+		t.Fatalf("len=%d err %v", len(got), err)
+	}
+}

@@ -147,10 +147,17 @@ func leTokenStdin() (string, error) {
 	return leLinhaToken(os.Stdin)
 }
 
+// maxTokenStdin é o teto (em bytes, sem o terminador de linha) do token lido do stdin.
+const maxTokenStdin = 4096
+
 func leLinhaToken(r io.Reader) (string, error) {
-	linha, err := bufio.NewReader(r).ReadString('\n')
+	// +2 deixa espaço para o terminador "\r\n" além do conteúdo máximo.
+	linha, err := bufio.NewReader(io.LimitReader(r, maxTokenStdin+2)).ReadString('\n')
 	if err != nil && err != io.EOF {
 		return "", err
+	}
+	if len(strings.TrimRight(linha, "\r\n")) > maxTokenStdin {
+		return "", errors.New("token do stdin excede o tamanho máximo")
 	}
 	return strings.TrimSpace(linha), nil
 }
