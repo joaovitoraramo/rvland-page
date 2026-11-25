@@ -73,22 +73,23 @@ type mundo struct {
 	saudeCod   int
 
 	// comportamento do RVLand fake
-	tipoChave   string // instalacao | adocao
-	canal       string
-	cnpjRef     string
-	statusVal   int
-	corpoVal    string
-	statusAtiv  int
-	corpoAtiv   string
-	instValidar bool // validar devolve instalacao_id (contrato futuro)
-	pubRelease  string
-	privRelease ed25519.PrivateKey
-	bin         []byte
-	shaMeta     string
-	assinMeta   string
-	hdrSha      string
-	pubAgente   ed25519.PublicKey
-	inst        string // instalacao_id devolvido pelo fake
+	tipoChave    string         // instalacao | adocao
+	validarExtra map[string]any // sobrescreve campos da resposta do validar
+	canal        string
+	cnpjRef      string
+	statusVal    int
+	corpoVal     string
+	statusAtiv   int
+	corpoAtiv    string
+	instValidar  bool // validar devolve instalacao_id (contrato futuro)
+	pubRelease   string
+	privRelease  ed25519.PrivateKey
+	bin          []byte
+	shaMeta      string
+	assinMeta    string
+	hdrSha       string
+	pubAgente    ed25519.PublicKey
+	inst         string // instalacao_id devolvido pelo fake
 
 	redirecionarValidar bool
 }
@@ -333,6 +334,9 @@ func (m *mundo) handlerRV(w http.ResponseWriter, r *http.Request) {
 		resp := map[string]any{"tipo": m.tipoChave, "cliente_nome": "Cliente Teste", "cnpj_mascarado": "11.222.333/****-**", "canal": m.canal, "expira_em": "2026-11-25T00:00:00.000Z"}
 		if m.instValidar {
 			resp["instalacao_id"] = m.inst
+		}
+		for k, v := range m.validarExtra {
+			resp[k] = v
 		}
 		responder(200, resp)
 	case r.Method == "POST" && r.URL.Path == "/api/hermes/ativacao":

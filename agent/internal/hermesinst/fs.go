@@ -199,10 +199,26 @@ func (t *Transacao) CriarDir(p string, modo os.FileMode) error {
 			if err != nil || !fi.IsDir() {
 				return fmt.Errorf("%s mudou de tipo; não removido", d)
 			}
+			if achado := contemIdentidadeServidor(real(t.raiz, d)); achado != "" {
+				return fmt.Errorf("%s não removido: contém %s (identidade do servidor no RVLand nunca é apagada)", d, achado)
+			}
 			return os.RemoveAll(real(t.raiz, d))
 		})
 	}
 	return err
+}
+
+// contemIdentidadeServidor: caminho do agent.conf/agente.key dentro de dir (vazio = não tem).
+func contemIdentidadeServidor(dir string) string {
+	achado := ""
+	_ = filepath.WalkDir(dir, func(p string, d fs.DirEntry, err error) error {
+		if err == nil && !d.IsDir() && (d.Name() == filepath.Base(arqAgenteConf) || d.Name() == filepath.Base(arqAgenteChave)) {
+			achado = d.Name()
+			return fs.SkipAll
+		}
+		return nil
+	})
+	return achado
 }
 
 // Escrever grava p (atômico). Conteúdo e modo iguais ao atual = nada a fazer (idempotente).

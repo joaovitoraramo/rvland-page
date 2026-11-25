@@ -416,7 +416,7 @@ func erroRV(r respostaRV) error {
 	case r.status == http.StatusTooManyRequests:
 		return falha(SaidaFalha, "limite de tentativas do RVLand atingido; tente de novo em 1 hora")
 	default:
-		return falha(SaidaFalha, "o RVLand respondeu HTTP %d %s", r.status, corta(e, 40))
+		return falha(SaidaFalha, "o RVLand respondeu HTTP %d %s", r.status, corta(textoLimpo(e), 40))
 	}
 }
 
@@ -449,7 +449,7 @@ func (i *instalador) validar(c corpoPublico) (*respValidar, error) {
 	if !CanalValido(v.Canal) {
 		v.Canal = "stable"
 	}
-	i.info("Chave válida (%s) para %q (CNPJ %s), canal %s, expira em %s.", v.Tipo, corta(textoLimpo(v.ClienteNome), 80), corta(v.CNPJMascarado, 24), v.Canal, corta(v.ExpiraEm, 30))
+	i.info("Chave válida (%s) para %q (CNPJ %s), canal %s, expira em %s.", corta(textoLimpo(v.Tipo), 20), corta(textoLimpo(v.ClienteNome), 80), corta(textoLimpo(v.CNPJMascarado), 24), v.Canal, corta(textoLimpo(v.ExpiraEm), 30))
 	return &v, nil
 }
 

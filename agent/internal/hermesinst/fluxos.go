@@ -311,6 +311,10 @@ func (i *instalador) baixarAgente(token string) ([]byte, string, error) {
 	if json.Unmarshal(r.corpo, &meta) != nil || !reSemver.MatchString(meta.Versao) || meta.Arch != i.a.Arch {
 		return nil, "", fmt.Errorf("metadados da release do agente fora do formato")
 	}
+	// versão fixada: a release devolvida precisa ser exatamente a pedida (anti downgrade/replay)
+	if i.o.AgenteVersao != "latest" && meta.Versao != i.o.AgenteVersao {
+		return nil, "", fmt.Errorf("o RVLand devolveu a release %s do agente, mas --agente-versao=%s foi pedida; recusada", meta.Versao, i.o.AgenteVersao)
+	}
 	q = url.Values{"versao": {meta.Versao}, "arch": {i.a.Arch}}
 	b, err := i.rv.fazer(i.ctx, http.MethodGet, "/api/agente/binario?"+q.Encode(), nil, map[string]string{"X-RVLand-Enroll": token}, maxBinarioAgente, timeoutDownload)
 	if err != nil {
@@ -454,7 +458,9 @@ func (i *instalador) instalarHermes(tx *Transacao, e *estado, id, canal string, 
 	} else {
 		i.aviso("sem /etc/cron.d: a atualização diária fica só por conta do agente RV")
 	}
-	if r := i.executar(Comando{Nome: "docker", Args: []string{"inspect", "--format", "{{.Id}}", "hermes"}, Timeout: 30 * time.Second}); !r.ok() {
+	// só um "No such object" confirma que o container NÃO existia; timeout/daemon instável = incerto,
+	// e na dúvida nunca se registra a remoção (poderia apagar um container pré-existente)
+	if r := i.executar(Comando{Nome: "docker", Args: []string{"inspect", "--format", "{{.Id}}", "hermes"}, Timeout: 30 * time.Second}); r.Err == nil && r.Codigo != 0 && strings.Contains(strings.ToLower(string(r.Saida)), "no such object") {
 		tx.Compensar("remover o container hermes criado nesta execução", func() error {
 			i.executarLimpeza(Comando{Nome: "docker", Args: []string{"rm", "-f", "hermes"}, Timeout: 2 * time.Minute})
 			return nil
@@ -498,7 +504,7 @@ var (
 // credencialRegistro: `agenterv hermes credencial` (duas linhas: usuário e senha). A senha só
 // vive em memória, entra no mascarador e vai ao docker login por stdin.
 func (i *instalador) credencialRegistro() (string, string, error) {
-	r := i.executar(Comando{Nome: real(i.a.Raiz, arqAgente), Args: []string{"hermes", "credencial"}, Timeout: time.Minute})
+	r := i.executar(Comando{Nome: real(i.a.Raiz, arqAgente), Args: []string{"hermes", "credencial"}, SoStdout: true, Timeout: time.Minute})
 	switch {
 	case r.Err == nil && r.Codigo == 3:
 		return "", "", fmt.Errorf("a instalação está bloqueada no RV (credencial 403): não recebe versões")

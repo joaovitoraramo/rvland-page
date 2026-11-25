@@ -28,7 +28,12 @@ var (
 	releasePK = ""
 )
 
+// ignorarSIGPIPE: escrita em pipe/terminal quebrado vira erro EPIPE (tratável) em vez de matar
+// o processo no meio da transação ou do rollback.
+func ignorarSIGPIPE() { signal.Ignore(syscall.SIGPIPE) }
+
 func main() {
+	ignorarSIGPIPE()
 	hermesinst.UmaskRestritivo()
 	ctx, parar := signal.NotifyContext(context.Background(), os.Interrupt, syscall.SIGTERM, syscall.SIGHUP)
 	defer parar()

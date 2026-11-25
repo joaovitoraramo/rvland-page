@@ -14,11 +14,14 @@ import (
 // Comando a executar. Segredos: valores que nunca aparecem na forma exibida (log).
 // Stdin leva segredos que não podem ir no argv (ex.: senha do docker login).
 type Comando struct {
-	Nome     string
-	Args     []string
-	Env      []string // somadas ao ambiente (já filtrado)
-	Stdin    []byte
-	Saida    io.Writer // opcional: stdout+stderr também em tempo real
+	Nome  string
+	Args  []string
+	Env   []string // somadas ao ambiente (já filtrado)
+	Stdin []byte
+	Saida io.Writer // opcional: stdout+stderr também em tempo real
+	// SoStdout: Resultado.Saida leva SÓ o stdout; o stderr vai separado em Resultado.Stderr
+	// (para ler dados estruturados sem misturar avisos).
+	SoStdout bool
 	Timeout  time.Duration
 	Segredos []string
 }
@@ -40,6 +43,7 @@ func (c Comando) Exibir() string {
 // Resultado: Err != nil = o comando nem rodou até o fim (não encontrado, timeout).
 type Resultado struct {
 	Saida  []byte
+	Stderr []byte // só preenchido com Comando.SoStdout
 	Codigo int
 	Err    error
 }
@@ -101,16 +105,22 @@ func (ExecutorReal) Executar(ctx context.Context, c Comando) Resultado {
 	if c.Stdin != nil {
 		cmd.Stdin = bytes.NewReader(c.Stdin)
 	}
-	var cap limitado
-	var w io.Writer = &cap
-	if c.Saida != nil {
-		w = io.MultiWriter(&cap, c.Saida)
+	var cap, capErr limitado
+	var wOut, wErr io.Writer = &cap, &cap
+	if c.SoStdout {
+		wErr = &capErr
 	}
-	cmd.Stdout, cmd.Stderr = w, w
+	if c.Saida != nil {
+		wOut, wErr = io.MultiWriter(wOut, c.Saida), io.MultiWriter(wErr, c.Saida)
+	}
+	cmd.Stdout, cmd.Stderr = wOut, wErr
 	prepararGrupo(cmd)
 	cmd.WaitDelay = 30 * time.Second
 	err := cmd.Run()
 	r := Resultado{Saida: cap.buf.Bytes()}
+	if c.SoStdout {
+		r.Stderr = capErr.buf.Bytes()
+	}
 	var ee *exec.ExitError
 	switch {
 	case err == nil:

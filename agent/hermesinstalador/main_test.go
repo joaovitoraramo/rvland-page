@@ -2,6 +2,8 @@ package main
 
 import (
 	"net"
+	"os/signal"
+	"syscall"
 	"testing"
 
 	"rvland-agent/internal/hermesinst"
@@ -30,5 +32,12 @@ func TestEscolherIPv4IgnoraPontesETuneis(t *testing.T) {
 	}
 	if got := escolherIPv4(lista[:5]); got != "" {
 		t.Fatalf("só virtuais: %q", got)
+	}
+}
+
+func TestIgnorarSIGPIPE(t *testing.T) {
+	ignorarSIGPIPE()
+	if !signal.Ignored(syscall.SIGPIPE) {
+		t.Fatal("SIGPIPE deveria estar ignorado (escrita em pipe quebrado vira EPIPE)")
 	}
 }
