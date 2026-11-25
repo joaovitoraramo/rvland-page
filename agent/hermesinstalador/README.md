@@ -72,7 +72,17 @@ Códigos de saída: **0** ok · **2** uso · **3** aguardando chave · **4** cha
 
 **Sinais:** SIGINT/SIGTERM/SIGHUP cancelam a etapa em curso; as limpezas (logout/`rm -f` do container
 temporário, `docker rm -f hermes` criado nesta execução, `systemctl reload nginx`, `disable`/`daemon-reload`)
-rodam com contexto próprio, não cancelado, e o rollback é completo. Pânico interno: rollback e saída 7.
+rodam com contexto próprio, não cancelado, e o rollback dos **arquivos** é completo (exceto o container
+no `adotar` com Hermes já existente; ver a limitação abaixo). Pânico interno: rollback e saída 7.
+
+**Limitação conhecida (container no `adotar` com Hermes já existente):** o instalador só controla o
+processo do `hermes-imagem`, não o `docker compose up` que ele dispara. O `trap` TERM do
+`hermes-imagem.sh` apenas sai com 143 e, no timeout/cancelamento, o instalador mata só o líder do grupo
+de processos. Após Ctrl-C/timeout durante o `compose up`, `.env.production` e `agent.conf` são
+restaurados, mas o container `hermes` pode ficar parado ou recriado com a configuração nova (não há como
+o rollback devolvê-lo ao estado anterior). **O que fazer:** rodar `hermes-imagem <canal>` de novo (como
+root) para convergir o container com os arquivos atuais e conferir com `docker ps` e `/api/saude`; se
+ele subir com configuração indesejada, rodar `hermesinstalador adotar` de novo.
 
 **Retomada / idempotência:** rodar de novo depois de uma falha pós-enroll continua do ponto do Hermes
 **sem chave** e sem nova ativação; rodar de novo com tudo pronto diz "já instalado" e não altera nada.
@@ -114,44 +124,46 @@ O_NOFOLLOW e confere o tipo no mesmo descritor. Uma `HERMES_CHAVE` inválida só
 necessária (a retomada não usa chave). Nginx: só o `sites-enabled/default` de fábrica (link para
 `sites-available/default`) sai; site do cliente nunca é apagado nem sobrescrito.
 
-## Link público `…/hermes/instalar/<chave>` (NÃO implementado aqui; especificação para a rota TS)
-
-O painel mostra: `curl -fsSL https://rvland.com.br/hermes/instalar/<chave> | sudo bash`
-(o link É a credencial). A rota deve:
-
-- aceitar só `<chave>` no formato `^hmk_[A-Za-z0-9_-]{43}$` (senão 404 genérico); rate limit por IP;
-  **não** consumir nem validar a chave no GET (quem valida é o instalador); não logar o caminho;
-- responder `content-type: text/x-shellscript; charset=utf-8`, `cache-control: no-store`,
-  `x-robots-tag: noindex, nofollow` (e a página não pode ser indexável);
-- para chave de **adoção**, embutir `MODO=adotar` e `--instalacao=<uuid>` (a rota conhece a instalação
-  pelo hash da chave); para instalação, `MODO=instalar`;
-- entregar exatamente este script mínimo (BASE = `SITE_URL`; CHAVE já validada pelo regex, logo sem
-  caracteres de shell):
+## Link público `/hermes/instalar` (rota `app/hermes/instalar/route.ts`)
 
 ```bash
-#!/usr/bin/env bash
-set -euo pipefail
-BASE="https://rvland.com.br"
-CHAVE="hmk_..."
-MODO="instalar"            # ou: adotar
-EXTRA=""                   # adoção: --instalacao=<uuid>
-[ "$(id -u)" -eq 0 ] || { echo "hermes: rode como root (sudo)"; exit 6; }
-case "$(uname -m)" in x86_64|amd64) A=amd64 ;; aarch64|arm64) A=arm64 ;; *) echo "hermes: arquitetura não suportada"; exit 6 ;; esac
-D="$(mktemp -d)"; chmod 700 "$D"; trap 'rm -rf "$D"' EXIT
-H="$(curl -fsS --proto '=https' --tlsv1.2 --max-time 30 -o /dev/null -D - "$BASE/api/hermes/instalador?arch=$A" | tr -d '\r')"
-LOC="$(printf '%s\n' "$H" | sed -n 's/^[Ll]ocation: //p' | tail -1)"
-SHA="$(printf '%s\n' "$H" | sed -n 's/^[Xx]-[Ss]ha256: //p' | tail -1)"
-case "$SHA" in *[!0-9a-f]*|"") echo "hermes: release sem sha256"; exit 7 ;; esac
-[ "${#SHA}" -eq 64 ] && [ "${LOC#https://}" != "$LOC" ] || { echo "hermes: resposta inesperada do instalador"; exit 7; }
-curl -fsS --proto '=https' --tlsv1.2 --max-time 300 --max-filesize 67108864 -o "$D/hermesinstalador" "$LOC"
-echo "$SHA  $D/hermesinstalador" | sha256sum -c --quiet - || { echo "hermes: sha256 do instalador NÃO confere"; exit 7; }
-chmod 700 "$D/hermesinstalador"
-# a chave vai por stdin (fora do argv); as perguntas usam /dev/tty
-printf '%s\n' "$CHAVE" | "$D/hermesinstalador" "$MODO" --chave-stdin $EXTRA "$@"
+curl -fsSL https://rvland.com.br/hermes/instalar | sudo bash              # instalar
+curl -fsSL https://rvland.com.br/hermes/instalar | sudo bash -s -- adotar # adoção (ou: solicitar)
 ```
 
-Argumentos extras depois do `bash -s --` (ex.: `--nao-interativo`, `--dry-run`) chegam ao instalador.
-A URL assinada do 302 vale 60 s: o segundo `curl` precisa vir logo após o primeiro (como acima).
+Script **genérico, sem chave** (gerado por `lib/servicos/hermes-bootstrap.ts`). **Decisão:** não existe
+a variante `/hermes/instalar/<chave>` (link = credencial em logs de proxy/CDN, histórico e referer).
+A adoção não precisa dela: o `validar` devolve o `instalacao_id` da chave de adoção; `--instalacao=`
+continua aceito como argumento extra. **Ordem de publicação:** publicar o binário do instalador antes
+de exibir o comando de adoção (sem `--instalacao`) no painel: a adoção sem a flag depende de o
+instalador publicado já tratar o `instalacao_id` devolvido pelo `validar`.
+
+- Chave, nesta ordem: `HERMES_CHAVE` → `/dev/tty` sem eco → entrada padrão (sem terminal); entregue
+  ao instalador **só** por stdin (`--chave-stdin`); `HERMES_CHAVE` sai do ambiente antes do exec.
+  O **prompt no terminal é o caminho preferido**. A entrada padrão só vale com
+  `bash instalar.sh < chave`: sob `curl | sudo bash` ela é o próprio script (o `read` recebe EOF e o
+  instalador recebe linha vazia = retomada); em automação use `HERMES_CHAVE`. **Nunca** escreva
+  `curl ... | sudo HERMES_CHAVE=hmk_... bash`: a chave vai no argv do `sudo` (legível em `ps`) e no
+  histórico. Forma segura com variável:
+  `read -rs HERMES_CHAVE; export HERMES_CHAVE; curl -fsSL https://rvland.com.br/hermes/instalar | sudo --preserve-env=HERMES_CHAVE bash`.
+  Os filtros de argumento seguem o pacote `flag` do Go (`-x`, `--x`, `-x=v`, `-x v`): `-chave`,
+  `-chave=`, `-chave-stdin` (e as formas `--`) na linha de comando são recusados (2); `-chave-arquivo`
+  (com `=` ou valor separado) passa e dispensa a chave; `-h`/`-help`/`-ajuda`/`-versao`/
+  `-mostrar-identificacao` (e `--`) também não pedem chave. Enter vazio = retomada (o instalador decide
+  se a chave é necessária).
+- Rota: pública, rate limit por IP (`hermes_limites`, 60/h), `text/x-shellscript; charset=utf-8`,
+  `no-store`, `noindex`, `nosniff`; não lê release nem nada do banco além do contador.
+- Confiança: TLS até o RVLand → `x-sha256` do 302 de `/api/hermes/instalador` (cabeçalho do RVLand,
+  fora do corpo que vem do Storage) → o script confere com `sha256sum` antes de executar (divergência =
+  7, nada executa) → o instalador confere sha256 + assinatura Ed25519 de release (`releasePK`) de tudo que
+  baixa. O script não verifica a assinatura do próprio instalador (sem ferramenta Ed25519 garantida no
+  servidor); a garantia dele é o TLS do RVLand + sha256.
+- Script: `set -eu`, `umask 077`, tudo dentro de uma função (download parcial não executa), Linux +
+  root + amd64/arm64 (6), `mktemp -d` 0700 com `trap` de limpeza, sem `eval`/`source`/pipe para shell.
+  Script cortado em qualquer byte não executa nada: a chamada final leva uma sentinela (`__HERMES_FIM__`)
+  como último argumento e a função recusa (2) sem ela. O sha256 do binário é calculado pela entrada
+  padrão (`sha256sum < arquivo`), sem nome de arquivo na saída.
+  A URL assinada do 302 vale 60 s: o download vem logo em seguida.
 
 ## Build e publicação
 
